@@ -1,0 +1,77 @@
+package vultr
+
+import (
+	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/vultr/govultr"
+)
+
+func dataSourceVultrApplication() *schema.Resource {
+	return &schema.Resource{
+		Read: dataSourceVultrApplicationRead,
+		Schema: map[string]*schema.Schema{
+			"filter": dataSourceFiltersSchema(),
+			"deploy_name": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"name": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"short_name": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+		},
+	}
+}
+
+func dataSourceVultrApplicationRead(d *schema.ResourceData, meta interface{}) error {
+	client := meta.(*Client).govultrClient()
+
+	filters, filtersOk := d.GetOk("filter")
+
+	if !filtersOk {
+		return fmt.Errorf("issue with filter: %v", filtersOk)
+	}
+
+	apps, err := client.Application.GetList(context.Background())
+
+	if err != nil {
+		return fmt.Errorf("Error getting applications: %v", err)
+	}
+
+	appList := []govultr.Application{}
+	f := buildVultrDataSourceFilter(filters.(*schema.Set))
+
+	var structToMap map[string]interface{}
+	for _, a := range apps {
+		// we need convert the a struct INTO a map so we can easily manipulate the data here
+		appByte, _ := json.Marshal(a)
+		json.Unmarshal(appByte, &structToMap)
+
+		for _, v := range f[0].values {
+			if v == structToMap[f[0].name] {
+				appList = append(appList, a)
+			}
+		}
+	}
+
+	if len(appList) > 1 {
+		return fmt.Errorf("your search returned too many results : %d. Please refine your search to be more specific", len(appList))
+	}
+
+	if len(appList) < 1 {
+		return errors.New("no results where found")
+	}
+
+	d.SetId(appList[0].AppID)
+	d.Set("deploy_name", appList[0].DeployName)
+	d.Set("name", appList[0].Name)
+	d.Set("short_name", appList[0].ShortName)
+	return nil
+}
