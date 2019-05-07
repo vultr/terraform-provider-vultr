@@ -70,7 +70,7 @@ func dataSourceVultrApplicationRead(d *schema.ResourceData, meta interface{}) er
 	}
 
 	if len(appList) < 1 {
-		return errors.New("no results where found")
+		return errors.New("no results were found")
 	}
 
 	d.SetId(appList[0].AppID)

@@ -30,7 +30,7 @@ func TestAccVultrApplication(t *testing.T) {
 			},
 			{
 				Config:      testAccCheckVultrApplication_noresult("image_test"),
-				ExpectError: regexp.MustCompile(`.* data.vultr_application.docker: data.vultr_application.docker: no results where found`),
+				ExpectError: regexp.MustCompile(`.* data.vultr_application.docker: data.vultr_application.docker: no results were found`),
 			},
 			{
 				Config:      testAccCheckVultrApplication_tooManyResults("Docker"),
