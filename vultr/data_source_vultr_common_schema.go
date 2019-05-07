@@ -1,6 +1,10 @@
 package vultr
 
-import "github.com/hashicorp/terraform/helper/schema"
+import (
+	"encoding/json"
+
+	"github.com/hashicorp/terraform/helper/schema"
+)
 
 type filter struct {
 	name   string
@@ -23,6 +27,41 @@ func buildVultrDataSourceFilter(set *schema.Set) []filter {
 	}
 
 	return filters
+}
+
+func structToMap(data interface{}) (map[string]interface{}, error) {
+	var structMap map[string]interface{}
+
+	a, err := json.Marshal(data)
+
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(a, &structMap)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return structMap, nil
+}
+
+func filterLoop(f []filter, m map[string]interface{}) bool {
+	for _, filter := range f {
+		if !valuesLoop(filter.values, m[filter.name]) {
+			return false
+		}
+	}
+	return true
+}
+
+func valuesLoop(values []string, i interface{}) bool {
+	for _, v := range values {
+		if v == i {
+			return true
+		}
+	}
+	return false
 }
 
 func dataSourceFiltersSchema() *schema.Schema {

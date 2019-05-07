@@ -2,9 +2,9 @@ package vultr
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
+
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/vultr/govultr"
 )
@@ -24,6 +24,10 @@ func dataSourceVultrApplication() *schema.Resource {
 			},
 			"short_name": {
 				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"surcharge": {
+				Type:     schema.TypeFloat,
 				Computed: true,
 			},
 		},
@@ -48,16 +52,16 @@ func dataSourceVultrApplicationRead(d *schema.ResourceData, meta interface{}) er
 	appList := []govultr.Application{}
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 
-	var structToMap map[string]interface{}
 	for _, a := range apps {
 		// we need convert the a struct INTO a map so we can easily manipulate the data here
-		appByte, _ := json.Marshal(a)
-		json.Unmarshal(appByte, &structToMap)
+		sm, err := structToMap(a)
 
-		for _, v := range f[0].values {
-			if v == structToMap[f[0].name] {
-				appList = append(appList, a)
-			}
+		if err != nil {
+			return err
+		}
+
+		if filterLoop(f, sm) {
+			appList = append(appList, a)
 		}
 	}
 
@@ -73,5 +77,6 @@ func dataSourceVultrApplicationRead(d *schema.ResourceData, meta interface{}) er
 	d.Set("deploy_name", appList[0].DeployName)
 	d.Set("name", appList[0].Name)
 	d.Set("short_name", appList[0].ShortName)
+	d.Set("surcharge", appList[0].Surcharge)
 	return nil
 }
