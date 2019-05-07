@@ -19,6 +19,10 @@ type Client struct {
 	client *govultr.Client
 }
 
+func (c *Client) govultrClient() *govultr.Client {
+	return c.client
+}
+
 // Client configures govultr and returns an initialized client
 func (c *Config) Client() (*Client, error) {
 

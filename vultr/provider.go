@@ -17,12 +17,10 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-
+			"vultr_application": dataSourceVultrApplication(),
 		},
 
-		ResourcesMap: map[string]*schema.Resource{
-
-		},
+		ResourcesMap:  map[string]*schema.Resource{},
 		ConfigureFunc: providerConfigure,
 	}
 }
