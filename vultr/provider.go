@@ -21,6 +21,7 @@ func Provider() terraform.ResourceProvider {
 			"vultr_api":         dataSourceVultrApi(),
 			"vultr_application": dataSourceVultrApplication(),
 			"vultr_os":          dataSourceVultrOS(),
+			"vultr_user":        dataSourceVultrUser(),
 		},
 
 		ResourcesMap:  map[string]*schema.Resource{},
