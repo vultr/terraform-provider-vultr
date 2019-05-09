@@ -20,6 +20,7 @@ func Provider() terraform.ResourceProvider {
 			"vultr_account":     dataSourceVultrAccount(),
 			"vultr_api":         dataSourceVultrApi(),
 			"vultr_application": dataSourceVultrApplication(),
+			"vultr_backup":      dataSourceVultrBackup(),
 			"vultr_os":          dataSourceVultrOS(),
 			"vultr_plan":        dataSourceVultrPlan(),
 			"vultr_user":        dataSourceVultrUser(),
