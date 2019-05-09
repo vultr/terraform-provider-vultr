@@ -98,7 +98,7 @@ func dataSourceVultrPlanRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if len(planList) > 1 {
-		return fmt.Errorf("your search returned too many results : %d. Please refine your search to be more specific", len(planList))
+		return errors.New("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(planList) < 1 {

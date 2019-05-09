@@ -34,7 +34,7 @@ func TestAccVultrPlan(t *testing.T) {
 			},
 			{
 				Config:      testAccCheckVultrPlan_tooManyResults("110"),
-				ExpectError: regexp.MustCompile(`.* data.vultr_plan.16gb: data.vultr_plan.16gb: your search returned too many results : 4. Please refine your search to be more specific`),
+				ExpectError: regexp.MustCompile(`.* data.vultr_plan.16gb: data.vultr_plan.16gb: your search returned too many results. Please refine your search to be more specific`),
 			},
 		},
 	})

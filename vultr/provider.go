@@ -24,6 +24,7 @@ func Provider() terraform.ResourceProvider {
 			"vultr_firewall_group": dataSourceVultrFirewallGroup(),
 			"vultr_os":             dataSourceVultrOS(),
 			"vultr_plan":           dataSourceVultrPlan(),
+			"vultr_region":         dataSourceVultrRegion(),
 			"vultr_user":           dataSourceVultrUser(),
 		},
 
