@@ -32,7 +32,7 @@ func TestAccVultrRegion(t *testing.T) {
 			},
 			{
 				Config:      testAccCheckVultrRegion_tooManyResults("US"),
-				ExpectError: regexp.MustCompile(`.* data.vultr_region.miami: data.vultr_region.miami: your search returned too many results : 8. Please refine your search to be more specific`),
+				ExpectError: regexp.MustCompile(`.* data.vultr_region.miami: data.vultr_region.miami: your search returned too many results. Please refine your search to be more specific`),
 			},
 		},
 	})

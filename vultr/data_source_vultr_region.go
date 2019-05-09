@@ -78,7 +78,7 @@ func dataSourceVultrRegionRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if len(regionList) > 1 {
-		return fmt.Errorf("your search returned too many results : %d. Please refine your search to be more specific", len(regionList))
+		return errors.New("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(regionList) < 1 {
