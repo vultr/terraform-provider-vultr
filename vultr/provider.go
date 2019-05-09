@@ -25,6 +25,7 @@ func Provider() terraform.ResourceProvider {
 			"vultr_os":             dataSourceVultrOS(),
 			"vultr_plan":           dataSourceVultrPlan(),
 			"vultr_region":         dataSourceVultrRegion(),
+			"vultr_ssh_key":        dataSourceVultrSSHKey(),
 			"vultr_user":           dataSourceVultrUser(),
 		},
 
