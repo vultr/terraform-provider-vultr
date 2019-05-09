@@ -17,13 +17,14 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"vultr_account":     dataSourceVultrAccount(),
-			"vultr_api":         dataSourceVultrApi(),
-			"vultr_application": dataSourceVultrApplication(),
-			"vultr_backup":      dataSourceVultrBackup(),
-			"vultr_os":          dataSourceVultrOS(),
-			"vultr_plan":        dataSourceVultrPlan(),
-			"vultr_user":        dataSourceVultrUser(),
+			"vultr_account":        dataSourceVultrAccount(),
+			"vultr_api":            dataSourceVultrApi(),
+			"vultr_application":    dataSourceVultrApplication(),
+			"vultr_backup":         dataSourceVultrBackup(),
+			"vultr_firewall_group": dataSourceVultrFirewallGroup(),
+			"vultr_os":             dataSourceVultrOS(),
+			"vultr_plan":           dataSourceVultrPlan(),
+			"vultr_user":           dataSourceVultrUser(),
 		},
 
 		ResourcesMap:  map[string]*schema.Resource{},
