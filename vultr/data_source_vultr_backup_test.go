@@ -28,7 +28,7 @@ func TestAccVultrBackup(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrBackup_noResults("auto-backup 63.209.32.244"),
+				Config:      testAccVultrBackup_noResults("auto-backup 63.209.32.244"),
 				ExpectError: regexp.MustCompile(`.* data.vultr_backup.backs: data.vultr_backup.backs: no results were found`),
 			},
 		},
