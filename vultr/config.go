@@ -3,10 +3,11 @@ package vultr
 import (
 	"crypto/tls"
 	"fmt"
+	"net/http"
+
 	"github.com/hashicorp/terraform/helper/logging"
 	"github.com/hashicorp/terraform/terraform"
 	"github.com/vultr/govultr"
-	"net/http"
 )
 
 // Config is the configuration structure used to instantiate Vultr
@@ -38,7 +39,7 @@ func (c *Config) Client() (*Client, error) {
 
 	vultrClient := govultr.NewClient(client, c.APIKey)
 	vultrClient.SetUserAgent(userAgent)
-	vultrClient.SetRateLimit(200)
+	vultrClient.SetRateLimit(300)
 
 	return &Client{client: vultrClient}, nil
 }
