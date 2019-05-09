@@ -2,6 +2,7 @@ package vultr
 
 import (
 	"fmt"
+	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/resource"
@@ -31,11 +32,24 @@ func TestAccVultrFirewallGroup(t *testing.T) {
 						"data.vultr_firewall_group.fwg", "id", "2e353f07"),
 				),
 			},
+			{
+				Config:      testAccVultrFirewallGroup_noresult("foobar"),
+				ExpectError: regexp.MustCompile(`.* data.vultr_firewall_group.fwg: data.vultr_firewall_group.fwg: no results were found`),
+			},
 		},
 	})
 }
 
 func testAccVultrFirewallGroup_read(description string) string {
+	return fmt.Sprintf(`data "vultr_firewall_group" "fwg" {
+  filter {
+    name = "description"
+    values = ["%s"]
+  }
+}`, description)
+}
+
+func testAccVultrFirewallGroup_noresult(description string) string {
 	return fmt.Sprintf(`data "vultr_firewall_group" "fwg" {
   filter {
     name = "description"
