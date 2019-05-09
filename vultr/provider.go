@@ -21,6 +21,7 @@ func Provider() terraform.ResourceProvider {
 			"vultr_api":            dataSourceVultrApi(),
 			"vultr_application":    dataSourceVultrApplication(),
 			"vultr_backup":         dataSourceVultrBackup(),
+			"vultr_block_storage":  dataSourceVultrBlockStorage(),
 			"vultr_firewall_group": dataSourceVultrFirewallGroup(),
 			"vultr_iso_private":    dataSourceVultrIsoPrivate(),
 			"vultr_iso_public":     dataSourceVultrIsoPublic(),
