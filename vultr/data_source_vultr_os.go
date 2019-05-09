@@ -47,7 +47,7 @@ func dataSourceVultrOSRead(d *schema.ResourceData, meta interface{}) error {
 	os, err := client.OS.GetList(context.Background())
 
 	if err != nil {
-		return fmt.Errorf("Error getting applications: %v", err)
+		return fmt.Errorf("error getting applications: %v", err)
 	}
 
 	osList := []govultr.OS{}
@@ -67,7 +67,7 @@ func dataSourceVultrOSRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if len(osList) > 1 {
-		return fmt.Errorf("your search returned too many results : %d. Please refine your search to be more specific", len(osList))
+		return errors.New("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(osList) < 1 {
