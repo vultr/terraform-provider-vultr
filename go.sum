@@ -187,6 +187,8 @@ github.com/vultr/govultr v0.0.0-20190506162044-0093c451dad4 h1:5jiaohY/lhGPVKjFW
 github.com/vultr/govultr v0.0.0-20190506162044-0093c451dad4/go.mod h1:9H008Uxr/C4vFNGLqKx232C206GL0PBHzOP0809bGNA=
 github.com/vultr/govultr v0.0.0-20190508170617-1882bb6ad6c5 h1:5XakNGQLln4/aO6C8JoK6gt5J2KYKbIjo5lyzcU+u/c=
 github.com/vultr/govultr v0.0.0-20190508170617-1882bb6ad6c5/go.mod h1:9H008Uxr/C4vFNGLqKx232C206GL0PBHzOP0809bGNA=
+github.com/vultr/govultr v0.1.0 h1:Nw6ziZmw7h27sa+7pBKiZjExLhwpZSf4V+diyROTeNA=
+github.com/vultr/govultr v0.1.0/go.mod h1:9H008Uxr/C4vFNGLqKx232C206GL0PBHzOP0809bGNA=
 github.com/xanzy/ssh-agent v0.2.0/go.mod h1:0NyE30eGUDliuLEHJgYte/zncp2zdTStcOnWhgSqHD8=
 github.com/xiang90/probing v0.0.0-20160813154853-07dd2e8dfe18/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/xlab/treeprint v0.0.0-20161029104018-1d6e34225557/go.mod h1:ce1O1j6UtZfjr22oyGxGLbauSBp2YVXpARAosm7dHBg=
