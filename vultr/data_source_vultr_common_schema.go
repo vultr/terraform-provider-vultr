@@ -2,6 +2,7 @@ package vultr
 
 import (
 	"encoding/json"
+	"strconv"
 
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -39,11 +40,23 @@ func structToMap(data interface{}) (map[string]interface{}, error) {
 	}
 	err = json.Unmarshal(a, &structMap)
 
-	if err != nil {
-		return nil, err
+	newMap := make(map[string]interface{})
+	for k, v := range structMap {
+		switch v.(type) {
+		case string:
+			newMap[k] = v.(string)
+		case bool:
+			newMap[k] = strconv.FormatBool(v.(bool))
+		case int:
+			newMap[k] = strconv.FormatInt(int64(v.(int)), 10)
+		case float64:
+			newMap[k] = strconv.FormatFloat(v.(float64), 'f', -1, 64)
+		default:
+			newMap[k] = v
+		}
 	}
 
-	return structMap, nil
+	return newMap, nil
 }
 
 func filterLoop(f []filter, m map[string]interface{}) bool {
