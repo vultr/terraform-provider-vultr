@@ -134,7 +134,7 @@ func dataSourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 
 	servers, err := client.Server.GetList(context.Background())
 	if err != nil {
-		return fmt.Errorf("Error getting applications: %v", err)
+		return fmt.Errorf("Error getting servers: %v", err)
 	}
 
 	serverList := []govultr.Server{}
