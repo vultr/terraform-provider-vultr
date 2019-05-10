@@ -4,51 +4,50 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/vultr/govultr"
 )
 
-func dataSourceVultrPlan() *schema.Resource {
+func dataSourceVultrBareMetalPlan() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrPlanRead,
+		Read: dataSourceVultrBareMetalPlanRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"name": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"vcpu_count": {
+			"cpu_count": {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
-			"ram": {
+			"cpu_model": {
 				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"ram": {
+				Type:     schema.TypeInt,
 				Computed: true,
 			},
 			"disk": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"bandwidth": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"bandwidth_gb": {
-				Type:     schema.TypeString,
+			"bandwidth_tb": {
+				Type:     schema.TypeInt,
 				Computed: true,
 			},
 			"price_per_month": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"windows": {
-				Type:     schema.TypeBool,
+				Type:     schema.TypeInt,
 				Computed: true,
 			},
 			"plan_type": {
 				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"deprecated": {
+				Type:     schema.TypeBool,
 				Computed: true,
 			},
 			"available_locations": {
@@ -58,15 +57,11 @@ func dataSourceVultrPlan() *schema.Resource {
 					Type: schema.TypeInt,
 				},
 			},
-			"deprecated": {
-				Type:     schema.TypeBool,
-				Computed: true,
-			},
 		},
 	}
 }
 
-func dataSourceVultrPlanRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrBareMetalPlanRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
@@ -75,13 +70,13 @@ func dataSourceVultrPlanRead(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	plans, err := client.Plan.GetList(context.Background(), "")
+	plans, err := client.Plan.GetBareMetalList(context.Background())
 
 	if err != nil {
-		return fmt.Errorf("Error getting plans: %v", err)
+		return fmt.Errorf("Error getting bare metal plans: %v", err)
 	}
 
-	planList := []govultr.Plan{}
+	planList := []govultr.BareMetalPlan{}
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 
 	for _, a := range plans {
@@ -105,15 +100,14 @@ func dataSourceVultrPlanRead(d *schema.ResourceData, meta interface{}) error {
 		return errors.New("no results were found")
 	}
 
-	d.SetId(strconv.Itoa(planList[0].VpsID))
+	d.SetId(planList[0].BareMetalID)
 	d.Set("name", planList[0].Name)
-	d.Set("vcpu_count", planList[0].VCPUCount)
+	d.Set("cpu_count", planList[0].CPUCount)
+	d.Set("cpu_model", planList[0].CPUModel)
 	d.Set("ram", planList[0].RAM)
 	d.Set("disk", planList[0].Disk)
-	d.Set("bandwidth", planList[0].Bandwidth)
-	d.Set("bandwidth_gb", planList[0].BandwidthGB)
+	d.Set("bandwidth_tb", planList[0].BandwidthTB)
 	d.Set("price_per_month", planList[0].Price)
-	d.Set("windows", planList[0].Windows)
 	d.Set("plan_type", planList[0].PlanType)
 	d.Set("available_locations", planList[0].Regions)
 	d.Set("deprecated", planList[0].Deprecated)
