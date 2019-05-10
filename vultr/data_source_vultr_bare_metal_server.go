@@ -9,9 +9,9 @@ import (
 	"github.com/vultr/govultr"
 )
 
-func dataSourceVultrServer() *schema.Resource {
+func dataSourceVultrBareMetalServer() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrServerRead,
+		Read: dataSourceVultrBareMetalServerRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"os": {
@@ -30,8 +30,8 @@ func dataSourceVultrServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"vps_cpu_count": {
-				Type:     schema.TypeString,
+			"cpu_count": {
+				Type:     schema.TypeInt,
 				Computed: true,
 			},
 			"location": {
@@ -39,6 +39,10 @@ func dataSourceVultrServer() *schema.Resource {
 				Computed: true,
 			},
 			"region_id": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
+			"default_password": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -46,19 +50,7 @@ func dataSourceVultrServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"pending_charges": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"cost_per_month": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"current_bandwidth": {
-				Type:     schema.TypeFloat,
-				Computed: true,
-			},
-			"allowed_bandwidth": {
+			"status": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -70,16 +62,8 @@ func dataSourceVultrServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"power_status": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"server_status": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 			"plan_id": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Computed: true,
 			},
 			"v6_networks": {
@@ -88,18 +72,6 @@ func dataSourceVultrServer() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"label": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"internal_ip": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"kvm_url": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"auto_backups": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -115,15 +87,11 @@ func dataSourceVultrServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"firewall_group_id": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 		},
 	}
 }
 
-func dataSourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrBareMetalServerRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
@@ -132,12 +100,12 @@ func dataSourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	servers, err := client.Server.GetList(context.Background())
+	servers, err := client.BareMetalServer.GetList(context.Background())
 	if err != nil {
-		return fmt.Errorf("Error getting servers: %v", err)
+		return fmt.Errorf("Error getting bare metal servers: %v", err)
 	}
 
-	serverList := []govultr.Server{}
+	serverList := []govultr.BareMetalServer{}
 
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 
@@ -162,37 +130,30 @@ func dataSourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 		return errors.New("no results were found")
 	}
 
-	d.SetId(serverList[0].VpsID)
-	d.Set("os", serverList[0].OS)
+	d.SetId(serverList[0].BareMetalServerID)
+	d.Set("os", serverList[0].Os)
 	d.Set("ram", serverList[0].RAM)
 	d.Set("disk", serverList[0].Disk)
 	d.Set("main_ip", serverList[0].MainIP)
-	d.Set("vps_cpu_count", serverList[0].VPSCpus)
+	d.Set("cpu_count", serverList[0].CPUCount)
 	d.Set("location", serverList[0].Location)
 	d.Set("region_id", serverList[0].RegionID)
-	d.Set("date_created", serverList[0].Created)
-	d.Set("pending_charges", serverList[0].PendingCharges)
-	d.Set("cost_per_month", serverList[0].Cost)
-	d.Set("current_bandwidth", serverList[0].CurrentBandwidth)
-	d.Set("allowed_bandwidth", serverList[0].AllowedBandwidth)
+	d.Set("default_password", serverList[0].DefaultPassword)
+	d.Set("date_created", serverList[0].DateCreated)
+	d.Set("status", serverList[0].Status)
 	d.Set("netmask_v4", serverList[0].NetmaskV4)
 	d.Set("gateway_v4", serverList[0].GatewayV4)
-	d.Set("power_status", serverList[0].PowerStatus)
-	d.Set("server_status", serverList[0].ServerState)
-	d.Set("plan_id", serverList[0].PlanID)
+	d.Set("plan_id", serverList[0].BareMetalPlanID)
 	d.Set("label", serverList[0].Label)
-	d.Set("internal_ip", serverList[0].InternalIP)
-	d.Set("kvm_url", serverList[0].KVMUrl)
-	d.Set("auto_backups", serverList[0].AutoBackups)
 	d.Set("tag", serverList[0].Tag)
 	d.Set("os_id", serverList[0].OsID)
 	d.Set("app_id", serverList[0].AppID)
-	d.Set("firewall_group_id", serverList[0].FirewallGroupID)
 
 	var ipv6s []string
 	for _, net := range serverList[0].V6Networks {
 		ipv6s = append(ipv6s, net.MainIP)
 	}
 	d.Set("v6_networks", ipv6s)
+
 	return nil
 }
