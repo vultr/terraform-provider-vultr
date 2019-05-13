@@ -37,7 +37,10 @@ func Provider() terraform.ResourceProvider {
 			"vultr_user":            dataSourceVultrUser(),
 		},
 
-		ResourcesMap:  map[string]*schema.Resource{},
+		ResourcesMap:  map[string]*schema.Resource{
+			"vultr_user": resourceVultrUsers(),
+		},
+
 		ConfigureFunc: providerConfigure,
 	}
 }
