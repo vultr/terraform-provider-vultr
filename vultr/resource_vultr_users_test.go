@@ -1,0 +1,155 @@
+package vultr
+
+import (
+	"context"
+	"fmt"
+	"testing"
+
+	"github.com/hashicorp/terraform/helper/resource"
+	"github.com/hashicorp/terraform/terraform"
+)
+
+func TestAccVultrUser_base(t *testing.T) {
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckVultrUsersDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccResourceVultrUser_create(),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "email", "terraform-acceptance@vultr.com"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "name", "Terraform AccTests"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.#", "10"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.0", "manage_users"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.1", "subscriptions"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.2", "billing"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.3", "support"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.4", "provisioning"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.5", "dns"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.6", "abuse"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.7", "upgrade"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.8", "firewall"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.9", "alerts"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "api_enabled", "true"),
+					resource.TestCheckResourceAttrSet("vultr_user.admin", "api_key"),
+				),
+			},
+			{
+				Config: testAccResourceVultrUser_update(),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "email", "terraform-acceptance@vultr.com"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "name", "Terraform Update Name"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.#", "9"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.0", "manage_users"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.1", "subscriptions"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.2", "billing"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.3", "support"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.4", "provisioning"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.5", "dns"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.6", "abuse"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.7", "upgrade"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.8", "firewall"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "api_enabled", "false"),
+					resource.TestCheckResourceAttrSet("vultr_user.admin", "api_key"),
+				),
+			},
+		},
+	})
+}
+
+func testAccCheckVultrUsersDestroy(s *terraform.State) error {
+
+	client := testAccProvider.Meta().(*Client).govultrClient()
+	for _, rs := range s.RootModule().Resources {
+		if rs.Type != "vultr_user" {
+			continue
+		}
+
+		users, err := client.User.GetList(context.Background())
+		if err != nil {
+			return fmt.Errorf("Error getting list of users : %s", err)
+		}
+
+		exists := false
+		for i := range users {
+			if users[i].UserID == rs.Primary.ID {
+				exists = true
+				break
+			}
+		}
+
+		if exists {
+			return fmt.Errorf("User still exists : %s", rs.Primary.ID)
+		}
+	}
+	return nil
+}
+
+func testAccResourceVultrUser_create() string {
+	return `resource "vultr_user" "admin" {
+  name = "Terraform AccTests",
+  email = "terraform-acceptance@vultr.com"
+  password = "password",
+  acl = [
+            "manage_users",
+            "subscriptions",
+            "billing",
+            "support",
+            "provisioning",
+            "dns",
+            "abuse",
+            "upgrade",
+            "firewall",
+            "alerts"
+  ]
+  api_enabled = true
+}`
+}
+
+func testAccResourceVultrUser_update() string {
+	return `resource "vultr_user" "admin" {
+  name = "Terraform Update Name",
+  email = "terraform-acceptance@vultr.com"
+  password = "password",
+  acl = [
+            "manage_users",
+            "subscriptions",
+            "billing",
+            "support",
+            "provisioning",
+            "dns",
+            "abuse",
+            "upgrade",
+            "firewall",
+  ]
+  api_enabled = false
+}`
+}
