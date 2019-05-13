@@ -24,7 +24,7 @@ func TestAccVultrIsoPrivate(t *testing.T) {
 				),
 			},
 			{
-				Config:      testAccVultrIsoPrivate_notResults("Debian 9"),
+				Config:      testAccVultrIsoPrivate_noResults("Debian 9"),
 				ExpectError: regexp.MustCompile(`.* data.vultr_iso_private.neon: data.vultr_iso_private.neon: no results were found`),
 			},
 		},
@@ -40,7 +40,7 @@ func testAccVultrIsoPrivate_read(description string) string {
 }`, description)
 }
 
-func testAccVultrIsoPrivate_notResults(name string) string {
+func testAccVultrIsoPrivate_noResults(name string) string {
 	return fmt.Sprintf(`data "vultr_iso_private" "neon" {
   filter {
     name = "name"
