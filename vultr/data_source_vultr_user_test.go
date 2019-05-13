@@ -13,14 +13,12 @@ func TestAccVultrUser(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrUser("terraform-acceptance@vultr.com"),
+				Config: testAccVultrUser("terraform-datasource@vultr.com"),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(
-						"data.vultr_user.admin", "email", "terraform-acceptance@vultr.com"),
+						"data.vultr_user.admin", "email", "terraform-datasource@vultr.com"),
 					resource.TestCheckResourceAttr(
-						"data.vultr_user.admin", "name", "Terraform AccTests"),
-					resource.TestCheckResourceAttr(
-						"data.vultr_user.admin", "id", "ef35cd31c6de8"),
+						"data.vultr_user.admin", "name", "Terraform datasourceTest"),
 					resource.TestCheckResourceAttr(
 						"data.vultr_user.admin", "acl.#", "10"),
 					resource.TestCheckResourceAttr(
@@ -45,6 +43,7 @@ func TestAccVultrUser(t *testing.T) {
 						"data.vultr_user.admin", "acl.9", "alerts"),
 					resource.TestCheckResourceAttr(
 						"data.vultr_user.admin", "api_enabled", "yes"),
+					resource.TestCheckResourceAttrSet("data.vultr_user.admin", "id"),
 				),
 			},
 		},
