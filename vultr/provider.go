@@ -42,7 +42,9 @@ func Provider() terraform.ResourceProvider {
 		ResourcesMap: map[string]*schema.Resource{
 			"vultr_firewall_group": resourceVultrFirewallGroup(),
 			"vultr_ssh_key":        resourceVultrSSHKey(),
+			"vultr_user":           resourceVultrUsers(),
 		},
+
 		ConfigureFunc: providerConfigure,
 	}
 }
