@@ -54,7 +54,7 @@ func testAccCheckVultrIsoScriptDestroy(s *terraform.State) error {
 
 		isoList, err := client.Iso.GetList(context.Background())
 		if err != nil {
-			return fmt.Errorf("Error getting list of users : %s", err)
+			return fmt.Errorf("Error getting list of ISO : %s", err)
 		}
 
 		exists := false
@@ -66,7 +66,7 @@ func testAccCheckVultrIsoScriptDestroy(s *terraform.State) error {
 		}
 
 		if exists {
-			return fmt.Errorf("User still exists : %s", rs.Primary.ID)
+			return fmt.Errorf("ISO still exists : %s", rs.Primary.ID)
 		}
 	}
 	return nil
