@@ -8,7 +8,6 @@ import (
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
-	"github.com/vultr/govultr"
 )
 
 func TestAccVultrSSHKey_basic(t *testing.T) {
@@ -60,15 +59,15 @@ func testAccCheckVultrSSHKeyDestroy(s *terraform.State) error {
 			return fmt.Errorf("Error getting SSH keys: %s", err)
 		}
 
-		var key *govultr.SSHKey
+		exists := false
 		for i := range keys {
 			if keys[i].SSHKeyID == keyID {
-				key = &keys[i]
+				exists = true
 				break
 			}
 		}
 
-		if key != nil {
+		if exists {
 			return fmt.Errorf("SSH Key still exists: %s", keyID)
 		}
 	}
@@ -94,15 +93,15 @@ func testAccCheckVultrSSHKeyExists(n string) resource.TestCheckFunc {
 			return fmt.Errorf("Error getting SSH keys: %s", err)
 		}
 
-		var key *govultr.SSHKey
+		exists := false
 		for i := range keys {
 			if keys[i].SSHKeyID == keyID {
-				key = &keys[i]
+				exists = true
 				break
 			}
 		}
 
-		if key == nil {
+		if !exists {
 			return fmt.Errorf("SSH Key does not exist: %s", keyID)
 		}
 
