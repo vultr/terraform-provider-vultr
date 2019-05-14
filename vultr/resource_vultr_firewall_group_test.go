@@ -23,7 +23,7 @@ func TestAccVultrFirewallGroup_basic(t *testing.T) {
 		CheckDestroy: testAccCheckVultrFirewallGroupDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrFirewallGroup_create(rString),
+				Config: testAccVultrFirewallGroup_base(rString),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrFirewallGroupExists("vultr_firewall_group.fwg"),
 					resource.TestCheckResourceAttr(
@@ -92,7 +92,7 @@ func testAccCheckVultrFirewallGroupExists(n string) resource.TestCheckFunc {
 	}
 }
 
-func testAccVultrFirewallGroup_create(description string) string {
+func testAccVultrFirewallGroup_base(description string) string {
 	return fmt.Sprintf(`resource "vultr_firewall_group" "fwg" {
   	description = "%s"
 }`, description)
