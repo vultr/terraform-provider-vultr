@@ -40,11 +40,14 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			"vultr_firewall_group": resourceVultrFirewallGroup(),
-			"vultr_firewall_rule":  resourceVultrFirewallRule(),
-			"vultr_ssh_key":        resourceVultrSSHKey(),
-			"vultr_startup_script": resourceVultrStartupScript(),
-			"vultr_user":           resourceVultrUsers(),
+			"vultr_firewall_group":    resourceVultrFirewallGroup(),
+			"vultr_firewall_rule":     resourceVultrFirewallRule(),
+			"vultr_iso_private":       resourceVultrIsoPrivate(),
+			"vultr_snapshot":          resourceVultrSnapshot(),
+			"vultr_snapshot_from_url": resourceVultrSnapshotFromURL(),
+			"vultr_ssh_key":           resourceVultrSSHKey(),
+			"vultr_startup_script":    resourceVultrStartupScript(),
+			"vultr_user":              resourceVultrUsers(),
 		},
 
 		ConfigureFunc: providerConfigure,
