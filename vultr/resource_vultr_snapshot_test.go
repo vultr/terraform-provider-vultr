@@ -12,6 +12,7 @@ import (
 
 func TestAccVultrSnapshot_basic(t *testing.T) {
 	rInt := acctest.RandInt()
+	desc := fmt.Sprintf("%d - created by Terraform test", rInt)
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -19,11 +20,11 @@ func TestAccVultrSnapshot_basic(t *testing.T) {
 		CheckDestroy: testAccCheckVultrSnapshotDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrSnapshotConfigBasic(rInt),
+				Config: testAccVultrSnapshotConfigBasic(desc),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrSnapshotExists("vultr_snapshot.foo"),
 					resource.TestCheckResourceAttrSet("vultr_snapshot.foo", "vps_id"),
-					resource.TestCheckResourceAttrSet("vultr_snapshot.foo", "description"),
+					resource.TestCheckResourceAttr("vultr_snapshot.foo", "description", desc),
 					resource.TestCheckResourceAttrSet("vultr_snapshot.foo", "date_created"),
 					resource.TestCheckResourceAttrSet("vultr_snapshot.foo", "size"),
 					resource.TestCheckResourceAttrSet("vultr_snapshot.foo", "status"),
@@ -99,11 +100,11 @@ func testAccCheckVultrSnapshotExists(n string) resource.TestCheckFunc {
 	}
 }
 
-func testAccVultrSnapshotConfigBasic(rInt int) string {
+func testAccVultrSnapshotConfigBasic(desc string) string {
 	return fmt.Sprintf(`
 		resource "vultr_snapshot" "foo" {
 			vps_id       = "24609751"
-			description  = "%d - created by terraform test"
+			description  = "%s"
 		}
-	`, rInt)
+	`, desc)
 }
