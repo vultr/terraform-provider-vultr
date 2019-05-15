@@ -47,6 +47,7 @@ func resourceVultrDnsDomainCreate(d *schema.ResourceData, meta interface{}) erro
 	if validIp == nil {
 		return fmt.Errorf("The supplied IP address is invalid : %s", ip)
 	}
+	log.Print("[INFO] Creating DNS domain")
 
 	err := client.DNSDomain.Create(context.Background(), domain, ip)
 
@@ -140,6 +141,7 @@ func resourceVultrDnsDomainUpdate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	record.Data = d.Get("server_ip").(string)
+	log.Print("[INFO] Updating DNS domain")
 	err = client.DNSRecord.Update(context.Background(), d.Id(), record)
 	if err != nil {
 		return fmt.Errorf("Error updating the default DNS record for DNS domain %s : %v", d.Id(), err)
