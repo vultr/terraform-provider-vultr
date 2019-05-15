@@ -43,6 +43,7 @@ func Provider() terraform.ResourceProvider {
 			"vultr_firewall_group":    resourceVultrFirewallGroup(),
 			"vultr_firewall_rule":     resourceVultrFirewallRule(),
 			"vultr_iso_private":       resourceVultrIsoPrivate(),
+			"vultr_reserved_ip":       resourceVultrReservedIP(),
 			"vultr_snapshot":          resourceVultrSnapshot(),
 			"vultr_snapshot_from_url": resourceVultrSnapshotFromURL(),
 			"vultr_ssh_key":           resourceVultrSSHKey(),

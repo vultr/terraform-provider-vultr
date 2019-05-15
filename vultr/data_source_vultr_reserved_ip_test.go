@@ -5,16 +5,23 @@ import (
 	"regexp"
 	"testing"
 
+	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 )
 
-func TestAccVultrReservedIp(t *testing.T) {
+func TestAccDataSourceVultrReservedIP(t *testing.T) {
+	rLabel := acctest.RandomWithPrefix("tf-test-")
+	ipType := "v4"
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrReservedIp_read("reserved-ip"),
+				Config: testAccVultrReservedIPConfig(rLabel, ipType),
+			},
+			{
+				Config: testAccVultrReservedIPConfig(rLabel, ipType) + testAccVultrReservedIP_read(rLabel),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.rs", "id"),
 					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.rs", "subnet_size"),
@@ -25,14 +32,14 @@ func TestAccVultrReservedIp(t *testing.T) {
 				),
 			},
 			{
-				Config:      testAccVultrReservedIp_noResult("foobar"),
+				Config:      testAccVultrReservedIP_noResult("foobar"),
 				ExpectError: regexp.MustCompile(`.* data.vultr_reserved_ip.rs: data.vultr_reserved_ip.rs: no results were found`),
 			},
 		},
 	})
 }
 
-func testAccVultrReservedIp_read(label string) string {
+func testAccVultrReservedIP_read(label string) string {
 	return fmt.Sprintf(`
 		data "vultr_reserved_ip" "rs" {
 		filter {
@@ -42,7 +49,7 @@ func testAccVultrReservedIp_read(label string) string {
 	}`, label)
 }
 
-func testAccVultrReservedIp_noResult(label string) string {
+func testAccVultrReservedIP_noResult(label string) string {
 	return fmt.Sprintf(`
 		data "vultr_reserved_ip" "rs" {
 		filter {
