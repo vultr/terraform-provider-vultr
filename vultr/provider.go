@@ -41,6 +41,7 @@ func Provider() terraform.ResourceProvider {
 
 		ResourcesMap: map[string]*schema.Resource{
 			"vultr_firewall_group":    resourceVultrFirewallGroup(),
+			"vultr_firewall_rule":     resourceVultrFirewallRule(),
 			"vultr_iso_private":       resourceVultrIsoPrivate(),
 			"vultr_snapshot":          resourceVultrSnapshot(),
 			"vultr_snapshot_from_url": resourceVultrSnapshotFromURL(),
