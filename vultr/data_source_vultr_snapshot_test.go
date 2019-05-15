@@ -5,18 +5,25 @@ import (
 	"regexp"
 	"testing"
 
+	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 )
 
 func TestAccVultrSnapshot(t *testing.T) {
+	rInt := acctest.RandInt()
+	desc := fmt.Sprintf("%d - created by Terraform test", rInt)
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckVultrSnapshot("Terraform Test"),
+				Config: testAccVultrSnapshotConfigBasic(desc),
+			},
+			{
+				Config: testAccVultrSnapshotConfigBasic(desc) + testAccCheckVultrSnapshot(desc),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vultr_snapshot.my_snapshot", "description", "Terraform Test"),
+					resource.TestCheckResourceAttr("data.vultr_snapshot.my_snapshot", "description", desc),
 					resource.TestCheckResourceAttrSet("data.vultr_snapshot.my_snapshot", "date_created"),
 					resource.TestCheckResourceAttrSet("data.vultr_snapshot.my_snapshot", "size"),
 					resource.TestCheckResourceAttrSet("data.vultr_snapshot.my_snapshot", "status"),
