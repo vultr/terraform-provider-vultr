@@ -171,17 +171,29 @@ func splitFirewallRule(portRange string) (int, int, error) {
 		return 0, 0, nil
 	}
 	ports := strings.Split(portRange, "-")
-	from, err := strconv.Atoi(strings.TrimSpace(ports[0]))
-	if err != nil {
-		return 0, 0, err
-	}
-	if len(ports) == 1 {
+
+	switch len(ports) {
+	case 1:
+		from, err := strconv.Atoi(strings.TrimSpace(ports[0]))
+		if err != nil {
+			return 0, 0, err
+		}
 		return from, 0, nil
-	}
-	to, err := strconv.Atoi(strings.TrimSpace(ports[1]))
-	if err != nil {
-		return 0, 0, err
+
+	case 2:
+		from, err := strconv.Atoi(strings.TrimSpace(ports[0]))
+		if err != nil {
+			return 0, 0, err
+		}
+
+		to, err := strconv.Atoi(strings.TrimSpace(ports[1]))
+		if err != nil {
+			return 0, 0, err
+		}
+		return from, to, nil
+
+	default:
+		return 0, 0, nil
 	}
 
-	return from, to, nil
 }
