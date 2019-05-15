@@ -137,7 +137,9 @@ func resourceVultrDnsDomainUpdate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	if record == nil {
-		return resourceVultrDnsDomainRead(d, meta)
+		log.Printf("[WARN] Removing DNS domain (%s) because it has no default record", d.Id())
+		d.SetId("")
+		return nil
 	}
 
 	record.Data = d.Get("server_ip").(string)
