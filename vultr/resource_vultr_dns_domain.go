@@ -69,7 +69,7 @@ func resourceVultrDnsDomainRead(d *schema.ResourceData, meta interface{}) error 
 		return fmt.Errorf("Error getting domains ")
 	}
 
-	domain := &govultr.DNSDomain{}
+	var domain *govultr.DNSDomain
 	for i := range domains {
 		if domains[i].Domain == d.Id() {
 			domain = &domains[i]
@@ -94,7 +94,7 @@ func resourceVultrDnsDomainRead(d *schema.ResourceData, meta interface{}) error 
 		return fmt.Errorf("Error getting DNS records for DNS domain %s: %v", d.Id(), err)
 	}
 
-	record := &govultr.DNSRecord{}
+	var record *govultr.DNSRecord
 	for i := range records {
 		if records[i].Type == "A" && records[i].Name == "" {
 			record = &records[i]
@@ -128,7 +128,7 @@ func resourceVultrDnsDomainUpdate(d *schema.ResourceData, meta interface{}) erro
 		return fmt.Errorf("Error getting DNS records for DNS domain %s: %v", d.Id(), err)
 	}
 
-	record := &govultr.DNSRecord{}
+	var record *govultr.DNSRecord
 	for i := range records {
 		if records[i].Type == "A" && records[i].Name == "" {
 			record = &records[i]
