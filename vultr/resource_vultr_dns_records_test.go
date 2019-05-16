@@ -18,8 +18,8 @@ func TestAccVultrDnsRecord_basic(t *testing.T) {
 	name := "vultr_dns_record.a-record"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckVultrDnsDomainDestroy,
 		Steps: []resource.TestStep{
 			{
@@ -40,7 +40,6 @@ func TestAccVultrDnsRecord_basic(t *testing.T) {
 func testAccCheckVultrDomainRecordExists(s *terraform.State) error {
 	client := testAccProvider.Meta().(*Client).govultrClient()
 
-
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "vultr_dns_record" {
 			continue
@@ -48,14 +47,14 @@ func testAccCheckVultrDomainRecordExists(s *terraform.State) error {
 
 		id := rs.Primary.ID
 		domain := rs.Primary.Attributes["domain"]
-		records, err  := client.DNSRecord.GetList(context.Background(), domain)
+		records, err := client.DNSRecord.GetList(context.Background(), domain)
 
 		if err != nil {
 			return fmt.Errorf("Error getting dns record %s for domain %s : %v", id, domain, err)
 		}
 
 		exists := false
-		for _, v  := range records {
+		for _, v := range records {
 			if strconv.Itoa(v.RecordID) == id {
 				exists = true
 				break
@@ -70,15 +69,14 @@ func testAccCheckVultrDomainRecordExists(s *terraform.State) error {
 	return nil
 }
 
-
 func testAccVultrDnsRecord_base(name string) string {
 	time.Sleep(1 * time.Second)
-	return fmt.Sprintf(`resource "vultr_dns_record" "a-record" {
-  data = "10.0.0.1"
-  domain = "${vultr_dns_domain.my-site.id}"
-  name = "%s"
-  type = "A"
-  ttl = "3600"
-}`, name)
+	return fmt.Sprintf(`
+		resource "vultr_dns_record" "a-record" {
+  			data = "10.0.0.1"
+  			domain = "${vultr_dns_domain.my-site.id}"
+  			name = "%s"
+  			type = "A"
+  			ttl = "3600"
+		}`, name)
 }
-

@@ -104,7 +104,7 @@ func resourceVultrFirewallRuleCreate(d *schema.ResourceData, meta interface{}) e
 		d.Set("ip_type", "v6")
 	}
 
-	return nil
+	return resourceVultrFirewallRuleRead(d, meta)
 }
 
 func resourceVultrFirewallRuleRead(d *schema.ResourceData, meta interface{}) error {

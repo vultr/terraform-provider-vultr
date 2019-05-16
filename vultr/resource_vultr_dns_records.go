@@ -86,7 +86,7 @@ func resourceVultrDnsRecordCreate(d *schema.ResourceData, meta interface{}) erro
 	for _, v := range records {
 		if data == v.Data && recordType == v.Type && name == v.Name {
 			d.SetId(strconv.Itoa(v.RecordID))
-			return nil
+			return resourceVultrDnsRecordRead(d, meta)
 		}
 	}
 
@@ -146,7 +146,7 @@ func resourceVultrDnsRecordUpdate(d *schema.ResourceData, meta interface{}) erro
 		return fmt.Errorf("Error updating DNS record %s : %v", d.Id(), err)
 	}
 
-	return nil
+	return resourceVultrDnsRecordRead(d, meta)
 }
 
 func resourceVultrDnsRecordDelete(d *schema.ResourceData, meta interface{}) error {
