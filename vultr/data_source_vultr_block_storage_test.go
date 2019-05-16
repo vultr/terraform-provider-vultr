@@ -5,16 +5,22 @@ import (
 	"regexp"
 	"testing"
 
+	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 )
 
-func TestAccVultrBlockStorage(t *testing.T) {
+func TestAccDataSourceVultrBlockStorage(t *testing.T) {
+	rLabel := acctest.RandomWithPrefix("tf-test")
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrBlockStorage_read("block-label"),
+				Config: testAccVultrBlockStorageConfig(rLabel),
+			},
+			{
+				Config: testAccVultrBlockStorageConfig(rLabel) + testAccDataSourceVultrBlockStorageConfig(rLabel),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "id"),
 					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "date_created"),
@@ -26,29 +32,19 @@ func TestAccVultrBlockStorage(t *testing.T) {
 				),
 			},
 			{
-				Config:      testAccVultrBlockStorage_NoResult("foobar"),
+				Config:      testAccDataSourceVultrBlockStorageConfig(rLabel),
 				ExpectError: regexp.MustCompile(`.* data.vultr_block_storage.block: data.vultr_block_storage.block: no results were found`),
 			},
 		},
 	})
 }
 
-func testAccVultrBlockStorage_read(label string) string {
+func testAccDataSourceVultrBlockStorageConfig(label string) string {
 	return fmt.Sprintf(`
-		data "vultr_block_storage" "block" {
+	data "vultr_block_storage" "block" {
     	filter {
-    	name = "label"
-    	values = ["%s"]
+    		name = "label"
+    		values = ["%s"]
   		}
-		}`, label)
-}
-
-func testAccVultrBlockStorage_NoResult(label string) string {
-	return fmt.Sprintf(`
-		data "vultr_block_storage" "block" {
-    	filter {
-    	name = "label"
-    	values = ["%s"]
-  		}
-		}`, label)
+	}`, label)
 }
