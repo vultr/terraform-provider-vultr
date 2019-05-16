@@ -42,6 +42,7 @@ func Provider() terraform.ResourceProvider {
 
 		ResourcesMap: map[string]*schema.Resource{
 			"vultr_dns_domain":        resourceVultrDnsDomain(),
+			"vultr_dns_record":        resourceVultrDnsRecord(),
 			"vultr_firewall_group":    resourceVultrFirewallGroup(),
 			"vultr_firewall_rule":     resourceVultrFirewallRule(),
 			"vultr_iso_private":       resourceVultrIsoPrivate(),
