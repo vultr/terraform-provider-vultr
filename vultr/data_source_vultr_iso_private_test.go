@@ -41,19 +41,21 @@ func TestAccVultrIsoPrivate(t *testing.T) {
 }
 
 func testAccVultrIsoPrivate_read(description string) string {
-	return fmt.Sprintf(`data "vultr_iso_private" "alpine" {
-  filter {
-    name = "filename"
-    values = ["%s"]
-  }
-}`, description)
+	return fmt.Sprintf(`
+		data "vultr_iso_private" "alpine" {
+  			filter {
+    			name = "filename"
+    			values = ["%s"]
+  			}
+		}`, description)
 }
 
 func testAccVultrIsoPrivate_noResults(name string) string {
-	return fmt.Sprintf(`data "vultr_iso_private" "alpine" {
-  filter {
-    name = "filename"
-    values = ["%s"]
-  }
-}`, name)
+	return fmt.Sprintf(`
+		data "vultr_iso_private" "alpine" {
+  			filter {
+    			name = "filename"
+    			values = ["%s"]
+  			}
+		}`, name)
 }

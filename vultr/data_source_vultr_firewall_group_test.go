@@ -42,19 +42,21 @@ func TestAccVultrFirewallGroup(t *testing.T) {
 }
 
 func testAccVultrFirewallGroup_read(description string) string {
-	return fmt.Sprintf(`data "vultr_firewall_group" "fwg" {
-  filter {
-    name = "description"
-    values = ["%s"]
-  }
-}`, description)
+	return fmt.Sprintf(`
+		data "vultr_firewall_group" "fwg" {
+  			filter {
+    			name = "description"
+    			values = ["%s"]
+  			}
+		}`, description)
 }
 
 func testAccVultrFirewallGroup_noresult(description string) string {
-	return fmt.Sprintf(`data "vultr_firewall_group" "fwg" {
-  filter {
-    name = "description"
-    values = ["%s"]
-  }
-}`, description)
+	return fmt.Sprintf(`
+		data "vultr_firewall_group" "fwg" {
+  			filter {
+    			name = "description"
+    			values = ["%s"]
+  			}
+		}`, description)
 }
