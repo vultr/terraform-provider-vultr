@@ -9,9 +9,9 @@ import (
 	"github.com/vultr/govultr"
 )
 
-func dataSourceVultrReservedIp() *schema.Resource {
+func dataSourceVultrReservedIP() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrReservedIpRead,
+		Read: dataSourceVultrReservedIPRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"region_id": {
@@ -42,7 +42,7 @@ func dataSourceVultrReservedIp() *schema.Resource {
 	}
 }
 
-func dataSourceVultrReservedIpRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrReservedIPRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
