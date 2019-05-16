@@ -9,21 +9,20 @@ import (
 	"github.com/hashicorp/terraform/helper/resource"
 )
 
-func TestAccVultrSnapshot(t *testing.T) {
-	rInt := acctest.RandInt()
-	desc := fmt.Sprintf("%d - created by Terraform test", rInt)
+func TestAccDataSourceVultrSnapshot(t *testing.T) {
+	rDesc := acctest.RandomWithPrefix("tf-test")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrSnapshotConfigBasic(desc),
+				Config: testAccVultrSnapshotConfigBasic(rDesc),
 			},
 			{
-				Config: testAccVultrSnapshotConfigBasic(desc) + testAccCheckVultrSnapshot(desc),
+				Config: testAccVultrSnapshotConfigBasic(rDesc) + testAccDataSourceVultrSnapshotConfig(rDesc),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vultr_snapshot.my_snapshot", "description", desc),
+					resource.TestCheckResourceAttr("data.vultr_snapshot.my_snapshot", "description", rDesc),
 					resource.TestCheckResourceAttrSet("data.vultr_snapshot.my_snapshot", "date_created"),
 					resource.TestCheckResourceAttrSet("data.vultr_snapshot.my_snapshot", "size"),
 					resource.TestCheckResourceAttrSet("data.vultr_snapshot.my_snapshot", "status"),
@@ -32,24 +31,14 @@ func TestAccVultrSnapshot(t *testing.T) {
 				),
 			},
 			{
-				Config:      testAccCheckVultrSnapshot_noResult("foobar"),
+				Config:      testAccDataSourceVultrSnapshotConfig(rDesc),
 				ExpectError: regexp.MustCompile(`.* data.vultr_snapshot.my_snapshot: data.vultr_snapshot.my_snapshot: no results were found`),
 			},
 		},
 	})
 }
 
-func testAccCheckVultrSnapshot(description string) string {
-	return fmt.Sprintf(`
-		data "vultr_snapshot" "my_snapshot" {
-    	filter {
-    	name = "description"
-    	values = ["%s"]
-	}
-  	}`, description)
-}
-
-func testAccCheckVultrSnapshot_noResult(description string) string {
+func testAccDataSourceVultrSnapshotConfig(description string) string {
 	return fmt.Sprintf(`
 		data "vultr_snapshot" "my_snapshot" {
     	filter {
