@@ -156,7 +156,7 @@ func resourceVultrDnsRecordDelete(d *schema.ResourceData, meta interface{}) erro
 	err := client.DNSRecord.Delete(context.Background(), d.Get("domain").(string), d.Id())
 
 	if err != nil {
-		return fmt.Errorf("Error deleting dns record %d : %v", d.Id(), err)
+		return fmt.Errorf("Error deleting dns record %s : %v", d.Id(), err)
 	}
 
 	return nil
