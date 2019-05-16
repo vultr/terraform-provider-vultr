@@ -57,7 +57,7 @@ func resourceVultrDnsDomainCreate(d *schema.ResourceData, meta interface{}) erro
 
 	d.SetId(domain)
 
-	return nil
+	return resourceVultrDnsDomainRead(d, meta)
 }
 
 func resourceVultrDnsDomainRead(d *schema.ResourceData, meta interface{}) error {
@@ -139,7 +139,7 @@ func resourceVultrDnsDomainUpdate(d *schema.ResourceData, meta interface{}) erro
 	if record == nil {
 		log.Printf("[WARN] Removing DNS domain (%s) because it has no default record", d.Id())
 		d.SetId("")
-		return nil
+		return resourceVultrDnsDomainRead(d, meta)
 	}
 
 	record.Data = d.Get("server_ip").(string)
@@ -149,7 +149,7 @@ func resourceVultrDnsDomainUpdate(d *schema.ResourceData, meta interface{}) erro
 		return fmt.Errorf("Error updating the default DNS record for DNS domain %s : %v", d.Id(), err)
 	}
 
-	return nil
+	return resourceVultrDnsDomainRead(d, meta)
 }
 
 func resourceVultrDnsDomainDelete(d *schema.ResourceData, meta interface{}) error {
