@@ -2,57 +2,50 @@ package vultr
 
 import (
 	"fmt"
+	"github.com/hashicorp/terraform/helper/acctest"
+	"github.com/hashicorp/terraform/helper/resource"
 	"regexp"
 	"testing"
-
-	"github.com/hashicorp/terraform/helper/resource"
 )
 
-func TestAccVultrDnsDomain(t *testing.T) {
+func TestAccVultrDnsDomain_dataBase(t *testing.T) {
+	domain := fmt.Sprintf("%s.com", acctest.RandString(6))
+	name := "data.vultr_dns_domain.my-site"
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrDnsDomain_read("domain-test.com"),
+				Config: testAccVultrDnsDomainConfig(domain),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttrSet("data.vultr_dns_domain.my-site", "id"),
-					resource.TestCheckResourceAttrSet("data.vultr_dns_domain.my-site", "domain"),
-					resource.TestCheckResourceAttrSet("data.vultr_dns_domain.my-site", "date_created"),
+					resource.TestCheckResourceAttrSet(name, "id"),
+					resource.TestCheckResourceAttr(name, "domain", domain),
+					resource.TestCheckResourceAttrSet(name, "date_created"),
 				),
 			},
 			{
-				Config:      testAccVultrDnsDomain_noResults("bad-domain.com"),
+				Config:      testAccVultrDnsDomain_noResults(domain),
 				ExpectError: regexp.MustCompile(`.* data.vultr_dns_domain.my-site: data.vultr_dns_domain.my-site: no results were found`),
-			},
-			{
-				Config:      testAccVultrDnsDomain_noDomain(),
-				ExpectError: regexp.MustCompile(`config is invalid: data.vultr_dns_domain.my-site: "domain": required field is not set`),
-			},
-			{
-				Config:      testAccVultrDnsDomain_emptyDomain(),
-				ExpectError: regexp.MustCompile(`config is invalid: data.vultr_dns_domain.my-site: domain must not be empty`),
 			},
 		},
 	})
 }
 
-func testAccVultrDnsDomain_read(domain string) string {
-	return fmt.Sprintf(`data "vultr_dns_domain" "my-site" {
-  domain = "%s"
-}`, domain)
+func testAccVultrDnsDomainConfig(domain string) string {
+	return fmt.Sprintf(`
+			data "vultr_dns_domain" "my-site" {
+  				domain = "${vultr_dns_domain.my-site.id}"
+			}
+
+			resource "vultr_dns_domain" "my-site" {
+  				domain = "%s",
+  				server_ip = "10.0.0.0"
+			}`, domain)
 }
 
 func testAccVultrDnsDomain_noResults(name string) string {
-	return fmt.Sprintf(`data "vultr_dns_domain" "my-site" {
-  domain = "%s"
-}`, name)
-}
-
-func testAccVultrDnsDomain_noDomain() string {
-	return `data "vultr_dns_domain" "my-site" {}`
-}
-
-func testAccVultrDnsDomain_emptyDomain() string {
-	return `data "vultr_dns_domain" "my-site" {domain = ""}`
+	return fmt.Sprintf(`
+		data "vultr_dns_domain" "my-site" {
+ 			domain = "%s"
+		}`, name)
 }
