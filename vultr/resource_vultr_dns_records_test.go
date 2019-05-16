@@ -20,6 +20,7 @@ func TestAccVultrDnsRecord_basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
+		CheckDestroy: testAccCheckVultrDnsDomainDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrDnsDomain_base(rString) + testAccVultrDnsRecord_base(rSub),
