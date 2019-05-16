@@ -32,7 +32,7 @@ func Provider() terraform.ResourceProvider {
 			"vultr_os":                dataSourceVultrOS(),
 			"vultr_plan":              dataSourceVultrPlan(),
 			"vultr_region":            dataSourceVultrRegion(),
-			"vultr_reserved_ip":       dataSourceVultrReservedIp(),
+			"vultr_reserved_ip":       dataSourceVultrReservedIP(),
 			"vultr_server":            dataSourceVultrServer(),
 			"vultr_snapshot":          dataSourceVultrSnapshot(),
 			"vultr_ssh_key":           dataSourceVultrSSHKey(),
@@ -41,7 +41,9 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
+			"vultr_block_storage":     resourceVultrBlockStorage(),
 			"vultr_dns_domain":        resourceVultrDnsDomain(),
+			"vultr_dns_record":        resourceVultrDnsRecord(),
 			"vultr_firewall_group":    resourceVultrFirewallGroup(),
 			"vultr_firewall_rule":     resourceVultrFirewallRule(),
 			"vultr_iso_private":       resourceVultrIsoPrivate(),
