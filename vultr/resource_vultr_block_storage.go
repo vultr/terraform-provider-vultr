@@ -99,9 +99,9 @@ func resourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) err
 	}
 
 	d.Set("date_created", bs.DateCreated)
-	d.Set("cost_per_month", bs.Cost)
+	d.Set("cost_per_month", bs.CostPerMonth)
 	d.Set("status", bs.Status)
-	d.Set("size_gb", bs.Size)
+	d.Set("size_gb", bs.SizeGB)
 	d.Set("region_id", bs.RegionID)
 	d.Set("attached_id", bs.VpsID)
 	d.Set("label", bs.Label)
