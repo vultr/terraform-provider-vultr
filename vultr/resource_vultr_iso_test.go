@@ -52,14 +52,14 @@ func testAccCheckVultrIsoScriptDestroy(s *terraform.State) error {
 			continue
 		}
 
-		isoList, err := client.Iso.GetList(context.Background())
+		isoList, err := client.ISO.GetList(context.Background())
 		if err != nil {
 			return fmt.Errorf("Error getting list of ISO : %s", err)
 		}
 
 		exists := false
 		for i := range isoList {
-			if strconv.Itoa(isoList[i].IsoID) == rs.Primary.ID {
+			if strconv.Itoa(isoList[i].ISOID) == rs.Primary.ID {
 				exists = true
 				break
 			}

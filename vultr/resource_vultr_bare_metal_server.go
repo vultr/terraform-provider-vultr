@@ -181,7 +181,7 @@ func resourceVultrBareMetalServerCreate(d *schema.ResourceData, meta interface{}
 		StartupScriptID: d.Get("startup_script_id").(string),
 		EnableIPV6:      ipv6,
 		Label:           d.Get("label").(string),
-		SSHKeyID:        strings.Join(keyIDs, ","),
+		SSHKeyIDs:       keyIDs,
 		UserData:        d.Get("userdata").(string),
 		NotifyActivate:  notify,
 		Hostname:        d.Get("hostname").(string),
