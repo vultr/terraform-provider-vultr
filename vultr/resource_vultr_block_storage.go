@@ -153,6 +153,8 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 		d.SetPartial("attached_id")
 	}
 
+	d.Partial(false)
+
 	return resourceVultrBlockStorageRead(d, meta)
 }
 
