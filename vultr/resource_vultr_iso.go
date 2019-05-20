@@ -57,13 +57,13 @@ func resourceVultrIsoCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Creating new ISO")
-	iso, err := client.Iso.CreateFromURL(context.Background(), d.Get("url").(string))
+	iso, err := client.ISO.CreateFromURL(context.Background(), d.Get("url").(string))
 
 	if err != nil {
 		return fmt.Errorf("Error creating ISO : %v", err)
 	}
 
-	d.SetId(strconv.Itoa(iso.IsoID))
+	d.SetId(strconv.Itoa(iso.ISOID))
 
 	_, err = waitForIsoAvailable(d, "complete", []string{"pending"}, "status", meta)
 	if err != nil {
@@ -77,7 +77,7 @@ func resourceVultrIsoCreate(d *schema.ResourceData, meta interface{}) error {
 func resourceVultrIsoRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	isoList, err := client.Iso.GetList(context.Background())
+	isoList, err := client.ISO.GetList(context.Background())
 
 	if err != nil {
 		fmt.Errorf("Error getting ISO %s : %v", d.Id(), err)
@@ -86,7 +86,7 @@ func resourceVultrIsoRead(d *schema.ResourceData, meta interface{}) error {
 	exists := false
 	counter := 0
 	for _, v := range isoList {
-		if strconv.Itoa(v.IsoID) == d.Id() {
+		if strconv.Itoa(v.ISOID) == d.Id() {
 			exists = true
 			break
 		}
@@ -120,7 +120,7 @@ func resourceVultrIsoDelete(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("Error occuring while retreiving ISO id : %v", err)
 	}
 
-	if err := client.Iso.Delete(context.Background(), id); err != nil {
+	if err := client.ISO.Delete(context.Background(), id); err != nil {
 		return fmt.Errorf("Error destroying ISO %d : %v", id, err)
 	}
 
@@ -153,7 +153,7 @@ func newIsoStateRefresh(
 	return func() (interface{}, string, error) {
 
 		log.Printf("[INFO] Creating Private ISO")
-		isoList, err := client.Iso.GetList(context.Background())
+		isoList, err := client.ISO.GetList(context.Background())
 
 		if err != nil {
 			return nil, "", fmt.Errorf("Error retrieving ISO %s : %s", d.Id(), err)
@@ -161,7 +161,7 @@ func newIsoStateRefresh(
 
 		counter := 0
 		for _, v := range isoList {
-			if strconv.Itoa(v.IsoID) == d.Id() {
+			if strconv.Itoa(v.ISOID) == d.Id() {
 				break
 			}
 			counter++

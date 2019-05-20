@@ -87,9 +87,9 @@ func dataSourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) e
 
 	d.SetId(blockList[0].BlockStorageID)
 	d.Set("date_created", blockList[0].DateCreated)
-	d.Set("cost_pre_month", blockList[0].Cost)
+	d.Set("cost_pre_month", blockList[0].CostPerMonth)
 	d.Set("status", blockList[0].Status)
-	d.Set("size_gb", blockList[0].Size)
+	d.Set("size_gb", blockList[0].SizeGB)
 	d.Set("region_id", blockList[0].RegionID)
 	d.Set("attached_to_vps", blockList[0].VpsID)
 	d.Set("label", blockList[0].Label)
