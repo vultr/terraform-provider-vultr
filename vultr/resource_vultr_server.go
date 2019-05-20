@@ -153,11 +153,13 @@ func resourceVultrServer() *schema.Resource {
 			"enable_ipv6": {
 				Type:     schema.TypeBool,
 				Computed: true,
+				ForceNew: true,
 				Optional: true,
 			},
 			"enable_private_network": {
 				Type:     schema.TypeBool,
 				Computed: true,
+				ForceNew: true,
 				Optional: true,
 			},
 			"network_ids": {
@@ -205,6 +207,7 @@ func resourceVultrServer() *schema.Resource {
 			"notify_activate": {
 				Type:     schema.TypeBool,
 				Computed: true,
+				ForceNew: true,
 				Optional: true,
 			},
 			"ddos_protection": {
@@ -393,7 +396,92 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 
 	return nil
 }
-func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error { return nil }
+func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
+	client := meta.(*Client).govultrClient()
+
+
+	if d.HasChange("auto_backup") {
+		if d.Get("auto_backup").(bool) {
+			err := client.Server.EnableBackup(context.Background(), d.Id())
+			if err != nil {
+				return err
+			}
+		} else {
+			err := client.Server.DisableBackup(context.Background(), d.Id())
+			if err != nil {
+				return err
+			}
+		}
+		d.SetPartial("auto_backup")
+	}
+
+	if d.HasChange("application_id") {
+		err := client.Server.ChangeApp(context.Background(), d.Id(), strconv.Itoa(d.Get("application_id").(int)))
+		if err != nil {
+			return err
+		}
+		d.SetPartial("application_id")
+	}
+
+	if d.HasChange("os_id") {
+		err := client.Server.ChangeOS(context.Background(), d.Id(), strconv.Itoa(d.Get("os_id").(int)))
+		if err != nil {
+			return err
+		}
+		d.SetPartial("os_id")
+	}
+
+	if d.HasChange("snapshot_id") {
+		err := client.Server.RestoreSnapshot(context.Background(), d.Id(), strconv.Itoa(d.Get("snapshot_id").(int)))
+		if err != nil {
+			return err
+		}
+		d.SetPartial("snapshot_id")
+	}
+
+	if d.HasChange("iso_id") {
+		err := client.Server.IsoAttach(context.Background(), d.Id(), strconv.Itoa(d.Get("iso_id").(int)))
+		if err != nil {
+			return err
+		}
+		d.SetPartial("iso_id")
+	}
+
+	if d.HasChange("user_data") {
+		err := client.Server.SetUserData(context.Background(), d.Id(), d.Get("user_data").(string))
+		if err != nil {
+			return err
+		}
+		d.SetPartial("user_data")
+	}
+
+	if d.HasChange("firewall_group_id") {
+		err := client.Server.SetFirewallGroup(context.Background(), d.Id(), d.Get("firewall_group_id").(string))
+		if err != nil {
+			return err
+		}
+		d.SetPartial("firewall_group_id")
+	}
+
+	if d.HasChange("tag") {
+		err := client.Server.SetTag(context.Background(), d.Id(), d.Get("tag").(string))
+		if err != nil {
+			return err
+		}
+		d.SetPartial("tag")
+	}
+
+	if d.HasChange("label") {
+		err := client.Server.SetLabel(context.Background(), d.Id(), d.Get("label").(string))
+		if err != nil {
+			return err
+		}
+		d.SetPartial("label")
+	}
+
+	d.Partial(false)
+	return resourceVultrServerRead(d, meta)
+}
 
 func resourceVultrServerDelete(d *schema.ResourceData, meta interface{}) error {
 
