@@ -163,7 +163,7 @@ func dataSourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.SetId(serverList[0].VpsID)
-	d.Set("os", serverList[0].OS)
+	d.Set("os", serverList[0].Os)
 	d.Set("ram", serverList[0].RAM)
 	d.Set("disk", serverList[0].Disk)
 	d.Set("main_ip", serverList[0].MainIP)
