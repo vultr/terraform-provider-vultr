@@ -3,11 +3,15 @@ package vultr
 import (
 	"context"
 	"fmt"
+	"log"
+	"strconv"
+	"strings"
+	"time"
+
+	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/pkg/errors"
 	"github.com/vultr/govultr"
-	"log"
-	"strconv"
 )
 
 const (
@@ -122,6 +126,17 @@ func resourceVultrServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"network_macs": {
+				Type:     schema.TypeMap,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
+
+			"network_ips": {
+				Type:     schema.TypeMap,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 
 			// server options
 			"iso_id": {
@@ -158,7 +173,6 @@ func resourceVultrServer() *schema.Resource {
 			},
 			"ssh_key_ids": {
 				Type:     schema.TypeList,
-				Computed: true,
 				Optional: true,
 				ForceNew: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -228,8 +242,7 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 	osID, osOK := d.GetOk("os_id")
 	appID, appOK := d.GetOk("application_id")
 	isoID, isoOK := d.GetOk("iso_id")
-	// This isn't supported on the client needs to implement this
-	_, snapOK := d.GetOk("snapshot_id")
+	snapID, snapOK := d.GetOk("snapshot_id")
 
 	osOptions := map[string]bool{"os_id": osOK, "application_id": appOK, "iso_id": isoOK, "snapshot_id": snapOK}
 	osOption, err := optionCheck(osOptions)
@@ -241,7 +254,6 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	options := &govultr.ServerOptions{
-		//IPXEChain: d.Get() check wtf this is
 		ScriptID:             d.Get("script_id").(string),
 		EnableIPV6:           d.Get("enable_ipv6").(bool),
 		EnablePrivateNetwork: d.Get("enable_private_network").(bool),
@@ -273,9 +285,9 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 		options.IsoID = isoID.(int)
 		os = osIsoID
 
-	//case "snapshot_id":
-	//	options.SnapshotID = snapID.(int)
-	//	os = osSnapID
+	case "snapshot_id":
+		options.SnapshotID = snapID.(string)
+		os = osSnapID
 
 	default:
 		return errors.New("Error occurred while getting your intended os type")
@@ -284,11 +296,20 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 	regionID := d.Get("region_id").(int)
 	planID := d.Get("plan_id").(int)
 
-	// todo we need to loop through network IDs and
-	// networkIDs need to handle this separately
+	networkIDs, networkOK := d.GetOk("network_ids")
+	if networkOK {
+		for _, v := range networkIDs.([]interface{}) {
+			options.NetworkID = append(options.NetworkID, v.(string))
+		}
+	}
 
-	// todo we need to loop through the sshKey and gather those bad boys
-	//SSHKeyID: d.Get("") handle this differently
+	sshKeyIDs, sshKeyOK := d.GetOk("ssh_key_ids")
+	if sshKeyOK {
+		log.Print(sshKeyOK)
+		for _, v := range sshKeyIDs.([]interface{}) {
+			options.SSHKeyIDs = append(options.SSHKeyIDs, v.(string))
+		}
+	}
 
 	log.Printf("[INFO] Creating server")
 	server, err := client.Server.Create(context.Background(), regionID, planID, os, options)
@@ -299,14 +320,93 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 
 	d.SetId(server.VpsID)
 
-	// todo wait for this to be in a "running state"
+	_, err = waitForServerAvailable(d, "active", []string{"pending", "installing"}, "status", meta)
+	if err != nil {
+		return fmt.Errorf(
+			"Error while waiting for Server %s to be completed: %s", d.Id(), err)
+	}
 
-	// todo call read after this
+	return resourceVultrServerRead(d, meta)
+}
+
+func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
+
+	client := meta.(*Client).govultrClient()
+
+	vps, err := client.Server.GetServer(context.Background(), d.Id())
+
+	if err != nil {
+		if strings.HasPrefix(err.Error(), "Invalid server") {
+			log.Printf("[WARN] Removing instance (%s) because it is gone", d.Id())
+			d.SetId("")
+			return nil
+		}
+		return fmt.Errorf("Error getting instance (%s): %v", d.Id(), err)
+	}
+
+	networks, err := client.Server.ListPrivateNetworks(context.Background(), d.Id())
+	if err != nil {
+		return fmt.Errorf("Error getting private networks for server  %s : %v", d.Id(), err)
+	}
+
+	var networkIDs []string
+	networkIPs := make(map[string]string)
+	networkMacs := make(map[string]string)
+	for _, v := range networks {
+		networkMacs[v.NetworkID] = v.MacAddress
+		networkIPs[v.NetworkID] = v.IPAddress
+		networkIDs = append(networkIDs, v.NetworkID)
+	}
+
+	d.Set("os", vps.Os)
+	d.Set("ram", vps.RAM)
+	d.Set("disk", vps.Disk)
+	d.Set("main_ip", vps.MainIP)
+	d.Set("vps_cpu_count", vps.VPSCpus)
+	d.Set("location", vps.Location)
+	d.Set("default_password", vps.DefaultPassword)
+	d.Set("date_created", vps.Created)
+	d.Set("pending_charges", vps.PendingCharges)
+	d.Set("status", vps.Status)
+	d.Set("cost_per_month", vps.Cost)
+	d.Set("current_bandwidth", vps.CurrentBandwidth)
+	d.Set("allowed_bandwidth", vps.AllowedBandwidth)
+	d.Set("netmask_v4", vps.NetmaskV4)
+	d.Set("gateway_v4", vps.GatewayV4)
+	d.Set("power_status", vps.PowerStatus)
+	d.Set("server_status", vps.ServerState)
+	d.Set("internal_ip", vps.InternalIP)
+	d.Set("kvm_url", vps.KVMUrl)
+	d.Set("network_macs", networkMacs)
+	d.Set("network_ips", networkIPs)
+
+	d.Set("network_ids", networks)
+	var ipv6s []string
+	for _, net := range vps.V6Networks {
+		ipv6s = append(ipv6s, net.MainIP)
+	}
+	d.Set("v6_networks", ipv6s)
+
+	d.Set("tag", vps.Tag)
+	d.Set("region_id", vps.RegionID)
+	d.Set("firewall_group_id", vps.FirewallGroupID)
+
 	return nil
 }
 func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error { return nil }
-func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error   { return nil }
-func resourceVultrServerDelete(d *schema.ResourceData, meta interface{}) error { return nil }
+
+func resourceVultrServerDelete(d *schema.ResourceData, meta interface{}) error {
+
+	client := meta.(*Client).govultrClient()
+	log.Printf("[INFO] Destroying instance (%s)", d.Id())
+	err := client.Server.Destroy(context.Background(), d.Id())
+
+	if err != nil {
+		return fmt.Errorf("Error destroying instance %s : %v", d.Id(), err)
+	}
+
+	return nil
+}
 
 func optionCheck(options map[string]bool) (string, error) {
 
@@ -322,4 +422,40 @@ func optionCheck(options map[string]bool) (string, error) {
 	}
 
 	return result[0], nil
+}
+
+func waitForServerAvailable(d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+	log.Printf(
+		"[INFO] Waiting for Server (%s) to have %s of %s",
+		d.Id(), attribute, target)
+
+	stateConf := &resource.StateChangeConf{
+		Pending:        pending,
+		Target:         []string{target},
+		Refresh:        newServerStateRefresh(d, meta),
+		Timeout:        60 * time.Minute,
+		Delay:          10 * time.Second,
+		MinTimeout:     3 * time.Second,
+		NotFoundChecks: 60,
+	}
+
+	return stateConf.WaitForState()
+}
+
+func newServerStateRefresh(
+	d *schema.ResourceData, meta interface{}) resource.StateRefreshFunc {
+	client := meta.(*Client).govultrClient()
+
+	return func() (interface{}, string, error) {
+
+		log.Printf("[INFO] Creating Server")
+		server, err := client.Server.GetServer(context.Background(), d.Id())
+
+		if err != nil {
+			return nil, "", fmt.Errorf("Error retrieving Server %s : %s", d.Id(), err)
+		}
+
+		log.Printf("[INFO] The Server Status is %s", server.Status)
+		return server, server.Status, nil
+	}
 }
