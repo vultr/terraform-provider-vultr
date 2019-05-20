@@ -36,13 +36,13 @@ func dataSourceVultrIsoPublicRead(d *schema.ResourceData, meta interface{}) erro
 		return fmt.Errorf("issue with filter: %v", filtersOK)
 	}
 
-	iso, err := client.Iso.GetPublicList(context.Background())
+	iso, err := client.ISO.GetPublicList(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("Error getting applications: %v", err)
 	}
 
-	isoList := []govultr.PublicIso{}
+	isoList := []govultr.PublicISO{}
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 
 	for _, i := range iso {
@@ -65,7 +65,7 @@ func dataSourceVultrIsoPublicRead(d *schema.ResourceData, meta interface{}) erro
 		return errors.New("no results were found")
 	}
 
-	d.SetId(strconv.Itoa(isoList[0].IsoID))
+	d.SetId(strconv.Itoa(isoList[0].ISOID))
 	d.Set("description", isoList[0].Description)
 	d.Set("name", isoList[0].Name)
 	return nil

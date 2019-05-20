@@ -52,13 +52,13 @@ func dataSourceVultrIsoPrivateRead(d *schema.ResourceData, meta interface{}) err
 		return fmt.Errorf("issue with filter: %v", filtersOK)
 	}
 
-	iso, err := client.Iso.GetList(context.Background())
+	iso, err := client.ISO.GetList(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("Error getting applications: %v", err)
 	}
 
-	isoList := []govultr.Iso{}
+	isoList := []govultr.ISO{}
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 
 	for _, i := range iso {
@@ -81,7 +81,7 @@ func dataSourceVultrIsoPrivateRead(d *schema.ResourceData, meta interface{}) err
 		return errors.New("no results were found")
 	}
 
-	d.SetId(strconv.Itoa(isoList[0].IsoID))
+	d.SetId(strconv.Itoa(isoList[0].ISOID))
 	d.Set("date_created", isoList[0].DateCreated)
 	d.Set("filename", isoList[0].FileName)
 	d.Set("size", isoList[0].Size)
