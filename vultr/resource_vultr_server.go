@@ -142,6 +142,7 @@ func resourceVultrServer() *schema.Resource {
 			"iso_id": {
 				Type:     schema.TypeInt,
 				Computed: true,
+				ForceNew: true,
 				Optional: true,
 			},
 			"script_id": {
@@ -197,6 +198,7 @@ func resourceVultrServer() *schema.Resource {
 			"snapshot_id": {
 				Type:     schema.TypeInt,
 				Computed: true,
+				ForceNew: true,
 				Optional: true,
 			},
 			"user_data": {
@@ -394,63 +396,73 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("region_id", vps.RegionID)
 	d.Set("firewall_group_id", vps.FirewallGroupID)
 
+	osID, err := strconv.Atoi(vps.OsID)
+	if err != nil {
+		fmt.Errorf("Error while getting osID for server : %v", err)
+	}
+	d.Set("os_id", osID)
+
+	appID, err := strconv.Atoi(vps.AppID)
+	if err != nil {
+		fmt.Errorf("Error while getting appID for server : %v", err)
+	}
+	d.Set("application_id", appID)
+
 	return nil
 }
 func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-
 	if d.HasChange("auto_backup") {
-		if d.Get("auto_backup").(bool) {
+		_, newVal := d.GetChange("auto_backup")
+		if newVal.(bool) {
 			err := client.Server.EnableBackup(context.Background(), d.Id())
 			if err != nil {
-				return err
+				return fmt.Errorf("Error occured while enabling auto_backup for server %s : %v", d.Id(), err)
 			}
 		} else {
 			err := client.Server.DisableBackup(context.Background(), d.Id())
 			if err != nil {
-				return err
+				return fmt.Errorf("Error occured while disabling auto_backup for server %s : %v", d.Id(), err)
 			}
 		}
 		d.SetPartial("auto_backup")
 	}
 
 	if d.HasChange("application_id") {
-		err := client.Server.ChangeApp(context.Background(), d.Id(), strconv.Itoa(d.Get("application_id").(int)))
+		_, newer := d.GetChange("application_id")
+		err := client.Server.ChangeApp(context.Background(), d.Id(), strconv.Itoa(newer.(int)))
 		if err != nil {
-			return err
+			return fmt.Errorf("Error occured while updating application_id for server %s : %v", d.Id(), err)
 		}
+
+		_, err = waitForServerAvailable(d, "active", []string{"pending", "installing"}, "status", meta)
+		if err != nil {
+			return fmt.Errorf("Error while waiting for Server %s to be in a active state : %s", d.Id(), err)
+		}
+
 		d.SetPartial("application_id")
 	}
 
 	if d.HasChange("os_id") {
-		err := client.Server.ChangeOS(context.Background(), d.Id(), strconv.Itoa(d.Get("os_id").(int)))
+		_, newer := d.GetChange("os_id")
+		err := client.Server.ChangeOS(context.Background(), d.Id(), strconv.Itoa(newer.(int)))
 		if err != nil {
-			return err
+			return fmt.Errorf("Error occured while updating os_id for server %s : %v", d.Id(), err)
 		}
+
+		_, err = waitForServerAvailable(d, "active", []string{"pending", "installing"}, "status", meta)
+		if err != nil {
+			return fmt.Errorf("Error while waiting for Server %s to be in a active state : %s", d.Id(), err)
+		}
+
 		d.SetPartial("os_id")
-	}
-
-	if d.HasChange("snapshot_id") {
-		err := client.Server.RestoreSnapshot(context.Background(), d.Id(), strconv.Itoa(d.Get("snapshot_id").(int)))
-		if err != nil {
-			return err
-		}
-		d.SetPartial("snapshot_id")
-	}
-
-	if d.HasChange("iso_id") {
-		err := client.Server.IsoAttach(context.Background(), d.Id(), strconv.Itoa(d.Get("iso_id").(int)))
-		if err != nil {
-			return err
-		}
-		d.SetPartial("iso_id")
 	}
 
 	if d.HasChange("user_data") {
 		err := client.Server.SetUserData(context.Background(), d.Id(), d.Get("user_data").(string))
 		if err != nil {
-			return err
+			return fmt.Errorf("Error occured while updating user_data for server %s : %v", d.Id(), err)
 		}
 		d.SetPartial("user_data")
 	}
@@ -458,7 +470,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	if d.HasChange("firewall_group_id") {
 		err := client.Server.SetFirewallGroup(context.Background(), d.Id(), d.Get("firewall_group_id").(string))
 		if err != nil {
-			return err
+			return fmt.Errorf("Error occured while updating firewall_group_id for server %s : %v", d.Id(), err)
 		}
 		d.SetPartial("firewall_group_id")
 	}
@@ -466,7 +478,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	if d.HasChange("tag") {
 		err := client.Server.SetTag(context.Background(), d.Id(), d.Get("tag").(string))
 		if err != nil {
-			return err
+			return fmt.Errorf("Error occured while updating tag for server %s : %v", d.Id(), err)
 		}
 		d.SetPartial("tag")
 	}
@@ -474,7 +486,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	if d.HasChange("label") {
 		err := client.Server.SetLabel(context.Background(), d.Id(), d.Get("label").(string))
 		if err != nil {
-			return err
+			return fmt.Errorf("Error occured while updating label for server %s : %v", d.Id(), err)
 		}
 		d.SetPartial("label")
 	}
