@@ -140,11 +140,6 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
-			"reserved_ip_v4": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
 		},
 	}
 }
@@ -186,7 +181,6 @@ func resourceVultrBareMetalServerCreate(d *schema.ResourceData, meta interface{}
 		NotifyActivate:  notify,
 		Hostname:        d.Get("hostname").(string),
 		Tag:             d.Get("tag").(string),
-		ReservedIPV4:    d.Get("reserved_ip_v4").(string),
 	}
 
 	switch osOption {
