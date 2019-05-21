@@ -265,8 +265,8 @@ func resourceVultrBareMetalServerUpdate(d *schema.ResourceData, meta interface{}
 
 	if d.HasChange("app_id") {
 		log.Printf(`[INFO] Changing bare metal server (%s) application`, d.Id())
-		_, new := d.GetChange("app_id")
-		err := client.BareMetalServer.ChangeApp(context.Background(), d.Id(), new.(string))
+		_, newVal := d.GetChange("app_id")
+		err := client.BareMetalServer.ChangeApp(context.Background(), d.Id(), newVal.(string))
 		if err != nil {
 			return fmt.Errorf("Error changing bare metal server (%s) application: %v", d.Id(), err)
 		}
@@ -279,8 +279,8 @@ func resourceVultrBareMetalServerUpdate(d *schema.ResourceData, meta interface{}
 
 	if d.HasChange("label") {
 		log.Printf(`[INFO] Updating bare metal server label (%s)`, d.Id())
-		_, new := d.GetChange("label")
-		err := client.BareMetalServer.SetLabel(context.Background(), d.Id(), new.(string))
+		_, newVal := d.GetChange("label")
+		err := client.BareMetalServer.SetLabel(context.Background(), d.Id(), newVal.(string))
 		if err != nil {
 			return fmt.Errorf("Error updating bare metal server label (%s): %v", d.Id(), err)
 		}
@@ -289,8 +289,8 @@ func resourceVultrBareMetalServerUpdate(d *schema.ResourceData, meta interface{}
 
 	if d.HasChange("os_id") {
 		log.Printf(`[INFO] Changing bare metal server (%s) operating system`, d.Id())
-		_, new := d.GetChange("os_id")
-		err := client.BareMetalServer.ChangeOS(context.Background(), d.Id(), new.(string))
+		_, newVal := d.GetChange("os_id")
+		err := client.BareMetalServer.ChangeOS(context.Background(), d.Id(), newVal.(string))
 		if err != nil {
 			return fmt.Errorf("Error changing bare metal server (%s) operating system: %v", d.Id(), err)
 		}
@@ -303,8 +303,8 @@ func resourceVultrBareMetalServerUpdate(d *schema.ResourceData, meta interface{}
 
 	if d.HasChange("tag") {
 		log.Printf(`[INFO] Updating bare metal server (%s) tag`, d.Id())
-		_, new := d.GetChange("tag")
-		err := client.BareMetalServer.SetTag(context.Background(), d.Id(), new.(string))
+		_, newVal := d.GetChange("tag")
+		err := client.BareMetalServer.SetTag(context.Background(), d.Id(), newVal.(string))
 		if err != nil {
 			return fmt.Errorf("Error updating bare metal server (%s) tag: %v", d.Id(), err)
 		}
@@ -313,8 +313,8 @@ func resourceVultrBareMetalServerUpdate(d *schema.ResourceData, meta interface{}
 
 	if d.HasChange("userdata") {
 		log.Printf(`[INFO] Updating bare metal server (%s) userdata`, d.Id())
-		_, new := d.GetChange("userdata")
-		err := client.BareMetalServer.SetUserData(context.Background(), d.Id(), new.(string))
+		_, newVal := d.GetChange("userdata")
+		err := client.BareMetalServer.SetUserData(context.Background(), d.Id(), newVal.(string))
 		if err != nil {
 			return fmt.Errorf("Error updating bare metal server (%s) userdata: %v", d.Id(), err)
 		}
