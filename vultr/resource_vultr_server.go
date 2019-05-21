@@ -331,6 +331,11 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 			"Error while waiting for Server %s to be completed: %s", d.Id(), err)
 	}
 
+	_, err = waitForServerAvailable(d, "running", []string{"stopped"}, "power_status", meta)
+	if err != nil {
+		return fmt.Errorf("Error while waiting for Server %s to be in a active state : %s", d.Id(), err)
+	}
+
 	return resourceVultrServerRead(d, meta)
 }
 
@@ -441,6 +446,11 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 			return fmt.Errorf("Error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 		}
 
+		_, err = waitForServerAvailable(d, "running", []string{"stopped"}, "power_status", meta)
+		if err != nil {
+			return fmt.Errorf("Error while waiting for Server %s to be in a active state : %s", d.Id(), err)
+		}
+
 		d.SetPartial("application_id")
 	}
 
@@ -452,6 +462,11 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		}
 
 		_, err = waitForServerAvailable(d, "active", []string{"pending", "installing"}, "status", meta)
+		if err != nil {
+			return fmt.Errorf("Error while waiting for Server %s to be in a active state : %s", d.Id(), err)
+		}
+
+		_, err = waitForServerAvailable(d, "running", []string{"stopped"}, "power_status", meta)
 		if err != nil {
 			return fmt.Errorf("Error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 		}
@@ -532,7 +547,7 @@ func waitForServerAvailable(d *schema.ResourceData, target string, pending []str
 	stateConf := &resource.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
-		Refresh:        newServerStateRefresh(d, meta),
+		Refresh:        newServerStateRefresh(d, meta, attribute),
 		Timeout:        60 * time.Minute,
 		Delay:          10 * time.Second,
 		MinTimeout:     3 * time.Second,
@@ -542,10 +557,8 @@ func waitForServerAvailable(d *schema.ResourceData, target string, pending []str
 	return stateConf.WaitForState()
 }
 
-func newServerStateRefresh(
-	d *schema.ResourceData, meta interface{}) resource.StateRefreshFunc {
+func newServerStateRefresh(d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
-
 	return func() (interface{}, string, error) {
 
 		log.Printf("[INFO] Creating Server")
@@ -555,7 +568,14 @@ func newServerStateRefresh(
 			return nil, "", fmt.Errorf("Error retrieving Server %s : %s", d.Id(), err)
 		}
 
-		log.Printf("[INFO] The Server Status is %s", server.Status)
-		return server, server.Status, nil
+		if attr == "status" {
+			log.Printf("[INFO] The Server Status is %s", server.Status)
+			return server, server.Status, nil
+		} else if attr == "power_status" {
+			log.Printf("[INFO] The Server Power Status is %s", server.PowerStatus)
+			return server, server.PowerStatus, nil
+		} else {
+			return nil, "", nil
+		}
 	}
 }
