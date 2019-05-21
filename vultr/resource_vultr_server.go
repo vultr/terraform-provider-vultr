@@ -419,6 +419,8 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	if d.HasChange("auto_backup") {
+		log.Printf("[INFO] Updating auto backups")
+
 		_, newVal := d.GetChange("auto_backup")
 		if newVal.(bool) {
 			err := client.Server.EnableBackup(context.Background(), d.Id())
@@ -435,6 +437,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if d.HasChange("application_id") {
+		log.Printf("[INFO] Updating application_id")
 		_, newer := d.GetChange("application_id")
 		err := client.Server.ChangeApp(context.Background(), d.Id(), strconv.Itoa(newer.(int)))
 		if err != nil {
@@ -455,6 +458,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if d.HasChange("os_id") {
+		log.Printf("[INFO] Updating os_id")
 		_, newer := d.GetChange("os_id")
 		err := client.Server.ChangeOS(context.Background(), d.Id(), strconv.Itoa(newer.(int)))
 		if err != nil {
@@ -475,6 +479,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if d.HasChange("user_data") {
+		log.Printf("[INFO] Updating user_data")
 		err := client.Server.SetUserData(context.Background(), d.Id(), d.Get("user_data").(string))
 		if err != nil {
 			return fmt.Errorf("Error occured while updating user_data for server %s : %v", d.Id(), err)
@@ -483,6 +488,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if d.HasChange("firewall_group_id") {
+		log.Printf("[INFO] Updating firewall_group_id")
 		err := client.Server.SetFirewallGroup(context.Background(), d.Id(), d.Get("firewall_group_id").(string))
 		if err != nil {
 			return fmt.Errorf("Error occured while updating firewall_group_id for server %s : %v", d.Id(), err)
@@ -491,6 +497,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if d.HasChange("tag") {
+		log.Printf("[INFO] Updating tag")
 		err := client.Server.SetTag(context.Background(), d.Id(), d.Get("tag").(string))
 		if err != nil {
 			return fmt.Errorf("Error occured while updating tag for server %s : %v", d.Id(), err)
@@ -499,6 +506,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if d.HasChange("label") {
+		log.Printf("[INFO] Updating label")
 		err := client.Server.SetLabel(context.Background(), d.Id(), d.Get("label").(string))
 		if err != nil {
 			return fmt.Errorf("Error occured while updating label for server %s : %v", d.Id(), err)
@@ -507,6 +515,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if d.HasChange("network_ids") {
+		log.Printf("[INFO] Updating network_ids")
 		oldNetwork, newNetwork := d.GetChange("network_ids")
 
 		var oldIDs []string
