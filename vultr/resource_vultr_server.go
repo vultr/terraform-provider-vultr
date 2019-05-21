@@ -116,7 +116,7 @@ func resourceVultrServer() *schema.Resource {
 			"v6_networks": {
 				Type:     schema.TypeList,
 				Computed: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+				Elem:     &schema.Schema{Type: schema.TypeMap},
 			},
 			"internal_ip": {
 				Type:     schema.TypeString,
@@ -385,9 +385,15 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("network_ips", networkIPs)
 
 	d.Set("network_ids", networks)
-	var ipv6s []string
+
+	var ipv6s []map[string]string
 	for _, net := range vps.V6Networks {
-		ipv6s = append(ipv6s, net.MainIP)
+		v6network := map[string]string{
+			"v6_network":      net.Network,
+			"v6_main_ip":      net.MainIP,
+			"v6_network_size": net.NetworkSize,
+		}
+		ipv6s = append(ipv6s, v6network)
 	}
 	d.Set("v6_networks", ipv6s)
 
@@ -534,7 +540,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 			err := client.Server.EnablePrivateNetwork(context.Background(), d.Id(), v)
 
 			if err != nil {
-				return fmt.Errorf("fjsklfjlas")
+				return fmt.Errorf("Error attaching network id %s to server %s : %v", v, d.Id(), err)
 			}
 		}
 
@@ -542,7 +548,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 			err := client.Server.DisablePrivateNetwork(context.Background(), d.Id(), v)
 
 			if err != nil {
-				return fmt.Errorf("unodostres")
+				return fmt.Errorf("Error detaching network id %s from server %s : %v", v, d.Id(), err)
 			}
 		}
 
@@ -557,7 +563,21 @@ func resourceVultrServerDelete(d *schema.ResourceData, meta interface{}) error {
 
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Destroying instance (%s)", d.Id())
-	err := client.Server.Destroy(context.Background(), d.Id())
+
+	ids, err := client.Server.ListPrivateNetworks(context.Background(), d.Id())
+	if err != nil {
+		fmt.Errorf("Error grabbing private networks associated to server %s : %v", d.Id(), err)
+	}
+
+	for i := range ids {
+		err := client.Server.DisablePrivateNetwork(context.Background(), d.Id(), ids[i].NetworkID)
+
+		if err != nil {
+			return fmt.Errorf("Error detaching network id %s from server %s : %v", ids[i].NetworkID, d.Id(), err)
+		}
+	}
+
+	err = client.Server.Destroy(context.Background(), d.Id())
 
 	if err != nil {
 		return fmt.Errorf("Error destroying instance %s : %v", d.Id(), err)
@@ -577,6 +597,10 @@ func optionCheck(options map[string]bool) (string, error) {
 
 	if len(result) > 1 {
 		return "", fmt.Errorf("Too many options have been selected : %v : please select one", result)
+	}
+
+	if len(result) == 0 {
+		return "", fmt.Errorf("Please select at least one of the following os_id, application_id, iso_id or snapshot_id")
 	}
 
 	return result[0], nil
