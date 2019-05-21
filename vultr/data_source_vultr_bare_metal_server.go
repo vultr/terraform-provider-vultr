@@ -69,7 +69,7 @@ func dataSourceVultrBareMetalServer() *schema.Resource {
 			"v6_networks": {
 				Type:     schema.TypeList,
 				Computed: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+				Elem:     &schema.Schema{Type: schema.TypeMap},
 			},
 			"label": {
 				Type:     schema.TypeString,
@@ -149,9 +149,14 @@ func dataSourceVultrBareMetalServerRead(d *schema.ResourceData, meta interface{}
 	d.Set("os_id", serverList[0].OsID)
 	d.Set("app_id", serverList[0].AppID)
 
-	var ipv6s []string
+	var ipv6s []map[string]string
 	for _, net := range serverList[0].V6Networks {
-		ipv6s = append(ipv6s, net.MainIP)
+		v6network := map[string]string{
+			"v6_network":      net.Network,
+			"v6_main_ip":      net.MainIP,
+			"v6_network_size": net.NetworkSize,
+		}
+		ipv6s = append(ipv6s, v6network)
 	}
 	d.Set("v6_networks", ipv6s)
 
