@@ -506,6 +506,55 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		d.SetPartial("label")
 	}
 
+	if d.HasChange("network_ids") {
+		oldNetwork, newNetwork := d.GetChange("network_ids")
+
+		var oldIDs []string
+		for _, v := range oldNetwork.([]interface{}) {
+			oldIDs = append(oldIDs, v.(string))
+		}
+
+		var newIDs []string
+		for _, v := range newNetwork.([]interface{}) {
+			newIDs = append(newIDs, v.(string))
+		}
+
+		diff := func(in, out []string) []string {
+			var diff []string
+
+			b := map[string]string{}
+			for i := range in {
+				b[in[i]] = ""
+			}
+
+			for i := range out {
+				if _, ok := b[out[i]]; !ok {
+					diff = append(diff, out[i])
+				}
+			}
+
+			return diff
+		}
+
+		for _, v := range diff(oldIDs, newIDs) {
+			err := client.Server.EnablePrivateNetwork(context.Background(), d.Id(), v)
+
+			if err != nil {
+				return fmt.Errorf("fjsklfjlas")
+			}
+		}
+
+		for _, v := range diff(newIDs, oldIDs) {
+			err := client.Server.DisablePrivateNetwork(context.Background(), d.Id(), v)
+
+			if err != nil {
+				return fmt.Errorf("unodostres")
+			}
+		}
+
+		d.SetPartial("network_ids")
+	}
+
 	d.Partial(false)
 	return resourceVultrServerRead(d, meta)
 }
