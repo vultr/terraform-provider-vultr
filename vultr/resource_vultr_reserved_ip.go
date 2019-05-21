@@ -75,8 +75,9 @@ func resourceVultrReservedIPCreate(d *schema.ResourceData, meta interface{}) err
 	var attachedTo string
 	a, attachedOK := d.GetOk("attached_id")
 	if attachedOK {
+		resourceVultrReservedIPRead(d, meta)
 		attachedTo = a.(string)
-		err := client.ReservedIP.Attach(context.Background(), rip.Subnet, attachedTo)
+		err := client.ReservedIP.Attach(context.Background(), d.Get("subnet").(string), attachedTo)
 		if err != nil {
 			return fmt.Errorf("Error attaching reserved IP: %v", err)
 		}
@@ -125,15 +126,15 @@ func resourceVultrReservedIPUpdate(d *schema.ResourceData, meta interface{}) err
 
 		ip := d.Get("subnet").(string)
 
-		old, new := d.GetChange("attached_id")
+		old, newVal := d.GetChange("attached_id")
 		if old.(string) != "" {
 			err := client.ReservedIP.Detach(context.Background(), ip, old.(string))
 			if err != nil {
 				return fmt.Errorf("Error detaching Reserved IP (%s): %v", d.Id(), err)
 			}
 		}
-		if new.(string) != "" {
-			err := client.ReservedIP.Attach(context.Background(), ip, new.(string))
+		if newVal.(string) != "" {
+			err := client.ReservedIP.Attach(context.Background(), ip, newVal.(string))
 			if err != nil {
 				return fmt.Errorf("Error attaching Reserved IP (%s): %v", d.Id(), err)
 			}
