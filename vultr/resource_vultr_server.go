@@ -217,11 +217,6 @@ func resourceVultrServer() *schema.Resource {
 				Computed: true,
 				Optional: true,
 			},
-			"reserved_ipv4": {
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
 			"hostname": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -267,7 +262,6 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 		UserData:             d.Get("user_data").(string),
 		NotifyActivate:       d.Get("notify_activate").(bool),
 		DDOSProtection:       d.Get("ddos_protection").(bool),
-		ReservedIPV4:         d.Get("reserved_ipv4").(string),
 		Hostname:             d.Get("hostname").(string),
 		Tag:                  d.Get("tag").(string),
 		FirewallGroupID:      d.Get("firewall_group_id").(string),
