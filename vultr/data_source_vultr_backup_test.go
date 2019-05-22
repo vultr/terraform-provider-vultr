@@ -2,9 +2,10 @@ package vultr
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform/helper/resource"
 	"regexp"
 	"testing"
+
+	"github.com/hashicorp/terraform/helper/resource"
 )
 
 func TestAccVultrBackup(t *testing.T) {
@@ -13,22 +14,17 @@ func TestAccVultrBackup(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrBackup_read("auto-backup 63.209.32.248"),
+				Config: testAccVultrBackup_read("auto-backup 63.209.32.248 server-label"),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr(
-						"data.vultr_backup.backs", "size", "860174523"),
-					resource.TestCheckResourceAttr(
-						"data.vultr_backup.backs", "status", "complete"),
-					resource.TestCheckResourceAttr(
-						"data.vultr_backup.backs", "description", "auto-backup 63.209.32.248 "),
-					resource.TestCheckResourceAttr(
-						"data.vultr_backup.backs", "date_created", "2019-05-09 00:09:57"),
-					resource.TestCheckResourceAttr(
-						"data.vultr_backup.backs", "id", "bca5cd36fd57c"),
+					resource.TestCheckResourceAttrSet("data.vultr_backup.backs", "size"),
+					resource.TestCheckResourceAttr("data.vultr_backup.backs", "status", "complete"),
+					resource.TestCheckResourceAttr("data.vultr_backup.backs", "description", "auto-backup 63.209.32.248 server-label"),
+					resource.TestCheckResourceAttrSet("data.vultr_backup.backs", "date_created"),
+					resource.TestCheckResourceAttrSet("data.vultr_backup.backs", "id"),
 				),
 			},
 			{
-				Config:      testAccVultrBackup_noResults("auto-backup 63.209.32.244"),
+				Config:      testAccVultrBackup_noResults("auto-backup 63.209.32.248 server-label"),
 				ExpectError: regexp.MustCompile(`.* data.vultr_backup.backs: data.vultr_backup.backs: no results were found`),
 			},
 		},
@@ -39,7 +35,7 @@ func testAccVultrBackup_read(description string) string {
 	return fmt.Sprintf(`data "vultr_backup" "backs" {
   filter {
     name = "description"
-    values = ["%s "]
+    values = ["%s"]
   }
 }`, description)
 }

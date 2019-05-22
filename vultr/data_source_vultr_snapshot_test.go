@@ -11,23 +11,23 @@ import (
 
 func TestAccDataSourceVultrSnapshot(t *testing.T) {
 	rDesc := acctest.RandomWithPrefix("tf-test")
+	rLabel := acctest.RandomWithPrefix("tf-test-vps")
+	name := "data.vultr_snapshot.my_snapshot"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
+
 			{
-				Config: testAccVultrSnapshotConfigBasic(rDesc),
-			},
-			{
-				Config: testAccVultrSnapshotConfigBasic(rDesc) + testAccDataSourceVultrSnapshotConfig(rDesc),
+				Config: testAccDataSourceVultrSnapshotBase(rLabel, rDesc),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vultr_snapshot.my_snapshot", "description", rDesc),
-					resource.TestCheckResourceAttrSet("data.vultr_snapshot.my_snapshot", "date_created"),
-					resource.TestCheckResourceAttrSet("data.vultr_snapshot.my_snapshot", "size"),
-					resource.TestCheckResourceAttrSet("data.vultr_snapshot.my_snapshot", "status"),
-					resource.TestCheckResourceAttrSet("data.vultr_snapshot.my_snapshot", "os_id"),
-					resource.TestCheckResourceAttrSet("data.vultr_snapshot.my_snapshot", "app_id"),
+					resource.TestCheckResourceAttr(name, "description", rDesc),
+					resource.TestCheckResourceAttrSet(name, "date_created"),
+					resource.TestCheckResourceAttrSet(name, "size"),
+					resource.TestCheckResourceAttrSet(name, "status"),
+					resource.TestCheckResourceAttrSet(name, "os_id"),
+					resource.TestCheckResourceAttrSet(name, "app_id"),
 				),
 			},
 			{
@@ -36,6 +36,31 @@ func TestAccDataSourceVultrSnapshot(t *testing.T) {
 			},
 		},
 	})
+}
+
+func testAccDataSourceVultrSnapshotBase(vpsLabel, desc string) string {
+	return fmt.Sprintf(`
+	resource "vultr_server" "test" {
+  			plan_id = "201"
+  			region_id = "4"
+			os_id = "167"
+  			label = "%s"
+  			hostname = "testing-the-hostname"
+  			tag = "even better tag"
+		}
+
+		resource "vultr_snapshot" "foo" {
+			vps_id       = "${vultr_server.test.id}"
+			description  = "%s"
+		}
+
+		data "vultr_snapshot" "my_snapshot" {
+    		filter {
+    			name = "description"
+    			values = ["${vultr_snapshot.foo.description}"]
+			}
+  		}
+		`, vpsLabel, desc)
 }
 
 func testAccDataSourceVultrSnapshotConfig(description string) string {
