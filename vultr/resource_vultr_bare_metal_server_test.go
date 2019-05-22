@@ -25,7 +25,7 @@ func TestAccVultrBareMetalServer_basic(t *testing.T) {
 		CheckDestroy: testAccCheckVultrBareMetalServerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + testAccVultrBareMetalServerConfigBasic(rInt),
+				Config: testAccVultrBareMetalServerConfigBasic(rInt, rSSH, rName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrBareMetalServerExists("vultr_bare_metal_server.foo"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "os"),
@@ -55,7 +55,7 @@ func TestAccVultrBareMetalServer_basic(t *testing.T) {
 			},
 			{
 				// change the server from OS to application, update tag, label, and userdata
-				Config: testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + testAccVultrBareMetalServerConfigUpdate(rInt),
+				Config: testAccVultrBareMetalServerConfigUpdate(rInt, rSSH, rName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrBareMetalServerExists("vultr_bare_metal_server.foo"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "os"),
@@ -133,17 +133,17 @@ func testAccCheckVultrBareMetalServerExists(n string) resource.TestCheckFunc {
 	}
 }
 
-func testAccVultrBareMetalServerConfigBasic(rInt int) string {
-	return fmt.Sprintf(`
-		data "vultr_region" "miami" {
+func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string {
+	return testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + fmt.Sprintf(`
+		data "vultr_region" "chicago" {
 			filter {
 				name   = "name"
-				values = ["Miami"]
+				values = ["Chicago"]
 			}
 		}
 
 		resource "vultr_bare_metal_server" "foo" {
-			region_id 		  = "${data.vultr_region.miami.id}"
+			region_id 		  = "${data.vultr_region.chicago.id}"
 			os_id 			  = "270"
 			plan_id           = "100"
 			enable_ipv6       = true
@@ -151,24 +151,24 @@ func testAccVultrBareMetalServerConfigBasic(rInt int) string {
 			ssh_key_ids       = ["${vultr_ssh_key.foo.id}"]
 			startup_script_id = "${vultr_startup_script.foo.id}"
 			userdata          = "V2h5IHdvdWxkIHlvdSBkZWNvZGUgdGhpcz8gR0VUIEJBQ0sgVE8gV09SSyE="
-			tag               = "tf-test-tag-%d"
-			label             = "tf-test-label-%d"
-			hostname 		  = "tf-test-hostname-%d"
+			tag               = "%s"
+			label             = "%s"
+			hostname 		  = "%s"
 		}
-	`, rInt, rInt, rInt)
+	`, rName, rName, rName)
 }
 
-func testAccVultrBareMetalServerConfigUpdate(rInt int) string {
-	return fmt.Sprintf(`
-		data "vultr_region" "miami" {
+func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) string {
+	return testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + fmt.Sprintf(`
+		data "vultr_region" "chicago" {
 			filter {
 				name   = "name"
-				values = ["Miami"]
+				values = ["Chicago"]
 			}
 		}
 
 		resource "vultr_bare_metal_server" "foo" {
-			region_id 		  = "${data.vultr_region.miami.id}"
+			region_id 		  = "${data.vultr_region.chicago.id}"
 			app_id 			  = "3"
 			plan_id           = "100"
 			enable_ipv6       = true
@@ -176,9 +176,9 @@ func testAccVultrBareMetalServerConfigUpdate(rInt int) string {
 			ssh_key_ids       = ["${vultr_ssh_key.foo.id}"]
 			startup_script_id = "${vultr_startup_script.foo.id}"
 			userdata          = "V2h5Li4uPw=="
-			tag               = "tf-test-tag-update-%d"
-			label             = "tf-test-label-update-%d"
-			hostname 		  = "tf-test-hostname-%d"
+			tag               = "%s-update"
+			label             = "%s-update"
+			hostname 		  = "%s-update"
 		}
-	`, rInt, rInt, rInt)
+	`, rName, rName, rName)
 }
