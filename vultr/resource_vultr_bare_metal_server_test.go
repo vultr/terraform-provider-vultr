@@ -135,15 +135,15 @@ func testAccCheckVultrBareMetalServerExists(n string) resource.TestCheckFunc {
 
 func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string {
 	return testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + fmt.Sprintf(`
-		data "vultr_region" "chicago" {
+		data "vultr_region" "singapore" {
 			filter {
 				name   = "name"
-				values = ["Chicago"]
+				values = ["Singapore"]
 			}
 		}
 
 		resource "vultr_bare_metal_server" "foo" {
-			region_id 		  = "${data.vultr_region.chicago.id}"
+			region_id 		  = "${data.vultr_region.singapore.id}"
 			os_id 			  = "270"
 			plan_id           = "100"
 			enable_ipv6       = true
@@ -160,16 +160,16 @@ func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string
 
 func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) string {
 	return testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + fmt.Sprintf(`
-		data "vultr_region" "chicago" {
+		data "vultr_region" "singapore" {
 			filter {
 				name   = "name"
-				values = ["Chicago"]
+				values = ["Singapore"]
 			}
 		}
 
 		resource "vultr_bare_metal_server" "foo" {
-			region_id 		  = "${data.vultr_region.chicago.id}"
-			app_id 			  = "3"
+			region_id 		  = "${data.vultr_region.singapore.id}"
+			app_id 			  = "2"
 			plan_id           = "100"
 			enable_ipv6       = true
 			notify_activate   = false
@@ -178,7 +178,7 @@ func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) strin
 			userdata          = "V2h5Li4uPw=="
 			tag               = "%s-update"
 			label             = "%s-update"
-			hostname 		  = "%s-update"
+			hostname 		  = "%s"
 		}
 	`, rName, rName, rName)
 }
