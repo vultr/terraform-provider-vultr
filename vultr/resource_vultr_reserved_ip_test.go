@@ -172,33 +172,33 @@ func testAccCheckVultrReservedIPExists(n string) resource.TestCheckFunc {
 
 func testAccVultrReservedIPConfig(label, ipType string) string {
 	return fmt.Sprintf(`
-	data "vultr_region" "atlanta" {
-		filter {
-		  name   = "name"
-		  values = ["Atlanta"]
-		}
-	}
-	resource "vultr_reserved_ip" "foo" {
-		label       = "%s"
-		region_id   = "${data.vultr_region.atlanta.id}"
-		ip_type		= "%s"
-	}
-   `, label, ipType)
+	resource "vultr_server" "ip" {
+        label = "%s"
+        region_id = 6
+        plan_id = 201
+        os_id = 147
+    }
+    resource "vultr_reserved_ip" "foo" {
+        label       = "%s"
+        region_id   = 6
+        ip_type        = "%s"
+    }
+   `, label, label, ipType)
 }
 
 func testAccVultrReservedIPConfig_attach(label, ipType string) string {
 	return fmt.Sprintf(`
-	data "vultr_region" "atlanta" {
-		filter {
-		  name   = "name"
-		  values = ["Atlanta"]
-		}
-	}
-	resource "vultr_reserved_ip" "foo" {
-		label       = "%s"
-		region_id   = "${data.vultr_region.atlanta.id}"
-		ip_type		= "%s"
-		attached_id = "24609751"
-	}
-   `, label, ipType)
+	resource "vultr_server" "ip" {
+        label = "%s"
+        region_id = 6
+        plan_id = 201
+        os_id = 147
+    }
+    resource "vultr_reserved_ip" "foo" {
+        label       = "%s"
+        region_id   = 6
+        ip_type        = "%s"
+        attached_id = "${vultr_server.ip.id}"
+    }
+   `, label, label, ipType)
 }
