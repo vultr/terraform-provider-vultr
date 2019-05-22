@@ -116,8 +116,8 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 
 	if d.HasChange("label") {
 		log.Printf(`[INFO] Updating block storage label (%s)`, d.Id())
-		_, new := d.GetChange("label")
-		err := client.BlockStorage.SetLabel(context.Background(), d.Id(), new.(string))
+		_, newVal := d.GetChange("label")
+		err := client.BlockStorage.SetLabel(context.Background(), d.Id(), newVal.(string))
 		if err != nil {
 			return fmt.Errorf("Error setting block storage label (%s): %v", d.Id(), err)
 		}
@@ -126,8 +126,8 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 
 	if d.HasChange("size_gb") {
 		log.Printf(`[INFO] Resizing block storage (%s)`, d.Id())
-		_, new := d.GetChange("size_gb")
-		err := client.BlockStorage.Resize(context.Background(), d.Id(), new.(int))
+		_, newVal := d.GetChange("size_gb")
+		err := client.BlockStorage.Resize(context.Background(), d.Id(), newVal.(int))
 		if err != nil {
 			return fmt.Errorf("Error resizing block storage (%s): %v", d.Id(), err)
 		}
@@ -135,7 +135,7 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 	}
 
 	if d.HasChange("attached_id") {
-		old, new := d.GetChange("attached_id")
+		old, newVal := d.GetChange("attached_id")
 		if old.(string) != "" {
 			log.Printf(`[INFO] Detaching block storage (%s)`, d.Id())
 			err := client.BlockStorage.Detach(context.Background(), d.Id())
@@ -143,15 +143,17 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 				return fmt.Errorf("Error detaching block storage (%s): %v", d.Id(), err)
 			}
 		}
-		if new.(string) != "" {
+		if newVal.(string) != "" {
 			log.Printf(`[INFO] Attaching block storage (%s)`, d.Id())
-			err := client.BlockStorage.Attach(context.Background(), d.Id(), new.(string))
+			err := client.BlockStorage.Attach(context.Background(), d.Id(), newVal.(string))
 			if err != nil {
 				return fmt.Errorf("Error attaching block storage (%s): %v", d.Id(), err)
 			}
 		}
 		d.SetPartial("attached_id")
 	}
+
+	d.Partial(false)
 
 	return resourceVultrBlockStorageRead(d, meta)
 }

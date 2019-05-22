@@ -5,16 +5,27 @@ import (
 	"regexp"
 	"testing"
 
+	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 )
 
-func TestAccVultrBareMetalServer(t *testing.T) {
+func TestAccDataSourceVultrBareMetalServer(t *testing.T) {
+	rInt := acctest.RandInt()
+	rName := acctest.RandomWithPrefix("tf-test")
+	rSSH, _, err := acctest.RandSSHKeyPair("foobar")
+	if err != nil {
+		t.Fatalf("Error generating test SSH key pair: %s", err)
+	}
+
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckVultrBareMetalServer("terraform-test"),
+				Config: testAccVultrBareMetalServerConfigBasic(rInt, rSSH, rName),
+			},
+			{
+				Config: testAccVultrBareMetalServerConfigBasic(rInt, rSSH, rName) + testAccCheckVultrBareMetalServer(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "os"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "ram"),
@@ -35,7 +46,7 @@ func TestAccVultrBareMetalServer(t *testing.T) {
 				),
 			},
 			{
-				Config:      testAccCheckVultrBareMetalServer_noResult("foobar"),
+				Config:      testAccCheckVultrBareMetalServer(rName),
 				ExpectError: regexp.MustCompile(`.* data.vultr_bare_metal_server.server: data.vultr_bare_metal_server.server: no results were found`),
 			},
 		},
@@ -43,15 +54,6 @@ func TestAccVultrBareMetalServer(t *testing.T) {
 }
 
 func testAccCheckVultrBareMetalServer(label string) string {
-	return fmt.Sprintf(`data "vultr_bare_metal_server" "server" {
-		filter {
-		name = "label"
-		values = ["%s"]
-		}
-		}`, label)
-}
-
-func testAccCheckVultrBareMetalServer_noResult(label string) string {
 	return fmt.Sprintf(`data "vultr_bare_metal_server" "server" {
 		filter {
 		name = "label"
