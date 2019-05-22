@@ -12,6 +12,7 @@ import (
 )
 
 func TestAccVultrServer_Basic(t *testing.T) {
+	t.Parallel()
 	rName := acctest.RandomWithPrefix("tf-test")
 
 	name := "vultr_server.test"
@@ -24,12 +25,11 @@ func TestAccVultrServer_Basic(t *testing.T) {
 				Config: testAccVultrServerBase(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "label", rName),
-					resource.TestCheckResourceAttr(name, "os", "Application "),
+					resource.TestCheckResourceAttr(name, "os", "CentOS 6 i386"),
 					resource.TestCheckResourceAttr(name, "ram", "1024 MB"),
 					resource.TestCheckResourceAttr(name, "disk", "Virtual 25 GB"),
 					resource.TestCheckResourceAttr(name, "location", "Seattle"),
-					resource.TestCheckResourceAttr(name, "os_id", "186"),
-					resource.TestCheckResourceAttr(name, "application_id", "17"),
+					resource.TestCheckResourceAttr(name, "os_id", "147"),
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region_id", "4"),
@@ -40,6 +40,7 @@ func TestAccVultrServer_Basic(t *testing.T) {
 	})
 }
 func TestAccVultrServer_Update(t *testing.T) {
+	t.Parallel()
 	rName := acctest.RandomWithPrefix("tf-test")
 
 	name := "vultr_server.test"
@@ -52,12 +53,11 @@ func TestAccVultrServer_Update(t *testing.T) {
 				Config: testAccVultrServerBase(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "label", rName),
-					resource.TestCheckResourceAttr(name, "os", "Application "),
+					resource.TestCheckResourceAttr(name, "os", "CentOS 6 i386"),
 					resource.TestCheckResourceAttr(name, "ram", "1024 MB"),
 					resource.TestCheckResourceAttr(name, "disk", "Virtual 25 GB"),
 					resource.TestCheckResourceAttr(name, "location", "Seattle"),
-					resource.TestCheckResourceAttr(name, "os_id", "186"),
-					resource.TestCheckResourceAttr(name, "application_id", "17"),
+					resource.TestCheckResourceAttr(name, "os_id", "147"),
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region_id", "4"),
@@ -68,12 +68,11 @@ func TestAccVultrServer_Update(t *testing.T) {
 				Config: testAccVultrServerBaseUpdatedRegion(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "label", rName),
-					resource.TestCheckResourceAttr(name, "os", "Application "),
+					resource.TestCheckResourceAttr(name, "os", "CentOS 6 i386"),
 					resource.TestCheckResourceAttr(name, "ram", "2048 MB"),
 					resource.TestCheckResourceAttr(name, "disk", "Virtual 55 GB"),
 					resource.TestCheckResourceAttr(name, "location", "New Jersey"),
-					resource.TestCheckResourceAttr(name, "os_id", "186"),
-					resource.TestCheckResourceAttr(name, "application_id", "17"),
+					resource.TestCheckResourceAttr(name, "os_id", "147"),
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region_id", "1"),
@@ -85,6 +84,7 @@ func TestAccVultrServer_Update(t *testing.T) {
 }
 
 func TestAccVultrServer_UpdateFirewall(t *testing.T) {
+	t.Parallel()
 	rName := acctest.RandomWithPrefix("tf-test")
 
 	name := "vultr_server.test"
@@ -97,12 +97,11 @@ func TestAccVultrServer_UpdateFirewall(t *testing.T) {
 				Config: testAccVultrServerBase(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "label", rName),
-					resource.TestCheckResourceAttr(name, "os", "Application "),
+					resource.TestCheckResourceAttr(name, "os", "CentOS 6 i386"),
 					resource.TestCheckResourceAttr(name, "ram", "1024 MB"),
 					resource.TestCheckResourceAttr(name, "disk", "Virtual 25 GB"),
 					resource.TestCheckResourceAttr(name, "location", "Seattle"),
-					resource.TestCheckResourceAttr(name, "os_id", "186"),
-					resource.TestCheckResourceAttr(name, "application_id", "17"),
+					resource.TestCheckResourceAttr(name, "os_id", "147"),
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region_id", "4"),
@@ -113,12 +112,11 @@ func TestAccVultrServer_UpdateFirewall(t *testing.T) {
 				Config: testAccVultrServerBaseUpdateFirewall(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "label", rName),
-					resource.TestCheckResourceAttr(name, "os", "Application "),
+					resource.TestCheckResourceAttr(name, "os", "CentOS 6 i386"),
 					resource.TestCheckResourceAttr(name, "ram", "1024 MB"),
 					resource.TestCheckResourceAttr(name, "disk", "Virtual 25 GB"),
 					resource.TestCheckResourceAttr(name, "location", "Seattle"),
-					resource.TestCheckResourceAttr(name, "os_id", "186"),
-					resource.TestCheckResourceAttr(name, "application_id", "17"),
+					resource.TestCheckResourceAttr(name, "os_id", "147"),
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region_id", "4"),
@@ -131,6 +129,7 @@ func TestAccVultrServer_UpdateFirewall(t *testing.T) {
 }
 
 func TestAccVultrServer_UpdateNetworkIDs(t *testing.T) {
+	t.Parallel()
 	rName := acctest.RandomWithPrefix("tf-test")
 
 	name := "vultr_server.test"
@@ -143,12 +142,11 @@ func TestAccVultrServer_UpdateNetworkIDs(t *testing.T) {
 				Config: testAccVultrServerBase(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "label", rName),
-					resource.TestCheckResourceAttr(name, "os", "Application "),
+					resource.TestCheckResourceAttr(name, "os", "CentOS 6 i386"),
 					resource.TestCheckResourceAttr(name, "ram", "1024 MB"),
 					resource.TestCheckResourceAttr(name, "disk", "Virtual 25 GB"),
 					resource.TestCheckResourceAttr(name, "location", "Seattle"),
-					resource.TestCheckResourceAttr(name, "os_id", "186"),
-					resource.TestCheckResourceAttr(name, "application_id", "17"),
+					resource.TestCheckResourceAttr(name, "os_id", "147"),
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region_id", "4"),
@@ -159,12 +157,11 @@ func TestAccVultrServer_UpdateNetworkIDs(t *testing.T) {
 				Config: testAccVultrServerBaseUpdateNetworkIDs(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "label", rName),
-					resource.TestCheckResourceAttr(name, "os", "Application "),
+					resource.TestCheckResourceAttr(name, "os", "CentOS 6 i386"),
 					resource.TestCheckResourceAttr(name, "ram", "1024 MB"),
 					resource.TestCheckResourceAttr(name, "disk", "Virtual 25 GB"),
 					resource.TestCheckResourceAttr(name, "location", "Seattle"),
-					resource.TestCheckResourceAttr(name, "os_id", "186"),
-					resource.TestCheckResourceAttr(name, "application_id", "17"),
+					resource.TestCheckResourceAttr(name, "os_id", "147"),
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region_id", "4"),
@@ -201,7 +198,7 @@ func testAccVultrServerBase(name string) string {
 		resource "vultr_server" "test" {
   			plan_id = "201"
   			region_id = "4"
-  			application_id = "17"
+  			os_id = "147"
   			label = "%s"
   			hostname = "testing-the-hostname"
   			enable_ipv6 = true
@@ -218,7 +215,7 @@ func testAccVultrServerBaseUpdateFirewall(name string) string {
 		resource "vultr_server" "test" {
   			plan_id = "201"
   			region_id = "4"
-  			application_id = "17"
+  			os_id = "147"
   			label = "%s"
   			hostname = "testing-the-hostname"
   			enable_ipv6 = true
@@ -253,7 +250,7 @@ func testAccVultrServerBaseUpdateNetworkIDs(name string) string {
 		resource "vultr_server" "test" {
   			plan_id = "201"
   			region_id = "4"
-  			application_id = "17"
+  			os_id = "147"
   			label = "%s"
   			hostname = "testing-the-hostname"
   			enable_ipv6 = true
@@ -272,7 +269,7 @@ func testAccVultrServerBaseUpdatedRegion(name string) string {
 		resource "vultr_server" "test" {
   			plan_id = "202"
   			region_id = "1"
-  			application_id = "17"
+  			os_id = "147"
   			label = "%s"
   			hostname = "testing-the-hostname"
   			enable_ipv6 = true

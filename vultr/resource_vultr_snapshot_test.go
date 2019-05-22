@@ -11,6 +11,7 @@ import (
 )
 
 func TestAccVultrSnapshot_basic(t *testing.T) {
+	t.Parallel()
 	rInt := acctest.RandInt()
 	desc := fmt.Sprintf("%d - created by Terraform test", rInt)
 

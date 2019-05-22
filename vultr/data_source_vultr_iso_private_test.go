@@ -9,10 +9,10 @@ import (
 )
 
 func TestAccVultrIsoPrivate(t *testing.T) {
-
-	url := "http://dl-cdn.alpinelinux.org/alpine/v3.9/releases/x86_64/alpine-virt-3.9.4-x86_64.iso"
+	t.Parallel()
+	url := "http://dl-cdn.alpinelinux.org/alpine/v3.9/releases/x86_64/alpine-virt-3.9.2-x86_64.iso"
 	name := "data.vultr_iso_private.alpine"
-	fileName := "alpine-virt-3.9.4-x86_64.iso"
+	fileName := "alpine-virt-3.9.2-x86_64.iso"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },

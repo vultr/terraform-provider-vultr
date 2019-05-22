@@ -30,5 +30,5 @@ func TestAccVultrSnapshotFromURL_basic(t *testing.T) {
 }
 
 func testAccVultrSnapshotFromURLConfigBasic() string {
-	return `resource "vultr_snapshot_from_url" "foo" {url = "http://dl-cdn.alpinelinux.org/alpine/v3.9/releases/x86_64/alpine-virt-3.9.4-x86_64.iso"}`
+	return `resource "vultr_snapshot_from_url" "foo" {url = "http://dl-cdn.alpinelinux.org/alpine/v3.9/releases/x86_64/alpine-virt-3.9.1-x86_64.iso"}`
 }
