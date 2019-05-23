@@ -10,6 +10,7 @@ import (
 )
 
 func TestAccDataSourceVultrReservedIP(t *testing.T) {
+	rServerLabel := acctest.RandomWithPrefix("tf-vps-rip-ds")
 	rLabel := acctest.RandomWithPrefix("tf-test-")
 	ipType := "v4"
 
@@ -18,10 +19,10 @@ func TestAccDataSourceVultrReservedIP(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrReservedIPConfig(rLabel, ipType),
+				Config: testAccVultrReservedIPConfig(rServerLabel, rLabel, ipType),
 			},
 			{
-				Config: testAccVultrReservedIPConfig(rLabel, ipType) + testAccVultrReservedIP_read(rLabel),
+				Config: testAccVultrReservedIPConfig(rServerLabel, rLabel, ipType) + testAccVultrReservedIP_read(rLabel),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.rs", "id"),
 					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.rs", "subnet_size"),
