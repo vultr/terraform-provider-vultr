@@ -11,16 +11,16 @@ import (
 
 func TestAccDataSourceVultrBlockStorage(t *testing.T) {
 	rLabel := acctest.RandomWithPrefix("tf-test")
-
+	rServerLabel := acctest.RandomWithPrefix("tf-vps-bs")
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrBlockStorageConfig(rLabel),
+				Config: testAccVultrBlockStorageConfig(rLabel, rServerLabel),
 			},
 			{
-				Config: testAccVultrBlockStorageConfig(rLabel) + testAccDataSourceVultrBlockStorageConfig(rLabel),
+				Config: testAccVultrBlockStorageConfig(rLabel, rServerLabel) + testAccDataSourceVultrBlockStorageConfig(rLabel),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "id"),
 					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "date_created"),

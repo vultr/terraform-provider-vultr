@@ -11,7 +11,7 @@ import (
 )
 
 func TestAccVultrIso_base(t *testing.T) {
-
+	t.Parallel()
 	url := "http://dl-cdn.alpinelinux.org/alpine/v3.9/releases/x86_64/alpine-virt-3.9.3-x86_64.iso"
 	updateUrl := "http://dl-cdn.alpinelinux.org/alpine/v3.9/releases/x86_64/alpine-virt-3.9.4-x86_64.iso"
 	name := "vultr_iso_private.alpine"

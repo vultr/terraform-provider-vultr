@@ -11,7 +11,8 @@ import (
 )
 
 func TestAccVultrReservedIP_IPv4(t *testing.T) {
-	rLabel := acctest.RandomWithPrefix("tf-test-")
+	rServerLabel := acctest.RandomWithPrefix("tf-vps-rip4")
+	rLabel := acctest.RandomWithPrefix("tf-test")
 	ipType := "v4"
 
 	resource.Test(t, resource.TestCase{
@@ -20,7 +21,7 @@ func TestAccVultrReservedIP_IPv4(t *testing.T) {
 		CheckDestroy: testAccCheckVultrReservedIPDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrReservedIPConfig(rLabel, ipType),
+				Config: testAccVultrReservedIPConfig(rServerLabel, rLabel, ipType),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrReservedIPExists("vultr_reserved_ip.foo"),
 					resource.TestCheckResourceAttr("vultr_reserved_ip.foo", "label", rLabel),
@@ -31,7 +32,7 @@ func TestAccVultrReservedIP_IPv4(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrReservedIPConfig_attach(rLabel, ipType),
+				Config: testAccVultrReservedIPConfig_attach(rServerLabel, rLabel, ipType),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrReservedIPExists("vultr_reserved_ip.foo"),
 					resource.TestCheckResourceAttr("vultr_reserved_ip.foo", "label", rLabel),
@@ -44,7 +45,7 @@ func TestAccVultrReservedIP_IPv4(t *testing.T) {
 			},
 			{
 				// test detach by unsetting the attached_id
-				Config: testAccVultrReservedIPConfig(rLabel, ipType),
+				Config: testAccVultrReservedIPConfig(rServerLabel, rLabel, ipType),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrReservedIPExists("vultr_reserved_ip.foo"),
 					resource.TestCheckResourceAttr("vultr_reserved_ip.foo", "label", rLabel),
@@ -59,7 +60,8 @@ func TestAccVultrReservedIP_IPv4(t *testing.T) {
 }
 
 func TestAccVultrReservedIP_IPv6(t *testing.T) {
-	rLabel := acctest.RandomWithPrefix("tf-test-")
+	rServerLabel := acctest.RandomWithPrefix("tf-vps-rip6")
+	rLabel := acctest.RandomWithPrefix("tf-test")
 	ipType := "v6"
 
 	resource.Test(t, resource.TestCase{
@@ -68,7 +70,7 @@ func TestAccVultrReservedIP_IPv6(t *testing.T) {
 		CheckDestroy: testAccCheckVultrReservedIPDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrReservedIPConfig(rLabel, ipType),
+				Config: testAccVultrReservedIPConfig(rServerLabel, rLabel, ipType),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrReservedIPExists("vultr_reserved_ip.foo"),
 					resource.TestCheckResourceAttr("vultr_reserved_ip.foo", "label", rLabel),
@@ -79,7 +81,7 @@ func TestAccVultrReservedIP_IPv6(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrReservedIPConfig_attach(rLabel, ipType),
+				Config: testAccVultrReservedIPConfig_attach(rServerLabel, rLabel, ipType),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrReservedIPExists("vultr_reserved_ip.foo"),
 					resource.TestCheckResourceAttr("vultr_reserved_ip.foo", "label", rLabel),
@@ -92,7 +94,7 @@ func TestAccVultrReservedIP_IPv6(t *testing.T) {
 			},
 			{
 				// test detach by unsetting the attached_id
-				Config: testAccVultrReservedIPConfig(rLabel, ipType),
+				Config: testAccVultrReservedIPConfig(rServerLabel, rLabel, ipType),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrReservedIPExists("vultr_reserved_ip.foo"),
 					resource.TestCheckResourceAttr("vultr_reserved_ip.foo", "label", rLabel),
@@ -170,29 +172,31 @@ func testAccCheckVultrReservedIPExists(n string) resource.TestCheckFunc {
 	}
 }
 
-func testAccVultrReservedIPConfig(label, ipType string) string {
+func testAccVultrReservedIPConfig(rServerLabel, label, ipType string) string {
 	return fmt.Sprintf(`
 	resource "vultr_server" "ip" {
         label = "%s"
         region_id = 6
         plan_id = 201
         os_id = 147
+		enable_ipv6 = true
     }
     resource "vultr_reserved_ip" "foo" {
         label       = "%s"
         region_id   = 6
         ip_type        = "%s"
     }
-   `, label, label, ipType)
+   `, rServerLabel, label, ipType)
 }
 
-func testAccVultrReservedIPConfig_attach(label, ipType string) string {
+func testAccVultrReservedIPConfig_attach(rServerLabel, label, ipType string) string {
 	return fmt.Sprintf(`
 	resource "vultr_server" "ip" {
         label = "%s"
         region_id = 6
         plan_id = 201
         os_id = 147
+		enable_ipv6 = true
     }
     resource "vultr_reserved_ip" "foo" {
         label       = "%s"
@@ -200,5 +204,5 @@ func testAccVultrReservedIPConfig_attach(label, ipType string) string {
         ip_type        = "%s"
         attached_id = "${vultr_server.ip.id}"
     }
-   `, label, label, ipType)
+   `, rServerLabel, label, ipType)
 }

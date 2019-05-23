@@ -12,6 +12,7 @@ import (
 )
 
 func TestAccVultrBareMetalServer_basic(t *testing.T) {
+	t.Parallel()
 	rInt := acctest.RandInt()
 	rName := acctest.RandomWithPrefix("tf-test")
 	rSSH, _, err := acctest.RandSSHKeyPair("foobar")

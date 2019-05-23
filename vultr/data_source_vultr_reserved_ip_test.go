@@ -2,7 +2,6 @@ package vultr
 
 import (
 	"fmt"
-	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/acctest"
@@ -10,30 +9,25 @@ import (
 )
 
 func TestAccDataSourceVultrReservedIP(t *testing.T) {
-	rLabel := acctest.RandomWithPrefix("tf-test-")
-	ipType := "v4"
+	rLabel := acctest.RandomWithPrefix("tf-rip-ds")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrReservedIPConfig(rLabel, ipType),
+				Config: testAccVultrReservedIP_read(rLabel),
 			},
 			{
-				Config: testAccVultrReservedIPConfig(rLabel, ipType) + testAccVultrReservedIP_read(rLabel),
+				Config: testAccVultrReservedIP_read(rLabel),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.rs", "id"),
-					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.rs", "subnet_size"),
-					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.rs", "subnet"),
-					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.rs", "region_id"),
-					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.rs", "label"),
-					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.rs", "ip_type"),
+					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.foo", "id"),
+					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.foo", "subnet_size"),
+					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.foo", "subnet"),
+					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.foo", "region_id"),
+					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.foo", "label"),
+					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.foo", "ip_type"),
 				),
-			},
-			{
-				Config:      testAccVultrReservedIP_noResult("foobar"),
-				ExpectError: regexp.MustCompile(`.* data.vultr_reserved_ip.rs: data.vultr_reserved_ip.rs: no results were found`),
 			},
 		},
 	})
@@ -41,20 +35,17 @@ func TestAccDataSourceVultrReservedIP(t *testing.T) {
 
 func testAccVultrReservedIP_read(label string) string {
 	return fmt.Sprintf(`
-		data "vultr_reserved_ip" "rs" {
-		filter {
-    	name = "label"
-    	values = ["%s"]
-  	}
-	}`, label)
-}
+		resource "vultr_reserved_ip" "bar" {
+        	label       = "%s"
+        	region_id   = 6
+        	ip_type = "v4"
+    	}
 
-func testAccVultrReservedIP_noResult(label string) string {
-	return fmt.Sprintf(`
-		data "vultr_reserved_ip" "rs" {
-		filter {
-    	name = "label"
-    	values = ["%s"]
-  	}
-	}`, label)
+		data "vultr_reserved_ip" "foo" {
+			filter {
+    			name = "label"
+    			values = ["${vultr_reserved_ip.bar.label}"]
+  			}
+		}
+		`, label)
 }

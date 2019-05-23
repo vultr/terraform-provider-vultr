@@ -10,6 +10,7 @@ import (
 )
 
 func TestAccVultrServer(t *testing.T) {
+	t.Parallel()
 	rLabel := acctest.RandomWithPrefix("tf-test-ds")
 	name := "data.vultr_server.server"
 	resource.Test(t, resource.TestCase{

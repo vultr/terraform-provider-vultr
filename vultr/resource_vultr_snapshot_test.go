@@ -11,16 +11,17 @@ import (
 )
 
 func TestAccVultrSnapshot_basic(t *testing.T) {
+	t.Parallel()
 	rInt := acctest.RandInt()
 	desc := fmt.Sprintf("%d - created by Terraform test", rInt)
-
+	rServerLabel := acctest.RandomWithPrefix("tf-vps-snap")
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
 		CheckDestroy: testAccCheckVultrSnapshotDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrSnapshotConfigBasic(desc),
+				Config: testAccVultrSnapshotConfigBasic(rServerLabel, desc),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrSnapshotExists("vultr_snapshot.foo"),
 					resource.TestCheckResourceAttrSet("vultr_snapshot.foo", "vps_id"),
@@ -100,11 +101,17 @@ func testAccCheckVultrSnapshotExists(n string) resource.TestCheckFunc {
 	}
 }
 
-func testAccVultrSnapshotConfigBasic(desc string) string {
+func testAccVultrSnapshotConfigBasic(rServerLabel, desc string) string {
 	return fmt.Sprintf(`
+		resource "vultr_server" "snap" {
+        	label = "%s"
+        	region_id = "1"
+        	plan_id = 201
+        	os_id = 147
+    	}
 		resource "vultr_snapshot" "foo" {
-			vps_id       = "24609751"
+			vps_id       = "${vultr_server.snap.id}"
 			description  = "%s"
 		}
-	`, desc)
+	`, rServerLabel, desc)
 }
