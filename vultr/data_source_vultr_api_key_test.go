@@ -14,10 +14,10 @@ func TestAccVultrApi(t *testing.T) {
 			{
 				Config: testAccVultrApi(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttrSet("data.vultr_api.api", "acl.#"),
-					resource.TestCheckResourceAttrSet("data.vultr_api.api", "email"),
-					resource.TestCheckResourceAttrSet("data.vultr_api.api", "id"),
-					resource.TestCheckResourceAttrSet("data.vultr_api.api", "name"),
+					resource.TestCheckResourceAttrSet("data.vultr_api_key.api", "acl.#"),
+					resource.TestCheckResourceAttrSet("data.vultr_api_key.api", "email"),
+					resource.TestCheckResourceAttrSet("data.vultr_api_key.api", "id"),
+					resource.TestCheckResourceAttrSet("data.vultr_api_key.api", "name"),
 				),
 			},
 		},
@@ -25,5 +25,5 @@ func TestAccVultrApi(t *testing.T) {
 }
 
 func testAccVultrApi() string {
-	return `data "vultr_api" "api" {}`
+	return `data "vultr_api_key" "api" {}`
 }
