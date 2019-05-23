@@ -26,17 +26,17 @@ data "vultr_ssh_key" "my_ssh_key" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding SSH keys
+* `filter` - Query parameters for finding SSH keys.
 
 The `filter` block supports the following:
 
-* `name` - Attribute name to filter with
-* `values` - One or more values filter with
+* `name` - Attribute name to filter with.
+* `values` - One or more values filter with.
 
 ## Attributes Reference
 
 The following attributes are exported:
 
-* `name` - The name of the SSH key
-* `ssh_key` - The public SSH key
-* `date_created` - The date the SSH key was added to your Vultr account
+* `name` - The name of the SSH key.
+* `ssh_key` - The public SSH key.
+* `date_created` - The date the SSH key was added to your Vultr account.
