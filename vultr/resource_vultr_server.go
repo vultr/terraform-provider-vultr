@@ -398,19 +398,29 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("v6_networks", ipv6s)
 
 	d.Set("tag", vps.Tag)
-	d.Set("region_id", vps.RegionID)
-	d.Set("plan_id", vps.PlanID)
 	d.Set("firewall_group_id", vps.FirewallGroupID)
+
+	regionID, err := strconv.Atoi(vps.RegionID)
+	if err != nil {
+		return fmt.Errorf("Error while getting regionID for server : %v", err)
+	}
+	d.Set("region_id", regionID)
+
+	planID, err := strconv.Atoi(vps.PlanID)
+	if err != nil {
+		return fmt.Errorf("Error while getting planID for server : %v", err)
+	}
+	d.Set("plan_id", planID)
 
 	osID, err := strconv.Atoi(vps.OsID)
 	if err != nil {
-		fmt.Errorf("Error while getting osID for server : %v", err)
+		return fmt.Errorf("Error while getting osID for server : %v", err)
 	}
 	d.Set("os_id", osID)
 
 	appID, err := strconv.Atoi(vps.AppID)
 	if err != nil {
-		fmt.Errorf("Error while getting appID for server : %v", err)
+		return fmt.Errorf("Error while getting appID for server : %v", err)
 	}
 	d.Set("application_id", appID)
 
