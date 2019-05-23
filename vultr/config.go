@@ -4,6 +4,7 @@ import (
 	"crypto/tls"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/hashicorp/terraform/helper/logging"
 	"github.com/hashicorp/terraform/terraform"
@@ -39,7 +40,7 @@ func (c *Config) Client() (*Client, error) {
 
 	vultrClient := govultr.NewClient(client, c.APIKey)
 	vultrClient.SetUserAgent(userAgent)
-	vultrClient.SetRateLimit(300)
+	vultrClient.SetRateLimit(660 * time.Millisecond)
 
 	return &Client{client: vultrClient}, nil
 }

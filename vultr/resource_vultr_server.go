@@ -399,6 +399,7 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 
 	d.Set("tag", vps.Tag)
 	d.Set("region_id", vps.RegionID)
+	d.Set("plan_id", vps.PlanID)
 	d.Set("firewall_group_id", vps.FirewallGroupID)
 
 	osID, err := strconv.Atoi(vps.OsID)
