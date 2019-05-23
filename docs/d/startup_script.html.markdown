@@ -26,19 +26,19 @@ data "vultr_startup_script" "my_startup_script" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding startup scripts
+* `filter` - Query parameters for finding startup scripts.
 
 The `filter` block supports the following:
 
-* `name` - Attribute name to filter with
-* `values` - One or more values filter with
+* `name` - Attribute name to filter with.
+* `values` - One or more values filter with.
 
 ## Attributes Reference
 
 The following attributes are exported:
 
-* `name` - The name of the startup script
-* `script` - The contents of the startup script
-* `type` - The type of the startup script
-* `date_created` - The date the startup script was added to your Vultr account
-* `date_modified` - The date the startup script was last modified
+* `name` - The name of the startup script.
+* `script` - The contents of the startup script.
+* `type` - The type of the startup script.
+* `date_created` - The date the startup script was added to your Vultr account.
+* `date_modified` - The date the startup script was last modified.
