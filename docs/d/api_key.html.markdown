@@ -1,7 +1,7 @@
 ---
 layout: "vultr"
 page_title: "Vultr: vultr_api_key"
-sidebar_current: "docs-vultr-datasource-api"
+sidebar_current: "docs-vultr-datasource-api-key"
 description: |-
   Get information about your Vultr API key.
 ---
