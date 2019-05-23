@@ -2,7 +2,6 @@ package vultr
 
 import (
 	"fmt"
-	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/acctest"
@@ -11,16 +10,12 @@ import (
 
 func TestAccDataSourceVultrBlockStorage(t *testing.T) {
 	rLabel := acctest.RandomWithPrefix("tf-test")
-	rServerLabel := acctest.RandomWithPrefix("tf-vps-bs")
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrBlockStorageConfig(rLabel, rServerLabel),
-			},
-			{
-				Config: testAccVultrBlockStorageConfig(rLabel, rServerLabel) + testAccDataSourceVultrBlockStorageConfig(rLabel),
+				Config: testAccDataSourceVultrBlockStorageConfig(rLabel),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "id"),
 					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "date_created"),
@@ -31,20 +26,23 @@ func TestAccDataSourceVultrBlockStorage(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "label"),
 				),
 			},
-			{
-				Config:      testAccDataSourceVultrBlockStorageConfig(rLabel),
-				ExpectError: regexp.MustCompile(`.* data.vultr_block_storage.block: data.vultr_block_storage.block: no results were found`),
-			},
 		},
 	})
 }
 
 func testAccDataSourceVultrBlockStorageConfig(label string) string {
 	return fmt.Sprintf(`
+	
+	resource "vultr_block_storage" "foo" {
+		region_id   = "1"
+		size_gb     = 10
+		label       = "%s"
+	  }
+
 	data "vultr_block_storage" "block" {
     	filter {
     		name = "label"
-    		values = ["%s"]
+    		values = ["${vultr_block_storage.foo.label}"]
   		}
 	}`, label)
 }
