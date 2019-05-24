@@ -29,12 +29,8 @@ func TestAccVultrBareMetalPlan(t *testing.T) {
 				),
 			},
 			{
-				Config:      testAccCheckVultrBareMetalPlan_noResult("foobar"),
-				ExpectError: regexp.MustCompile(`.* data.vultr_bare_metal_plan.my_bm_plan: data.vultr_bare_metal_plan.my_bm_plan: no results were found`),
-			},
-			{
 				Config:      testAccCheckVultrBareMetalPlan_tooManyResults(32768),
-				ExpectError: regexp.MustCompile(`.* data.vultr_bare_metal_plan.my_bm_plan: data.vultr_bare_metal_plan.my_bm_plan: your search returned too many results. Please refine your search to be more specific`),
+				ExpectError: regexp.MustCompile(`your search returned too many results. Please refine your search to be more specific`),
 			},
 		},
 	})

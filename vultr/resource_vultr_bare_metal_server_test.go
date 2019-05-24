@@ -136,15 +136,8 @@ func testAccCheckVultrBareMetalServerExists(n string) resource.TestCheckFunc {
 
 func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string {
 	return testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + fmt.Sprintf(`
-		data "vultr_region" "singapore" {
-			filter {
-				name   = "name"
-				values = ["Singapore"]
-			}
-		}
-
 		resource "vultr_bare_metal_server" "foo" {
-			region_id 		  = "${data.vultr_region.singapore.id}"
+			region_id 		  = "40"
 			os_id 			  = "270"
 			plan_id           = "100"
 			enable_ipv6       = true
@@ -161,15 +154,8 @@ func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string
 
 func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) string {
 	return testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + fmt.Sprintf(`
-		data "vultr_region" "singapore" {
-			filter {
-				name   = "name"
-				values = ["Singapore"]
-			}
-		}
-
 		resource "vultr_bare_metal_server" "foo" {
-			region_id 		  = "${data.vultr_region.singapore.id}"
+			region_id 		  = "40"
 			app_id 			  = "2"
 			plan_id           = "100"
 			enable_ipv6       = true

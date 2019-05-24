@@ -2,7 +2,6 @@ package vultr
 
 import (
 	"fmt"
-	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/resource"
@@ -28,14 +27,6 @@ func TestAccVultrApplication(t *testing.T) {
 						"data.vultr_application.docker", "surcharge", "0"),
 				),
 			},
-			{
-				Config:      testAccCheckVultrApplication_noresult("image_test"),
-				ExpectError: regexp.MustCompile(`.* data.vultr_application.docker: data.vultr_application.docker: no results were found`),
-			},
-			{
-				Config:      testAccCheckVultrApplication_tooManyResults("Docker"),
-				ExpectError: regexp.MustCompile(`.* data.vultr_application.toomany: data.vultr_application.toomany: your search returned too many results : 2. Please refine your search to be more specific`),
-			},
 		},
 	})
 }
@@ -48,24 +39,4 @@ func testAccCheckVultrApplication(deployName string) string {
     	values = ["%s"]
 	}
   	}`, deployName)
-}
-
-func testAccCheckVultrApplication_noresult(name string) string {
-	return fmt.Sprintf(`
-		data "vultr_application" "docker" {
-    	filter {
-    	name = "name"
-    	values = ["%s"]
-	}
-  	}`, name)
-}
-
-func testAccCheckVultrApplication_tooManyResults(name string) string {
-	return fmt.Sprintf(`
-		data "vultr_application" "toomany" {
-    	filter {
-    	name = "name"
-    	values = ["%s"]
-	}
-  	}`, name)
 }
