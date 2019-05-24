@@ -98,7 +98,7 @@ func resourceVultrDnsRecordRead(d *schema.ResourceData, meta interface{}) error 
 	records, err := client.DNSRecord.GetList(context.Background(), d.Get("domain").(string))
 
 	if err != nil {
-		fmt.Errorf("Error getting DNS records for DNS Domain %s: %v", d.Get("domain").(string), err)
+		return fmt.Errorf("Error getting DNS records for DNS Domain %s: %v", d.Get("domain").(string), err)
 	}
 
 	var record *govultr.DNSRecord
