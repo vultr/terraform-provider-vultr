@@ -19,7 +19,7 @@ func TestAccDataSourceVultrBlockStorage(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "id"),
 					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "date_created"),
-					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "cost_pre_month"),
+					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "cost_per_month"),
 					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "status"),
 					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "size_gb"),
 					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "region_id"),
