@@ -2,7 +2,6 @@ package vultr
 
 import (
 	"fmt"
-	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/resource"
@@ -23,28 +22,16 @@ func TestAccVultrBackup(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.vultr_backup.backs", "id"),
 				),
 			},
-			{
-				Config:      testAccVultrBackup_noResults("auto-backup 63.209.32.248 server-label"),
-				ExpectError: regexp.MustCompile(`.* data.vultr_backup.backs: data.vultr_backup.backs: no results were found`),
-			},
 		},
 	})
 }
 
 func testAccVultrBackup_read(description string) string {
-	return fmt.Sprintf(`data "vultr_backup" "backs" {
-  filter {
-    name = "description"
-    values = ["%s"]
-  }
-}`, description)
-}
-
-func testAccVultrBackup_noResults(description string) string {
-	return fmt.Sprintf(`data "vultr_backup" "backs" {
-  filter {
-    name = "description"
-    values = ["%s "]
-  }
-}`, description)
+	return fmt.Sprintf(`
+		data "vultr_backup" "backs" {
+  			filter {
+    			name = "description"
+    			values = ["%s"]
+  			}
+		}`, description)
 }

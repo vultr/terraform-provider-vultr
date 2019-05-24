@@ -11,7 +11,7 @@ import (
 )
 
 func TestAccResourceVultrBlockStorage(t *testing.T) {
-	rLabel := acctest.RandomWithPrefix("tf-test")
+	rLabel := acctest.RandomWithPrefix("tf-bs-rs")
 	rServerLabel := acctest.RandomWithPrefix("tf-vps-bs")
 	rLabelUpdate := acctest.RandomWithPrefix("tf-test-update")
 

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -50,7 +51,7 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Computed: true,
 			},
 			"region_id": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Required: true,
 				ForceNew: true,
 			},
@@ -76,7 +77,7 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Computed: true,
 			},
 			"plan_id": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Required: true,
 				ForceNew: true,
 			},
@@ -194,10 +195,10 @@ func resourceVultrBareMetalServerCreate(d *schema.ResourceData, meta interface{}
 
 	client := meta.(*Client).govultrClient()
 
-	regionID := d.Get("region_id").(string)
-	planID := d.Get("plan_id").(string)
+	regionID := d.Get("region_id").(int)
+	planID := d.Get("plan_id").(int)
 
-	bm, err := client.BareMetalServer.Create(context.Background(), regionID, planID, osID.(string), options)
+	bm, err := client.BareMetalServer.Create(context.Background(), strconv.Itoa(regionID), strconv.Itoa(planID), osID.(string), options)
 	if err != nil {
 		return fmt.Errorf("Error creating bare metal server: %v", err)
 	}

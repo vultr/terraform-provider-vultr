@@ -26,10 +26,6 @@ func dataSourceVultrApplication() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"surcharge": {
-				Type:     schema.TypeFloat,
-				Computed: true,
-			},
 		},
 	}
 }
@@ -77,6 +73,5 @@ func dataSourceVultrApplicationRead(d *schema.ResourceData, meta interface{}) er
 	d.Set("deploy_name", appList[0].DeployName)
 	d.Set("name", appList[0].Name)
 	d.Set("short_name", appList[0].ShortName)
-	d.Set("surcharge", appList[0].Surcharge)
 	return nil
 }

@@ -27,28 +27,14 @@ func TestAccVultrRegion(t *testing.T) {
 				),
 			},
 			{
-				Config:      testAccCheckVultrRegion_noResult("foobar"),
-				ExpectError: regexp.MustCompile(`.* data.vultr_region.miami: data.vultr_region.miami: no results were found`),
-			},
-			{
 				Config:      testAccCheckVultrRegion_tooManyResults("US"),
-				ExpectError: regexp.MustCompile(`.* data.vultr_region.miami: data.vultr_region.miami: your search returned too many results. Please refine your search to be more specific`),
+				ExpectError: regexp.MustCompile(`your search returned too many results. Please refine your search to be more specific`),
 			},
 		},
 	})
 }
 
 func testAccCheckVultrRegion(name string) string {
-	return fmt.Sprintf(`
-		data "vultr_region" "miami" {
-    	filter {
-    	name = "name"
-    	values = ["%s"]
-	}
-  	}`, name)
-}
-
-func testAccCheckVultrRegion_noResult(name string) string {
 	return fmt.Sprintf(`
 		data "vultr_region" "miami" {
     	filter {

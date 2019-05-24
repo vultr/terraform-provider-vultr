@@ -384,7 +384,7 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("network_macs", networkMacs)
 	d.Set("network_ips", networkIPs)
 
-	d.Set("network_ids", networks)
+	d.Set("network_ids", networkIDs)
 
 	var ipv6s []map[string]string
 	for _, net := range vps.V6Networks {

@@ -3,7 +3,8 @@ package vultr
 import (
 	"context"
 	"fmt"
-	"regexp"
+	"github.com/vultr/govultr"
+	"reflect"
 	"strconv"
 	"testing"
 
@@ -21,19 +22,12 @@ func TestAccVultrFirewallRule_basic(t *testing.T) {
 		CheckDestroy: testAccCheckVultrFirewallRuleDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrFirewallGroup_base(rString),
-			},
-			{
-				Config: testAccVultrFirewallGroup_base(rString) + testAccVultrFirewallRule_base(),
+				Config: testAccVultrFirewallRule_base(rString),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("vultr_firewall_rule.tcp", "firewall_group_id"),
 					resource.TestCheckResourceAttr("vultr_firewall_rule.tcp", "protocol", "tcp"),
 					resource.TestCheckResourceAttr("vultr_firewall_rule.tcp", "from_port", "3048"),
 					resource.TestCheckResourceAttr("vultr_firewall_rule.tcp", "network", "10.0.0.0/32")),
-			},
-			{
-				Config:      testAccVultrFirewallGroup_noresult(rString),
-				ExpectError: regexp.MustCompile(`.* data.vultr_firewall_group.fwg: data.vultr_firewall_group.fwg: no results were found`),
 			},
 		},
 	})
@@ -48,7 +42,7 @@ func TestAccVultrFirewallRule_update(t *testing.T) {
 		CheckDestroy: testAccCheckVultrFirewallRuleDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrFirewallGroup_base(rString) + testAccVultrFirewallRule_base(),
+				Config: testAccVultrFirewallRule_base(rString),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("vultr_firewall_rule.tcp", "firewall_group_id"),
 					resource.TestCheckResourceAttr("vultr_firewall_rule.tcp", "protocol", "tcp"),
@@ -57,17 +51,13 @@ func TestAccVultrFirewallRule_update(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrFirewallGroup_base(rString) + testAccVultrFirewallRule_update(),
+				Config: testAccVultrFirewallRule_update(rString),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("vultr_firewall_rule.tcp", "firewall_group_id"),
 					resource.TestCheckResourceAttr("vultr_firewall_rule.tcp", "protocol", "udp"),
 					resource.TestCheckResourceAttr("vultr_firewall_rule.tcp", "from_port", "3046"),
 					resource.TestCheckResourceAttr("vultr_firewall_rule.tcp", "network", "10.0.0.0/32"),
 				),
-			},
-			{
-				Config:      testAccVultrFirewallGroup_noresult(rString),
-				ExpectError: regexp.MustCompile(`.* data.vultr_firewall_group.fwg: data.vultr_firewall_group.fwg: no results were found`),
 			},
 		},
 	})
@@ -82,6 +72,13 @@ func testAccCheckVultrFirewallRuleDestroy(s *terraform.State) error {
 		}
 		groupId := rs.Primary.Attributes["firewall_group_id"]
 		ipType := rs.Primary.Attributes["ip_type"]
+
+		group, err := client.FirewallGroup.Get(context.Background(), groupId)
+
+		if reflect.DeepEqual(group, &govultr.FirewallGroup{}) {
+			// the group & rules were deleted
+			return nil
+		}
 
 		firewallRules, err := client.FirewallRule.GetList(context.Background(), groupId, ipType)
 		if err != nil {
@@ -104,20 +101,30 @@ func testAccCheckVultrFirewallRuleDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccVultrFirewallRule_base() string {
-	return fmt.Sprint(`resource "vultr_firewall_rule" "tcp" {
-		firewall_group_id = "${vultr_firewall_group.fwg.id}"
-		protocol = "tcp"
-		network = "10.0.0.0/32"
-		from_port = "3048"
-		}`)
+func testAccVultrFirewallRule_base(desc string) string {
+	return fmt.Sprintf(`
+		resource "vultr_firewall_group" "fwg" {
+  			description = "%s"
+		}			
+
+		resource "vultr_firewall_rule" "tcp" {
+			firewall_group_id = "${vultr_firewall_group.fwg.id}"
+			protocol = "tcp"
+			network = "10.0.0.0/32"
+			from_port = "3048"
+		}`, desc)
 }
 
-func testAccVultrFirewallRule_update() string {
-	return fmt.Sprint(`resource "vultr_firewall_rule" "tcp" {
-		firewall_group_id = "${vultr_firewall_group.fwg.id}"
-		protocol = "udp"
-		network = "10.0.0.0/32"
-		from_port = "3046"
-		}`)
+func testAccVultrFirewallRule_update(desc string) string {
+	return fmt.Sprintf(`
+		resource "vultr_firewall_group" "fwg" {
+  			description = "%s"
+		}		
+
+		resource "vultr_firewall_rule" "tcp" {
+			firewall_group_id = "${vultr_firewall_group.fwg.id}"
+			protocol = "udp"
+			network = "10.0.0.0/32"
+			from_port = "3046"
+		}`, desc)
 }

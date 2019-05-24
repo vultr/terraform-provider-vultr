@@ -11,7 +11,7 @@ import (
 )
 
 func TestAccVultrNetwork_noCidrBlock(t *testing.T) {
-	rDesc := acctest.RandomWithPrefix("tf-test")
+	rDesc := acctest.RandomWithPrefix("tf-net-rs-nocdir")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -32,7 +32,7 @@ func TestAccVultrNetwork_noCidrBlock(t *testing.T) {
 }
 
 func TestAccVultrNetwork_withCidrBlock(t *testing.T) {
-	rDesc := acctest.RandomWithPrefix("tf-test-")
+	rDesc := acctest.RandomWithPrefix("tf-net-rs-cidr")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },

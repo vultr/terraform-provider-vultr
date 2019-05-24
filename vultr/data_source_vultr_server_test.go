@@ -2,7 +2,6 @@ package vultr
 
 import (
 	"fmt"
-	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/acctest"
@@ -14,14 +13,12 @@ func TestAccVultrServer(t *testing.T) {
 	rLabel := acctest.RandomWithPrefix("tf-test-ds")
 	name := "data.vultr_server.server"
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckVultrServerDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrServerBase(rLabel),
-			},
-			{
-				Config: testAccVultrServerBase(rLabel) + testAccCheckVultrServer(rLabel),
+				Config: testAccCheckVultrServer(rLabel),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(name, "os"),
 					resource.TestCheckResourceAttrSet(name, "ram"),
@@ -50,28 +47,30 @@ func TestAccVultrServer(t *testing.T) {
 					resource.TestCheckResourceAttrSet(name, "v6_networks.#"),
 				),
 			},
-			{
-				Config:      testAccCheckVultrServer_noResult(rLabel),
-				ExpectError: regexp.MustCompile(fmt.Sprintf(".*%s: %s: no results were found", name, name)),
-			},
 		},
 	})
 }
 
 func testAccCheckVultrServer(label string) string {
-	return fmt.Sprintf(`data "vultr_server" "server" {
-		filter {
-		name = "label"
-		values = ["%s"]
+	return fmt.Sprintf(`
+		resource "vultr_server" "test" {
+  			plan_id = "201"
+  			region_id = "4"
+  			os_id = "147"
+  			label = "%s"
+  			hostname = "testing-the-hostname"
+  			enable_ipv6 = true
+  			auto_backup = true
+  			user_data = "unodostres!"
+  			notify_activate = false
+  			ddos_protection = true
+  			tag = "even better tag"
 		}
-		}`, label)
-}
 
-func testAccCheckVultrServer_noResult(label string) string {
-	return fmt.Sprintf(`data "vultr_server" "server" {
-		filter {
-		name = "label"
-		values = ["%s"]
-		}
+		data "vultr_server" "server" {
+			filter {
+				name = "label"
+				values = ["${vultr_server.test.label}"]
+			}
 		}`, label)
 }

@@ -35,7 +35,7 @@ func dataSourceVultrBlockStorage() *schema.Resource {
 				Computed: true,
 			},
 			"attached_to_vps": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeString,
 				Computed: true,
 			},
 			"label": {

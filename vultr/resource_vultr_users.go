@@ -112,9 +112,14 @@ func resourceVultrUsersRead(d *schema.ResourceData, meta interface{}) error {
 		return nil
 	}
 
+	enabled := false
+	if users[counter].APIEnabled == "yes" {
+		enabled = true
+	}
+
 	d.Set("name", users[counter].Name)
 	d.Set("email", users[counter].Email)
-	d.Set("api_enabled", users[counter].APIEnabled)
+	d.Set("api_enabled", enabled)
 	d.Set("acl", users[counter].ACL)
 	return nil
 }

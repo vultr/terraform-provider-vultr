@@ -2,7 +2,6 @@ package vultr
 
 import (
 	"fmt"
-	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/acctest"
@@ -11,13 +10,14 @@ import (
 
 func TestAccDataSourceVultrSnapshot(t *testing.T) {
 	t.Parallel()
-	rDesc := acctest.RandomWithPrefix("tf-test")
+	rDesc := acctest.RandomWithPrefix("tf-snap-ds")
 	rLabel := acctest.RandomWithPrefix("tf-test-vps")
 	name := "data.vultr_snapshot.my_snapshot"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckVultrSnapshotDestroy,
 		Steps: []resource.TestStep{
 
 			{
@@ -30,10 +30,6 @@ func TestAccDataSourceVultrSnapshot(t *testing.T) {
 					resource.TestCheckResourceAttrSet(name, "os_id"),
 					resource.TestCheckResourceAttrSet(name, "app_id"),
 				),
-			},
-			{
-				Config:      testAccDataSourceVultrSnapshotConfig(rDesc),
-				ExpectError: regexp.MustCompile(`.* data.vultr_snapshot.my_snapshot: data.vultr_snapshot.my_snapshot: no results were found`),
 			},
 		},
 	})
@@ -62,14 +58,4 @@ func testAccDataSourceVultrSnapshotBase(vpsLabel, desc string) string {
 			}
   		}
 		`, vpsLabel, desc)
-}
-
-func testAccDataSourceVultrSnapshotConfig(description string) string {
-	return fmt.Sprintf(`
-		data "vultr_snapshot" "my_snapshot" {
-    	filter {
-    	name = "description"
-    	values = ["%s"]
-	}
-  	}`, description)
 }

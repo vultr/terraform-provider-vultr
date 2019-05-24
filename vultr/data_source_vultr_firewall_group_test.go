@@ -2,16 +2,15 @@ package vultr
 
 import (
 	"fmt"
-	"github.com/hashicorp/terraform/helper/acctest"
-	"regexp"
 	"testing"
 
+	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 )
 
 func TestAccVultrFirewallGroup(t *testing.T) {
 
-	rString := acctest.RandString(12)
+	rDesc := acctest.RandomWithPrefix("tf-fwg-ds")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -19,12 +18,9 @@ func TestAccVultrFirewallGroup(t *testing.T) {
 		CheckDestroy: testAccCheckVultrFirewallGroupDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrFirewallGroup_base(rString),
-			},
-			{
-				Config: testAccVultrFirewallGroup_base(rString) + testAccVultrFirewallGroup_read(rString),
+				Config: testAccVultrFirewallGroup_read(rDesc),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vultr_firewall_group.fwg", "description", rString),
+					resource.TestCheckResourceAttr("data.vultr_firewall_group.fwg", "description", rDesc),
 					resource.TestCheckResourceAttrSet("data.vultr_firewall_group.fwg", "date_created"),
 					resource.TestCheckResourceAttrSet("data.vultr_firewall_group.fwg", "date_modified"),
 					resource.TestCheckResourceAttrSet("data.vultr_firewall_group.fwg", "instance_count"),
@@ -33,30 +29,20 @@ func TestAccVultrFirewallGroup(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.vultr_firewall_group.fwg", "id"),
 				),
 			},
-			{
-				Config:      testAccVultrFirewallGroup_noresult(rString),
-				ExpectError: regexp.MustCompile(`.* data.vultr_firewall_group.fwg: data.vultr_firewall_group.fwg: no results were found`),
-			},
 		},
 	})
 }
 
 func testAccVultrFirewallGroup_read(description string) string {
 	return fmt.Sprintf(`
-		data "vultr_firewall_group" "fwg" {
-  			filter {
-    			name = "description"
-    			values = ["%s"]
-  			}
-		}`, description)
-}
+		resource "vultr_firewall_group" "fwg" {
+  			description = "%s"
+		}
 
-func testAccVultrFirewallGroup_noresult(description string) string {
-	return fmt.Sprintf(`
 		data "vultr_firewall_group" "fwg" {
   			filter {
     			name = "description"
-    			values = ["%s"]
+    			values = ["${vultr_firewall_group.fwg.description}"]
   			}
 		}`, description)
 }

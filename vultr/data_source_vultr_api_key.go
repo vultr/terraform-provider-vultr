@@ -11,7 +11,6 @@ func dataSourceVultrApi() *schema.Resource {
 	return &schema.Resource{
 		Read: dataSourceVultrApiRead,
 		Schema: map[string]*schema.Schema{
-			"filter": dataSourceFiltersSchema(),
 			"name": {
 				Type:     schema.TypeString,
 				Computed: true,
