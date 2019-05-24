@@ -18,7 +18,7 @@ func dataSourceVultrBlockStorage() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"cost_pre_month": {
+			"cost_per_month": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -87,7 +87,7 @@ func dataSourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) e
 
 	d.SetId(blockList[0].BlockStorageID)
 	d.Set("date_created", blockList[0].DateCreated)
-	d.Set("cost_pre_month", blockList[0].CostPerMonth)
+	d.Set("cost_per_month", blockList[0].CostPerMonth)
 	d.Set("status", blockList[0].Status)
 	d.Set("size_gb", blockList[0].SizeGB)
 	d.Set("region_id", blockList[0].RegionID)
