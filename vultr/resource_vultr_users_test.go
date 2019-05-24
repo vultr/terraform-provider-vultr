@@ -115,9 +115,9 @@ func testAccCheckVultrUsersDestroy(s *terraform.State) error {
 
 func testAccResourceVultrUser_create() string {
 	return `resource "vultr_user" "admin" {
-  name = "Terraform AccTests",
+  name = "Terraform AccTests"
   email = "terraform-acceptance@vultr.com"
-  password = "password",
+  password = "password"
   acl = [
             "manage_users",
             "subscriptions",
@@ -136,9 +136,9 @@ func testAccResourceVultrUser_create() string {
 
 func testAccResourceVultrUser_update() string {
 	return `resource "vultr_user" "admin" {
-  name = "Terraform Update Name",
+  name = "Terraform Update Name"
   email = "terraform-acceptance@vultr.com"
-  password = "password",
+  password = "password"
   acl = [
             "manage_users",
             "subscriptions",

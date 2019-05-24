@@ -93,13 +93,15 @@ func testAccCheckVultrFirewallGroupExists(n string) resource.TestCheckFunc {
 }
 
 func testAccVultrFirewallGroup_base(description string) string {
-	return fmt.Sprintf(`resource "vultr_firewall_group" "fwg" {
-  	description = "%s"
-}`, description)
+	return fmt.Sprintf(`
+		resource "vultr_firewall_group" "fwg" {
+  			description = "%s"
+		}`, description)
 }
 
 func testAccVultrFirewallGroup_update(description string) string {
-	return fmt.Sprintf(`resource "vultr_firewall_group" "fwg" {
-  	description = "%s"
-}`, description)
+	return fmt.Sprintf(`
+	resource "vultr_firewall_group" "fwg" {
+  		description = "%s"
+	}`, description)
 }

@@ -2,7 +2,6 @@ package vultr
 
 import (
 	"fmt"
-	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/acctest"
@@ -11,22 +10,14 @@ import (
 
 func TestAccDataSourceVultrBareMetalServer(t *testing.T) {
 	t.Parallel()
-	rInt := acctest.RandInt()
-	rName := acctest.RandomWithPrefix("tf-test")
-	rSSH, _, err := acctest.RandSSHKeyPair("foobar")
-	if err != nil {
-		t.Fatalf("Error generating test SSH key pair: %s", err)
-	}
+	rName := acctest.RandomWithPrefix("tf-bms-ds")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrBareMetalServerConfigBasic(rInt, rSSH, rName),
-			},
-			{
-				Config: testAccVultrBareMetalServerConfigBasic(rInt, rSSH, rName) + testAccCheckVultrBareMetalServer(rName),
+				Config: testAccCheckVultrBareMetalServer(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "os"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "ram"),
@@ -46,19 +37,26 @@ func TestAccDataSourceVultrBareMetalServer(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "v6_networks.#"),
 				),
 			},
-			{
-				Config:      testAccCheckVultrBareMetalServer(rName),
-				ExpectError: regexp.MustCompile(`.* data.vultr_bare_metal_server.server: data.vultr_bare_metal_server.server: no results were found`),
-			},
 		},
 	})
 }
 
 func testAccCheckVultrBareMetalServer(label string) string {
-	return fmt.Sprintf(`data "vultr_bare_metal_server" "server" {
-		filter {
-		name = "label"
-		values = ["%s"]
+	return fmt.Sprintf(`
+		resource "vultr_bare_metal_server" "foo" {
+			region_id 		  = 40
+			os_id 			  = 270
+			plan_id           = 100
+			enable_ipv6       = true
+			notify_activate   = false
+			label             = "%s"
+			tag 			  = "bms-tag"
 		}
+
+		data "vultr_bare_metal_server" "server" {
+			filter {
+				name = "label"
+				values = ["${vultr_bare_metal_server.foo.label}"]
+			}
 		}`, label)
 }

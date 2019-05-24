@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
-	"regexp"
 	"testing"
 )
 
@@ -23,10 +22,6 @@ func TestAccVultrDnsDomain_dataBase(t *testing.T) {
 					resource.TestCheckResourceAttrSet(name, "date_created"),
 				),
 			},
-			{
-				Config:      testAccVultrDnsDomain_noResults(domain),
-				ExpectError: regexp.MustCompile(`.* data.vultr_dns_domain.my-site: data.vultr_dns_domain.my-site: no results were found`),
-			},
 		},
 	})
 }
@@ -38,14 +33,7 @@ func testAccVultrDnsDomainConfig(domain string) string {
 			}
 
 			resource "vultr_dns_domain" "my-site" {
-  				domain = "%s",
+  				domain = "%s"
   				server_ip = "10.0.0.0"
 			}`, domain)
-}
-
-func testAccVultrDnsDomain_noResults(name string) string {
-	return fmt.Sprintf(`
-		data "vultr_dns_domain" "my-site" {
- 			domain = "%s"
-		}`, name)
 }

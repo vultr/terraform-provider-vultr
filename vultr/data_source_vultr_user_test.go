@@ -2,7 +2,6 @@ package vultr
 
 import (
 	"fmt"
-	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/acctest"
@@ -15,8 +14,9 @@ func TestAccVultrUser_dataBase(t *testing.T) {
 	name := "data.vultr_user.admin"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckVultrUsersDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrUserConfig_base(rEmail),
@@ -38,10 +38,6 @@ func TestAccVultrUser_dataBase(t *testing.T) {
 					resource.TestCheckResourceAttrSet(name, "id"),
 				),
 			},
-			{
-				Config:      testAccVultrUserConfig_noResult(rEmail),
-				ExpectError: regexp.MustCompile(fmt.Sprintf(".*%s: %s: no results were found", name, name)),
-			},
 		},
 	})
 }
@@ -56,9 +52,9 @@ func testAccVultrUserConfig_base(email string) string {
 			}
 
 		resource "vultr_user" "admin" {
-  			name = "Terraform AccTests",
+  			name = "Terraform AccTests"
   			email = "%s"
-  			password = "password",
+  			password = "password"
   			acl = [
             	"manage_users",
             	"subscriptions",
@@ -72,18 +68,5 @@ func testAccVultrUserConfig_base(email string) string {
             	"alerts"
   			]
   			api_enabled = true
-		}
-
-		`, email)
-}
-
-func testAccVultrUserConfig_noResult(email string) string {
-	return fmt.Sprintf(`
-		data "vultr_user" "admin" {
-			filter {
-    			name = "email"
-    			values = ["%s"]
-  				}
-			}
-		`, email)
+		}`, email)
 }
