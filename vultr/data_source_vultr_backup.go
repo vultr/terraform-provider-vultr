@@ -14,10 +14,6 @@ func dataSourceVultrBackup() *schema.Resource {
 		Read: dataSourceVultrBackupRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
-			"backup_id": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
 			"date_created": {
 				Type:     schema.TypeString,
 				Computed: true,
