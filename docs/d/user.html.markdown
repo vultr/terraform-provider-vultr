@@ -12,7 +12,7 @@ Get information about a Vultr user associated with your account. This data sourc
 
 ## Example Usage
 
-Get the information for a user by email:
+Get the information for a user by `email`:
 ```hcl
 data "vultr_user" "my_user" {
   filter {
@@ -22,7 +22,7 @@ data "vultr_user" "my_user" {
 }
 ```
 
-Get the information for a user by name:
+Get the information for a user by `name`:
 ```hcl
 data "vultr_user" "my_user" {
   filter {
