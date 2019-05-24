@@ -10,7 +10,7 @@ import (
 
 func TestAccDataSourceVultrSnapshot(t *testing.T) {
 	t.Parallel()
-	rDesc := acctest.RandomWithPrefix("tf-test")
+	rDesc := acctest.RandomWithPrefix("tf-snap-ds")
 	rLabel := acctest.RandomWithPrefix("tf-test-vps")
 	name := "data.vultr_snapshot.my_snapshot"
 

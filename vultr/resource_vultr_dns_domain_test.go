@@ -100,16 +100,18 @@ func testAccCheckVultrDnsDomainDestroy(s *terraform.State) error {
 
 func testAccVultrDnsDomain_base(domain string) string {
 	time.Sleep(1 * time.Second)
-	return fmt.Sprintf(`resource "vultr_dns_domain" "my-site" {
-  domain = "%s",
-  server_ip = "10.0.0.0"
-}`, domain)
+	return fmt.Sprintf(`
+		resource "vultr_dns_domain" "my-site" {
+  			domain = "%s"
+  			server_ip = "10.0.0.0"
+		}`, domain)
 }
 
 func testAccVultrDnsDomain_update(domain string) string {
 	time.Sleep(1 * time.Second)
-	return fmt.Sprintf(`resource "vultr_dns_domain" "my-site" {
-  domain = "%s",
-  server_ip = "10.0.0.1"
-}`, domain)
+	return fmt.Sprintf(`
+		resource "vultr_dns_domain" "my-site" {
+  			domain = "%s"
+  			server_ip = "10.0.0.1"
+		}`, domain)
 }

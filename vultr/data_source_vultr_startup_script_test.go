@@ -10,7 +10,7 @@ import (
 
 func TestAccVultrStartupScript(t *testing.T) {
 
-	rName := fmt.Sprintf("%s-terraform-test", acctest.RandString(10))
+	rName := acctest.RandomWithPrefix("tf-startup-ds")
 	name := "data.vultr_startup_script.my_script"
 
 	resource.Test(t, resource.TestCase{

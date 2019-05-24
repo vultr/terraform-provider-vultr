@@ -14,7 +14,7 @@ import (
 func TestAccVultrBareMetalServer_basic(t *testing.T) {
 	t.Parallel()
 	rInt := acctest.RandInt()
-	rName := acctest.RandomWithPrefix("tf-test")
+	rName := acctest.RandomWithPrefix("tf-bms-rs")
 	rSSH, _, err := acctest.RandSSHKeyPair("foobar")
 	if err != nil {
 		t.Fatalf("Error generating test SSH key pair: %s", err)

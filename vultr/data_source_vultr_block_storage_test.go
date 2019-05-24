@@ -9,7 +9,7 @@ import (
 )
 
 func TestAccDataSourceVultrBlockStorage(t *testing.T) {
-	rLabel := acctest.RandomWithPrefix("tf-test")
+	rLabel := acctest.RandomWithPrefix("tf-bs-ds")
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,

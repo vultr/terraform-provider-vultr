@@ -13,7 +13,7 @@ import (
 
 func TestAccVultrServer_Basic(t *testing.T) {
 	t.Parallel()
-	rName := acctest.RandomWithPrefix("tf-test")
+	rName := acctest.RandomWithPrefix("tf-vps-rs")
 
 	name := "vultr_server.test"
 	resource.Test(t, resource.TestCase{
@@ -41,7 +41,7 @@ func TestAccVultrServer_Basic(t *testing.T) {
 }
 func TestAccVultrServer_Update(t *testing.T) {
 	t.Parallel()
-	rName := acctest.RandomWithPrefix("tf-test")
+	rName := acctest.RandomWithPrefix("tf-vps-rs-up")
 
 	name := "vultr_server.test"
 	resource.Test(t, resource.TestCase{
@@ -85,7 +85,7 @@ func TestAccVultrServer_Update(t *testing.T) {
 
 func TestAccVultrServer_UpdateFirewall(t *testing.T) {
 	t.Parallel()
-	rName := acctest.RandomWithPrefix("tf-test")
+	rName := acctest.RandomWithPrefix("tf-vps-rs-upfw")
 
 	name := "vultr_server.test"
 	resource.Test(t, resource.TestCase{
@@ -130,7 +130,7 @@ func TestAccVultrServer_UpdateFirewall(t *testing.T) {
 
 func TestAccVultrServer_UpdateNetworkIDs(t *testing.T) {
 	t.Parallel()
-	rName := acctest.RandomWithPrefix("tf-test")
+	rName := acctest.RandomWithPrefix("tf-vps-rs-upnid")
 
 	name := "vultr_server.test"
 	resource.Test(t, resource.TestCase{

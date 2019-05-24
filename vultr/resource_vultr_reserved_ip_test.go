@@ -12,7 +12,7 @@ import (
 
 func TestAccVultrReservedIP_IPv4(t *testing.T) {
 	rServerLabel := acctest.RandomWithPrefix("tf-vps-rip4")
-	rLabel := acctest.RandomWithPrefix("tf-test")
+	rLabel := acctest.RandomWithPrefix("tf-rip4-rs")
 	ipType := "v4"
 
 	resource.Test(t, resource.TestCase{
@@ -61,7 +61,7 @@ func TestAccVultrReservedIP_IPv4(t *testing.T) {
 
 func TestAccVultrReservedIP_IPv6(t *testing.T) {
 	rServerLabel := acctest.RandomWithPrefix("tf-vps-rip6")
-	rLabel := acctest.RandomWithPrefix("tf-test")
+	rLabel := acctest.RandomWithPrefix("tf-rip6-rs")
 	ipType := "v6"
 
 	resource.Test(t, resource.TestCase{
