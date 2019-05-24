@@ -75,9 +75,13 @@ func resourceVultrReservedIPCreate(d *schema.ResourceData, meta interface{}) err
 	var attachedTo string
 	a, attachedOK := d.GetOk("attached_id")
 	if attachedOK {
-		resourceVultrReservedIPRead(d, meta)
+		err := resourceVultrReservedIPRead(d, meta)
+
+		if err != nil {
+			return fmt.Errorf("Error occured while creating reservedIP : %v", err)
+		}
 		attachedTo = a.(string)
-		err := client.ReservedIP.Attach(context.Background(), d.Get("subnet").(string), attachedTo)
+		err = client.ReservedIP.Attach(context.Background(), d.Get("subnet").(string), attachedTo)
 		if err != nil {
 			return fmt.Errorf("Error attaching reserved IP: %v", err)
 		}

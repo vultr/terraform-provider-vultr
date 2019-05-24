@@ -80,7 +80,7 @@ func resourceVultrIsoRead(d *schema.ResourceData, meta interface{}) error {
 	isoList, err := client.ISO.GetList(context.Background())
 
 	if err != nil {
-		fmt.Errorf("Error getting ISO %s : %v", d.Id(), err)
+		return fmt.Errorf("Error getting ISO %s : %v", d.Id(), err)
 	}
 
 	exists := false

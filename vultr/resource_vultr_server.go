@@ -586,7 +586,7 @@ func resourceVultrServerDelete(d *schema.ResourceData, meta interface{}) error {
 
 	ids, err := client.Server.ListPrivateNetworks(context.Background(), d.Id())
 	if err != nil {
-		fmt.Errorf("Error grabbing private networks associated to server %s : %v", d.Id(), err)
+		return fmt.Errorf("Error grabbing private networks associated to server %s : %v", d.Id(), err)
 	}
 
 	for i := range ids {
