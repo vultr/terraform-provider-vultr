@@ -46,15 +46,6 @@ func testAccCheckVultrBareMetalPlan(name string) string {
   	}`, name)
 }
 
-func testAccCheckVultrBareMetalPlan_noResult(name string) string {
-	return fmt.Sprintf(`
-		data "vultr_bare_metal_plan" "my_bm_plan" {
-    	filter {
-    	name = "name"
-    	values = ["%s"]
-	}
-  	}`, name)
-}
 
 func testAccCheckVultrBareMetalPlan_tooManyResults(ram int) string {
 	return fmt.Sprintf(`
