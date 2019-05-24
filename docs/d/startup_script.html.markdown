@@ -12,7 +12,7 @@ Get information about a Vultr startup script. This data source provides the name
 
 ## Example Usage
 
-Get the information for an startup script:
+Get the information for an startup script by `name`:
 ```hcl
 data "vultr_startup_script" "my_startup_script" {
   filter {
