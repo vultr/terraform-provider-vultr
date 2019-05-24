@@ -12,7 +12,7 @@ Get information about a Vultr plan.
 
 ## Example Usage
 
-Get the information for a plan by name:
+Get the information for a plan by `name`:
 ```hcl
 data "vultr_plan" "my_plan" {
   filter {
