@@ -2,7 +2,6 @@ package vultr
 
 import (
 	"fmt"
-	"regexp"
 	"testing"
 
 	"github.com/hashicorp/terraform/helper/acctest"
@@ -19,8 +18,9 @@ func TestAccVultrSSHKey(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckVultrSSHKeyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckVultrSSHKeyConfig_basic(rName, rSSH),
@@ -29,10 +29,6 @@ func TestAccVultrSSHKey(t *testing.T) {
 					resource.TestCheckResourceAttrSet(name, "ssh_key"),
 					resource.TestCheckResourceAttrSet(name, "date_created"),
 				),
-			},
-			{
-				Config:      testAccCheckVultrSSHKey_noResult(rName),
-				ExpectError: regexp.MustCompile(fmt.Sprintf(".*%s: %s: no results were found", name, name)),
 			},
 		},
 	})
@@ -52,14 +48,4 @@ func testAccCheckVultrSSHKeyConfig_basic(name, ssh string) string {
 			ssh_key = "%s"
 		}
 		`, name, ssh)
-}
-
-func testAccCheckVultrSSHKey_noResult(name string) string {
-	return fmt.Sprintf(`
-		data "vultr_ssh_key" "my_key" {
-   			filter {
-   				name = "name"
-   				values = ["%s"]
-			}
- 		}`, name)
 }

@@ -43,10 +43,6 @@ func dataSourceVultrPlan() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"windows": {
-				Type:     schema.TypeBool,
-				Computed: true,
-			},
 			"plan_type": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -113,7 +109,6 @@ func dataSourceVultrPlanRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("bandwidth", planList[0].Bandwidth)
 	d.Set("bandwidth_gb", planList[0].BandwidthGB)
 	d.Set("price_per_month", planList[0].Price)
-	d.Set("windows", planList[0].Windows)
 	d.Set("plan_type", planList[0].PlanType)
 	d.Set("available_locations", planList[0].Regions)
 	d.Set("deprecated", planList[0].Deprecated)

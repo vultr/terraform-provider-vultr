@@ -25,26 +25,28 @@ func TestAccVultrIsoPublic(t *testing.T) {
 			},
 			{
 				Config:      testAccVultrIsoPublic_tooMany("Debian 9"),
-				ExpectError: regexp.MustCompile(`.* data.vultr_iso_public.cent: data.vultr_iso_public.cent: your search returned too many results. Please refine your search to be more specific`),
+				ExpectError: regexp.MustCompile(`errors during refresh: your search returned too many results. Please refine your search to be more specific`),
 			},
 		},
 	})
 }
 
 func testAccVultrIsoPublic_read(description string) string {
-	return fmt.Sprintf(`data "vultr_iso_public" "cent" {
-  filter {
-    name = "description"
-    values = ["%s"]
-  }
-}`, description)
+	return fmt.Sprintf(`
+		data "vultr_iso_public" "cent" {
+  			filter {
+    			name = "description"
+    			values = ["%s"]
+  			}
+		}`, description)
 }
 
 func testAccVultrIsoPublic_tooMany(name string) string {
-	return fmt.Sprintf(`data "vultr_iso_public" "cent" {
-  filter {
-    name = "name"
-    values = ["%s"]
-  }
-}`, name)
+	return fmt.Sprintf(`
+		data "vultr_iso_public" "cent" {
+  			filter {
+    			name = "name"
+    			values = ["%s"]
+  			}
+		}`, name)
 }
