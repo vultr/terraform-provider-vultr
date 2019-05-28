@@ -3,12 +3,12 @@ layout: "vultr"
 page_title: "Vultr: vultr_firewall_group"
 sidebar_current: "docs-vultr-resource-firewall-group"
 description: |-
-  Provides a Vultr Firewall Group resource. This can be used to create, read, modify, and delete Firewall Group Servers.
+  Provides a Vultr Firewall Group resource. This can be used to create, read, modify, and delete Firewall Group.
 ---
 
 # vultr_firewall_group
 
-Provides a Vultr Firewall Group resource. This can be used to create, read, modify, and delete Firewall Group Servers.
+Provides a Vultr Firewall Group resource. This can be used to create, read, modify, and delete Firewall Group.
 
 ## Example Usage
 
