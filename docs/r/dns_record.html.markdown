@@ -12,7 +12,7 @@ Provides a Vultr DNS Record resource. This can be used to create, read, modify, 
 
 ## Example Usage
 
-Create a new DNS Records
+Create a new DNS Record
 ```hcl
 
 resource "vultr_dns_domain" "my_domain" {
