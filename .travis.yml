@@ -21,5 +21,7 @@ matrix:
   fast_finish: true
   allow_failures:
     - go: tip
+
+
 env:
   - GOFLAGS=-mod=vendor GO111MODULE=on
