@@ -30,7 +30,7 @@ resource "vultr_server" "my_server" {
 	label = "my-server-label"
 	tag = "my-server-tag"
 	hostname = "my-server-hostname"
-	user_data = "SGVsbG8gVGVycmFmb3JtIQ=="
+	user_data = "{'foo': true}"
 	enable_ipv6 = true
 	auto_backup = true
 	ddos_protection = true
@@ -52,7 +52,7 @@ The following arguments are supported:
 * `firewall_group_id` - (Optional) The ID of the firewall group to assign to the server.
 * `network_ids` - (Optional) A list of private network IDs to be attached to the server.
 * `ssh_key_ids` - (Optional) A list of SSH key IDs to apply to the server on install (only valid for Linux/FreeBSD).
-* `user_data` - (Optional) Base64 encoded generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
+* `user_data` - (Optional) Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
 * `auto_backup` - (Optional) Whether automatic backups will be enabled for this server (these have an extra charge associated with them).
 * `enable_ipv6` - (Optional) Whether the server has IPv6 networking activated.
 * `enable_private_network` - (Optional) Whether the server has private networking support enabled.
