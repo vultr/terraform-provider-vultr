@@ -28,9 +28,9 @@ func resourceVultrUsers() *schema.Resource {
 				Required: true,
 			},
 			"password": {
-				Type:     schema.TypeString,
+				Type:      schema.TypeString,
 				Sensitive: true,
-				Required: true,
+				Required:  true,
 			},
 			"api_enabled": {
 				Type:     schema.TypeBool,
