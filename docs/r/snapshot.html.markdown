@@ -22,7 +22,7 @@ resource "vultr_server" "my_server" {
 }
 resource "vultr_snapshot" "my_snapshot" {
     vps_id       = "${vultr_server.snap.id}"
-	description  = "my servers snapshot"
+    description  = "my servers snapshot"
 }
 ```
 
