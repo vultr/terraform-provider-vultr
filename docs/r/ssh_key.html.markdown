@@ -35,3 +35,11 @@ The following attributes are exported:
 * `name` - The name/label of the SSH key.
 * `ssh_key` - The public SSH key.
 * `date_created` - The date the SSH key was added to your Vultr account.
+
+## Import
+
+SSH keys can be imported using the SSH key `SSHKEYID`, e.g.
+
+```
+terraform import vultr_ssh_key.my_key 541b4960f23bd
+```
