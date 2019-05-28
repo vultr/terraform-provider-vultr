@@ -109,7 +109,7 @@ func resourceVultrServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"server_status": {
+			"server_state": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -378,7 +378,7 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("netmask_v4", vps.NetmaskV4)
 	d.Set("gateway_v4", vps.GatewayV4)
 	d.Set("power_status", vps.PowerStatus)
-	d.Set("server_status", vps.ServerState)
+	d.Set("server_state", vps.ServerState)
 	d.Set("internal_ip", vps.InternalIP)
 	d.Set("kvm_url", vps.KVMUrl)
 	d.Set("network_macs", networkMacs)

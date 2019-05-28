@@ -42,6 +42,11 @@ func dataSourceVultrServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"default_password": {
+				Type:      schema.TypeString,
+				Sensitive: true,
+				Computed:  true,
+			},
 			"date_created": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -70,11 +75,15 @@ func dataSourceVultrServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"power_status": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"server_status": {
+			"server_state": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -170,6 +179,7 @@ func dataSourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("vps_cpu_count", serverList[0].VPSCpus)
 	d.Set("location", serverList[0].Location)
 	d.Set("region_id", serverList[0].RegionID)
+	d.Set("default_password", serverList[0].DefaultPassword)
 	d.Set("date_created", serverList[0].Created)
 	d.Set("pending_charges", serverList[0].PendingCharges)
 	d.Set("cost_per_month", serverList[0].Cost)
@@ -177,8 +187,9 @@ func dataSourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("allowed_bandwidth", serverList[0].AllowedBandwidth)
 	d.Set("netmask_v4", serverList[0].NetmaskV4)
 	d.Set("gateway_v4", serverList[0].GatewayV4)
+	d.Set("status", serverList[0].Status)
 	d.Set("power_status", serverList[0].PowerStatus)
-	d.Set("server_status", serverList[0].ServerState)
+	d.Set("server_state", serverList[0].ServerState)
 	d.Set("plan_id", serverList[0].PlanID)
 	d.Set("label", serverList[0].Label)
 	d.Set("internal_ip", serverList[0].InternalIP)
