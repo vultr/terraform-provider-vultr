@@ -43,8 +43,9 @@ func dataSourceVultrBareMetalServer() *schema.Resource {
 				Computed: true,
 			},
 			"default_password": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:      schema.TypeString,
+				Sensitive: true,
+				Computed:  true,
 			},
 			"date_created": {
 				Type:     schema.TypeString,
