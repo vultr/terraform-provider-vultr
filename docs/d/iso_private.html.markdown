@@ -40,6 +40,6 @@ The following attributes are exported:
 * `filename` - The ISO file's filename.
 * `status` - The status of the ISO file.
 * `size` - The size of the ISO file in bytes.
-* `md5sum` - The md5sum of the ISO file.
-* `sha512sum` - The sha512sum of the ISO file.
+* `md5sum` - The md5 hash of the ISO file.
+* `sha512sum` - The sha512 hash of the ISO file.
 * `date_created` - The date the ISO file was added to your Vultr account.
