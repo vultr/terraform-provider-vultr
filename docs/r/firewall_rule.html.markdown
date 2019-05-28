@@ -43,10 +43,10 @@ The following arguments are supported:
 The following attributes are exported:
 
 * `id` - The given ID for a firewall rule.
-* `firewall_group_id` - The firewall group that the firewall rule will belong to.
+* `firewall_group_id` - The firewall group that the firewall rule belongs to.
 * `protocol` - The type of protocol for this firewall rule. Possible values (icmp, tcp, udp, gre)
-* `network` - IP address that you want to define for this firewall rule.
-* `from_port` - Port that you want to define for this rule.
+* `network` - IP address that is defined for this rule.
+* `from_port` - Port that is defined for this rule.
 * `to_port` - This can be used with the from port if you want to define multiple ports. Example from port 8085 to port 8090
 * `notes` - A simple note for a given firewall rule
 * `ip_type` - The type of ip this rule is - may be either v4 or v6.
