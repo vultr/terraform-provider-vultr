@@ -33,7 +33,7 @@ The following attributes are exported:
 * `description` - The description for the given snapshot.
 * `url` - The url from where the raw image was used to create the snapshot.
 * `date_created` - The date the snapshot was created.
-* `Size` - The size of the snapshot in Bytes.
+* `size` - The size of the snapshot in Bytes.
 * `status` - The status for the given snapshot.
 * `os_id` - The os id which the snapshot is associated with.
 * `app_id` - The app id which the snapshot is associated with.
