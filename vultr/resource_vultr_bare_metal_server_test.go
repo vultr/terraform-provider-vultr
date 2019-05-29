@@ -46,16 +46,16 @@ func TestAccVultrBareMetalServer_basic(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "tag"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "os_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "app_id"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "startup_script_id"),
+					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "script_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "enable_ipv6"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "ssh_key_ids.#"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "userdata"),
+					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "user_data"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "notify_activate"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "hostname"),
 				),
 			},
 			{
-				// change the server from OS to application, update tag, label, and userdata
+				// change the server from OS to application, update tag, label, and user_data
 				Config: testAccVultrBareMetalServerConfigUpdate(rInt, rSSH, rName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrBareMetalServerExists("vultr_bare_metal_server.foo"),
@@ -76,10 +76,10 @@ func TestAccVultrBareMetalServer_basic(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "tag"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "os_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "app_id"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "startup_script_id"),
+					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "script_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "enable_ipv6"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "ssh_key_ids.#"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "userdata"),
+					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "user_data"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "notify_activate"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "hostname"),
 				),
@@ -143,8 +143,8 @@ func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string
 			enable_ipv6       = true
 			notify_activate   = false
 			ssh_key_ids       = ["${vultr_ssh_key.foo.id}"]
-			startup_script_id = "${vultr_startup_script.foo.id}"
-			userdata          = "V2h5IHdvdWxkIHlvdSBkZWNvZGUgdGhpcz8gR0VUIEJBQ0sgVE8gV09SSyE="
+			script_id = "${vultr_startup_script.foo.id}"
+			user_data          = "V2h5IHdvdWxkIHlvdSBkZWNvZGUgdGhpcz8gR0VUIEJBQ0sgVE8gV09SSyE="
 			tag               = "%s"
 			label             = "%s"
 			hostname 		  = "%s"
@@ -161,8 +161,8 @@ func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) strin
 			enable_ipv6       = true
 			notify_activate   = false
 			ssh_key_ids       = ["${vultr_ssh_key.foo.id}"]
-			startup_script_id = "${vultr_startup_script.foo.id}"
-			userdata          = "V2h5Li4uPw=="
+			script_id = "${vultr_startup_script.foo.id}"
+			user_data          = "V2h5Li4uPw=="
 			tag               = "%s-update"
 			label             = "%s-update"
 			hostname 		  = "%s"
