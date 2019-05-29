@@ -55,7 +55,7 @@ func TestAccVultrBareMetalServer_basic(t *testing.T) {
 				),
 			},
 			{
-				// change the server from OS to application, update tag, label, and user_data
+				// update tag, label, and user_data
 				Config: testAccVultrBareMetalServerConfigUpdate(rInt, rSSH, rName),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrBareMetalServerExists("vultr_bare_metal_server.foo"),
@@ -143,8 +143,8 @@ func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string
 			enable_ipv6       = true
 			notify_activate   = false
 			ssh_key_ids       = ["${vultr_ssh_key.foo.id}"]
-			script_id = "${vultr_startup_script.foo.id}"
-			user_data          = "V2h5IHdvdWxkIHlvdSBkZWNvZGUgdGhpcz8gR0VUIEJBQ0sgVE8gV09SSyE="
+			script_id 		  = "${vultr_startup_script.foo.id}"
+			user_data         = "foo"
 			tag               = "%s"
 			label             = "%s"
 			hostname 		  = "%s"
@@ -156,13 +156,13 @@ func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) strin
 	return testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + fmt.Sprintf(`
 		resource "vultr_bare_metal_server" "foo" {
 			region_id 		  = "40"
-			app_id 			  = "2"
+			os_id 			  = "270"
 			plan_id           = "100"
 			enable_ipv6       = true
 			notify_activate   = false
 			ssh_key_ids       = ["${vultr_ssh_key.foo.id}"]
-			script_id = "${vultr_startup_script.foo.id}"
-			user_data          = "V2h5Li4uPw=="
+			script_id 		  = "${vultr_startup_script.foo.id}"
+			user_data         = "bar"
 			tag               = "%s-update"
 			label             = "%s-update"
 			hostname 		  = "%s"
