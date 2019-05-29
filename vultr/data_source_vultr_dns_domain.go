@@ -33,7 +33,7 @@ func dataSourceVultrDnsDomainRead(d *schema.ResourceData, meta interface{}) erro
 
 	domain := d.Get("domain").(string)
 
-	dnsDomains, err := client.DNSDomain.GetList(context.Background())
+	dnsDomains, err := client.DNSDomain.List(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("error getting dns domains: %v", err)

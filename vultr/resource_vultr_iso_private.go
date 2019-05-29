@@ -77,7 +77,7 @@ func resourceVultrIsoCreate(d *schema.ResourceData, meta interface{}) error {
 func resourceVultrIsoRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	isoList, err := client.ISO.GetList(context.Background())
+	isoList, err := client.ISO.List(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("Error getting ISO %s : %v", d.Id(), err)
@@ -112,7 +112,7 @@ func resourceVultrIsoRead(d *schema.ResourceData, meta interface{}) error {
 func resourceVultrIsoDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	log.Printf("[INFO] Destroying iso : %s", d.Id())
+	log.Printf("[INFO] Deleting iso : %s", d.Id())
 
 	id, err := strconv.Atoi(d.Id())
 
@@ -153,7 +153,7 @@ func newIsoStateRefresh(
 	return func() (interface{}, string, error) {
 
 		log.Printf("[INFO] Creating Private ISO")
-		isoList, err := client.ISO.GetList(context.Background())
+		isoList, err := client.ISO.List(context.Background())
 
 		if err != nil {
 			return nil, "", fmt.Errorf("Error retrieving ISO %s : %s", d.Id(), err)

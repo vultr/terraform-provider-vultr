@@ -54,7 +54,7 @@ func testAccCheckVultrSSHKeyDestroy(s *terraform.State) error {
 		keyID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		keys, err := client.SSHKey.GetList(context.Background())
+		keys, err := client.SSHKey.List(context.Background())
 		if err != nil {
 			return fmt.Errorf("Error getting SSH keys: %s", err)
 		}
@@ -88,7 +88,7 @@ func testAccCheckVultrSSHKeyExists(n string) resource.TestCheckFunc {
 		keyID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		keys, err := client.SSHKey.GetList(context.Background())
+		keys, err := client.SSHKey.List(context.Background())
 		if err != nil {
 			return fmt.Errorf("Error getting SSH keys: %s", err)
 		}

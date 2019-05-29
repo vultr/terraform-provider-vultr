@@ -43,7 +43,7 @@ func dataSourceVultrNetworkRead(d *schema.ResourceData, meta interface{}) error 
 		return fmt.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	networks, err := client.Network.GetList(context.Background())
+	networks, err := client.Network.List(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("Error getting networks: %v", err)

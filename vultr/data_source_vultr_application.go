@@ -39,7 +39,7 @@ func dataSourceVultrApplicationRead(d *schema.ResourceData, meta interface{}) er
 		return fmt.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	apps, err := client.Application.GetList(context.Background())
+	apps, err := client.Application.List(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("Error getting applications: %v", err)

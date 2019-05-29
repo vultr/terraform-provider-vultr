@@ -78,7 +78,7 @@ func testAccCheckVultrDnsDomainDestroy(s *terraform.State) error {
 			continue
 		}
 
-		domains, err := client.DNSDomain.GetList(context.Background())
+		domains, err := client.DNSDomain.List(context.Background())
 		if err != nil {
 			return fmt.Errorf("Error getting list of domains : %s", err)
 		}

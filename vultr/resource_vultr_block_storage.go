@@ -79,7 +79,7 @@ func resourceVultrBlockStorageCreate(d *schema.ResourceData, meta interface{}) e
 func resourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	bses, err := client.BlockStorage.GetList(context.Background())
+	bses, err := client.BlockStorage.List(context.Background())
 	if err != nil {
 		return fmt.Errorf("Error getting block storage: %v", err)
 	}

@@ -55,7 +55,7 @@ func dataSourceVultrRegionRead(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	regions, err := client.Region.GetList(context.Background())
+	regions, err := client.Region.List(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("Error getting regions: %v", err)

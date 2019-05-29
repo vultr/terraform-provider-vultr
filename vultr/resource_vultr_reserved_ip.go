@@ -93,7 +93,7 @@ func resourceVultrReservedIPCreate(d *schema.ResourceData, meta interface{}) err
 func resourceVultrReservedIPRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	rips, err := client.ReservedIP.GetList(context.Background())
+	rips, err := client.ReservedIP.List(context.Background())
 	if err != nil {
 		return fmt.Errorf("Error getting Reserved IPs: %v", err)
 	}
@@ -151,8 +151,8 @@ func resourceVultrReservedIPUpdate(d *schema.ResourceData, meta interface{}) err
 func resourceVultrReservedIPDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	log.Printf("[INFO] Destroying Reserved IP: %s", d.Id())
-	if err := client.ReservedIP.Destroy(context.Background(), d.Get("subnet").(string)); err != nil {
+	log.Printf("[INFO] Deleting Reserved IP: %s", d.Id())
+	if err := client.ReservedIP.Delete(context.Background(), d.Get("subnet").(string)); err != nil {
 		return fmt.Errorf("Error destroying Reserved IP (%s): %v", d.Id(), err)
 	}
 

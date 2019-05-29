@@ -86,14 +86,6 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeMap},
 			},
-			"label": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"tag": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"os_id": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -106,7 +98,15 @@ func resourceVultrBareMetalServer() *schema.Resource {
 			},
 
 			// options
-			"startup_script_id": {
+			"label": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"tag": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"script_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
@@ -127,7 +127,7 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				ForceNew: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
-			"userdata": {
+			"user_data": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -174,11 +174,11 @@ func resourceVultrBareMetalServerCreate(d *schema.ResourceData, meta interface{}
 	}
 
 	options := &govultr.BareMetalServerOptions{
-		StartupScriptID: d.Get("startup_script_id").(string),
+		StartupScriptID: d.Get("script_id").(string),
 		EnableIPV6:      ipv6,
 		Label:           d.Get("label").(string),
 		SSHKeyIDs:       keyIDs,
-		UserData:        d.Get("userdata").(string),
+		UserData:        d.Get("user_data").(string),
 		NotifyActivate:  notify,
 		Hostname:        d.Get("hostname").(string),
 		Tag:             d.Get("tag").(string),
@@ -311,14 +311,14 @@ func resourceVultrBareMetalServerUpdate(d *schema.ResourceData, meta interface{}
 		d.SetPartial("tag")
 	}
 
-	if d.HasChange("userdata") {
-		log.Printf(`[INFO] Updating bare metal server (%s) userdata`, d.Id())
-		_, newVal := d.GetChange("userdata")
+	if d.HasChange("user_data") {
+		log.Printf(`[INFO] Updating bare metal server (%s) user_data`, d.Id())
+		_, newVal := d.GetChange("user_data")
 		err := client.BareMetalServer.SetUserData(context.Background(), d.Id(), newVal.(string))
 		if err != nil {
-			return fmt.Errorf("Error updating bare metal server (%s) userdata: %v", d.Id(), err)
+			return fmt.Errorf("Error updating bare metal server (%s) user_data: %v", d.Id(), err)
 		}
-		d.SetPartial("userdata")
+		d.SetPartial("user_data")
 	}
 
 	d.Partial(false)
@@ -330,7 +330,7 @@ func resourceVultrBareMetalServerDelete(d *schema.ResourceData, meta interface{}
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting bare metal server: %s", d.Id())
-	err := client.BareMetalServer.Destroy(context.Background(), d.Id())
+	err := client.BareMetalServer.Delete(context.Background(), d.Id())
 	if err != nil {
 		return fmt.Errorf("Error deleting bare metal server (%s): %v", d.Id(), err)
 	}

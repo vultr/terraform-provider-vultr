@@ -61,7 +61,7 @@ func testAccCheckVultrNetworkDestroy(s *terraform.State) error {
 		networkID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		nets, err := client.Network.GetList(context.Background())
+		nets, err := client.Network.List(context.Background())
 		if err != nil {
 			return fmt.Errorf("Error getting SSH nets: %s", err)
 		}
@@ -95,7 +95,7 @@ func testAccCheckVultrNetworkExists(n string) resource.TestCheckFunc {
 		networkID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		nets, err := client.Network.GetList(context.Background())
+		nets, err := client.Network.List(context.Background())
 		if err != nil {
 			return fmt.Errorf("Error getting Networks: %s", err)
 		}

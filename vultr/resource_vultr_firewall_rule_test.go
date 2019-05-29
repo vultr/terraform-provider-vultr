@@ -80,7 +80,7 @@ func testAccCheckVultrFirewallRuleDestroy(s *terraform.State) error {
 			return nil
 		}
 
-		firewallRules, err := client.FirewallRule.GetList(context.Background(), groupId, ipType)
+		firewallRules, err := client.FirewallRule.List(context.Background(), groupId, ipType)
 		if err != nil {
 			return fmt.Errorf("Error getting list of firewall rules: %s", err)
 		}

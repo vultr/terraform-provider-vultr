@@ -47,7 +47,7 @@ func testAccCheckVultrDomainRecordExists(s *terraform.State) error {
 
 		id := rs.Primary.ID
 		domain := rs.Primary.Attributes["domain"]
-		records, err := client.DNSRecord.GetList(context.Background(), domain)
+		records, err := client.DNSRecord.List(context.Background(), domain)
 
 		if err != nil {
 			return fmt.Errorf("Error getting dns record %s for domain %s : %v", id, domain, err)

@@ -185,7 +185,7 @@ func resourceVultrServer() *schema.Resource {
 				Computed: true,
 				Optional: true,
 			},
-			"application_id": {
+			"app_id": {
 				Type:     schema.TypeInt,
 				Computed: true,
 				Optional: true,
@@ -240,11 +240,11 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 
 	// Four unique options to image your server
 	osID, osOK := d.GetOk("os_id")
-	appID, appOK := d.GetOk("application_id")
+	appID, appOK := d.GetOk("app_id")
 	isoID, isoOK := d.GetOk("iso_id")
 	snapID, snapOK := d.GetOk("snapshot_id")
 
-	osOptions := map[string]bool{"os_id": osOK, "application_id": appOK, "iso_id": isoOK, "snapshot_id": snapOK}
+	osOptions := map[string]bool{"os_id": osOK, "app_id": appOK, "iso_id": isoOK, "snapshot_id": snapOK}
 	osOption, err := optionCheck(osOptions)
 
 	if err != nil {
@@ -276,7 +276,7 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 		}
 		os = osID.(int)
 
-	case "application_id":
+	case "app_id":
 		options.AppID = strconv.Itoa(appID.(int))
 		os = osAppID
 
@@ -422,7 +422,7 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	if err != nil {
 		return fmt.Errorf("Error while getting appID for server : %v", err)
 	}
-	d.Set("application_id", appID)
+	d.Set("app_id", appID)
 
 	return nil
 }
@@ -447,12 +447,12 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		d.SetPartial("auto_backup")
 	}
 
-	if d.HasChange("application_id") {
-		log.Printf("[INFO] Updating application_id")
-		_, newer := d.GetChange("application_id")
+	if d.HasChange("app_id") {
+		log.Printf("[INFO] Updating app_id")
+		_, newer := d.GetChange("app_id")
 		err := client.Server.ChangeApp(context.Background(), d.Id(), strconv.Itoa(newer.(int)))
 		if err != nil {
-			return fmt.Errorf("Error occured while updating application_id for server %s : %v", d.Id(), err)
+			return fmt.Errorf("Error occured while updating app_id for server %s : %v", d.Id(), err)
 		}
 
 		_, err = waitForServerAvailable(d, "active", []string{"pending", "installing"}, "status", meta)
@@ -465,7 +465,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 			return fmt.Errorf("Error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 		}
 
-		d.SetPartial("application_id")
+		d.SetPartial("app_id")
 	}
 
 	if d.HasChange("os_id") {
@@ -582,7 +582,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 func resourceVultrServerDelete(d *schema.ResourceData, meta interface{}) error {
 
 	client := meta.(*Client).govultrClient()
-	log.Printf("[INFO] Destroying instance (%s)", d.Id())
+	log.Printf("[INFO] Deleting instance (%s)", d.Id())
 
 	ids, err := client.Server.ListPrivateNetworks(context.Background(), d.Id())
 	if err != nil {
@@ -597,7 +597,7 @@ func resourceVultrServerDelete(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 
-	err = client.Server.Destroy(context.Background(), d.Id())
+	err = client.Server.Delete(context.Background(), d.Id())
 
 	if err != nil {
 		return fmt.Errorf("Error destroying instance %s : %v", d.Id(), err)
@@ -620,7 +620,7 @@ func optionCheck(options map[string]bool) (string, error) {
 	}
 
 	if len(result) == 0 {
-		return "", fmt.Errorf("Please select at least one of the following os_id, application_id, iso_id or snapshot_id")
+		return "", fmt.Errorf("Please select at least one of the following os_id, app_id, iso_id or snapshot_id")
 	}
 
 	return result[0], nil

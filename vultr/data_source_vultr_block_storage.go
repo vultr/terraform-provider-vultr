@@ -55,7 +55,7 @@ func dataSourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) e
 		return fmt.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	block, err := client.BlockStorage.GetList(context.Background())
+	block, err := client.BlockStorage.List(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("error getting applications: %v", err)

@@ -108,7 +108,7 @@ func resourceVultrFirewallGroupUpdate(d *schema.ResourceData, meta interface{}) 
 func resourceVultrFirewallGroupDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	log.Printf("[INFO] Destroying firewall group: %s", d.Id())
+	log.Printf("[INFO] Deleting firewall group: %s", d.Id())
 
 	err := client.FirewallGroup.Delete(context.Background(), d.Id())
 

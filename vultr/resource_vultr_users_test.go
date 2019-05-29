@@ -93,7 +93,7 @@ func testAccCheckVultrUsersDestroy(s *terraform.State) error {
 			continue
 		}
 
-		users, err := client.User.GetList(context.Background())
+		users, err := client.User.List(context.Background())
 		if err != nil {
 			return fmt.Errorf("Error getting list of users : %s", err)
 		}
