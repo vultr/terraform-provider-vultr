@@ -46,7 +46,7 @@ func TestAccVultrBareMetalServer_basic(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "tag"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "os_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "app_id"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "startup_script_id"),
+					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "script_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "enable_ipv6"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "ssh_key_ids.#"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "userdata"),
@@ -76,7 +76,7 @@ func TestAccVultrBareMetalServer_basic(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "tag"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "os_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "app_id"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "startup_script_id"),
+					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "script_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "enable_ipv6"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "ssh_key_ids.#"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "userdata"),
@@ -143,7 +143,7 @@ func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string
 			enable_ipv6       = true
 			notify_activate   = false
 			ssh_key_ids       = ["${vultr_ssh_key.foo.id}"]
-			startup_script_id = "${vultr_startup_script.foo.id}"
+			script_id = "${vultr_startup_script.foo.id}"
 			userdata          = "V2h5IHdvdWxkIHlvdSBkZWNvZGUgdGhpcz8gR0VUIEJBQ0sgVE8gV09SSyE="
 			tag               = "%s"
 			label             = "%s"
@@ -161,7 +161,7 @@ func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) strin
 			enable_ipv6       = true
 			notify_activate   = false
 			ssh_key_ids       = ["${vultr_ssh_key.foo.id}"]
-			startup_script_id = "${vultr_startup_script.foo.id}"
+			script_id = "${vultr_startup_script.foo.id}"
 			userdata          = "V2h5Li4uPw=="
 			tag               = "%s-update"
 			label             = "%s-update"

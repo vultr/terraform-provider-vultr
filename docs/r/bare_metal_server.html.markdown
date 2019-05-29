@@ -45,7 +45,7 @@ The following arguments are supported:
 * `os_id` - (Optional) The ID of the operating system to be installed on the server.
 * `app_id` - (Optional) The ID of the Vultr application to be installed on the server.
 * `snapshot_id` - (Optional) The ID of the Vultr snapshot that the server will restore for the initial installation. 
-* `startup_script_id` - (Optional) The ID of the startup script you want added to the server.
+* `script_id` - (Optional) The ID of the startup script you want added to the server.
 * `ssh_key_ids` - (Optional) A list of SSH key IDs to apply to the server on install (only valid for Linux/FreeBSD).
 * `userdata` - (Optional) Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
 * `enable_ipv6` - (Optional) Whether the server has IPv6 networking activated.
@@ -76,7 +76,7 @@ The following attributes are exported:
 * `os_id` - The ID of the operating system installed on the server.
 * `app_id` - The ID of the Vultr application installed on the server.
 * `snapshot_id` - The ID of the Vultr snapshot that the server was restored from.
-* `startup_script_id` - The ID of the startup script that was added to the server.
+* `script_id` - The ID of the startup script that was added to the server.
 * `ssh_key_ids` - A list of SSH key IDs applied to the server on install.
 * `userdata` - Base64 encoded generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
 * `enable_ipv6` - Whether the server has IPv6 networking activated.

@@ -106,7 +106,7 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"startup_script_id": {
+			"script_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
@@ -174,7 +174,7 @@ func resourceVultrBareMetalServerCreate(d *schema.ResourceData, meta interface{}
 	}
 
 	options := &govultr.BareMetalServerOptions{
-		StartupScriptID: d.Get("startup_script_id").(string),
+		StartupScriptID: d.Get("script_id").(string),
 		EnableIPV6:      ipv6,
 		Label:           d.Get("label").(string),
 		SSHKeyIDs:       keyIDs,
