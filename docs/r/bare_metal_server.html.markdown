@@ -87,7 +87,7 @@ The following attributes are exported:
 
 ## Import
 
-Servers can be imported using the server `SUBID`, e.g.
+Bare Metal Servers can be imported using the server `SUBID`, e.g.
 
 ```
 terraform import vultr_bare_metal_server.my_server 1312965
