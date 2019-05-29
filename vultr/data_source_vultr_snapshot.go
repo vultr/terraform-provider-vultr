@@ -52,7 +52,7 @@ func dataSourceVultrSnapshotRead(d *schema.ResourceData, meta interface{}) error
 		return fmt.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	snapshots, err := client.Snapshot.GetList(context.Background())
+	snapshots, err := client.Snapshot.List(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("error getting snapshots: %v", err)

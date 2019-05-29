@@ -71,7 +71,7 @@ func dataSourceVultrPlanRead(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	plans, err := client.Plan.GetList(context.Background(), "")
+	plans, err := client.Plan.List(context.Background(), "")
 
 	if err != nil {
 		return fmt.Errorf("Error getting plans: %v", err)

@@ -51,7 +51,7 @@ func dataSourceVultrReservedIPRead(d *schema.ResourceData, meta interface{}) err
 		return fmt.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	ips, err := client.ReservedIP.GetList(context.Background())
+	ips, err := client.ReservedIP.List(context.Background())
 	if err != nil {
 		return fmt.Errorf("Error getting applications: %v", err)
 	}

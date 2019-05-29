@@ -101,7 +101,7 @@ func dataSourceVultrBareMetalServerRead(d *schema.ResourceData, meta interface{}
 		return fmt.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	servers, err := client.BareMetalServer.GetList(context.Background())
+	servers, err := client.BareMetalServer.List(context.Background())
 	if err != nil {
 		return fmt.Errorf("Error getting bare metal servers: %v", err)
 	}

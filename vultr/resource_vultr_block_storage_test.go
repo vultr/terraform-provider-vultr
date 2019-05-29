@@ -95,7 +95,7 @@ func testAccCheckVultrBlockStorageDestroy(s *terraform.State) error {
 		bsID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		bses, err := client.BlockStorage.GetList(context.Background())
+		bses, err := client.BlockStorage.List(context.Background())
 		if err != nil {
 			return fmt.Errorf("Error getting block storages: %s", err)
 		}
@@ -129,7 +129,7 @@ func testAccCheckVultrBlockStorageExists(n string) resource.TestCheckFunc {
 		bsID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		bses, err := client.BlockStorage.GetList(context.Background())
+		bses, err := client.BlockStorage.List(context.Background())
 		if err != nil {
 			return fmt.Errorf("Error getting block storages: %s", err)
 		}

@@ -52,7 +52,7 @@ func testAccCheckVultrIsoScriptDestroy(s *terraform.State) error {
 			continue
 		}
 
-		isoList, err := client.ISO.GetList(context.Background())
+		isoList, err := client.ISO.List(context.Background())
 		if err != nil {
 			return fmt.Errorf("Error getting list of ISO : %s", err)
 		}

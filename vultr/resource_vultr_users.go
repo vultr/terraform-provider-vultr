@@ -91,7 +91,7 @@ func resourceVultrUsersCreate(d *schema.ResourceData, meta interface{}) error {
 func resourceVultrUsersRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	users, err := client.User.GetList(context.Background())
+	users, err := client.User.List(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("error getting user: %v", err)
@@ -163,7 +163,7 @@ func resourceVultrUsersUpdate(d *schema.ResourceData, meta interface{}) error {
 func resourceVultrUsersDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	log.Printf("[INFO] Destroying User %s", d.Id())
+	log.Printf("[INFO] Deleting User %s", d.Id())
 
 	err := client.User.Delete(context.Background(), d.Id())
 	if err != nil {

@@ -77,7 +77,7 @@ func resourceVultrDnsRecordCreate(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	// Grab Unique RecordID since create does not return it
-	records, err := client.DNSRecord.GetList(context.Background(), domain)
+	records, err := client.DNSRecord.List(context.Background(), domain)
 
 	if err != nil {
 		return fmt.Errorf("Error getting DNS records : %v", err)
@@ -95,7 +95,7 @@ func resourceVultrDnsRecordCreate(d *schema.ResourceData, meta interface{}) erro
 func resourceVultrDnsRecordRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	records, err := client.DNSRecord.GetList(context.Background(), d.Get("domain").(string))
+	records, err := client.DNSRecord.List(context.Background(), d.Get("domain").(string))
 
 	if err != nil {
 		return fmt.Errorf("Error getting DNS records for DNS Domain %s: %v", d.Get("domain").(string), err)
@@ -152,7 +152,7 @@ func resourceVultrDnsRecordUpdate(d *schema.ResourceData, meta interface{}) erro
 func resourceVultrDnsRecordDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	log.Printf("[INFO] Destroying DNS record: %s", d.Id())
+	log.Printf("[INFO] Deleting DNS record: %s", d.Id())
 	err := client.DNSRecord.Delete(context.Background(), d.Get("domain").(string), d.Id())
 
 	if err != nil {

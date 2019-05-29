@@ -52,7 +52,7 @@ func dataSourceVultrFirewallGroupRead(d *schema.ResourceData, meta interface{}) 
 		return fmt.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	firewallGroup, err := client.FirewallGroup.GetList(context.Background())
+	firewallGroup, err := client.FirewallGroup.List(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("error getting firewall group: %v", err)

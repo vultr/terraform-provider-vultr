@@ -582,7 +582,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 func resourceVultrServerDelete(d *schema.ResourceData, meta interface{}) error {
 
 	client := meta.(*Client).govultrClient()
-	log.Printf("[INFO] Destroying instance (%s)", d.Id())
+	log.Printf("[INFO] Deleting instance (%s)", d.Id())
 
 	ids, err := client.Server.ListPrivateNetworks(context.Background(), d.Id())
 	if err != nil {
@@ -597,7 +597,7 @@ func resourceVultrServerDelete(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 
-	err = client.Server.Destroy(context.Background(), d.Id())
+	err = client.Server.Delete(context.Background(), d.Id())
 
 	if err != nil {
 		return fmt.Errorf("Error destroying instance %s : %v", d.Id(), err)

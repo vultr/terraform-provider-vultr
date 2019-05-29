@@ -43,7 +43,7 @@ func dataSourceVultrBackupRead(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	backups, err := client.Backup.GetList(context.Background())
+	backups, err := client.Backup.List(context.Background())
 	if err != nil {
 		return fmt.Errorf("Error getting applications: %v", err)
 	}

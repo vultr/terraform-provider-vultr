@@ -63,7 +63,7 @@ func resourceVultrDnsDomainCreate(d *schema.ResourceData, meta interface{}) erro
 func resourceVultrDnsDomainRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	domains, err := client.DNSDomain.GetList(context.Background())
+	domains, err := client.DNSDomain.List(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("Error getting domains ")
@@ -83,7 +83,7 @@ func resourceVultrDnsDomainRead(d *schema.ResourceData, meta interface{}) error 
 		return nil
 	}
 
-	records, err := client.DNSRecord.GetList(context.Background(), d.Id())
+	records, err := client.DNSRecord.List(context.Background(), d.Id())
 
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid domain") {
@@ -117,7 +117,7 @@ func resourceVultrDnsDomainRead(d *schema.ResourceData, meta interface{}) error 
 func resourceVultrDnsDomainUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	records, err := client.DNSRecord.GetList(context.Background(), d.Id())
+	records, err := client.DNSRecord.List(context.Background(), d.Id())
 
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid domain") {
@@ -155,7 +155,7 @@ func resourceVultrDnsDomainUpdate(d *schema.ResourceData, meta interface{}) erro
 func resourceVultrDnsDomainDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	log.Printf("[INFO] Destroying DNS domain (%s)", d.Id())
+	log.Printf("[INFO] Deleting DNS domain (%s)", d.Id())
 	err := client.DNSDomain.Delete(context.Background(), d.Id())
 
 	if err != nil {
