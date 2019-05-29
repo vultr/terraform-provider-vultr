@@ -86,14 +86,6 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeMap},
 			},
-			"label": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"tag": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
 			"os_id": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -106,6 +98,14 @@ func resourceVultrBareMetalServer() *schema.Resource {
 			},
 
 			// options
+			"label": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"tag": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"startup_script_id": {
 				Type:     schema.TypeString,
 				Optional: true,
