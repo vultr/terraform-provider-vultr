@@ -86,7 +86,7 @@ func resourceVultrSnapshotCreate(d *schema.ResourceData, meta interface{}) error
 func resourceVultrSnapshotRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	snapshots, err := client.Snapshot.GetList(context.Background())
+	snapshots, err := client.Snapshot.List(context.Background())
 	if err != nil {
 		return fmt.Errorf("Error getting snapshots: %v", err)
 	}
@@ -118,8 +118,8 @@ func resourceVultrSnapshotRead(d *schema.ResourceData, meta interface{}) error {
 func resourceVultrSnapshotDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	log.Printf("[INFO] Destroying snapshot: %s", d.Id())
-	if err := client.Snapshot.Destroy(context.Background(), d.Id()); err != nil {
+	log.Printf("[INFO] Deleting snapshot: %s", d.Id())
+	if err := client.Snapshot.Delete(context.Background(), d.Id()); err != nil {
 		return fmt.Errorf("Error destroying snapshot (%s): %v", d.Id(), err)
 	}
 

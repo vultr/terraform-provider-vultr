@@ -58,7 +58,7 @@ func resourceVultrSSHKeyCreate(d *schema.ResourceData, meta interface{}) error {
 func resourceVultrSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	keys, err := client.SSHKey.GetList(context.Background())
+	keys, err := client.SSHKey.List(context.Background())
 	if err != nil {
 		return fmt.Errorf("Error getting SSH keys: %v", err)
 	}
@@ -104,8 +104,8 @@ func resourceVultrSSHKeyUpdate(d *schema.ResourceData, meta interface{}) error {
 func resourceVultrSSHKeyDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	log.Printf("[INFO] Destroying SSH Key: %s", d.Id())
-	if err := client.SSHKey.Destroy(context.Background(), d.Id()); err != nil {
+	log.Printf("[INFO] Deleting SSH Key: %s", d.Id())
+	if err := client.SSHKey.Delete(context.Background(), d.Id()); err != nil {
 		return fmt.Errorf("Error destroying SSH key (%s): %v", d.Id(), err)
 	}
 

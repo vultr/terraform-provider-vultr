@@ -52,7 +52,7 @@ func dataSourceVultrIsoPrivateRead(d *schema.ResourceData, meta interface{}) err
 		return fmt.Errorf("issue with filter: %v", filtersOK)
 	}
 
-	iso, err := client.ISO.GetList(context.Background())
+	iso, err := client.ISO.List(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("Error getting applications: %v", err)

@@ -40,7 +40,7 @@ func dataSourceVultrSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	sshKeys, err := client.SSHKey.GetList(context.Background())
+	sshKeys, err := client.SSHKey.List(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("error getting SSH keys: %v", err)

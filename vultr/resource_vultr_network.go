@@ -79,7 +79,7 @@ func resourceVultrNetworkCreate(d *schema.ResourceData, meta interface{}) error 
 func resourceVultrNetworkRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	nets, err := client.Network.GetList(context.Background())
+	nets, err := client.Network.List(context.Background())
 	if err != nil {
 		return fmt.Errorf("Error getting Reserved IPs: %v", err)
 	}
@@ -109,8 +109,8 @@ func resourceVultrNetworkRead(d *schema.ResourceData, meta interface{}) error {
 func resourceVultrNetworkDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	log.Printf("[INFO] Destroying Network: %s", d.Id())
-	if err := client.Network.Destroy(context.Background(), d.Id()); err != nil {
+	log.Printf("[INFO] Deleting Network: %s", d.Id())
+	if err := client.Network.Delete(context.Background(), d.Id()); err != nil {
 		return fmt.Errorf("Error destroying Network (%s): %v", d.Id(), err)
 	}
 

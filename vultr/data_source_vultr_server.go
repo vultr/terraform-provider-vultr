@@ -141,7 +141,7 @@ func dataSourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	servers, err := client.Server.GetList(context.Background())
+	servers, err := client.Server.List(context.Background())
 	if err != nil {
 		return fmt.Errorf("Error getting servers: %v", err)
 	}

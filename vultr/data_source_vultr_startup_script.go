@@ -48,7 +48,7 @@ func dataSourceVultrStartupScriptRead(d *schema.ResourceData, meta interface{}) 
 		return fmt.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	scripts, err := client.StartupScript.GetList(context.Background())
+	scripts, err := client.StartupScript.List(context.Background())
 
 	if err != nil {
 		return fmt.Errorf("error getting startup scripts: %v", err)

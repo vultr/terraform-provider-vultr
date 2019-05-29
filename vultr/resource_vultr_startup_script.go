@@ -72,7 +72,7 @@ func resourceVultrStartupScriptCreate(d *schema.ResourceData, meta interface{}) 
 func resourceVultrStartupScriptRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	scripts, err := client.StartupScript.GetList(context.Background())
+	scripts, err := client.StartupScript.List(context.Background())
 	if err != nil {
 		return fmt.Errorf("Error getting startup scripts: %v", err)
 	}
@@ -121,8 +121,8 @@ func resourceVultrStartupScriptUpdate(d *schema.ResourceData, meta interface{}) 
 func resourceVultrStartupScriptDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	log.Printf("[INFO] Destroying startup script: %s", d.Id())
-	if err := client.StartupScript.Destroy(context.Background(), d.Id()); err != nil {
+	log.Printf("[INFO] Deleting startup script: %s", d.Id())
+	if err := client.StartupScript.Delete(context.Background(), d.Id()); err != nil {
 		return fmt.Errorf("Error destroying startup script (%s): %v", d.Id(), err)
 	}
 

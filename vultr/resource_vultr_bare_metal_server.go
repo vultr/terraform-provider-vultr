@@ -330,7 +330,7 @@ func resourceVultrBareMetalServerDelete(d *schema.ResourceData, meta interface{}
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting bare metal server: %s", d.Id())
-	err := client.BareMetalServer.Destroy(context.Background(), d.Id())
+	err := client.BareMetalServer.Delete(context.Background(), d.Id())
 	if err != nil {
 		return fmt.Errorf("Error deleting bare metal server (%s): %v", d.Id(), err)
 	}
