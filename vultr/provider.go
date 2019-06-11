@@ -17,7 +17,7 @@ func Provider() terraform.ResourceProvider {
 			"rate_limit": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "RateLimit",
+				Description: "Allows users to set the speed of API calls to work with the Vultr Rate Limit",
 			},
 		},
 
