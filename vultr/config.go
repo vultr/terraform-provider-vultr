@@ -13,7 +13,8 @@ import (
 
 // Config is the configuration structure used to instantiate Vultr
 type Config struct {
-	APIKey string
+	APIKey    string
+	RateLimit int
 }
 
 // Client wraps govultr
@@ -40,7 +41,10 @@ func (c *Config) Client() (*Client, error) {
 
 	vultrClient := govultr.NewClient(client, c.APIKey)
 	vultrClient.SetUserAgent(userAgent)
-	vultrClient.SetRateLimit(660 * time.Millisecond)
+
+	if c.RateLimit != 0 {
+		vultrClient.SetRateLimit(time.Duration(c.RateLimit) * time.Millisecond)
+	}
 
 	return &Client{client: vultrClient}, nil
 }
