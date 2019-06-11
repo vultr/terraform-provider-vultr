@@ -14,6 +14,11 @@ func Provider() terraform.ResourceProvider {
 				DefaultFunc: schema.EnvDefaultFunc("VULTR_API_KEY", nil),
 				Description: "The API Key that allows interaction with the API",
 			},
+			"rate_limit": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Allows users to set the speed of API calls to work with the Vultr Rate Limit",
+			},
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -64,7 +69,8 @@ func Provider() terraform.ResourceProvider {
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	config := Config{
-		APIKey: d.Get("api_key").(string),
+		APIKey:    d.Get("api_key").(string),
+		RateLimit: d.Get("rate_limit").(int),
 	}
 
 	return config.Client()
