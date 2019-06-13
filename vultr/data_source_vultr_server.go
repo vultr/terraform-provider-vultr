@@ -171,7 +171,7 @@ func dataSourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 		return errors.New("no results were found")
 	}
 
-	d.SetId(serverList[0].VpsID)
+	d.SetId(serverList[0].InstanceID)
 	d.Set("os", serverList[0].Os)
 	d.Set("ram", serverList[0].RAM)
 	d.Set("disk", serverList[0].Disk)

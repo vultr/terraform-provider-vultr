@@ -103,7 +103,7 @@ func resourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) err
 	d.Set("status", bs.Status)
 	d.Set("size_gb", bs.SizeGB)
 	d.Set("region_id", bs.RegionID)
-	d.Set("attached_id", bs.VpsID)
+	d.Set("attached_id", bs.InstanceID)
 	d.Set("label", bs.Label)
 
 	return nil

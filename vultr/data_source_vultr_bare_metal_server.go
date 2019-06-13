@@ -136,7 +136,7 @@ func dataSourceVultrBareMetalServerRead(d *schema.ResourceData, meta interface{}
 	d.Set("ram", serverList[0].RAM)
 	d.Set("disk", serverList[0].Disk)
 	d.Set("main_ip", serverList[0].MainIP)
-	d.Set("cpu_count", serverList[0].CPUCount)
+	d.Set("cpu_count", serverList[0].CPUs)
 	d.Set("location", serverList[0].Location)
 	d.Set("region_id", serverList[0].RegionID)
 	d.Set("default_password", serverList[0].DefaultPassword)

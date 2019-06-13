@@ -110,7 +110,7 @@ func resourceVultrFirewallRuleCreate(d *schema.ResourceData, meta interface{}) e
 func resourceVultrFirewallRuleRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	firewallRuleList, err := client.FirewallRule.List(context.Background(), d.Get("firewall_group_id").(string), d.Get("ip_type").(string))
+	firewallRuleList, err := client.FirewallRule.ListByIPType(context.Background(), d.Get("firewall_group_id").(string), d.Get("ip_type").(string))
 
 	if err != nil {
 		return fmt.Errorf("Error getting firewall rule %s: %v", d.Get("firewall_group_id").(string), err)

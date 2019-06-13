@@ -101,9 +101,9 @@ func dataSourceVultrPlanRead(d *schema.ResourceData, meta interface{}) error {
 		return errors.New("no results were found")
 	}
 
-	d.SetId(strconv.Itoa(planList[0].VpsID))
+	d.SetId(strconv.Itoa(planList[0].PlanID))
 	d.Set("name", planList[0].Name)
-	d.Set("vcpu_count", planList[0].VCPUCount)
+	d.Set("vcpu_count", planList[0].VCPUs)
 	d.Set("ram", planList[0].RAM)
 	d.Set("disk", planList[0].Disk)
 	d.Set("bandwidth", planList[0].Bandwidth)
