@@ -100,9 +100,9 @@ func dataSourceVultrBareMetalPlanRead(d *schema.ResourceData, meta interface{}) 
 		return errors.New("no results were found")
 	}
 
-	d.SetId(planList[0].BareMetalID)
+	d.SetId(planList[0].PlanID)
 	d.Set("name", planList[0].Name)
-	d.Set("cpu_count", planList[0].CPUCount)
+	d.Set("cpu_count", planList[0].CPUs)
 	d.Set("cpu_model", planList[0].CPUModel)
 	d.Set("ram", planList[0].RAM)
 	d.Set("disk", planList[0].Disk)

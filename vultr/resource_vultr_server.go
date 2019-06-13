@@ -317,7 +317,7 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("Error creating server: %v", err)
 	}
 
-	d.SetId(server.VpsID)
+	d.SetId(server.InstanceID)
 
 	_, err = waitForServerAvailable(d, "active", []string{"pending", "installing"}, "status", meta)
 	if err != nil {
