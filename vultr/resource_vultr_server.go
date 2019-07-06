@@ -243,8 +243,9 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 	appID, appOK := d.GetOk("app_id")
 	isoID, isoOK := d.GetOk("iso_id")
 	snapID, snapOK := d.GetOk("snapshot_id")
+	scriptID, scriptOK := d.GetOk("script_id")
 
-	osOptions := map[string]bool{"os_id": osOK, "app_id": appOK, "iso_id": isoOK, "snapshot_id": snapOK}
+	osOptions := map[string]bool{"os_id": osOK, "app_id": appOK, "iso_id": isoOK, "snapshot_id": snapOK, "script_id": scriptOK}
 	osOption, err := optionCheck(osOptions)
 
 	if err != nil {
@@ -254,7 +255,6 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	options := &govultr.ServerOptions{
-		ScriptID:             d.Get("script_id").(string),
 		EnableIPV6:           d.Get("enable_ipv6").(bool),
 		EnablePrivateNetwork: d.Get("enable_private_network").(bool),
 		Label:                d.Get("label").(string),
@@ -287,6 +287,10 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 	case "snapshot_id":
 		options.SnapshotID = snapID.(string)
 		os = osSnapID
+
+	case "script_id":
+		options.ScriptID = scriptID.(string)
+		os = osIsoID
 
 	default:
 		return errors.New("Error occurred while getting your intended os type")
