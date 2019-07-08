@@ -3,7 +3,7 @@
 ## [v1.0.1](https://github.com/vultr/terraform-provider-vultr/compare/v1.0.0..v1.0.1) (2019-07-08)
 ### Fixes
 - Fixed bug where scriptID was not being 
-properly handled in creation [#82](https://github.com/vultr/terraform-provider-vultr/issues/82)
+properly handled in server creation [#82](https://github.com/vultr/terraform-provider-vultr/issues/82)
 ### Enhancements 
 - Added error handler on protocol case sensitivity [#83](https://github.com/vultr/terraform-provider-vultr/issues/83)
 ### Docs
