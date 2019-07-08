@@ -78,6 +78,11 @@ func resourceVultrFirewallRuleCreate(d *schema.ResourceData, meta interface{}) e
 	to, toOk := d.GetOk("to_port")
 
 	port := ""
+
+	if protocol != strings.ToLower(protocol) {
+		return fmt.Errorf("%q is required to be all lowercase", protocol)
+	}
+
 	if protocol == "tcp" || protocol == "udp" {
 		if fromOk {
 			if fromOk && toOk {

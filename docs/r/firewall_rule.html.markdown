@@ -20,7 +20,7 @@ resource "vultr_firewall_group" "my_firewallgroup" {
 
 resource "vultr_firewall_rule" "my_firewallrule" {
     firewall_group_id = "${vultr_firewall_group.my_firewallgroup.id}"
-    protocol = "TCP"
+    protocol = "tcp"
     network = "0.0.0.0/0"
     from_port = "8085"
     to_port = "8090"
@@ -32,7 +32,7 @@ resource "vultr_firewall_rule" "my_firewallrule" {
 The following arguments are supported:
 
 * `firewall_group_id` - (Required) The firewall group that the firewall rule will belong to.
-* `protocol` - (Required) The type of protocol for this firewall rule. Possible values (icmp, tcp, udp, gre)
+* `protocol` - (Required) The type of protocol for this firewall rule. Possible values (icmp, tcp, udp, gre) **Note** they must be lowercase
 * `network` - (Required) IP address that you want to define for this firewall rule.
 * `from_port` - (Optional) Port that you want to define for this rule.
 * `to_port` - (Optional) This can be used with the from port if you want to define multiple ports. Example from port 8085 to port 8090
