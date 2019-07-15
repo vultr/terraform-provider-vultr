@@ -13,7 +13,7 @@ import (
 )
 
 const (
-	version     = "0.1.3"
+	version     = "0.1.4"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 600 * time.Millisecond
@@ -166,11 +166,11 @@ func (c *Client) DoWithContext(ctx context.Context, r *http.Request, data interf
 		c.onRequestCompleted(req, res)
 	}
 
-	defer res.Body.Close()
-
 	if err != nil {
 		return err
 	}
+
+	defer res.Body.Close()
 
 	body, err := ioutil.ReadAll(res.Body)
 
