@@ -1,5 +1,10 @@
 # Change Log
 
+## [v1.0.2](https://github.com/vultr/terraform-provider-vultr/compare/v1.0.1..v1.0.2) (2019-07-15)
+### Dependencies
+* Updated dependencies [PR #89](https://github.com/vultr/terraform-provider-vultr/pull/89)
+  * Govultr `v0.1.3` -> `v0.1.4`
+  
 ## [v1.0.1](https://github.com/vultr/terraform-provider-vultr/compare/v1.0.0..v1.0.1) (2019-07-08)
 ### Fixes
 - Fixed bug where scriptID was not being 
