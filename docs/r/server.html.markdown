@@ -44,7 +44,7 @@ The following arguments are supported:
 
 * `region_id` - (Required) The ID of the region that the server is to be created in.
 * `plan_id` - (Required) The ID of the plan that you want the server to subscribe to.
-* `os_id` - (Optional) The ID of the operating system to be installed on the server.
+* `os_id` - (Required) The ID of the operating system to be installed on the server.
 * `iso_id` - (Optional) The ID of the ISO file to be installed on the server.
 * `app_id` - (Optional) The ID of the Vultr application to be installed on the server.
 * `snapshot_id` - (Optional) The ID of the Vultr snapshot that the server will restore for the initial installation. 
