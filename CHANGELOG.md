@@ -1,5 +1,15 @@
 # Change Log
 
+## [v1.0.3](https://github.com/vultr/terraform-provider-vultr/compare/v1.0.2..v1.0.3) (2019-07-18)
+### Fixes
+- Fixes issue where you could not use `os_id` and `script_id` together [#92](https://github.com/vultr/terraform-provider-vultr/issues/92)
+### Breaking Changes
+- You will now need to provide the `os_id` on each corresponding option
+    - `app_id` - uses os_id `186`
+    - `iso_id` - uses os_id `159`
+    - `snap_id` - uses os_id `164`
+    - `script_id` - uses os_id `159` or any os specific id
+    
 ## [v1.0.2](https://github.com/vultr/terraform-provider-vultr/compare/v1.0.1..v1.0.2) (2019-07-15)
 ### Dependencies
 * Updated dependencies [PR #89](https://github.com/vultr/terraform-provider-vultr/pull/89)
