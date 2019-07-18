@@ -8,7 +8,7 @@
     - `app_id` - uses os_id `186`
     - `iso_id` - uses os_id `159`
     - `snap_id` - uses os_id `164`
-    - `script_id` `uses os_id `159` or any os specific id
+    - `script_id` - uses os_id `159` or any os specific id
     
 ## [v1.0.2](https://github.com/vultr/terraform-provider-vultr/compare/v1.0.1..v1.0.2) (2019-07-15)
 ### Dependencies
