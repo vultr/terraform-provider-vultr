@@ -3,6 +3,11 @@ variable "vultr_seattle" {
   default = "4"
 }
 
+variable "os_type" {
+  description = "Application"  
+  default = 186
+}
+
 variable "docker_centos" {
   description = "Docker on CentOS 7"
   default = 17
