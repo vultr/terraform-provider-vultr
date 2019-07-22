@@ -7,6 +7,7 @@ resource "vultr_server" "my_server" {
   plan_id = "${var.one_cpu_one_gb_ram}"
   region_id = "${var.vultr_seattle}"
   app_id = "${var.docker_centos}"
+  os_id = "${var.os_type}"
   label = "terraform example"
   enable_ipv6 = true
   auto_backup = true
