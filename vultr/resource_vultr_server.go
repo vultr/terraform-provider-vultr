@@ -10,7 +10,14 @@ import (
 
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/helper/schema"
+	"github.com/pkg/errors"
 	"github.com/vultr/govultr"
+)
+
+const (
+	osAppID  = 186
+	osIsoID  = 159
+	osSnapID = 164
 )
 
 func resourceVultrServer() *schema.Resource {
@@ -35,10 +42,7 @@ func resourceVultrServer() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"os_id": {
-				Type:     schema.TypeInt,
-				Required: true,
-			},
+
 			// computed attributes
 			"os": {
 				Type:     schema.TypeString,
@@ -186,6 +190,11 @@ func resourceVultrServer() *schema.Resource {
 				Computed: true,
 				Optional: true,
 			},
+			"os_id": {
+				Type:     schema.TypeInt,
+				Computed: true,
+				Optional: true,
+			},
 			"snapshot_id": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -230,11 +239,17 @@ func resourceVultrServer() *schema.Resource {
 func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 
 	// Four unique options to image your server
-	osID := d.Get("os_id").(int)
-	appID := d.Get("app_id").(int)
-	isoID := d.Get("iso_id").(int)
-	snapID := d.Get("snapshot_id").(string)
-	scriptID := d.Get("script_id").(string)
+	osID := d.Get("os_id")
+	appID, appOK := d.GetOk("app_id")
+	isoID, isoOK := d.GetOk("iso_id")
+	snapID, snapOK := d.GetOk("snapshot_id")
+
+	osOptions := map[string]bool{"app_id": appOK, "iso_id": isoOK, "snapshot_id": snapOK}
+	osOption, err := optionCheck(osOptions)
+
+	if err != nil {
+		return err
+	}
 
 	client := meta.(*Client).govultrClient()
 
@@ -249,12 +264,36 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 		Hostname:             d.Get("hostname").(string),
 		Tag:                  d.Get("tag").(string),
 		FirewallGroupID:      d.Get("firewall_group_id").(string),
-		AppID:                strconv.Itoa(appID),
-		IsoID:                isoID,
-		SnapshotID:           snapID,
-		ScriptID:             scriptID,
+		ScriptID:             d.Get("script_id").(string),
 	}
-	os := osID
+
+	var os int
+
+	// If no osOptions where selected and osID has a real value then set the osOptions to osID
+	if osOption == "" && osID.(int) != 0 {
+		osOption = "os_id"
+	}
+
+	switch osOption {
+	case "os_id":
+		os = osID.(int)
+
+	case "app_id":
+		options.AppID = strconv.Itoa(appID.(int))
+		os = osAppID
+
+	case "iso_id":
+		options.IsoID = isoID.(int)
+		os = osIsoID
+
+	case "snapshot_id":
+		options.SnapshotID = snapID.(string)
+		os = osSnapID
+
+	default:
+		return errors.New("Error occurred while getting your intended os type")
+	}
+
 	regionID := d.Get("region_id").(int)
 	planID := d.Get("plan_id").(int)
 
@@ -567,6 +606,27 @@ func resourceVultrServerDelete(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	return nil
+}
+
+func optionCheck(options map[string]bool) (string, error) {
+
+	result := []string{}
+	for k, v := range options {
+		if v == true {
+			result = append(result, k)
+		}
+	}
+
+	if len(result) > 1 {
+		return "", fmt.Errorf("Too many options have been selected : %v : please select one", result)
+	}
+
+	// Return back an empty slice so we can possibly add in osID
+	if len(result) == 0 {
+		return "", nil
+	}
+
+	return result[0], nil
 }
 
 func waitForServerAvailable(d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
