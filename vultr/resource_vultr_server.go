@@ -272,6 +272,8 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 	// If no osOptions where selected and osID has a real value then set the osOptions to osID
 	if osOption == "" && osID.(int) != 0 {
 		osOption = "os_id"
+	} else if osOption != "" && osID.(int) != 0 {
+		return errors.New(fmt.Sprintf("Please do not set %s with os_id", osOption))
 	}
 
 	switch osOption {
