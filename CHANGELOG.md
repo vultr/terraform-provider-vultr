@@ -1,5 +1,14 @@
 # Change Log
 
+## [v1.0.4](https://github.com/vultr/terraform-provider-vultr/compare/v1.0.3..v1.0.4) (2019-08-09)
+### Fixes
+- Fixes issue where using a snapshot would cause drift [#96](https://github.com/vultr/terraform-provider-vultr/issues/96)
+### Enhancements
+- You will now not have to define the `os_id` for the following server options
+    - `app_id`
+    - `iso_id`
+    - `snapshot_id`
+
 ## [v1.0.3](https://github.com/vultr/terraform-provider-vultr/compare/v1.0.2..v1.0.3) (2019-07-18)
 ### Fixes
 - Fixes issue where you could not use `os_id` and `script_id` together [#92](https://github.com/vultr/terraform-provider-vultr/issues/92)
