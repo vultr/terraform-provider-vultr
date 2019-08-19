@@ -1,0 +1,35 @@
+<% wrap_layout :inner do %>
+  <% content_for :sidebar do %>
+    <div class="docs-sidebar hidden-print affix-top" role="complementary">
+      <ul class="nav docs-sidenav">
+        <li<%= sidebar_current("docs-home") %>>
+          <a href="/docs/providers/index.html">All Providers</a>
+        </li>
+
+        <li<%= sidebar_current("docs-vultr-index") %>>
+          <a href="/docs/providers/vultr/index.html">Vultr Provider</a>
+        </li>
+
+        <li<%= sidebar_current("docs-vultr-datasource") %>>
+          <a href="#">Data Sources</a>
+          <ul class="nav nav-visible">
+            <li<%= sidebar_current("docs-vultr-datasource-account") %>>
+              <a href="/docs/providers/vultr/d/account.html">vultr_account</a>
+            </li>
+          </ul>
+        </li>
+
+        <li<%= sidebar_current("docs-vultr-resource") %>>
+          <a href="#">Resources</a>
+          <ul class="nav nav-visible">
+            <li<%= sidebar_current("docs-vultr-resource-image") %>>
+              <a href="/docs/providers/vultr/r/bare_metal_server.html">vultr_bare_metal_server</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= yield %>
+<% end %>
