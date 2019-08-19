@@ -13,6 +13,7 @@ Get information about your Vultr account. This data source provides the balance,
 ## Example Usage
 
 Get the information for an account:
+
 ```hcl
 data "vultr_account" "my_account" {}
 ```
