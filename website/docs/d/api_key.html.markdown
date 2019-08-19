@@ -13,6 +13,7 @@ Get information about your Vultr API key. This data source provides the name, em
 ## Example Usage
 
 Get the information for your API key:
+
 ```hcl
 data "vultr_api_key" "my_api_key" {}
 ```

@@ -13,6 +13,7 @@ Get information about a Vultr bare metal server plan.
 ## Example Usage
 
 Get the information for a plan by `name`:
+
 ```hcl
 data "vultr_bare_metal_plan" "my_plan" {
   filter {

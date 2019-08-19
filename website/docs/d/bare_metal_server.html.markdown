@@ -13,6 +13,7 @@ Get information about a Vultr bare metal server.
 ## Example Usage
 
 Get the information for a server by `label`:
+
 ```hcl
 data "vultr_bare_metal_server" "my_server" {
   filter {

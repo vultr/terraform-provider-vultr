@@ -13,6 +13,7 @@ Get information about a Vultr block storage subscription.
 ## Example Usage
 
 Get the information for a block storage subscription by `label`:
+
 ```hcl
 data "vultr_block_storage" "my_block_storage" {
   filter {

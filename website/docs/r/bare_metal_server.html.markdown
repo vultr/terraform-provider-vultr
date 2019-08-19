@@ -13,6 +13,7 @@ Provides a Vultr bare metal server resource. This can be used to create, read, m
 ## Example Usage
 
 Create a new bare metal server:
+
 ```hcl
 resource "vultr_bare_metal_server" "my_server" {
 	plan_id = "100"
@@ -22,6 +23,7 @@ resource "vultr_bare_metal_server" "my_server" {
 ```
 
 Create a new bare metal server with options:
+
 ```hcl
 resource "vultr_bare_metal_server" "my_server" {
 	plan_id = "100"

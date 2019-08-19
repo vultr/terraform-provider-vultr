@@ -13,6 +13,7 @@ Provides a Vultr SSH key resource. This can be used to create, read, modify, and
 ## Example Usage
 
 Create an SSH key
+
 ```hcl
 resource "vultr_ssh_key" "my_ssh_key" {
   name = "my-ssh-key"

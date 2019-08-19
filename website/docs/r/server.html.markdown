@@ -13,6 +13,7 @@ Provides a Vultr server resource. This can be used to create, read, modify, and 
 ## Example Usage
 
 Create a new server:
+
 ```hcl
 resource "vultr_server" "my_server" {
 	plan_id = "201"
@@ -22,6 +23,7 @@ resource "vultr_server" "my_server" {
 ```
 
 Create a new server with options:
+
 ```hcl
 resource "vultr_server" "my_server" {
 	plan_id = "201"

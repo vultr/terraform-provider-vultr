@@ -13,6 +13,7 @@ Provides a Vultr private network resource. This can be used to create, read, and
 ## Example Usage
 
 Create a new private network with an automatically generated CIDR block:
+
 ```hcl
 resource "vultr_network" "my_network" {
 	description = "my private network"
@@ -21,6 +22,7 @@ resource "vultr_network" "my_network" {
 ```
 
 Create a new private network with a specified CIDR block:
+
 ```hcl
 resource "vultr_network" "my_network" {
 	description = "my private network"

@@ -13,6 +13,7 @@ Provides a Vultr Snapshot resource. This can be used to create, read, modify, an
 ## Example Usage
 
 Create a new Snapshot
+
 ```hcl
 resource "vultr_server" "my_server" {
     label = "my_server"

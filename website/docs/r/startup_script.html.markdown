@@ -13,6 +13,7 @@ Provides a Vultr Startup Script resource. This can be used to create, read, modi
 ## Example Usage
 
 Create a new Startup Script
+
 ```hcl
 resource "vultr_startup_script" "my_script" {
     name = "man_run_docs"

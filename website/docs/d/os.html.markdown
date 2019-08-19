@@ -13,6 +13,7 @@ Get information about operating systems that can be launched when creating a Vul
 ## Example Usage
 
 Get the information for an operating system by `name`:
+
 ```hcl
 data "vultr_os" "centos" {
   filter {

@@ -13,6 +13,7 @@ Provides a Vultr DNS Domain resource. This can be used to create, read, modify, 
 ## Example Usage
 
 Create a new DNS Domain
+
 ```hcl
 resource "vultr_dns_domain" "my_domain" {
 	domain = "domain.com"

@@ -13,6 +13,7 @@ Provides a Vultr Snapshots from URL resource. This can be used to create, read, 
 ## Example Usage
 
 Create a new Snapshots from URL
+
 ```hcl
 resource "vultr_snapshot_from_url" "my_snapshot" {
 	url = "http://dl-cdn.alpinelinux.org/alpine/v3.9/releases/x86_64/alpine-virt-3.9.1-x86_64.iso"

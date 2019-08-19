@@ -13,6 +13,7 @@ Get information about applications that can be launched when creating a Vultr VP
 ## Example Usage
 
 Get the information for an application by `deploy_name`:
+
 ```hcl
 data "vultr_application" "docker" {
   filter {

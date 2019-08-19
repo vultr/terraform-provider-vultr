@@ -13,6 +13,7 @@ Get information about a firewall group on your Vultr account.
 ## Example Usage
 
 Get the information for a firewall group by `description`:
+
 ```hcl
 data "vultr_firewall_group" "my_fwg" {
   filter {

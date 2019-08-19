@@ -13,6 +13,7 @@ Get information about a Vultr reserved IP address.
 ## Example Usage
 
 Get the information for a reserved IP by `label`:
+
 ```hcl
 data "vultr_reserved_ip" "my_reserved_ip" {
   filter {

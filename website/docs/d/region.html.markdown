@@ -13,6 +13,7 @@ Get information about a Vultr region.
 ## Example Usage
 
 Get the information for a region by `name`:
+
 ```hcl
 data "vultr_region" "my_region" {
   filter {

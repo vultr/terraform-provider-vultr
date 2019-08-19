@@ -13,6 +13,7 @@ Provides a Vultr Block Storage resource. This can be used to create, read, modif
 ## Example Usage
 
 Create a new Block Storage
+
 ```hcl
 resource "vultr_block_storage" "my_blockstorage" {
 	size_gb = 10

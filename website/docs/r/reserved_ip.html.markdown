@@ -13,6 +13,7 @@ Provides a Vultr reserved IP resource. This can be used to create, read, modify,
 ## Example Usage
 
 Create a new reserved IP:
+
 ```hcl
 resource "vultr_reserved_ip" "my_reserved_ip" {
 	label = "my-reserved-ip"
@@ -22,6 +23,7 @@ resource "vultr_reserved_ip" "my_reserved_ip" {
 ```
 
 Attach a reserved IP to a server:
+
 ```hcl
 resource "vultr_reserved_ip" "my_reserved_ip" {
 	label = "my-reserved-ip"

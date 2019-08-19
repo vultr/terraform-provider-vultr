@@ -13,6 +13,7 @@ Provides a Vultr User resource. This can be used to create, read, modify, and de
 ## Example Usage
 
 Create a new User without any ACLs
+
 ```hcl
 resource "vultr_user" "my_user" {
 	name = "my user"
@@ -23,6 +24,7 @@ resource "vultr_user" "my_user" {
 ```
 
 Create a new User with all ACLs
+
 ```hcl
 resource "vultr_user" "my_user" {
 	name = "my user"

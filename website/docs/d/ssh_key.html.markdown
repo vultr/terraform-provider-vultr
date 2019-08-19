@@ -13,6 +13,7 @@ Get information about a Vultr SSH key. This data source provides the name, publi
 ## Example Usage
 
 Get the information for an SSH key by `name`:
+
 ```hcl
 data "vultr_ssh_key" "my_ssh_key" {
   filter {

@@ -13,6 +13,7 @@ Get information about a DNS domain associated with your Vultr account.
 ## Example Usage
 
 Get the information for a DNS domain:
+
 ```hcl
 data "vultr_dns_domain" "my_domain" {
   domain = "example.com"

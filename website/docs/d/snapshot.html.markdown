@@ -13,6 +13,7 @@ Get information about a Vultr snapshot.
 ## Example Usage
 
 Get the information for a snapshot by `description`:
+
 ```hcl
 data "vultr_snapshot" "my_snapshot" {
   filter {

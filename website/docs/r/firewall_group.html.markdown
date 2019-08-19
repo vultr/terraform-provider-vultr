@@ -13,6 +13,7 @@ Provides a Vultr Firewall Group resource. This can be used to create, read, modi
 ## Example Usage
 
 Create a new Firewall group
+
 ```hcl
 resource "vultr_firewall_group" "my_firewallgroup" {
 	description = "base firewall"

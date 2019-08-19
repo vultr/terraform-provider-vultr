@@ -13,6 +13,7 @@ Get information about a Vultr private network.
 ## Example Usage
 
 Get the information for a private network by `description`:
+
 ```hcl
 data "vultr_network" "my_network" {
   filter {
