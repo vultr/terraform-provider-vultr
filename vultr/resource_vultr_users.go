@@ -121,7 +121,10 @@ func resourceVultrUsersRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("name", users[counter].Name)
 	d.Set("email", users[counter].Email)
 	d.Set("api_enabled", enabled)
-	d.Set("acl", users[counter].ACL)
+	if err := d.Set("acl", users[counter].ACL); err != nil {
+		return fmt.Errorf("Error setting `acl`: %#v", err)
+	}
+
 	return nil
 }
 

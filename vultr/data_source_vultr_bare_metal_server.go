@@ -159,7 +159,9 @@ func dataSourceVultrBareMetalServerRead(d *schema.ResourceData, meta interface{}
 		}
 		ipv6s = append(ipv6s, v6network)
 	}
-	d.Set("v6_networks", ipv6s)
+	if err := d.Set("v6_networks", ipv6s); err != nil {
+		return fmt.Errorf("Error setting `v6_networks`: %#v", err)
+	}
 
 	return nil
 }
