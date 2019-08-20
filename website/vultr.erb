@@ -1,0 +1,137 @@
+<% wrap_layout :inner do %>
+  <% content_for :sidebar do %>
+    <div class="docs-sidebar hidden-print affix-top" role="complementary">
+      <ul class="nav docs-sidenav">
+        <li<%= sidebar_current("docs-home") %>>
+          <a href="/docs/providers/index.html">All Providers</a>
+        </li>
+
+        <li<%= sidebar_current("docs-vultr-index") %>>
+          <a href="/docs/providers/vultr/index.html">Vultr Provider</a>
+        </li>
+
+        <li<%= sidebar_current("docs-vultr-datasource") %>>
+          <a href="#">Data Sources</a>
+          <ul class="nav nav-visible">
+            <li<%= sidebar_current("docs-vultr-datasource-account") %>>
+              <a href="/docs/providers/vultr/d/account.html">vultr_account</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-datasource-api-key") %>>
+              <a href="/docs/providers/vultr/d/api_key.html">vultr_api_key</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-datasource-application") %>>
+              <a href="/docs/providers/vultr/d/application.html">vultr_application</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-datasource-backup") %>>
+              <a href="/docs/providers/vultr/d/backup.html">vultr_backup</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-datasource-bare-metal-plan") %>>
+              <a href="/docs/providers/vultr/d/bare_metal_plan.html">vultr_bare_metal_plan</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-datasource-bare-metal-server") %>>
+              <a href="/docs/providers/vultr/d/bare_metal_server.html">vultr_bare_metal_server</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-datasource-block-storage") %>>
+              <a href="/docs/providers/vultr/d/block_storage.html">vultr_block_storage</a>
+            </li>   
+            <li<%= sidebar_current("docs-vultr-datasource-dns-domain") %>>
+              <a href="/docs/providers/vultr/d/dns_domain.html">vultr_dns_domain</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-datasource-firewall-group") %>>
+              <a href="/docs/providers/vultr/d/firewall_group.html">vultr_firewall_group</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-datasource-iso-private") %>>
+              <a href="/docs/providers/vultr/d/iso_private.html">vultr_iso_private</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-datasource-iso-public") %>>
+              <a href="/docs/providers/vultr/d/iso_public.html">vultr_iso_public</a>
+            </li> 
+            <li<%= sidebar_current("docs-vultr-datasource-network") %>>
+              <a href="/docs/providers/vultr/d/network.html">vultr_network</a>
+            </li>  
+            <li<%= sidebar_current("docs-vultr-datasource-os") %>>
+              <a href="/docs/providers/vultr/d/os.html">vultr_os</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-datasource-plan") %>>
+              <a href="/docs/providers/vultr/d/plan.html">vultr_plan</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-datasource-region") %>>
+              <a href="/docs/providers/vultr/d/region.html">vultr_region</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-datasource-reserved-ip") %>>
+              <a href="/docs/providers/vultr/d/reserved_ip.html">vultr_reserved_ip</a>
+            </li> 
+            <li<%= sidebar_current("docs-vultr-datasource-server") %>>
+              <a href="/docs/providers/vultr/d/server.html">vultr_server</a>
+            </li>      
+            <li<%= sidebar_current("docs-vultr-datasource-snapshot") %>>
+              <a href="/docs/providers/vultr/d/snapshot.html">vultr_snapshot</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-datasource-ssh-key") %>>
+              <a href="/docs/providers/vultr/d/ssh_key.html">vultr_ssh_key</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-datasource-startup-script") %>>
+              <a href="/docs/providers/vultr/d/startup_script.html">vultr_startup_script</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-datasource-user") %>>
+              <a href="/docs/providers/vultr/d/user.html">vultr_user</a>
+            </li>
+          </ul>
+        </li>
+
+        <li<%= sidebar_current("docs-vultr-resource") %>>
+          <a href="#">Resources</a>
+          <ul class="nav nav-visible">
+            <li<%= sidebar_current("docs-vultr-resource-bare-metal-server") %>>
+              <a href="/docs/providers/vultr/r/bare_metal_server.html">vultr_bare_metal_server</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-resource-block-storage") %>>
+              <a href="/docs/providers/vultr/r/block_storage.html">vultr_block_storage</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-resource-dns-domain") %>>
+              <a href="/docs/providers/vultr/r/dns_domain.html">vultr_dns_domain</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-resource-dns-record") %>>
+              <a href="/docs/providers/vultr/r/dns_record.html">vultr_dns_record</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-resource-firewall-group") %>>
+              <a href="/docs/providers/vultr/r/firewall_group.html">vultr_firewall_group</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-resource-firewall-rule") %>>
+              <a href="/docs/providers/vultr/r/firewall_rule.html">vultr_firewall_rule</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-resource-iso") %>>
+              <a href="/docs/providers/vultr/r/iso.html">vultr_iso</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-resource-network") %>>
+              <a href="/docs/providers/vultr/r/network.html">vultr_network</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-resource-reserved-ip") %>>
+              <a href="/docs/providers/vultr/r/reserved_ip.html">vultr_reserved_ip</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-resource-server") %>>
+              <a href="/docs/providers/vultr/r/server.html">vultr_server</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-resource-snapshot-from-url") %>>
+              <a href="/docs/providers/vultr/r/snapshot_from_url.html">vultr_snapshot_from_url</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-resource-snapshot") %>>
+              <a href="/docs/providers/vultr/r/snapshot.html">vultr_snapshot</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-resource-ssh-key") %>>
+              <a href="/docs/providers/vultr/r/ssh_key.html">vultr_ssh_key</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-resource-startup-script") %>>
+              <a href="/docs/providers/vultr/r/startup_script.html">vultr_startup_script</a>
+            </li>
+            <li<%= sidebar_current("docs-vultr-resource-user") %>>
+              <a href="/docs/providers/vultr/r/user.html">vultr_user</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  <% end %>
+
+  <%= yield %>
+<% end %>
