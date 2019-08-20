@@ -78,6 +78,8 @@ func dataSourceVultrUserRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("name", userList[0].Name)
 	d.Set("email", userList[0].Email)
 	d.Set("api_enabled", userList[0].APIEnabled)
-	d.Set("acl", userList[0].ACL)
+	if err := d.Set("acl", userList[0].ACL); err != nil {
+		return fmt.Errorf("Error setting `acl`: %#v", err)
+	}
 	return nil
 }

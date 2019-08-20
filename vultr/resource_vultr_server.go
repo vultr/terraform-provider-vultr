@@ -385,10 +385,18 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("server_state", vps.ServerState)
 	d.Set("internal_ip", vps.InternalIP)
 	d.Set("kvm_url", vps.KVMUrl)
-	d.Set("network_macs", networkMacs)
-	d.Set("network_ips", networkIPs)
 
-	d.Set("network_ids", networkIDs)
+	if err := d.Set("network_macs", networkMacs); err != nil {
+		return fmt.Errorf("Error setting `network_macs`: %#v", err)
+	}
+
+	if err := d.Set("network_ips", networkIPs); err != nil {
+		return fmt.Errorf("Error setting `network_ips`: %#v", err)
+	}
+
+	if err := d.Set("network_ids", networkIDs); err != nil {
+		return fmt.Errorf("Error setting `network_ids`: %#v", err)
+	}
 
 	var ipv6s []map[string]string
 	for _, net := range vps.V6Networks {
@@ -399,7 +407,9 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 		}
 		ipv6s = append(ipv6s, v6network)
 	}
-	d.Set("v6_networks", ipv6s)
+	if err := d.Set("v6_networks", ipv6s); err != nil {
+		return fmt.Errorf("Error setting `v6_networks`: %#v", err)
+	}
 
 	d.Set("tag", vps.Tag)
 	d.Set("firewall_group_id", vps.FirewallGroupID)

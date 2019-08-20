@@ -109,7 +109,11 @@ func dataSourceVultrBareMetalPlanRead(d *schema.ResourceData, meta interface{}) 
 	d.Set("bandwidth_tb", planList[0].BandwidthTB)
 	d.Set("price_per_month", planList[0].Price)
 	d.Set("plan_type", planList[0].PlanType)
-	d.Set("available_locations", planList[0].Regions)
+
+	if err := d.Set("available_locations", planList[0].Regions); err != nil {
+		return fmt.Errorf("Error setting `available_locations`: %#v", err)
+	}
+
 	d.Set("deprecated", planList[0].Deprecated)
 	return nil
 }
