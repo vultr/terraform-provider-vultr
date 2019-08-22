@@ -38,7 +38,7 @@ $ln -s $GOPATH/bin/terraform-provider-vultr ~/.terraform.d/plugins/terraform-pro
 Using the provider
 ----------------------
 
-See the [Vultr Provider documentation](docs/index.html.markdown) to get started using the Vultr provider.
+See the [Vultr Provider documentation](website/docs/index.html.markdown) to get started using the Vultr provider.
 
 Developing the Provider
 ---------------------------
