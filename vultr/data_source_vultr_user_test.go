@@ -23,8 +23,9 @@ func TestAccVultrUser_dataBase(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "email", rEmail),
 					resource.TestCheckResourceAttr(name, "name", "Terraform AccTests"),
-					resource.TestCheckResourceAttr(name, "acl.#", "10"),
+					resource.TestCheckResourceAttr(name, "acl.#", "11"),
 					resource.TestCheckResourceAttr(name, "acl.0", "manage_users"),
+					resource.TestCheckResourceAttr(name, "acl.1", "subscriptions_view"),
 					resource.TestCheckResourceAttr(name, "acl.1", "subscriptions"),
 					resource.TestCheckResourceAttr(name, "acl.2", "billing"),
 					resource.TestCheckResourceAttr(name, "acl.3", "support"),
@@ -57,6 +58,7 @@ func testAccVultrUserConfig_base(email string) string {
   			password = "password"
   			acl = [
             	"manage_users",
+            	"subscriptions_view",
             	"subscriptions",
             	"billing",
             	"support",
