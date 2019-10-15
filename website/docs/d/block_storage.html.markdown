@@ -27,7 +27,7 @@ data "vultr_block_storage" "my_block_storage" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding block storage subscriptions.
+* `filter` - (Required) Query parameters for finding block storage subscriptions.
 
 The `filter` block supports the following:
 

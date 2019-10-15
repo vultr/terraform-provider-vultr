@@ -27,7 +27,7 @@ data "vultr_backup" "my_backup" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding backups.
+* `filter` - (Required) Query parameters for finding backups.
 
 The `filter` block supports the following:
 

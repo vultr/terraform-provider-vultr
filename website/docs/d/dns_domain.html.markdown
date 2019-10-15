@@ -24,7 +24,7 @@ data "vultr_dns_domain" "my_domain" {
 
 The following arguments are supported:
 
-* `domain` - The name you're searching for.
+* `domain` - (Required) The name you're searching for.
 
 ## Attributes Reference
 

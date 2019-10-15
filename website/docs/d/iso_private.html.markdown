@@ -27,7 +27,7 @@ data "vultr_iso_private" "my_iso" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding ISO files.
+* `filter` - (Required) Query parameters for finding ISO files.
 
 The `filter` block supports the following:
 

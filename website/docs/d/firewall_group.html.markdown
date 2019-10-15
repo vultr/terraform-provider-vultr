@@ -27,7 +27,7 @@ data "vultr_firewall_group" "my_fwg" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding firewall groups.
+* `filter` - (Required) Query parameters for finding firewall groups.
 
 The `filter` block supports the following:
 
