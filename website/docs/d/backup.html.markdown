@@ -8,7 +8,7 @@ description: |-
 
 # vultr_backup
 
-Get information about a Vultr backup. This data source provides the description, size, status, and the creation date for your Vultr backup.
+Get information about a Vultr backup. This data source provides a list of backups which contain the description, size, status, and the creation date for your Vultr backup.
 
 ## Example Usage
 
@@ -38,6 +38,7 @@ The `filter` block supports the following:
 
 The following attributes are exported:
 
+* `BACKUPID` - The ID of the backup
 * `description` - The description of the backup.
 * `size` - The size of the backup in bytes.
 * `status` - The status of the backup.
