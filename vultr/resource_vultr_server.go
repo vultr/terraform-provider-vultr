@@ -42,103 +42,6 @@ func resourceVultrServer() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-
-			// computed attributes
-			"os": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"ram": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"disk": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"main_ip": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"vps_cpu_count": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"location": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"default_password": {
-				Type:      schema.TypeString,
-				Computed:  true,
-				Sensitive: true,
-			},
-			"date_created": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"pending_charges": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"status": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"cost_per_month": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"current_bandwidth": {
-				Type:     schema.TypeFloat,
-				Computed: true,
-			},
-			"allowed_bandwidth": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"netmask_v4": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"gateway_v4": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"power_status": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"server_state": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"v6_networks": {
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem:     &schema.Schema{Type: schema.TypeMap},
-			},
-			"internal_ip": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"kvm_url": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"network_macs": {
-				Type:     schema.TypeMap,
-				Computed: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
-
-			"network_ips": {
-				Type:     schema.TypeMap,
-				Computed: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
-
-			// server options
 			"iso_id": {
 				Type:     schema.TypeInt,
 				Computed: true,
@@ -231,6 +134,99 @@ func resourceVultrServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 				Optional: true,
+			},
+			"os": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"ram": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"disk": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"main_ip": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"vps_cpu_count": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"location": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"default_password": {
+				Type:      schema.TypeString,
+				Computed:  true,
+				Sensitive: true,
+			},
+			"date_created": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"pending_charges": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"cost_per_month": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"current_bandwidth": {
+				Type:     schema.TypeFloat,
+				Computed: true,
+			},
+			"allowed_bandwidth": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"netmask_v4": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"gateway_v4": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"power_status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"server_state": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"v6_networks": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeMap},
+			},
+			"internal_ip": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"kvm_url": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"network_macs": {
+				Type:     schema.TypeMap,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
+
+			"network_ips": {
+				Type:     schema.TypeMap,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 		},
 	}

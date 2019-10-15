@@ -20,6 +20,15 @@ func resourceVultrBlockStorage() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			"size_gb": {
+				Type:     schema.TypeInt,
+				Required: true,
+			},
+			"region_id": {
+				Type:     schema.TypeInt,
+				Required: true,
+				ForceNew: true,
+			},
 			"date_created": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -31,15 +40,6 @@ func resourceVultrBlockStorage() *schema.Resource {
 			"status": {
 				Type:     schema.TypeString,
 				Computed: true,
-			},
-			"size_gb": {
-				Type:     schema.TypeInt,
-				Required: true,
-			},
-			"region_id": {
-				Type:     schema.TypeInt,
-				Required: true,
-				ForceNew: true,
 			},
 			"attached_id": {
 				Type:     schema.TypeString,

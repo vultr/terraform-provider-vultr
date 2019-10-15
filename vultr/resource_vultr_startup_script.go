@@ -24,13 +24,9 @@ func resourceVultrStartupScript() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"date_created": {
+			"script": {
 				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"date_modified": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Required: true,
 			},
 			"type": {
 				Type:     schema.TypeString,
@@ -38,9 +34,13 @@ func resourceVultrStartupScript() *schema.Resource {
 				ForceNew: true,
 				Computed: true,
 			},
-			"script": {
+			"date_created": {
 				Type:     schema.TypeString,
-				Required: true,
+				Computed: true,
+			},
+			"date_modified": {
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 		},
 	}
