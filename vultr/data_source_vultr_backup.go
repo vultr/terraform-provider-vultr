@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/vultr/govultr"
 )
 
 func dataSourceVultrBackup() *schema.Resource {
@@ -14,21 +13,10 @@ func dataSourceVultrBackup() *schema.Resource {
 		Read: dataSourceVultrBackupRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
-			"date_created": {
-				Type:     schema.TypeString,
+			"backups": {
+				Type:     schema.TypeList,
 				Computed: true,
-			},
-			"description": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"size": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"status": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeMap},
 			},
 		},
 	}
@@ -48,35 +36,30 @@ func dataSourceVultrBackupRead(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("Error getting applications: %v", err)
 	}
 
-	backupList := []govultr.Backup{}
+	var backupList []map[string]interface{}
 
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
-
 	for _, b := range backups {
 		// we need convert the a struct INTO a map so we can easily manipulate the data here
 		sm, err := structToMap(b)
-
 		if err != nil {
 			return err
 		}
 
 		if filterLoop(f, sm) {
-			backupList = append(backupList, b)
+			backupList = append(backupList, sm)
 		}
-	}
-
-	if len(backupList) > 1 {
-		return fmt.Errorf("your search returned too many results : %d. Please refine your search to be more specific", len(backupList))
 	}
 
 	if len(backupList) < 1 {
 		return errors.New("no results were found")
 	}
 
-	d.SetId(backupList[0].BackupID)
-	d.Set("date_created", backupList[0].DateCreated)
-	d.Set("description", backupList[0].Description)
-	d.Set("size", backupList[0].Size)
-	d.Set("status", backupList[0].Status)
+	//d.SetId(backupList[0]["BACKUPID"].(string))
+	d.SetId(backupList[0]["description"].(string))
+	if err := d.Set("backups", backupList); err != nil {
+		return fmt.Errorf("Error setting `backups`: %#v", err)
+	}
+
 	return nil
 }

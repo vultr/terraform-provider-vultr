@@ -23,27 +23,31 @@ func TestAccVultrUser_base(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						"vultr_user.admin", "name", "Terraform AccTests"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.#", "10"),
+						"vultr_user.admin", "acl.#", "12"),
 					resource.TestCheckResourceAttr(
 						"vultr_user.admin", "acl.0", "manage_users"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.1", "subscriptions"),
+						"vultr_user.admin", "acl.1", "subscriptions_view"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.2", "billing"),
+						"vultr_user.admin", "acl.2", "subscriptions"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.3", "support"),
+						"vultr_user.admin", "acl.3", "billing"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.4", "provisioning"),
+						"vultr_user.admin", "acl.4", "support"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.5", "dns"),
+						"vultr_user.admin", "acl.5", "provisioning"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.6", "abuse"),
+						"vultr_user.admin", "acl.6", "dns"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.7", "upgrade"),
+						"vultr_user.admin", "acl.7", "abuse"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.8", "firewall"),
+						"vultr_user.admin", "acl.8", "upgrade"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.9", "alerts"),
+						"vultr_user.admin", "acl.9", "firewall"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.10", "alerts"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.11", "objstore"),
 					resource.TestCheckResourceAttr(
 						"vultr_user.admin", "api_enabled", "true"),
 					resource.TestCheckResourceAttrSet("vultr_user.admin", "api_key"),
@@ -57,25 +61,29 @@ func TestAccVultrUser_base(t *testing.T) {
 					resource.TestCheckResourceAttr(
 						"vultr_user.admin", "name", "Terraform Update Name"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.#", "9"),
+						"vultr_user.admin", "acl.#", "11"),
 					resource.TestCheckResourceAttr(
 						"vultr_user.admin", "acl.0", "manage_users"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.1", "subscriptions"),
+						"vultr_user.admin", "acl.1", "subscriptions_view"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.2", "billing"),
+						"vultr_user.admin", "acl.2", "subscriptions"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.3", "support"),
+						"vultr_user.admin", "acl.3", "billing"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.4", "provisioning"),
+						"vultr_user.admin", "acl.4", "support"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.5", "dns"),
+						"vultr_user.admin", "acl.5", "provisioning"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.6", "abuse"),
+						"vultr_user.admin", "acl.6", "dns"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.7", "upgrade"),
+						"vultr_user.admin", "acl.7", "abuse"),
 					resource.TestCheckResourceAttr(
-						"vultr_user.admin", "acl.8", "firewall"),
+						"vultr_user.admin", "acl.8", "upgrade"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.9", "firewall"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "acl.10", "alerts"),
 					resource.TestCheckResourceAttr(
 						"vultr_user.admin", "api_enabled", "false"),
 					resource.TestCheckResourceAttrSet("vultr_user.admin", "api_key"),
@@ -120,6 +128,7 @@ func testAccResourceVultrUser_create() string {
   password = "password"
   acl = [
             "manage_users",
+            "subscriptions_view",
             "subscriptions",
             "billing",
             "support",
@@ -128,7 +137,8 @@ func testAccResourceVultrUser_create() string {
             "abuse",
             "upgrade",
             "firewall",
-            "alerts"
+            "alerts",
+			"objstore"
   ]
   api_enabled = true
 }`
@@ -141,6 +151,7 @@ func testAccResourceVultrUser_update() string {
   password = "password"
   acl = [
             "manage_users",
+            "subscriptions_view",
             "subscriptions",
             "billing",
             "support",
@@ -149,6 +160,7 @@ func testAccResourceVultrUser_update() string {
             "abuse",
             "upgrade",
             "firewall",
+            "alerts"
   ]
   api_enabled = false
 }`
