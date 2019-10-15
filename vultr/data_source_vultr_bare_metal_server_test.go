@@ -44,7 +44,7 @@ func TestAccDataSourceVultrBareMetalServer(t *testing.T) {
 func testAccCheckVultrBareMetalServer(label string) string {
 	return fmt.Sprintf(`
 		resource "vultr_bare_metal_server" "foo" {
-			region_id 		  = 40
+			region_id 		  = 5
 			os_id 			  = 270
 			plan_id           = 100
 			enable_ipv6       = true
