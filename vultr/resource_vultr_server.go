@@ -42,8 +42,99 @@ func resourceVultrServer() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-
-			// computed attributes
+			"iso_id": {
+				Type:     schema.TypeInt,
+				Computed: true,
+				ForceNew: true,
+				Optional: true,
+			},
+			"script_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+				ForceNew: true,
+				Optional: true,
+			},
+			"enable_ipv6": {
+				Type:     schema.TypeBool,
+				Computed: true,
+				ForceNew: true,
+				Optional: true,
+			},
+			"enable_private_network": {
+				Type:     schema.TypeBool,
+				Computed: true,
+				ForceNew: true,
+				Optional: true,
+			},
+			"network_ids": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
+			"label": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
+			"ssh_key_ids": {
+				Type:     schema.TypeList,
+				Optional: true,
+				ForceNew: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
+			"auto_backup": {
+				Type:     schema.TypeBool,
+				Computed: true,
+				Optional: true,
+			},
+			"app_id": {
+				Type:     schema.TypeInt,
+				Computed: true,
+				Optional: true,
+			},
+			"os_id": {
+				Type:     schema.TypeInt,
+				Computed: true,
+				Optional: true,
+			},
+			"snapshot_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+				ForceNew: true,
+				Optional: true,
+			},
+			"user_data": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
+			"notify_activate": {
+				Type:     schema.TypeBool,
+				Computed: true,
+				ForceNew: true,
+				Optional: true,
+			},
+			"ddos_protection": {
+				Type:     schema.TypeBool,
+				Computed: true,
+				Optional: true,
+			},
+			"hostname": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
+			"tag": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
+			"firewall_group_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
 			"os": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -138,100 +229,6 @@ func resourceVultrServer() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 
-			// server options
-			"iso_id": {
-				Type:     schema.TypeInt,
-				Computed: true,
-				ForceNew: true,
-				Optional: true,
-			},
-			"script_id": {
-				Type:     schema.TypeString,
-				Computed: true,
-				ForceNew: true,
-				Optional: true,
-			},
-			"enable_ipv6": {
-				Type:     schema.TypeBool,
-				Computed: true,
-				ForceNew: true,
-				Optional: true,
-			},
-			"enable_private_network": {
-				Type:     schema.TypeBool,
-				Computed: true,
-				ForceNew: true,
-				Optional: true,
-			},
-			"network_ids": {
-				Type:     schema.TypeList,
-				Computed: true,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
-			"label": {
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-			"ssh_key_ids": {
-				Type:     schema.TypeList,
-				Optional: true,
-				ForceNew: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
-			"auto_backup": {
-				Type:     schema.TypeBool,
-				Computed: true,
-				Optional: true,
-			},
-			"app_id": {
-				Type:     schema.TypeInt,
-				Computed: true,
-				Optional: true,
-			},
-			"os_id": {
-				Type:     schema.TypeInt,
-				Computed: true,
-				Optional: true,
-			},
-			"snapshot_id": {
-				Type:     schema.TypeString,
-				Computed: true,
-				ForceNew: true,
-				Optional: true,
-			},
-			"user_data": {
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-			"notify_activate": {
-				Type:     schema.TypeBool,
-				Computed: true,
-				ForceNew: true,
-				Optional: true,
-			},
-			"ddos_protection": {
-				Type:     schema.TypeBool,
-				Computed: true,
-				Optional: true,
-			},
-			"hostname": {
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-			"tag": {
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-			"firewall_group_id": {
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
 		},
 	}
 }

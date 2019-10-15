@@ -35,11 +35,6 @@ func resourceVultrFirewallRule() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"ip_type": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			// Optional params
 			"to_port": {
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -54,6 +49,10 @@ func resourceVultrFirewallRule() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
+			},
+			"ip_type": {
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 		},
 	}

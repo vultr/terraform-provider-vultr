@@ -31,14 +31,6 @@ func resourceVultrReservedIP() *schema.Resource {
 				ForceNew:     true,
 				ValidateFunc: validateVultrReservedIPType,
 			},
-			"subnet": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"subnet_size": {
-				Type:     schema.TypeInt,
-				Computed: true,
-			},
 			"label": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -47,6 +39,14 @@ func resourceVultrReservedIP() *schema.Resource {
 			"attached_id": {
 				Type:     schema.TypeString,
 				Optional: true,
+			},
+			"subnet": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"subnet_size": {
+				Type:     schema.TypeInt,
+				Computed: true,
 			},
 		},
 	}

@@ -30,74 +30,16 @@ func resourceVultrBareMetalServer() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			"os": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"ram": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"disk": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"main_ip": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"cpu_count": {
-				Type:     schema.TypeInt,
-				Computed: true,
-			},
 			"region_id": {
 				Type:     schema.TypeInt,
 				Required: true,
 				ForceNew: true,
-			},
-			"default_password": {
-				Type:      schema.TypeString,
-				Computed:  true,
-				Sensitive: true,
-			},
-			"date_created": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"status": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"netmask_v4": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"gateway_v4": {
-				Type:     schema.TypeString,
-				Computed: true,
 			},
 			"plan_id": {
 				Type:     schema.TypeInt,
 				Required: true,
 				ForceNew: true,
 			},
-			"v6_networks": {
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem:     &schema.Schema{Type: schema.TypeMap},
-			},
-			"os_id": {
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-			"app_id": {
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-			},
-
-			// options
 			"label": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -140,6 +82,62 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
+			},
+			"os_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
+			"app_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
+			"os": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"ram": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"disk": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"main_ip": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"cpu_count": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
+			"default_password": {
+				Type:      schema.TypeString,
+				Computed:  true,
+				Sensitive: true,
+			},
+			"date_created": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"netmask_v4": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"gateway_v4": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"v6_networks": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeMap},
 			},
 		},
 	}

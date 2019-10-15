@@ -33,15 +33,15 @@ func resourceVultrDnsRecord() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"priority": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
 			"type": {
 				Type:         schema.TypeString,
 				Required:     true,
 				ForceNew:     true,
 				ValidateFunc: validateRecordType,
+			},
+			"priority": {
+				Type:     schema.TypeInt,
+				Optional: true,
 			},
 			"ttl": {
 				Type:     schema.TypeInt,
