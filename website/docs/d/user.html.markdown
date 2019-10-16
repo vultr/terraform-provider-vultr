@@ -38,7 +38,7 @@ data "vultr_user" "my_user" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding users.
+* `filter` - (Required) Query parameters for finding users.
 
 The `filter` block supports the following:
 

@@ -27,7 +27,7 @@ data "vultr_network" "my_network" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding private networks.
+* `filter` - (Required) Query parameters for finding private networks.
 
 The `filter` block supports the following:
 

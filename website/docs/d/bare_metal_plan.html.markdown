@@ -27,7 +27,7 @@ data "vultr_bare_metal_plan" "my_plan" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding plans.
+* `filter` - (Required) Query parameters for finding plans.
 
 The `filter` block supports the following:
 

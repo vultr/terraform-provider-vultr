@@ -27,7 +27,7 @@ data "vultr_ssh_key" "my_ssh_key" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding SSH keys.
+* `filter` - (Required) Query parameters for finding SSH keys.
 
 The `filter` block supports the following:
 

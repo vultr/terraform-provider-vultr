@@ -27,7 +27,7 @@ data "vultr_os" "centos" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding operating systems.
+* `filter` - (Required) Query parameters for finding operating systems.
 
 The `filter` block supports the following:
 

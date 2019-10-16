@@ -27,7 +27,7 @@ data "vultr_startup_script" "my_startup_script" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding startup scripts.
+* `filter` - (Required) Query parameters for finding startup scripts.
 
 The `filter` block supports the following:
 

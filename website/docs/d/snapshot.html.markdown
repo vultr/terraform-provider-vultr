@@ -27,7 +27,7 @@ data "vultr_snapshot" "my_snapshot" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding snapshots.
+* `filter` - (Required) Query parameters for finding snapshots.
 
 The `filter` block supports the following:
 

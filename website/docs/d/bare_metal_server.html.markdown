@@ -27,7 +27,7 @@ data "vultr_bare_metal_server" "my_server" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding servers.
+* `filter` - (Required) Query parameters for finding servers.
 
 The `filter` block supports the following:
 

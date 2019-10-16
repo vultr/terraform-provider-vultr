@@ -27,7 +27,7 @@ data "vultr_region" "my_region" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding regions.
+* `filter` - (Required) Query parameters for finding regions.
 
 The `filter` block supports the following:
 

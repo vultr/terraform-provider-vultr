@@ -27,7 +27,7 @@ data "vultr_reserved_ip" "my_reserved_ip" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding reserved IP addresses.
+* `filter` - (Required) Query parameters for finding reserved IP addresses.
 
 The `filter` block supports the following:
 

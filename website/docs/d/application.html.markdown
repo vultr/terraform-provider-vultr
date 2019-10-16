@@ -27,7 +27,7 @@ data "vultr_application" "docker" {
 
 The following arguments are supported:
 
-* `filter` - Query parameters for finding applications.
+* `filter` - (Required) Query parameters for finding applications.
 
 The `filter` block supports the following:
 
