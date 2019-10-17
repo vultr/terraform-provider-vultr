@@ -13,7 +13,7 @@ func TestAccVultrBackup(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrBackup_read("auto-backup 45.77.151.177 tf-backup-DONT-DELETE"),
+				Config: testAccVultrBackup_read("auto-backup 45.77.152.237 tf-backup-DONT-DELETE"),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.vultr_backup.backs", "backups.0.size"),
 					resource.TestCheckResourceAttrSet("data.vultr_backup.backs", "backups.0.date_created"),
