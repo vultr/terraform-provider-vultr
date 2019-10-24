@@ -1,4 +1,4 @@
-## v1.0.5 (Unreleased)
+## 1.0.5 (Unreleased)
 
 - Initial release under the terraform-providers/ namespace
 
