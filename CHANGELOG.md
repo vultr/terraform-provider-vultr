@@ -1,3 +1,4 @@
+## 1.0.6 (Unreleased)
 ## 1.0.5 (October 24, 2019)
 
 - Initial release under the terraform-providers/ namespace
