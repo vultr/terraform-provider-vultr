@@ -1,4 +1,4 @@
-module github.com/vultr/terraform-provider-vultr
+module github.com/terraform-providers/terraform-provider-vultr
 
 go 1.12
 
