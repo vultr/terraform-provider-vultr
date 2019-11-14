@@ -22,7 +22,7 @@ func Provider() terraform.ResourceProvider {
 			"retry_limit": {
 				Type:        schema.TypeInt,
 				Optional:    true,
-				Description: "Allows users to set the number of retrys that should be taken for failed API call",
+				Description: "Allows users to set the number of retrys that should be taken for a failed API call",
 			},
 		},
 
