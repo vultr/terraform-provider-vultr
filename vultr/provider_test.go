@@ -14,7 +14,7 @@ var testAccProvider *schema.Provider
 
 func init() {
 	testAccProvider = Provider().(*schema.Provider)
-	config, _ := config.NewRawConfig(map[string]interface{}{"rate_limit": 2000, "retry_rate": 4})
+	config, _ := config.NewRawConfig(map[string]interface{}{"rate_limit": 2000, "retry_limit": 4})
 	testAccProvider.Configure(terraform.NewResourceConfig(config))
 	testAccProviders = map[string]terraform.ResourceProvider{
 		"vultr": testAccProvider,
