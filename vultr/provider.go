@@ -19,6 +19,11 @@ func Provider() terraform.ResourceProvider {
 				Optional:    true,
 				Description: "Allows users to set the speed of API calls to work with the Vultr Rate Limit",
 			},
+			"retry_limit": {
+				Type:        schema.TypeInt,
+				Optional:    true,
+				Description: "Allows users to set the maximum number of retries allowed for a failed API call.",
+			},
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
@@ -69,8 +74,9 @@ func Provider() terraform.ResourceProvider {
 
 func providerConfigure(d *schema.ResourceData) (interface{}, error) {
 	config := Config{
-		APIKey:    d.Get("api_key").(string),
-		RateLimit: d.Get("rate_limit").(int),
+		APIKey:     d.Get("api_key").(string),
+		RateLimit:  d.Get("rate_limit").(int),
+		RetryLimit: d.Get("retry_limit").(int),
 	}
 
 	return config.Client()

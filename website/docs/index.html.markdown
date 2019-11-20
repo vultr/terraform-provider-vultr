@@ -19,6 +19,7 @@ with the proper credentials before it can be used.
 provider "vultr" {
   api_key = "VULTR_API_KEY"
   rate_limit = 700
+  retry_limit = 3
 }
 
 # Create a web server
@@ -33,3 +34,4 @@ The following arguments are supported:
 
 * `api_key` - (Required) This is the [Vultr API API](https://my.vultr.com/settings/#settingsapi). This can also be specified with the VULTR_API_KEY shell environment variable.
 * `rate_limit` - (Optional) Vultr limits API calls to 3 calls per second. This field lets you configure how the rate limit using milliseconds. The default value if this field is omitted is `650 milliseconds` per call. 
+* `retry_limit` - (Optional) This field lets you configure how many retries should be attempted on a failed call. The default value if this field is omitted is `3` retries.
