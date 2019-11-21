@@ -1,4 +1,7 @@
-# Change Log
+## 1.0.6 (Unreleased)
+## 1.0.5 (October 24, 2019)
+
+- Initial release under the terraform-providers/ namespace
 
 ## [v1.0.4](https://github.com/vultr/terraform-provider-vultr/compare/v1.0.3..v1.0.4) (2019-08-09)
 ### Fixes
