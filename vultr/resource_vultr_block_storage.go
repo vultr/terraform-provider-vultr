@@ -6,7 +6,6 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform/helper/schema"
-	"github.com/vultr/govultr"
 )
 
 func resourceVultrBlockStorage() *schema.Resource {
@@ -41,11 +40,11 @@ func resourceVultrBlockStorage() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"attached_id": {
+			"label": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"label": {
+			"attached_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -58,6 +57,7 @@ func resourceVultrBlockStorageCreate(d *schema.ResourceData, meta interface{}) e
 
 	regionID := d.Get("region_id").(int)
 	size := d.Get("size_gb").(int)
+	instanceID := d.Get("attached_id").(string)
 
 	var label string
 	l, ok := d.GetOk("label")
@@ -73,29 +73,25 @@ func resourceVultrBlockStorageCreate(d *schema.ResourceData, meta interface{}) e
 	d.SetId(bs.BlockStorageID)
 	log.Printf("[INFO] Block Storage ID: %s", d.Id())
 
+	if instanceID != "" {
+		log.Printf("[INFO] Attaching block storage (%s)", d.Id(), instanceID)
+		err := client.BlockStorage.Attach(context.Background(), d.Id(), instanceID)
+		if err != nil {
+			return fmt.Errorf("Error attaching block storage (%s): %v", d.Id(), err)
+		}
+	}
+
 	return resourceVultrBlockStorageRead(d, meta)
 }
 
 func resourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	bses, err := client.BlockStorage.List(context.Background())
+	blockID := d.Id()
+
+	bs, err := client.BlockStorage.Get(context.Background(), blockID)
 	if err != nil {
 		return fmt.Errorf("Error getting block storage: %v", err)
-	}
-
-	var bs *govultr.BlockStorage
-	for i := range bses {
-		if bses[i].BlockStorageID == d.Id() {
-			bs = &bses[i]
-			break
-		}
-	}
-
-	if bs == nil {
-		log.Printf("[WARN] Vultr block storage (%s) not found", d.Id())
-		d.SetId("")
-		return nil
 	}
 
 	d.Set("date_created", bs.DateCreated)
@@ -160,6 +156,16 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 
 func resourceVultrBlockStorageDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
+
+	instanceID := d.Get("attached_id").(string)
+
+	if instanceID != "" {
+		log.Printf("[INFO] Detaching block storage (%s)", d.Id())
+		err := client.BlockStorage.Detach(context.Background(), d.Id())
+		if err != nil {
+			return fmt.Errorf("Error detaching block storage (%s): %v", d.Id(), err)
+		}
+	}
 
 	log.Printf("[INFO] Deleting block storage: %s", d.Id())
 	err := client.BlockStorage.Delete(context.Background(), d.Id())
