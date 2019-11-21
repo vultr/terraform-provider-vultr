@@ -40,11 +40,11 @@ func resourceVultrBlockStorage() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"label": {
+			"attached_id": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"attached_id": {
+			"label": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
