@@ -1,5 +1,3 @@
-## This plugin has been archived in favor of the official provider located at https://github.com/terraform-providers/terraform-provider-vultr
-
 Terraform Provider for Vultr
 ==================
 
