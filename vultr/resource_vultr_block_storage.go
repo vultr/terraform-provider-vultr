@@ -133,10 +133,17 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 	if d.HasChange("attached_id") {
 		old, newVal := d.GetChange("attached_id")
 		if old.(string) != "" {
-			log.Printf(`[INFO] Detaching block storage (%s)`, d.Id())
-			err := client.BlockStorage.Detach(context.Background(), d.Id())
+			// The following check is necessary so we do not erroneously detach after a formerly attached server has been tainted and/or destroyed.
+			bs, err := client.BlockStorage.Get(context.Background(), d.Id())
 			if err != nil {
-				return fmt.Errorf("Error detaching block storage (%s): %v", d.Id(), err)
+				return fmt.Errorf("Error getting block storage: %v", err)
+			}
+			if bs.InstanceID != "" {
+				log.Printf(`[INFO] Detaching block storage (%s)`, d.Id())
+				err := client.BlockStorage.Detach(context.Background(), d.Id())
+				if err != nil {
+					return fmt.Errorf("Error detaching block storage (%s): %v", d.Id(), err)
+				}
 			}
 		}
 		if newVal.(string) != "" {
