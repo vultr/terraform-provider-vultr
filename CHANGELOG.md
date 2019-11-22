@@ -1,4 +1,4 @@
-## 1.1.0 (November 22, 2019)
+## 1.1.0 (Unreleased)
 IMPROVEMENTS:
 -   provider: Retry mechanism configuration `retry_limit` was added to allow adjusting how many retries should be attempted. [#7](https://github.com/terraform-providers/terraform-provider-vultr/pull/7).
 
