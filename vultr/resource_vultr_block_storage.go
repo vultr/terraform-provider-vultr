@@ -74,7 +74,7 @@ func resourceVultrBlockStorageCreate(d *schema.ResourceData, meta interface{}) e
 	log.Printf("[INFO] Block Storage ID: %s", d.Id())
 
 	if instanceID != "" {
-		log.Printf("[INFO] Attaching block storage (%s)", d.Id(), instanceID)
+		log.Printf("[INFO] Attaching block storage (%s)", d.Id())
 		err := client.BlockStorage.Attach(context.Background(), d.Id(), instanceID)
 		if err != nil {
 			return fmt.Errorf("Error attaching block storage (%s): %v", d.Id(), err)
