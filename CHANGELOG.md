@@ -1,4 +1,11 @@
-## 1.0.6 (Unreleased)
+## 1.1.1 (Unreleased)
+## 1.1.0 (November 22, 2019)
+IMPROVEMENTS:
+-   provider: Retry mechanism configuration `retry_limit` was added to allow adjusting how many retries should be attempted. [#7](https://github.com/terraform-providers/terraform-provider-vultr/pull/7).
+
+BUG FIXES:
+- Fixed go module name [#4](https://github.com/terraform-providers/terraform-provider-vultr/pull/4)
+
 ## 1.0.5 (October 24, 2019)
 
 - Initial release under the terraform-providers/ namespace
