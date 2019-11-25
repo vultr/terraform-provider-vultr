@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/hashicorp/terraform/helper/schema"
 )
@@ -75,6 +76,7 @@ func resourceVultrBlockStorageCreate(d *schema.ResourceData, meta interface{}) e
 
 	if instanceID != "" {
 		log.Printf("[INFO] Attaching block storage (%s)", d.Id())
+		time.Sleep(5 * time.Second)
 		err := client.BlockStorage.Attach(context.Background(), d.Id(), instanceID)
 		if err != nil {
 			return fmt.Errorf("Error attaching block storage (%s): %v", d.Id(), err)
