@@ -1,4 +1,4 @@
-## 1.1.1 (Unreleased)
+## 1.1.1 (December 02, 2019)
 IMPROVEMENTS:
 - resource/vultr_block_storage: Attaches block storage on creation. Also reattaches block storage to instances if you taint the instance.[#9](https://github.com/terraform-providers/terraform-provider-vultr/pull/9) Thanks @oogy!
 
