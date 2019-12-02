@@ -1,4 +1,7 @@
 ## 1.1.1 (Unreleased)
+IMPROVEMENTS:
+- resource/vultr_block_storage: Attaches block storage on creation. Also reattaches block storage to instances if you taint the instance.Thanks @oogy!
+
 ## 1.1.0 (November 22, 2019)
 IMPROVEMENTS:
 -   provider: Retry mechanism configuration `retry_limit` was added to allow adjusting how many retries should be attempted. [#7](https://github.com/terraform-providers/terraform-provider-vultr/pull/7).
