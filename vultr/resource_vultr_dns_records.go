@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/hashicorp/terraform/helper/schema"
 	"github.com/vultr/govultr"
@@ -17,7 +18,7 @@ func resourceVultrDnsRecord() *schema.Resource {
 		Update: resourceVultrDnsRecordUpdate,
 		Delete: resourceVultrDnsRecordDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			State: resourceVultrDnsRecordImport,
 		},
 		Schema: map[string]*schema.Schema{
 			"data": {
@@ -92,6 +93,7 @@ func resourceVultrDnsRecordCreate(d *schema.ResourceData, meta interface{}) erro
 
 	return fmt.Errorf("Error finding DNS record: %v", err)
 }
+
 func resourceVultrDnsRecordRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
@@ -122,6 +124,38 @@ func resourceVultrDnsRecordRead(d *schema.ResourceData, meta interface{}) error 
 	d.Set("ttl", record.TTL)
 	return nil
 }
+
+func resourceVultrDnsRecordImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	client := meta.(*Client).govultrClient()
+
+	importID := d.Id()
+	commaIdx := strings.IndexByte(importID, ',')
+	if commaIdx == -1 {
+		return nil, fmt.Errorf(`Invalid import format, expected "domain,resourceID"`)
+	}
+	domain, recordID := importID[:commaIdx], importID[commaIdx+1:]
+
+	records, err := client.DNSRecord.List(context.Background(), domain)
+	if err != nil {
+		return nil, fmt.Errorf("Error getting DNS records for DNS Domain %s: %v", domain, err)
+	}
+
+	var record *govultr.DNSRecord
+	for _, v := range records {
+		if strconv.Itoa(v.RecordID) == recordID {
+			record = &v
+			break
+		}
+	}
+	if record == nil {
+		return nil, fmt.Errorf("DNS record %s not found for domain %s", recordID, domain)
+	}
+
+	d.SetId(recordID)
+	d.Set("domain", domain)
+	return []*schema.ResourceData{d}, nil
+}
+
 func resourceVultrDnsRecordUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 

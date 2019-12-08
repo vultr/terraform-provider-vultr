@@ -6,6 +6,7 @@ import (
 	"github.com/hashicorp/terraform/helper/acctest"
 	"github.com/hashicorp/terraform/helper/resource"
 	"github.com/hashicorp/terraform/terraform"
+	"regexp"
 	"strconv"
 	"testing"
 	"time"
@@ -79,4 +80,38 @@ func testAccVultrDnsRecord_base(name string) string {
   			type = "A"
   			ttl = "3600"
 		}`, name)
+}
+
+func TestAccVultrDnsRecord_importBasic(t *testing.T) {
+	resourceName := "vultr_dns_record.example"
+	rString := acctest.RandString(6) + ".com"
+	rSub := acctest.RandString(4) + rString
+	domainName := testAccVultrDnsDomain_base(rString)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckVultrDnsDomainDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: domainName + testAccVultrDnsRecord_base(rSub),
+			},
+
+			{
+				ResourceName:      resourceName,
+				ImportState:       true,
+				ImportStateVerify: true,
+				// Requires passing both the ID and domain
+				ImportStateIdPrefix: fmt.Sprintf("%s,", domainName),
+			},
+			// Test importing non-existent resource provides expected error.
+			{
+				ResourceName:        resourceName,
+				ImportState:         true,
+				ImportStateVerify:   false,
+				ImportStateIdPrefix: fmt.Sprintf("%s,", "nonexistent.com"),
+				ExpectError:         regexp.MustCompile(`Error getting DNS records for DNS Domain`),
+			},
+		},
+	})
 }
