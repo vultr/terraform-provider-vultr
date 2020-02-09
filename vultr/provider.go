@@ -43,6 +43,7 @@ func Provider() terraform.ResourceProvider {
 			"vultr_plan":              dataSourceVultrPlan(),
 			"vultr_region":            dataSourceVultrRegion(),
 			"vultr_reserved_ip":       dataSourceVultrReservedIP(),
+			"vultr_reverse_ipv6":      dataSourceVultrReverseIPV6(),
 			"vultr_server":            dataSourceVultrServer(),
 			"vultr_snapshot":          dataSourceVultrSnapshot(),
 			"vultr_ssh_key":           dataSourceVultrSSHKey(),
