@@ -58,7 +58,7 @@ func dataSourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) e
 	block, err := client.BlockStorage.List(context.Background())
 
 	if err != nil {
-		return fmt.Errorf("error getting applications: %v", err)
+		return fmt.Errorf("error getting block storages: %v", err)
 	}
 
 	blockList := []govultr.BlockStorage{}
