@@ -39,6 +39,7 @@ func Provider() terraform.ResourceProvider {
 			"vultr_iso_private":       dataSourceVultrIsoPrivate(),
 			"vultr_iso_public":        dataSourceVultrIsoPublic(),
 			"vultr_network":           dataSourceVultrNetwork(),
+			"vultr_object_storage":    dataSourceVultrObjectStorage(),
 			"vultr_os":                dataSourceVultrOS(),
 			"vultr_plan":              dataSourceVultrPlan(),
 			"vultr_region":            dataSourceVultrRegion(),
