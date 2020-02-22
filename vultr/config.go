@@ -3,11 +3,11 @@ package vultr
 import (
 	"crypto/tls"
 	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/meta"
 	"net/http"
 	"time"
 
-	"github.com/hashicorp/terraform/helper/logging"
-	"github.com/hashicorp/terraform/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/logging"
 	"github.com/vultr/govultr"
 )
 
@@ -30,7 +30,7 @@ func (c *Client) govultrClient() *govultr.Client {
 // Client configures govultr and returns an initialized client
 func (c *Config) Client() (*Client, error) {
 
-	userAgent := fmt.Sprintf("Terraform/%s", terraform.VersionString())
+	userAgent := fmt.Sprintf("Terraform/%s", meta.SDKVersionString())
 
 	transport := &http.Transport{
 		TLSNextProto: make(map[string]func(string, *tls.Conn) http.RoundTripper),
