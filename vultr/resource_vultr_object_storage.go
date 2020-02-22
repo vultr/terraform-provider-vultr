@@ -122,7 +122,7 @@ func resourceVultrObjectStorageUpdate(d *schema.ResourceData, meta interface{}) 
 
 	err = client.ObjectStorage.SetLabel(context.Background(), id, label)
 	if err != nil {
-		return fmt.Errorf("error updating object storage %s label : %v", id, err)
+		return fmt.Errorf("error updating object storage %d label : %v", id, err)
 	}
 
 	return resourceVultrObjectStorageRead(d, meta)
