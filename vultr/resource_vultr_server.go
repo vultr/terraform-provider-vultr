@@ -130,6 +130,11 @@ func resourceVultrServer() *schema.Resource {
 				Computed: true,
 				Optional: true,
 			},
+			"reserved_ip": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
 			"firewall_group_id": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -261,6 +266,7 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 		Tag:                  d.Get("tag").(string),
 		FirewallGroupID:      d.Get("firewall_group_id").(string),
 		ScriptID:             d.Get("script_id").(string),
+		ReservedIPV4:         d.Get("reserved_ip").(string),
 	}
 
 	var os int

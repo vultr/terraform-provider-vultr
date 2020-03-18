@@ -63,6 +63,7 @@ The following arguments are supported:
 * `hostname` - (Optional) The hostname to assign to the server.
 * `tag` - (Optional) The tag to assign to the server.
 * `label` - (Optional) A label for the server.
+* `reserved_ip` - (Optional) IP address of the floating IP to use as the main IP of this server.
 
 ## Attributes Reference
 
