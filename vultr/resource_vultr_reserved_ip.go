@@ -151,11 +151,6 @@ func resourceVultrReservedIPUpdate(d *schema.ResourceData, meta interface{}) err
 func resourceVultrReservedIPDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	err := resourceVultrReservedIPRead(d, meta)
-	if err != nil {
-		return fmt.Errorf("error reading reservedIP info: %v", err)
-	}
-
 	if d.Get("attached_id").(string) != "" {
 		err := client.ReservedIP.Detach(context.Background(), d.Get("subnet").(string), d.Get("attached_id").(string))
 		if err != nil {
