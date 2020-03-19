@@ -1,3 +1,4 @@
+## 1.2.0 (Unreleased)
 ## 1.1.2 (March 19, 2020)
 IMPROVEMENTS:
 - resource/vultr_server: New optional field `reserved_ip` which lets you assign a `reserved_ip` during server creation [#26](https://github.com/terraform-providers/terraform-provider-vultr/pull/26).
