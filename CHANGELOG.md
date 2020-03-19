@@ -1,4 +1,10 @@
 ## 1.1.2 (Unreleased)
+IMPROVEMENTS:
+- resource/vultr_server: New optional field `reserved_ip` which lets you assign a `reserved_ip` during server creation [#26](https://github.com/terraform-providers/terraform-provider-vultr/pull/26).
+- resource/reserved_ip: During deletion any instances that are attached to the reserved_ip are detached [#27](https://github.com/terraform-providers/terraform-provider-vultr/pull/27).
+- Migrated to Terraform Plugin SDK [#21](https://github.com/terraform-providers/terraform-provider-vultr/issues/21)
+- docs/snapshot fixed typo in snapshot [#19](https://github.com/terraform-providers/terraform-provider-vultr/pull/19)
+
 ## 1.1.1 (December 02, 2019)
 IMPROVEMENTS:
 - resource/vultr_block_storage: Attaches block storage on creation. Also reattaches block storage to instances if you taint the instance.[#9](https://github.com/terraform-providers/terraform-provider-vultr/pull/9) Thanks @oogy!
