@@ -38,6 +38,7 @@ func resourceVultrReservedIP() *schema.Resource {
 			},
 			"attached_id": {
 				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"subnet": {
