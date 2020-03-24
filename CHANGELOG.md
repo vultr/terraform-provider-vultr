@@ -1,4 +1,4 @@
-## 1.1.3 (Unreleased)
+## 1.1.3 (March 24, 2020)
 BUG FIXES:
 - resource/reserved_ip: Adding `computed: true` to `attached_id` to prevent issues when Vultr assigns this [29](https://github.com/terraform-providers/terraform-provider-vultr/pull/29)
 - resource/vultr_server: Adding `ForceNew: true` to `reserved_ip` to prevent any issues where the main floating ip may get deleted and cause issues with the instance [29](https://github.com/terraform-providers/terraform-provider-vultr/pull/29/files)
