@@ -132,6 +132,7 @@ func resourceVultrServer() *schema.Resource {
 			},
 			"reserved_ip": {
 				Type:     schema.TypeString,
+				ForceNew: true,
 				Computed: true,
 				Optional: true,
 			},
