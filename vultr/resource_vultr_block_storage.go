@@ -86,10 +86,29 @@ func resourceVultrBlockStorageCreate(d *schema.ResourceData, meta interface{}) e
 
 	if instanceID != "" {
 		log.Printf("[INFO] Attaching block storage (%s)", d.Id())
-		time.Sleep(5 * time.Second)
+		time.Sleep(10 * time.Second)
+
+		// Wait for the BS state to become active for 15 seconds
+		bsReady := false
+		for i := 0; i <= 15; i++ {
+			bState, err := client.BlockStorage.Get(context.Background(), bs.BlockStorageID)
+			if err != nil {
+				return fmt.Errorf("error attaching: %s", err.Error())
+			}
+			if bState.Status == "active" {
+				bsReady = true
+				break
+			}
+			time.Sleep(1 * time.Second)
+		}
+
+		if !bsReady {
+			return fmt.Errorf("blockstorage is not in ready state after 15 seconds")
+		}
+
 		err := client.BlockStorage.Attach(context.Background(), d.Id(), instanceID, live)
 		if err != nil {
-			return fmt.Errorf("Error attaching block storage (%s): %v", d.Id(), err)
+			return fmt.Errorf("error attaching block storage (%s): %v", d.Id(), err)
 		}
 	}
 
