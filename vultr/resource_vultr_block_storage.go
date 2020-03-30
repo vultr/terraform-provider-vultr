@@ -127,8 +127,6 @@ func resourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) err
 
 func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
-
-	d.Partial(true)
 	live := d.Get("live").(string)
 
 	if d.HasChange("label") {
@@ -148,7 +146,6 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 		if err != nil {
 			return fmt.Errorf("Error resizing block storage (%s): %v", d.Id(), err)
 		}
-		d.SetPartial("size_gb")
 	}
 
 	if d.HasChange("attached_id") {
@@ -174,10 +171,7 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 				return fmt.Errorf("Error attaching block storage (%s): %v", d.Id(), err)
 			}
 		}
-		d.SetPartial("attached_id")
 	}
-
-	d.Partial(false)
 
 	return resourceVultrBlockStorageRead(d, meta)
 }
