@@ -49,6 +49,10 @@ func resourceVultrBlockStorage() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"live": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 		},
 	}
 }
@@ -66,6 +70,12 @@ func resourceVultrBlockStorageCreate(d *schema.ResourceData, meta interface{}) e
 		label = l.(string)
 	}
 
+	var live string
+	li, ok := d.GetOk("live")
+	if ok {
+		live = li.(string)
+	}
+
 	bs, err := client.BlockStorage.Create(context.Background(), regionID, size, label)
 	if err != nil {
 		return fmt.Errorf("Error creating block storage: %v", err)
@@ -76,10 +86,29 @@ func resourceVultrBlockStorageCreate(d *schema.ResourceData, meta interface{}) e
 
 	if instanceID != "" {
 		log.Printf("[INFO] Attaching block storage (%s)", d.Id())
-		time.Sleep(5 * time.Second)
-		err := client.BlockStorage.Attach(context.Background(), d.Id(), instanceID)
+		time.Sleep(10 * time.Second)
+
+		// Wait for the BS state to become active for 15 seconds
+		bsReady := false
+		for i := 0; i <= 15; i++ {
+			bState, err := client.BlockStorage.Get(context.Background(), bs.BlockStorageID)
+			if err != nil {
+				return fmt.Errorf("error attaching: %s", err.Error())
+			}
+			if bState.Status == "active" {
+				bsReady = true
+				break
+			}
+			time.Sleep(1 * time.Second)
+		}
+
+		if !bsReady {
+			return fmt.Errorf("blockstorage is not in ready state after 15 seconds")
+		}
+
+		err := client.BlockStorage.Attach(context.Background(), d.Id(), instanceID, live)
 		if err != nil {
-			return fmt.Errorf("Error attaching block storage (%s): %v", d.Id(), err)
+			return fmt.Errorf("error attaching block storage (%s): %v", d.Id(), err)
 		}
 	}
 
@@ -96,6 +125,14 @@ func resourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) err
 		return fmt.Errorf("Error getting block storage: %v", err)
 	}
 
+	var live string
+	li, ok := d.GetOk("live")
+	if ok {
+		live = li.(string)
+	}
+
+	d.Set("live", live)
+
 	d.Set("date_created", bs.DateCreated)
 	d.Set("cost_per_month", bs.CostPerMonth)
 	d.Set("status", bs.Status)
@@ -109,8 +146,7 @@ func resourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) err
 
 func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
-
-	d.Partial(true)
+	live := d.Get("live").(string)
 
 	if d.HasChange("label") {
 		log.Printf(`[INFO] Updating block storage label (%s)`, d.Id())
@@ -129,7 +165,6 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 		if err != nil {
 			return fmt.Errorf("Error resizing block storage (%s): %v", d.Id(), err)
 		}
-		d.SetPartial("size_gb")
 	}
 
 	if d.HasChange("attached_id") {
@@ -142,7 +177,7 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 			}
 			if bs.InstanceID != "" {
 				log.Printf(`[INFO] Detaching block storage (%s)`, d.Id())
-				err := client.BlockStorage.Detach(context.Background(), d.Id())
+				err := client.BlockStorage.Detach(context.Background(), d.Id(), live)
 				if err != nil {
 					return fmt.Errorf("Error detaching block storage (%s): %v", d.Id(), err)
 				}
@@ -150,15 +185,12 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 		}
 		if newVal.(string) != "" {
 			log.Printf(`[INFO] Attaching block storage (%s)`, d.Id())
-			err := client.BlockStorage.Attach(context.Background(), d.Id(), newVal.(string))
+			err := client.BlockStorage.Attach(context.Background(), d.Id(), newVal.(string), live)
 			if err != nil {
 				return fmt.Errorf("Error attaching block storage (%s): %v", d.Id(), err)
 			}
 		}
-		d.SetPartial("attached_id")
 	}
-
-	d.Partial(false)
 
 	return resourceVultrBlockStorageRead(d, meta)
 }
@@ -167,10 +199,11 @@ func resourceVultrBlockStorageDelete(d *schema.ResourceData, meta interface{}) e
 	client := meta.(*Client).govultrClient()
 
 	instanceID := d.Get("attached_id").(string)
+	live := d.Get("live").(string)
 
 	if instanceID != "" {
 		log.Printf("[INFO] Detaching block storage (%s)", d.Id())
-		err := client.BlockStorage.Detach(context.Background(), d.Id())
+		err := client.BlockStorage.Detach(context.Background(), d.Id(), live)
 		if err != nil {
 			return fmt.Errorf("Error detaching block storage (%s): %v", d.Id(), err)
 		}

@@ -29,6 +29,8 @@ The following arguments are supported:
 * `region_id` - (Required) Region in which this block storage will reside in. (Currently only NJ/NY supported region_id 1)
 * `attached_id` - (Optional) VPS ID that you want to have this block storage attached to.
 * `label` - (Optional) Label that is given to your block storage.
+* `live` - (Optional) Live will allow attachment of the volume to an instance without a restart. Values are `yes` or `no` default is `no`.
+
 
 
 ## Attributes Reference
@@ -43,6 +45,7 @@ The following attributes are exported:
 * `date_created` - The date this block storage was created.
 * `status` - Current status of your block storage.
 * `id` - The ID for this block storage.
+* `live` - Flag which will determine of a volume should be attached with a restart or not.
 
 ## Import
 
