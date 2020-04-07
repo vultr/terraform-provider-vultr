@@ -1,3 +1,4 @@
+## 1.2.0 (Unreleased)
 ## 1.1.5 (April 07, 2020)
 BUG FIXES:
 - resource/vultr_server: Detach ISO prior to deletion if instance was created with ISO. [34](https://github.com/terraform-providers/terraform-provider-vultr/issues/34)
