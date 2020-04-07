@@ -614,6 +614,14 @@ func resourceVultrServerDelete(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 
+	isoID, ok := d.GetOk("os_id")
+	if ok {
+		err = client.Server.IsoDetach(context.Background(), d.Id())
+		if err != nil {
+			return fmt.Errorf("error detaching iso (%s) from instance (%s) : %v", d.Id(), isoID, err)
+		}
+	}
+
 	err = client.Server.Delete(context.Background(), d.Id())
 
 	if err != nil {
