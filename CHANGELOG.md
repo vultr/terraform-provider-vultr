@@ -1,4 +1,7 @@
-## 1.2.0 (Unreleased)
+## 1.1.5 (Unreleased)
+BUG FIXES:
+- resource/vultr_server: Detach ISO prior to deletion if instance was created with ISO. [34](https://github.com/terraform-providers/terraform-provider-vultr/issues/34)
+
 ## 1.1.4 (March 30, 2020)
 IMPROVEMENTS:
 - resource/block_storage: Adding new optional param `live` to allow attaching/detaching of block storage to instances without restarts [31](https://github.com/terraform-providers/terraform-provider-vultr/pull/31)
