@@ -27,7 +27,7 @@ func resourceVultrLoadBalancer() *schema.Resource {
 			},
 			"forwarding_rules": {
 				Type:     schema.TypeList,
-				Optional: true,
+				Required: true,
 				Elem:     &schema.Schema{Type: schema.TypeMap},
 			},
 			"protocol": {
@@ -219,5 +219,16 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 }
 
 func resourceVultrLoadBalancerDelete(d *schema.ResourceData, meta interface{}) error {
+	client := meta.(*Client).govultrClient()
+
+	log.Printf("[INFO] Deleting Load Balancer: %s", d.Id())
+
+	id, _ := strconv.Atoi(d.Id())
+	err := client.LoadBalancer.Delete(context.Background(), id)
+
+	if err != nil {
+		return fmt.Errorf("Error deleting Load Balancer %s : %v", d.Id(), err)
+	}
+
 	return nil
 }
