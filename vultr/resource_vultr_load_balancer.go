@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/vultr/govultr"
@@ -13,65 +14,95 @@ import (
 func resourceVultrLoadBalancer() *schema.Resource {
 	return &schema.Resource{
 		Create: resourceVultrLoadBalancerCreate,
+		Read:   resourceVultrLoadBalancerRead,
+		Update: resourceVultrLoadBalancerUpdate,
+		Delete: resourceVultrLoadBalancerDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
 		Schema: map[string]*schema.Schema{
+			"region_id": {
+				Type:     schema.TypeInt,
+				Required: true,
+			},
+			"forwarding_rules": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeMap},
+			},
 			"protocol": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"response_timeout": {
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"port": {
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"healthy_threshold": {
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"unhealthy_threshold": {
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"check_interval": {
 				Type:     schema.TypeInt,
 				Optional: true,
+				Computed: true,
 			},
 			"path": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"label": {
 				Type:     schema.TypeString,
 				Optional: true,
-			},
-			"frontend_protocol": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"frontend_port": {
-				Type:     schema.TypeInt,
-				Optional: true,
-			},
-			"backend_protocol": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"backend_port": {
-				Type:     schema.TypeInt,
-				Optional: true,
+				Computed: true,
 			},
 			"balancing_algorithm": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"ssl_redirect": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				Computed: true,
 			},
 			"cookie_name": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
+			},
+			"status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"ssl_certificate": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"ssl_chain": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"ssl_private_key": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
 			},
 		},
 	}
@@ -79,14 +110,18 @@ func resourceVultrLoadBalancer() *schema.Resource {
 
 func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
-
 	regionID := d.Get("region_id").(int)
 	label := d.Get("label").(string)
 	sslRedirect := d.Get("ssl_redirect").(bool)
+	cookieName := strings.TrimSpace(d.Get("cookie_name").(string))
 
 	stickySessions := &govultr.StickySessions{
-		StickySessionsEnabled: "false", // tk
-		CookieName:            d.Get("cookie_name").(string),
+		StickySessionsEnabled: "false",
+		CookieName:            cookieName,
+	}
+
+	if cookieName != "" {
+		stickySessions.StickySessionsEnabled = "true"
 	}
 
 	genericInfo := &govultr.GenericInfo{
@@ -95,13 +130,47 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 		StickySessions:     stickySessions,
 	}
 
-	healthCheck := &govultr.HealthCheck{} // tk
-	rules := []govultr.ForwardingRule{}   // tk
-	ssl := &govultr.SSL{}                 // tk
+	healthCheck := &govultr.HealthCheck{
+		Protocol:           d.Get("protocol").(string),
+		Port:               d.Get("port").(int),
+		Path:               d.Get("path").(string),
+		CheckInterval:      d.Get("check_interval").(int),
+		ResponseTimeout:    d.Get("response_timeout").(int),
+		UnhealthyThreshold: d.Get("unhealthy_threshold").(int),
+		HealthyThreshold:   d.Get("healthy_threshold").(int),
+	}
 
-	lb, err := client.LoadBalancer.Create(context.Background(), regionID, label, genericInfo, healthCheck, rules, ssl)
+	fr, frOk := d.GetOk("forwarding_rules")
+	fwMap := []govultr.ForwardingRule{}
+	if frOk {
+		for _, value := range fr.([]interface{}) {
+			rule := govultr.ForwardingRule{}
+			for k, v := range value.(map[string]interface{}) {
+				if k == "frontend_port" {
+					num, _ := strconv.Atoi(v.(string))
+					rule.FrontendPort = num
+				} else if k == "frontend_protocol" {
+					rule.FrontendProtocol = v.(string)
+				} else if k == "backend_port" {
+					num, _ := strconv.Atoi(v.(string))
+					rule.BackendPort = num
+				} else if k == "backend_protocol" {
+					rule.BackendProtocol = v.(string)
+				}
+			}
+			fwMap = append(fwMap, rule)
+		}
+	}
+
+	ssl := &govultr.SSL{
+		PrivateKey:  d.Get("ssl_private_key").(string),
+		Certificate: d.Get("ssl_certificate").(string),
+		Chain:       d.Get("ssl_chain").(string),
+	}
+
+	lb, err := client.LoadBalancer.Create(context.Background(), regionID, label, genericInfo, healthCheck, fwMap, ssl)
 	if err != nil {
-		return fmt.Errorf("Error creating load balancer: %v", err)
+		return fmt.Errorf("Error creating load balancer: %v, %v", err, fwMap)
 	}
 	id := strconv.Itoa(lb.ID)
 
@@ -142,5 +211,13 @@ func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) err
 	d.Set("ipv4", lb.IPV4)
 	d.Set("ipv6", lb.IPV6)
 
+	return nil
+}
+
+func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) error {
+	return nil
+}
+
+func resourceVultrLoadBalancerDelete(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
