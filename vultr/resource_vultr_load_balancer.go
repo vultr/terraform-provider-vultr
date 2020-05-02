@@ -33,7 +33,7 @@ func resourceVultrLoadBalancer() *schema.Resource {
 			},
 			"forwarding_rules": {
 				Type:     schema.TypeList,
-				Optional: true,
+				Required: true,
 				Elem:     &schema.Schema{Type: schema.TypeMap},
 			},
 			"balancing_algorithm": {
@@ -83,25 +83,21 @@ func resourceVultrLoadBalancer() *schema.Resource {
 
 func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
-
-	stickySessions := &govultr.StickySessions{}
-	genericInfo := &govultr.GenericInfo{}
-	healthCheck := govultr.HealthCheck{}
-
 	regionID := d.Get("region_id").(int)
 	label := d.Get("label").(string)
-
-	cookieName, cookieOk := d.GetOk("cookie_name")
-
-	// Generic
-	_, healthCheckOk := d.GetOk("health_check")
 	_, proxyProtocolOk := d.GetOk("proxy_protocol")
 	_, sslRedirectOk := d.GetOk("ssl_redirect")
+	cookieName, cookieOk := d.GetOk("cookie_name")
 	balancingAlgorithm, balancingAlgorithmOk := d.GetOk("balancing_algorithm")
 
+	genericInfo := &govultr.GenericInfo{}
+	stickySessions := &govultr.StickySessions{}
 	if cookieOk {
 		stickySessions.StickySessionsEnabled = "on"
 		stickySessions.CookieName = cookieName.(string)
+		genericInfo.StickySessions = stickySessions
+	} else {
+		genericInfo.StickySessions = nil
 	}
 
 	if balancingAlgorithmOk {
@@ -112,17 +108,27 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 		proxyProtocol := d.Get("proxy_protocol").(bool)
 		genericInfo.ProxyProtocol = &proxyProtocol
 	}
+
 	if sslRedirectOk {
 		sslRedirect := d.Get("ssl_redirect").(bool)
 		genericInfo.SSLRedirect = &sslRedirect
 	}
 
-	if healthCheckOk {
-		healthCheck = generateHealthCheck(d.Get("health_check"))
+	if !proxyProtocolOk && !balancingAlgorithmOk && !cookieOk && !sslRedirectOk {
+		genericInfo = nil
 	}
 
-	fr, frOk := d.GetOk("forwarding_rules")
+	// Health
+	healthCheck := &govultr.HealthCheck{}
+	healthCheckData, healthCheckOk := d.GetOk("health_check")
+	if healthCheckOk {
+		healthCheck = generateHealthCheck(healthCheckData)
+	} else {
+		healthCheck = nil
+	}
+
 	fwMap := []govultr.ForwardingRule{}
+	fr, frOk := d.GetOk("forwarding_rules")
 	if frOk {
 		for _, value := range fr.([]interface{}) {
 			rule := generateRule(value.(map[string]interface{}))
@@ -130,10 +136,14 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 		}
 	}
 
+	if len(fwMap) == 0 {
+		fwMap = nil
+	}
+
 	ssl := &govultr.SSL{}
-	_, sslOk := d.GetOk("ssl")
+	sslData, sslOk := d.GetOk("ssl")
 	if sslOk {
-		for k, v := range d.Get("ssl").(map[string]interface{}) {
+		for k, v := range sslData.(map[string]interface{}) {
 			switch k {
 			case "private_key":
 				ssl.PrivateKey = v.(string)
@@ -143,10 +153,12 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 				ssl.Chain = v.(string)
 			}
 		}
+	} else {
+		ssl = nil
 	}
 
-	attachInstances, attachInstancesOk := d.GetOk("attached_instances")
 	instanceList := &govultr.InstanceList{}
+	attachInstances, attachInstancesOk := d.GetOk("attached_instances")
 	if attachInstancesOk {
 		for _, value := range attachInstances.([]interface{}) {
 			idInt := value.(string)
@@ -160,9 +172,13 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 			attachId, _ := strconv.Atoi(value.(string))
 			instanceList.InstanceList = append(instanceList.InstanceList, attachId)
 		}
+	} else {
+		instanceList = nil
 	}
 
-	lb, err := client.LoadBalancer.Create(context.Background(), regionID, label, genericInfo, &healthCheck, fwMap, ssl, instanceList)
+	// return fmt.Errorf("Error creating load balancer: REGION: %v LABEL: %v GENERIC: %v HEALTH: %v FR: %v SSL: %v INSTANCES: %v ", regionID, label, genericInfo, healthCheck, fwMap, ssl, instanceList)
+
+	lb, err := client.LoadBalancer.Create(context.Background(), regionID, label, genericInfo, healthCheck, fwMap, ssl, instanceList)
 	if err != nil {
 		return fmt.Errorf("Error creating load balancer: %v", err)
 	}
@@ -177,7 +193,7 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 
 	log.Printf("[INFO] load balancer ID: %s", d.Id())
 
-	return resourceVultrLoadBalancerRead(d, meta)
+	return nil
 }
 
 func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) error {
@@ -313,7 +329,7 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 		healthCheck := generateHealthCheck(newHealthCheck)
 
 		log.Printf(`[INFO] Updating load balancer health info (%v)`, id)
-		err := client.LoadBalancer.SetHealthCheck(context.Background(), id, &healthCheck)
+		err := client.LoadBalancer.SetHealthCheck(context.Background(), id, healthCheck)
 		if err != nil {
 			return fmt.Errorf("Error updating load balancer health info (%v): %v", id, err)
 		}
@@ -555,8 +571,8 @@ func generateRule(rule map[string]interface{}) govultr.ForwardingRule {
 	return r
 }
 
-func generateHealthCheck(params interface{}) govultr.HealthCheck {
-	healthCheck := govultr.HealthCheck{}
+func generateHealthCheck(params interface{}) *govultr.HealthCheck {
+	healthCheck := &govultr.HealthCheck{}
 	for k, v := range params.(map[string]interface{}) {
 		switch k {
 		case "protocol":
