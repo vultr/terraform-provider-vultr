@@ -83,28 +83,43 @@ func resourceVultrLoadBalancer() *schema.Resource {
 
 func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
+
+	stickySessions := &govultr.StickySessions{}
+	genericInfo := &govultr.GenericInfo{}
+	healthCheck := govultr.HealthCheck{}
+
 	regionID := d.Get("region_id").(int)
 	label := d.Get("label").(string)
-	sslRedirect := d.Get("ssl_redirect").(bool)
-	cookieName := d.Get("cookie_name").(string)
-	balancingAlgorithm := d.Get("balancing_algorithm").(string)
 
-	stickySessions := &govultr.StickySessions{
-		StickySessionsEnabled: "off",
-		CookieName:            cookieName,
-	}
+	cookieName, cookieOk := d.GetOk("cookie_name")
 
-	if cookieName != "" {
+	// Generic
+	_, healthCheckOk := d.GetOk("health_check")
+	_, proxyProtocolOk := d.GetOk("proxy_protocol")
+	_, sslRedirectOk := d.GetOk("ssl_redirect")
+	balancingAlgorithm, balancingAlgorithmOk := d.GetOk("balancing_algorithm")
+
+	if cookieOk {
 		stickySessions.StickySessionsEnabled = "on"
+		stickySessions.CookieName = cookieName.(string)
 	}
 
-	genericInfo := &govultr.GenericInfo{
-		BalancingAlgorithm: balancingAlgorithm,
-		SSLRedirect:        &sslRedirect,
-		StickySessions:     stickySessions,
+	if balancingAlgorithmOk {
+		genericInfo.BalancingAlgorithm = balancingAlgorithm.(string)
 	}
 
-	healthCheck := generateHealthCheck(d.Get("health_check"))
+	if proxyProtocolOk {
+		proxyProtocol := d.Get("proxy_protocol").(bool)
+		genericInfo.ProxyProtocol = &proxyProtocol
+	}
+	if sslRedirectOk {
+		sslRedirect := d.Get("ssl_redirect").(bool)
+		genericInfo.SSLRedirect = &sslRedirect
+	}
+
+	if healthCheckOk {
+		healthCheck = generateHealthCheck(d.Get("health_check"))
+	}
 
 	fr, frOk := d.GetOk("forwarding_rules")
 	fwMap := []govultr.ForwardingRule{}
