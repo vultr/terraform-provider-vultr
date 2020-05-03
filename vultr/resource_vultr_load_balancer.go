@@ -32,31 +32,30 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			// "forwarding_rules": {
-			// 	Type:     schema.TypeList,
-			// 	Required: true,
-			// 	Elem:     &schema.Schema{Type: schema.TypeMap},
-			// },
 			"forwarding_rules": {
 				Type:     schema.TypeSet,
 				Required: true,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"frontend_protocol": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"http", "https", "tcp"}, false),
 						},
 						"frontend_port": {
-							Type:     schema.TypeInt,
-							Required: true,
+							Type:         schema.TypeInt,
+							Required:     true,
+							ValidateFunc: validation.IntBetween(1, 65535),
 						},
 						"backend_protocol": {
-							Type:     schema.TypeString,
-							Required: true,
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"http", "https", "tcp"}, false),
 						},
 						"backend_port": {
-							Type:     schema.TypeInt,
-							Required: true,
+							Type:         schema.TypeInt,
+							Required:     true,
+							ValidateFunc: validation.IntBetween(1, 65535),
 						},
 						"rule_id": {
 							Type:     schema.TypeString,
@@ -89,7 +88,7 @@ func resourceVultrLoadBalancer() *schema.Resource {
 						"port": {
 							Type:         schema.TypeInt,
 							Required:     true,
-							ValidateFunc: validation.NoZeroValues,
+							ValidateFunc: validation.IntBetween(1, 65535),
 						},
 						"check_interval": {
 							Type:         schema.TypeInt,
@@ -188,7 +187,6 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 		genericInfo = nil
 	}
 
-	// Health
 	healthCheck := &govultr.HealthCheck{}
 	healthCheckData, healthCheckOk := d.GetOk("health_check")
 	if healthCheckOk {
