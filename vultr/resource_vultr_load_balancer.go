@@ -270,6 +270,12 @@ func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) err
 	client := meta.(*Client).govultrClient()
 
 	id, _ := strconv.Atoi(d.Id())
+
+	lbConfig, err := client.LoadBalancer.GetFullConfig(context.Background(), id)
+	if err != nil {
+		return fmt.Errorf("Error getting load balancer: %v", err)
+	}
+
 	lbs, err := client.LoadBalancer.List(context.Background())
 	if err != nil {
 		return fmt.Errorf("Error getting load balancer: %v", err)
@@ -289,13 +295,8 @@ func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) err
 		return nil
 	}
 
-	frList, err := client.LoadBalancer.ListForwardingRules(context.Background(), id)
-	if err != nil {
-		return fmt.Errorf("Error getting forwarding rules for load balancer (%v): %v", id, err)
-	}
-
 	var rulesList []map[string]interface{}
-	for _, rules := range frList.ForwardRuleList {
+	for _, rules := range lbConfig.ForwardRuleList {
 		rule := map[string]interface{}{
 			"rule_id":           rules.RuleID,
 			"frontend_protocol": rules.FrontendProtocol,
@@ -310,30 +311,15 @@ func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) err
 		return fmt.Errorf("Error setting `forwarding_rules`: %v", err)
 	}
 
-	genericInfo, err := client.LoadBalancer.GetGenericInfo(context.Background(), id)
-	if err != nil {
-		return fmt.Errorf("Error getting generic info for loadbalancer (%v): %v", id, err)
-	}
-
-	instanceList, err := client.LoadBalancer.AttachedInstances(context.Background(), id)
-	if err != nil {
-		return fmt.Errorf("Error getting attached instance list for loadbalancer (%v): %v", id, err)
-	}
-
-	healthCheck, err := client.LoadBalancer.GetHealthCheck(context.Background(), id)
-	if err != nil {
-		return fmt.Errorf("Error getting health check info for loadbalancer (%v): %v", id, err)
-	}
-
 	var hc []map[string]interface{}
 	hcInfo := map[string]interface{}{
-		"protocol":            healthCheck.Protocol,
-		"port":                healthCheck.Port,
-		"path":                healthCheck.Path,
-		"check_interval":      healthCheck.CheckInterval,
-		"response_timeout":    healthCheck.ResponseTimeout,
-		"unhealthy_threshold": healthCheck.UnhealthyThreshold,
-		"healthy_threshold":   healthCheck.HealthyThreshold,
+		"protocol":            lbConfig.HealthCheck.Protocol,
+		"port":                lbConfig.HealthCheck.Port,
+		"path":                lbConfig.HealthCheck.Path,
+		"check_interval":      lbConfig.HealthCheck.CheckInterval,
+		"response_timeout":    lbConfig.HealthCheck.ResponseTimeout,
+		"unhealthy_threshold": lbConfig.HealthCheck.UnhealthyThreshold,
+		"healthy_threshold":   lbConfig.HealthCheck.HealthyThreshold,
 	}
 	hc = append(hc, hcInfo)
 
@@ -341,18 +327,13 @@ func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) err
 		return fmt.Errorf("Error setting `health_check`: %v", err)
 	}
 
-	ssl, err := client.LoadBalancer.HasSSL(context.Background(), id)
-	if err != nil {
-		return fmt.Errorf("Error getting ssl info for loadbalancer (%v): %v", id, err)
-	}
+	d.Set("has_ssl", lbConfig.SSLInfo)
 
-	d.Set("has_ssl", ssl.SSLInfo)
-
-	d.Set("attached_instances", instanceList.InstanceList)
-	d.Set("balancing_algorithm", genericInfo.BalancingAlgorithm)
-	d.Set("ssl_redirect", genericInfo.SSLRedirect)
-	d.Set("proxy_protocol", genericInfo.ProxyProtocol)
-	d.Set("cookie_name", genericInfo.StickySessions.CookieName)
+	d.Set("attached_instances", lbConfig.InstanceList)
+	d.Set("balancing_algorithm", lbConfig.BalancingAlgorithm)
+	d.Set("ssl_redirect", lbConfig.SSLRedirect)
+	d.Set("proxy_protocol", lbConfig.ProxyProtocol)
+	d.Set("cookie_name", lbConfig.StickySessions.CookieName)
 
 	d.Set("date_created", lb.DateCreated)
 	d.Set("region_id", lb.RegionID)
