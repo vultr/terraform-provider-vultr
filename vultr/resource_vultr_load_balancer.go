@@ -472,50 +472,53 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 
 	if d.HasChange("attached_instances") {
 		oldInstances, newInstances := d.GetChange("attached_instances")
-		var oldIDs []string
-		for _, v := range oldInstances.([]interface{}) {
-			oldIDs = append(oldIDs, v.(string))
-		}
 
-		var newIDs []string
-		for _, v := range newInstances.([]interface{}) {
-			newIDs = append(newIDs, v.(string))
-		}
+		return fmt.Errorf("instances (%v): %v", oldInstances, newInstances)
 
-		diff := func(in, out []string) []string {
-			var diff []string
+		// var oldIDs []string
+		// for _, v := range oldInstances.([]interface{}) {
+		// 	oldIDs = append(oldIDs, v.(string))
+		// }
 
-			b := map[string]string{}
-			for i := range in {
-				b[in[i]] = ""
-			}
+		// var newIDs []string
+		// for _, v := range newInstances.([]interface{}) {
+		// 	newIDs = append(newIDs, v.(string))
+		// }
 
-			for i := range out {
-				if _, ok := b[out[i]]; !ok {
-					diff = append(diff, out[i])
-				}
-			}
+		// diff := func(in, out []string) []string {
+		// 	var diff []string
 
-			return diff
-		}
+		// 	b := map[string]string{}
+		// 	for i := range in {
+		// 		b[in[i]] = ""
+		// 	}
 
-		for _, v := range diff(newIDs, oldIDs) {
-			detachID, _ := strconv.Atoi(v)
-			err := client.LoadBalancer.DetachInstance(context.Background(), id, detachID)
+		// 	for i := range out {
+		// 		if _, ok := b[out[i]]; !ok {
+		// 			diff = append(diff, out[i])
+		// 		}
+		// 	}
 
-			if err != nil {
-				return fmt.Errorf("Error detaching instance id %v from LoadBalancer %v : %v", v, id, diff(oldIDs, newIDs))
-			}
-		}
+		// 	return diff
+		// }
 
-		for _, v := range diff(oldIDs, newIDs) {
-			attachID, _ := strconv.Atoi(v)
-			err := client.LoadBalancer.AttachInstance(context.Background(), id, attachID)
+		// for _, v := range diff(newIDs, oldIDs) {
+		// 	detachID, _ := strconv.Atoi(v)
+		// 	err := client.LoadBalancer.DetachInstance(context.Background(), id, detachID)
 
-			if err != nil {
-				return fmt.Errorf("Error attaching instance id %v to loadbalancer %v : %v", v, id, err)
-			}
-		}
+		// 	if err != nil {
+		// 		return fmt.Errorf("Error detaching instance id %v from LoadBalancer %v : %v", v, id, diff(oldIDs, newIDs))
+		// 	}
+		// }
+
+		// for _, v := range diff(oldIDs, newIDs) {
+		// 	attachID, _ := strconv.Atoi(v)
+		// 	err := client.LoadBalancer.AttachInstance(context.Background(), id, attachID)
+
+		// 	if err != nil {
+		// 		return fmt.Errorf("Error attaching instance id %v to loadbalancer %v : %v", v, id, err)
+		// 	}
+		// }
 	}
 
 	return resourceVultrLoadBalancerRead(d, meta)
