@@ -242,8 +242,7 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 		}
 
 		for _, value := range attachInstances.([]interface{}) {
-			attachId, _ := strconv.Atoi(value.(string))
-			instanceList.InstanceList = append(instanceList.InstanceList, attachId)
+			instanceList.InstanceList = append(instanceList.InstanceList, value.(int))
 		}
 	} else {
 		instanceList = nil
@@ -473,52 +472,48 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 	if d.HasChange("attached_instances") {
 		oldInstances, newInstances := d.GetChange("attached_instances")
 
-		return fmt.Errorf("instances (%v): %v", oldInstances, newInstances)
+		var oldIDs []int
+		for _, v := range oldInstances.([]interface{}) {
+			oldIDs = append(oldIDs, v.(int))
+		}
 
-		// var oldIDs []string
-		// for _, v := range oldInstances.([]interface{}) {
-		// 	oldIDs = append(oldIDs, v.(string))
-		// }
+		var newIDs []int
+		for _, v := range newInstances.([]interface{}) {
+			newIDs = append(newIDs, v.(int))
+		}
 
-		// var newIDs []string
-		// for _, v := range newInstances.([]interface{}) {
-		// 	newIDs = append(newIDs, v.(string))
-		// }
+		diff := func(in, out []int) []int {
+			var diff []int
 
-		// diff := func(in, out []string) []string {
-		// 	var diff []string
+			b := map[int]int{}
+			for i := range in {
+				b[in[i]] = 0
+			}
 
-		// 	b := map[string]string{}
-		// 	for i := range in {
-		// 		b[in[i]] = ""
-		// 	}
+			for i := range out {
+				if _, ok := b[out[i]]; !ok {
+					diff = append(diff, out[i])
+				}
+			}
 
-		// 	for i := range out {
-		// 		if _, ok := b[out[i]]; !ok {
-		// 			diff = append(diff, out[i])
-		// 		}
-		// 	}
+			return diff
+		}
 
-		// 	return diff
-		// }
+		for _, v := range diff(newIDs, oldIDs) {
+			err := client.LoadBalancer.DetachInstance(context.Background(), id, v)
 
-		// for _, v := range diff(newIDs, oldIDs) {
-		// 	detachID, _ := strconv.Atoi(v)
-		// 	err := client.LoadBalancer.DetachInstance(context.Background(), id, detachID)
+			if err != nil {
+				return fmt.Errorf("Error detaching instance id %v from load balancer (%v): %v", v, id, err)
+			}
+		}
 
-		// 	if err != nil {
-		// 		return fmt.Errorf("Error detaching instance id %v from LoadBalancer %v : %v", v, id, diff(oldIDs, newIDs))
-		// 	}
-		// }
+		for _, v := range diff(oldIDs, newIDs) {
+			err := client.LoadBalancer.AttachInstance(context.Background(), id, v)
 
-		// for _, v := range diff(oldIDs, newIDs) {
-		// 	attachID, _ := strconv.Atoi(v)
-		// 	err := client.LoadBalancer.AttachInstance(context.Background(), id, attachID)
-
-		// 	if err != nil {
-		// 		return fmt.Errorf("Error attaching instance id %v to loadbalancer %v : %v", v, id, err)
-		// 	}
-		// }
+			if err != nil {
+				return fmt.Errorf("Error attaching instance id %v to load balancer (%v): %v", v, id, err)
+			}
+		}
 	}
 
 	return resourceVultrLoadBalancerRead(d, meta)
