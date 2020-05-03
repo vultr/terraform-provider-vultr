@@ -261,7 +261,7 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 
 	log.Printf("[INFO] load balancer ID: %s", d.Id())
 
-	return nil
+	return resourceVultrIsoRead(d, meta)
 }
 
 func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) error {
@@ -432,7 +432,7 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 					err := client.LoadBalancer.DeleteForwardingRule(context.Background(), id, val.(string))
 
 					if err != nil {
-						return fmt.Errorf("Error updating forwarding rules for load balancer (%v) rule_id %v: %v", id, val.(string), err)
+						return fmt.Errorf("Error removing forwarding rules for load balancer (%v): %v", id, err)
 					}
 				}
 			}
@@ -443,7 +443,7 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 			_, err := client.LoadBalancer.CreateForwardingRule(context.Background(), id, &rule)
 
 			if err != nil {
-				return fmt.Errorf("Error updating forwarding rules for load balancer (%v): %v", id, err)
+				return fmt.Errorf("Error adding forwarding rules for load balancer (%v): %v", id, err)
 			}
 		}
 	}
