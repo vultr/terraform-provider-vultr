@@ -4,11 +4,12 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"reflect"
 	"strconv"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/vultr/govultr"
 )
@@ -31,18 +32,87 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			// "forwarding_rules": {
+			// 	Type:     schema.TypeList,
+			// 	Required: true,
+			// 	Elem:     &schema.Schema{Type: schema.TypeMap},
+			// },
 			"forwarding_rules": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Required: true,
-				Elem:     &schema.Schema{Type: schema.TypeMap},
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"frontend_protocol": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"frontend_port": {
+							Type:     schema.TypeInt,
+							Required: true,
+						},
+						"backend_protocol": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"backend_port": {
+							Type:     schema.TypeInt,
+							Required: true,
+						},
+						"rule_id": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
 			},
 			"balancing_algorithm": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
 			"health_check": {
-				Type:     schema.TypeMap,
+				Type:     schema.TypeSet,
 				Optional: true,
+				Computed: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"protocol": {
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"http", "https", "tcp"}, false),
+						},
+						"path": {
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.NoZeroValues,
+						},
+						"port": {
+							Type:         schema.TypeInt,
+							Required:     true,
+							ValidateFunc: validation.NoZeroValues,
+						},
+						"check_interval": {
+							Type:         schema.TypeInt,
+							Required:     true,
+							ValidateFunc: validation.IntBetween(1, 300),
+						},
+						"response_timeout": {
+							Type:         schema.TypeInt,
+							Required:     true,
+							ValidateFunc: validation.IntBetween(1, 300),
+						},
+						"unhealthy_threshold": {
+							Type:         schema.TypeInt,
+							Required:     true,
+							ValidateFunc: validation.IntBetween(1, 300),
+						},
+						"healthy_threshold": {
+							Type:         schema.TypeInt,
+							Required:     true,
+							ValidateFunc: validation.IntBetween(1, 300),
+						},
+					},
+				},
 			},
 			"ssl": {
 				Type:     schema.TypeMap,
@@ -122,7 +192,10 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 	healthCheck := &govultr.HealthCheck{}
 	healthCheckData, healthCheckOk := d.GetOk("health_check")
 	if healthCheckOk {
-		healthCheck = generateHealthCheck(healthCheckData)
+		for _, value := range healthCheckData.(*schema.Set).List() {
+			healthCheck = generateHealthCheck(value)
+			break
+		}
 	} else {
 		healthCheck = nil
 	}
@@ -130,7 +203,7 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 	fwMap := []govultr.ForwardingRule{}
 	fr, frOk := d.GetOk("forwarding_rules")
 	if frOk {
-		for _, value := range fr.([]interface{}) {
+		for _, value := range fr.(*schema.Set).List() {
 			rule := generateRule(value.(map[string]interface{}))
 			fwMap = append(fwMap, rule)
 		}
@@ -176,8 +249,6 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 		instanceList = nil
 	}
 
-	// return fmt.Errorf("Error creating load balancer: REGION: %v LABEL: %v GENERIC: %v HEALTH: %v FR: %v SSL: %v INSTANCES: %v ", regionID, label, genericInfo, healthCheck, fwMap, ssl, instanceList)
-
 	lb, err := client.LoadBalancer.Create(context.Background(), regionID, label, genericInfo, healthCheck, fwMap, ssl, instanceList)
 	if err != nil {
 		return fmt.Errorf("Error creating load balancer: %v", err)
@@ -219,7 +290,6 @@ func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) err
 		return nil
 	}
 
-	// tk fix rix rule_id
 	frList, err := client.LoadBalancer.ListForwardingRules(context.Background(), id)
 	if err != nil {
 		return fmt.Errorf("Error getting forwarding rules for load balancer (%v): %v", id, err)
@@ -228,11 +298,11 @@ func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) err
 	var rulesList []map[string]interface{}
 	for _, rules := range frList.ForwardRuleList {
 		rule := map[string]interface{}{
-			// "rule_id":            rules.RuleID,
+			"rule_id":           rules.RuleID,
 			"frontend_protocol": rules.FrontendProtocol,
-			"frontend_port":     strconv.Itoa(rules.FrontendPort),
+			"frontend_port":     rules.FrontendPort,
 			"backend_protocol":  rules.BackendProtocol,
-			"backend_port":      strconv.Itoa(rules.BackendPort),
+			"backend_port":      rules.BackendPort,
 		}
 		rulesList = append(rulesList, rule)
 	}
@@ -256,18 +326,20 @@ func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) err
 		return fmt.Errorf("Error getting health check info for loadbalancer (%v): %v", id, err)
 	}
 
+	var hc []map[string]interface{}
 	hcInfo := map[string]interface{}{
 		"protocol":            healthCheck.Protocol,
-		"port":                strconv.Itoa(healthCheck.Port),
+		"port":                healthCheck.Port,
 		"path":                healthCheck.Path,
-		"check_interval":      strconv.Itoa(healthCheck.CheckInterval),
-		"response_timeout":    strconv.Itoa(healthCheck.ResponseTimeout),
-		"unhealthy_threshold": strconv.Itoa(healthCheck.UnhealthyThreshold),
-		"healthy_threshold":   strconv.Itoa(healthCheck.HealthyThreshold),
+		"check_interval":      healthCheck.CheckInterval,
+		"response_timeout":    healthCheck.ResponseTimeout,
+		"unhealthy_threshold": healthCheck.UnhealthyThreshold,
+		"healthy_threshold":   healthCheck.HealthyThreshold,
 	}
+	hc = append(hc, hcInfo)
 
-	if err := d.Set("health_check", hcInfo); err != nil {
-		return fmt.Errorf("Error setting `health_check`: %#v", err)
+	if err := d.Set("health_check", hc); err != nil {
+		return fmt.Errorf("Error setting `health_check`: %v", err)
 	}
 
 	ssl, err := client.LoadBalancer.HasSSL(context.Background(), id)
@@ -298,7 +370,6 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 	client := meta.(*Client).govultrClient()
 	id, _ := strconv.Atoi(d.Id())
 
-	// Update GenericInfo
 	sslRedirect := d.Get("ssl_redirect").(bool)
 	cookieName := d.Get("cookie_name").(string)
 
@@ -323,10 +394,18 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 		return fmt.Errorf("Error updating load balancer generic info (%v): %v", id, err)
 	}
 
-	// Health Check
 	if d.HasChange("health_check") {
 		_, newHealthCheck := d.GetChange("health_check")
-		healthCheck := generateHealthCheck(newHealthCheck)
+		healthCheck := &govultr.HealthCheck{}
+		hcList := newHealthCheck.(*schema.Set).List()
+		for _, value := range hcList {
+			healthCheck = generateHealthCheck(value)
+			break
+		}
+
+		if len(hcList) == 0 {
+			healthCheck = nil
+		}
 
 		log.Printf(`[INFO] Updating load balancer health info (%v)`, id)
 		err := client.LoadBalancer.SetHealthCheck(context.Background(), id, healthCheck)
@@ -335,7 +414,6 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 		}
 	}
 
-	// SSL
 	if d.HasChange("ssl") {
 		ssl := govultr.SSL{}
 		for k, v := range d.Get("ssl").(map[string]interface{}) {
@@ -367,71 +445,28 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 	if d.HasChange("forwarding_rules") {
 		oldFR, newFR := d.GetChange("forwarding_rules")
 
-		var oldIDs []interface{}
-		for _, v := range oldFR.([]interface{}) {
-			oldIDs = append(oldIDs, v.(interface{}))
-		}
+		oldFRList := oldFR.(*schema.Set).Difference(newFR.(*schema.Set))
+		newFRList := newFR.(*schema.Set).Difference(oldFR.(*schema.Set))
 
-		var newIDs []interface{}
-		for _, v := range newFR.([]interface{}) {
-			newIDs = append(newIDs, v.(interface{}))
-		}
+		for _, value := range oldFRList.List() {
+			for key, val := range value.(map[string]interface{}) {
+				if key == "rule_id" {
+					err := client.LoadBalancer.DeleteForwardingRule(context.Background(), id, val.(string))
 
-		diff := func(in, out []interface{}) []interface{} {
-			var diff []interface{}
-
-			for _, v := range in {
-				exists := false
-				for _, v2 := range out {
-					if reflect.DeepEqual(v, v2) {
-						exists = true
+					if err != nil {
+						return fmt.Errorf("Error updating forwarding rules for load balancer (%v) rule_id %v: %v", id, val.(string), err)
 					}
 				}
-
-				if !exists {
-					diff = append(diff, v)
-				}
 			}
-
-			return diff
 		}
 
-		// delete
-		// formattedRules := make(map[string]interface{})
-		// for _, v := range frList.ForwardRuleList {
-		// 	newRule := make(map[string]interface{})
-		// 	newRule["frontend_protocol"] = v.FrontendProtocol
-		// 	newRule["frontend_port"] = v.FrontendPort
-		// 	newRule["backend_protocol"] = v.BackendProtocol
-		// 	newRule["backend_port"] = v.BackendPort
-		// 	formattedRules[v.RuleID] = newRule
-		// }
+		for _, value := range newFRList.List() {
+			rule := generateRule(value.(map[string]interface{}))
+			_, err := client.LoadBalancer.CreateForwardingRule(context.Background(), id, &rule)
 
-		// for _, value := range diff(oldIDs, newIDs) {
-		// 	for _, val := range value.(map[string]interface{}) {
-
-		// 		// if match {
-		// 		// 	err := client.LoadBalancer.DeleteForwardingRule(context.Background(), id, curRuleID)
-
-		// 		// 	if err != nil {
-		// 		// 		return fmt.Errorf("Error updating forwarding rules for loadbalancer RULEID:%v --- %v: %v", curRuleID, id, err)
-		// 		// 	}
-		// 		// }
-
-		// 	}
-
-		// }
-
-		// add
-		for _, value := range diff(newIDs, oldIDs) {
-			return fmt.Errorf("rules for loadbalancer %v: \n %v \n %v", value, oldFR, newFR)
-
-			// rule := generateRule(value.(map[string]interface{}))
-			// _, err := client.LoadBalancer.CreateForwardingRule(context.Background(), id, &rule)
-
-			// if err != nil {
-			// 	return fmt.Errorf("Error updating forwarding rules for loadbalancer %v: %v", value, err)
-			// }
+			if err != nil {
+				return fmt.Errorf("Error updating forwarding rules for load balancer (%v): %v", id, err)
+			}
 		}
 	}
 
@@ -557,13 +592,11 @@ func generateRule(rule map[string]interface{}) govultr.ForwardingRule {
 	for k, v := range rule {
 		switch k {
 		case "frontend_port":
-			num, _ := strconv.Atoi(v.(string))
-			r.FrontendPort = num
+			r.FrontendPort = v.(int)
 		case "frontend_protocol":
 			r.FrontendProtocol = v.(string)
 		case "backend_port":
-			num, _ := strconv.Atoi(v.(string))
-			r.BackendPort = num
+			r.BackendPort = v.(int)
 		case "backend_protocol":
 			r.BackendProtocol = v.(string)
 		}
@@ -578,22 +611,17 @@ func generateHealthCheck(params interface{}) *govultr.HealthCheck {
 		case "protocol":
 			healthCheck.Protocol = v.(string)
 		case "port":
-			num, _ := strconv.Atoi(v.(string))
-			healthCheck.Port = num
+			healthCheck.Port = v.(int)
 		case "path":
 			healthCheck.Path = v.(string)
 		case "check_interval":
-			num, _ := strconv.Atoi(v.(string))
-			healthCheck.CheckInterval = num
+			healthCheck.CheckInterval = v.(int)
 		case "response_timeout":
-			num, _ := strconv.Atoi(v.(string))
-			healthCheck.ResponseTimeout = num
+			healthCheck.ResponseTimeout = v.(int)
 		case "unhealthy_threshold":
-			num, _ := strconv.Atoi(v.(string))
-			healthCheck.UnhealthyThreshold = num
+			healthCheck.UnhealthyThreshold = v.(int)
 		case "healthy_threshold":
-			num, _ := strconv.Atoi(v.(string))
-			healthCheck.HealthyThreshold = num
+			healthCheck.HealthyThreshold = v.(int)
 		}
 	}
 
