@@ -65,13 +65,13 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				},
 			},
 			"balancing_algorithm": {
-				Type:     schema.TypeString,
-				Optional: true,
+				Type:         schema.TypeString,
+				Optional:     true,
+				ValidateFunc: validation.StringInSlice([]string{"leastconn", "roundrobin"}, false),
 			},
 			"health_check": {
 				Type:     schema.TypeSet,
 				Optional: true,
-				Computed: true,
 				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
@@ -114,8 +114,27 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				},
 			},
 			"ssl": {
-				Type:     schema.TypeMap,
+				Type:     schema.TypeSet,
 				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"private_key": {
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.NoZeroValues,
+						},
+						"certificate": {
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.NoZeroValues,
+						},
+						"chain": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
 			},
 			"has_ssl": {
 				Type:     schema.TypeBool,
@@ -214,15 +233,9 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 	ssl := &govultr.SSL{}
 	sslData, sslOk := d.GetOk("ssl")
 	if sslOk {
-		for k, v := range sslData.(map[string]interface{}) {
-			switch k {
-			case "private_key":
-				ssl.PrivateKey = v.(string)
-			case "certificate":
-				ssl.Certificate = v.(string)
-			case "chain":
-				ssl.Chain = v.(string)
-			}
+		for _, value := range sslData.(*schema.Set).List() {
+			ssl = generateSSL(value.(map[string]interface{}))
+			break
 		}
 	} else {
 		ssl = nil
@@ -361,9 +374,15 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 	}
 
 	genericInfo := govultr.GenericInfo{
-		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
-		SSLRedirect:        &sslRedirect,
-		StickySessions:     &stickySessions,
+		SSLRedirect:    &sslRedirect,
+		StickySessions: &stickySessions,
+	}
+
+	balancingAlgorithm, baOK := d.GetOk("balancing_algorithm")
+	if baOK {
+		genericInfo.BalancingAlgorithm = balancingAlgorithm.(string)
+	} else {
+		genericInfo.BalancingAlgorithm = "roundrobin"
 	}
 
 	log.Printf(`[INFO] Updating load balancer generic info (%v)`, id)
@@ -386,7 +405,13 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 		}
 
 		if len(hcList) == 0 {
-			healthCheck = nil
+			healthCheck.CheckInterval = 15
+			healthCheck.Path = "/"
+			healthCheck.Protocol = "http"
+			healthCheck.Port = 80
+			healthCheck.UnhealthyThreshold = 5
+			healthCheck.HealthyThreshold = 5
+			healthCheck.ResponseTimeout = 5
 		}
 
 		log.Printf(`[INFO] Updating load balancer health info (%v)`, id)
@@ -397,16 +422,11 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 	}
 
 	if d.HasChange("ssl") {
-		ssl := govultr.SSL{}
-		for k, v := range d.Get("ssl").(map[string]interface{}) {
-			switch k {
-			case "private_key":
-				ssl.PrivateKey = v.(string)
-			case "certificate":
-				ssl.Certificate = v.(string)
-			case "chain":
-				ssl.Chain = v.(string)
-			}
+		ssl := &govultr.SSL{}
+		sslData := d.Get("ssl")
+		for _, value := range sslData.(*schema.Set).List() {
+			ssl = generateSSL(value.(map[string]interface{}))
+			break
 		}
 
 		if ssl.PrivateKey == "" && ssl.Certificate == "" && ssl.Chain == "" {
@@ -417,7 +437,7 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 			}
 		} else {
 			log.Printf(`[INFO] Adding load balancer SSL certificate (%v)`, id)
-			err := client.LoadBalancer.AddSSL(context.Background(), id, &ssl)
+			err := client.LoadBalancer.AddSSL(context.Background(), id, ssl)
 			if err != nil {
 				return fmt.Errorf("Error adding SSL certificate for load balancer (%v): %v", id, err)
 			}
@@ -607,4 +627,20 @@ func generateHealthCheck(params interface{}) *govultr.HealthCheck {
 	}
 
 	return healthCheck
+}
+
+func generateSSL(sslData interface{}) *govultr.SSL {
+	ssl := &govultr.SSL{}
+	for k, v := range sslData.(map[string]interface{}) {
+		switch k {
+		case "private_key":
+			ssl.PrivateKey = v.(string)
+		case "certificate":
+			ssl.Certificate = v.(string)
+		case "chain":
+			ssl.Chain = v.(string)
+		}
+	}
+
+	return ssl
 }
