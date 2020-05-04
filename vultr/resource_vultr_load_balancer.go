@@ -389,6 +389,8 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 			healthCheck = nil
 		}
 
+		return fmt.Errorf("Error updating load balancer health info: %v", hcList...)
+
 		log.Printf(`[INFO] Updating load balancer health info (%v)`, id)
 		err := client.LoadBalancer.SetHealthCheck(context.Background(), id, healthCheck)
 		if err != nil {
