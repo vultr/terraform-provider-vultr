@@ -194,6 +194,10 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 			healthCheck = generateHealthCheck(value)
 			break
 		}
+
+		if healthCheck.Protocol == "tcp" && healthCheck.Path != "" {
+			return fmt.Errorf("Error creating load balancer. Cannot set health check path when protocol is TCP")
+		}
 	} else {
 		healthCheck = nil
 	}
@@ -205,10 +209,6 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 			rule := generateRule(value.(map[string]interface{}))
 			fwMap = append(fwMap, rule)
 		}
-	}
-
-	if len(fwMap) == 0 {
-		fwMap = nil
 	}
 
 	ssl := &govultr.SSL{}
@@ -232,8 +232,8 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 	attachInstances, attachInstancesOk := d.GetOk("attached_instances")
 	if attachInstancesOk {
 		for _, value := range attachInstances.([]interface{}) {
-			idInt := value.(string)
-			instance, err := client.Server.GetServer(context.Background(), idInt)
+			idInt := value.(int)
+			instance, err := client.Server.GetServer(context.Background(), strconv.Itoa(idInt))
 			if err != nil || instance.Status != "active" {
 				return fmt.Errorf("Could not attach requested instance  %v to load balancer: %v", idInt, err)
 			}
@@ -256,10 +256,10 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 	_, err = waitForLBAvailable(d, "active", []string{"pending", "installing"}, "status", meta)
 	if err != nil {
 		return fmt.Errorf(
-			"Error while waiting for load balancer %s to be completed: %s", d.Id(), err)
+			"Error while waiting for load balancer %v to be completed: %v", id, err)
 	}
 
-	log.Printf("[INFO] load balancer ID: %s", d.Id())
+	log.Printf("[INFO] load balancer ID: %v", id)
 
 	return resourceVultrIsoRead(d, meta)
 }
@@ -379,6 +379,10 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 		for _, value := range hcList {
 			healthCheck = generateHealthCheck(value)
 			break
+		}
+
+		if healthCheck.Protocol == "tcp" && healthCheck.Path != "" {
+			return fmt.Errorf("Error updating load balancer (%v) health check. Cannot set health check path when protocol is TCP", id)
 		}
 
 		if len(hcList) == 0 {
@@ -501,13 +505,13 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 func resourceVultrLoadBalancerDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	log.Printf("[INFO] Deleting load balancer: %s", d.Id())
+	log.Printf("[INFO] Deleting load balancer: %v", d.Id())
 
 	id, _ := strconv.Atoi(d.Id())
 	err := client.LoadBalancer.Delete(context.Background(), id)
 
 	if err != nil {
-		return fmt.Errorf("Error deleting load balancer %s : %v", d.Id(), err)
+		return fmt.Errorf("Error deleting load balancer %v : %v", d.Id(), err)
 	}
 
 	return nil
@@ -552,11 +556,11 @@ func newLBStateRefresh(d *schema.ResourceData, meta interface{}, attr string) re
 		}
 
 		if err != nil {
-			return nil, "", fmt.Errorf("Error retrieving load balancer %s : %s", d.Id(), err)
+			return nil, "", fmt.Errorf("Error retrieving load balancer %v : %v", d.Id(), err)
 		}
 
 		if attr == "status" {
-			log.Printf("[INFO] The load balancer Status is %s", lb.Status)
+			log.Printf("[INFO] The load balancer Status is %v", lb.Status)
 			return lb, lb.Status, nil
 		} else {
 			return nil, "", nil
