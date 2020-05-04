@@ -56,7 +56,7 @@ func TestAccResourceVultrLoadBalancer(t *testing.T) {
 				Config: testAccVultrLoadBalancerConfig_updateFR(rLabel, protocol),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrLoadBalancerExists("vultr_load_balancer.foo"),
-					// resource.TestCheckResourceAttr("vultr_load_balancer.foo", "forwarding_rule", protocol),
+					resource.TestCheckResourceAttr("vultr_load_balancer.foo", "forwarding_rule", protocol),
 					resource.TestCheckResourceAttrSet("vultr_load_balancer.foo", "region_id"),
 					resource.TestCheckResourceAttrSet("vultr_load_balancer.foo", "date_created"),
 					resource.TestCheckResourceAttrSet("vultr_load_balancer.foo", "status"),

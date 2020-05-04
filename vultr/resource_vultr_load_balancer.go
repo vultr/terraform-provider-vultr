@@ -363,6 +363,7 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 
 	sslRedirect := d.Get("ssl_redirect").(bool)
 	cookieName := d.Get("cookie_name").(string)
+	proxyProtocol := d.Get("proxy_protocol").(bool)
 
 	stickySessions := govultr.StickySessions{
 		StickySessionsEnabled: "on",
@@ -376,6 +377,7 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 	genericInfo := govultr.GenericInfo{
 		SSLRedirect:    &sslRedirect,
 		StickySessions: &stickySessions,
+		ProxyProtocol:  &proxyProtocol,
 	}
 
 	balancingAlgorithm, baOK := d.GetOk("balancing_algorithm")
