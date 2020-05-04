@@ -261,7 +261,7 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 
 	log.Printf("[INFO] load balancer ID: %v", id)
 
-	return resourceVultrIsoRead(d, meta)
+	return resourceVultrLoadBalancerRead(d, meta)
 }
 
 func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) error {
