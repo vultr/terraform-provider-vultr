@@ -392,9 +392,9 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 	}
 
 	if d.HasChange("health_check") {
-		_, newHealthCheck := d.GetChange("health_check")
+		hc := d.Get("health_check")
 		healthCheck := &govultr.HealthCheck{}
-		hcList := newHealthCheck.(*schema.Set).List()
+		hcList := hc.(*schema.Set).List()
 		for _, value := range hcList {
 			healthCheck = generateHealthCheck(value)
 			break
@@ -423,19 +423,28 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 
 	if d.HasChange("ssl") {
 		ssl := &govultr.SSL{}
-		sslData := d.Get("ssl")
+		_, sslData := d.GetChange("ssl")
 		for _, value := range sslData.(*schema.Set).List() {
 			ssl = generateSSL(value.(map[string]interface{}))
 			break
 		}
 
-		if ssl.PrivateKey == "" && ssl.Certificate == "" && ssl.Chain == "" {
+		if d.Get("has_ssl").(bool) {
 			log.Printf(`[INFO] Removing load balancer SSL certificate (%v)`, id)
 			err := client.LoadBalancer.RemoveSSL(context.Background(), id)
 			if err != nil {
 				return fmt.Errorf("Error removing SSL certificate for load balancer (%v): %v", id, err)
 			}
-		} else {
+
+			if len(sslData.(*schema.Set).List()) > 0 {
+				err := client.LoadBalancer.AddSSL(context.Background(), id, ssl)
+				if err != nil {
+					return fmt.Errorf("Error adding SSL certificate for load balancer (%v): %v", id, err)
+				}
+			}
+		}
+
+		if !d.Get("has_ssl").(bool) {
 			log.Printf(`[INFO] Adding load balancer SSL certificate (%v)`, id)
 			err := client.LoadBalancer.AddSSL(context.Background(), id, ssl)
 			if err != nil {
