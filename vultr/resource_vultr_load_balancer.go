@@ -32,45 +32,29 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"forwarding_rules": {
-				Type:     schema.TypeSet,
-				Required: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"frontend_protocol": {
-							Type:         schema.TypeString,
-							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"http", "https", "tcp"}, false),
-						},
-						"frontend_port": {
-							Type:         schema.TypeInt,
-							Required:     true,
-							ValidateFunc: validation.IntBetween(1, 65535),
-						},
-						"backend_protocol": {
-							Type:         schema.TypeString,
-							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"http", "https", "tcp"}, false),
-						},
-						"backend_port": {
-							Type:         schema.TypeInt,
-							Required:     true,
-							ValidateFunc: validation.IntBetween(1, 65535),
-						},
-						"rule_id": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-					},
-				},
-			},
 			"balancing_algorithm": {
 				Type:         schema.TypeString,
 				Optional:     true,
+				Computed:     true,
 				ValidateFunc: validation.StringInSlice([]string{"leastconn", "roundrobin"}, false),
 			},
+			"ssl_redirect": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+			"proxy_protocol": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Computed: true,
+			},
+			"cookie_name": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"health_check": {
-				Type:     schema.TypeSet,
+				Type:     schema.TypeList,
+				Computed: true,
 				Optional: true,
 				MaxItems: 1,
 				Elem: &schema.Resource{
@@ -113,45 +97,49 @@ func resourceVultrLoadBalancer() *schema.Resource {
 					},
 				},
 			},
-			"ssl": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				MaxItems: 1,
+
+			"forwarding_rules": {
+				Type:     schema.TypeList,
+				Required: true,
+				MinItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
-						"private_key": {
+						"frontend_protocol": {
 							Type:         schema.TypeString,
 							Required:     true,
-							ValidateFunc: validation.NoZeroValues,
+							ValidateFunc: validation.StringInSlice([]string{"http", "https", "tcp"}, false),
 						},
-						"certificate": {
+						"frontend_port": {
+							Type:         schema.TypeInt,
+							Required:     true,
+							ValidateFunc: validation.IntBetween(1, 65535),
+						},
+						"backend_protocol": {
 							Type:         schema.TypeString,
 							Required:     true,
-							ValidateFunc: validation.NoZeroValues,
+							ValidateFunc: validation.StringInSlice([]string{"http", "https", "tcp"}, false),
 						},
-						"chain": {
+						"backend_port": {
+							Type:         schema.TypeInt,
+							Required:     true,
+							ValidateFunc: validation.IntBetween(1, 65535),
+						},
+						"rule_id": {
 							Type:     schema.TypeString,
-							Optional: true,
+							Computed: true,
 						},
 					},
 				},
 			},
+
 			"has_ssl": {
 				Type:     schema.TypeBool,
 				Computed: true,
-			},
-			"ssl_redirect": {
-				Type:     schema.TypeBool,
-				Optional: true,
 			},
 			"attached_instances": {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeInt},
-			},
-			"cookie_name": {
-				Type:     schema.TypeString,
-				Optional: true,
 			},
 			"status": {
 				Type:     schema.TypeString,
@@ -173,98 +161,82 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 	client := meta.(*Client).govultrClient()
 	regionID := d.Get("region_id").(int)
 	label := d.Get("label").(string)
-	_, proxyProtocolOk := d.GetOk("proxy_protocol")
-	_, sslRedirectOk := d.GetOk("ssl_redirect")
+
+	proxy, proxyProtocolOk := d.GetOk("proxy_protocol")
+	sslRedirect, sslRedirectOk := d.GetOk("ssl_redirect")
 	cookieName, cookieOk := d.GetOk("cookie_name")
 	balancingAlgorithm, balancingAlgorithmOk := d.GetOk("balancing_algorithm")
 
 	genericInfo := &govultr.GenericInfo{}
-	stickySessions := &govultr.StickySessions{}
-	if cookieOk {
-		stickySessions.StickySessionsEnabled = "on"
-		stickySessions.CookieName = cookieName.(string)
-		genericInfo.StickySessions = stickySessions
+	if proxyProtocolOk || balancingAlgorithmOk || cookieOk || sslRedirectOk {
+		if proxyProtocolOk {
+			proxyProtocol := proxy.(bool)
+			genericInfo.ProxyProtocol = &proxyProtocol
+		}
+
+		if balancingAlgorithmOk {
+			genericInfo.BalancingAlgorithm = balancingAlgorithm.(string)
+		}
+
+		if sslRedirectOk {
+			sslRedirect := sslRedirect.(bool)
+			genericInfo.SSLRedirect = &sslRedirect
+		}
+
+		stickySessions := &govultr.StickySessions{}
+		if cookieOk {
+			stickySessions.StickySessionsEnabled = "on"
+			stickySessions.CookieName = cookieName.(string)
+			genericInfo.StickySessions = stickySessions
+		} else {
+			genericInfo.StickySessions = nil
+		}
 	} else {
-		genericInfo.StickySessions = nil
-	}
-
-	if balancingAlgorithmOk {
-		genericInfo.BalancingAlgorithm = balancingAlgorithm.(string)
-	}
-
-	if proxyProtocolOk {
-		proxyProtocol := d.Get("proxy_protocol").(bool)
-		genericInfo.ProxyProtocol = &proxyProtocol
-	}
-
-	if sslRedirectOk {
-		sslRedirect := d.Get("ssl_redirect").(bool)
-		genericInfo.SSLRedirect = &sslRedirect
-	}
-
-	if !proxyProtocolOk && !balancingAlgorithmOk && !cookieOk && !sslRedirectOk {
 		genericInfo = nil
 	}
 
-	healthCheck := &govultr.HealthCheck{}
-	healthCheckData, healthCheckOk := d.GetOk("health_check")
-	if healthCheckOk {
-		for _, value := range healthCheckData.(*schema.Set).List() {
-			healthCheck = generateHealthCheck(value)
-			break
-		}
-
-		if healthCheck.Protocol == "tcp" && healthCheck.Path != "" {
-			return fmt.Errorf("Error creating load balancer. Cannot set health check path when protocol is TCP")
-		}
+	var healthCheck *govultr.HealthCheck
+	if health, healthOk := d.GetOk("health_check"); healthOk {
+		healthCheck = generateHealthCheck(health)
 	} else {
 		healthCheck = nil
 	}
 
 	fwMap := []govultr.ForwardingRule{}
-	fr, frOk := d.GetOk("forwarding_rules")
-	if frOk {
-		for _, value := range fr.(*schema.Set).List() {
-			rule := generateRule(value.(map[string]interface{}))
-			fwMap = append(fwMap, rule)
-		}
+	if fr, frOk := d.GetOk("forwarding_rules"); frOk {
+		i := generateRules(fr)
+		fwMap = i.ForwardRuleList
+	} else {
+		fwMap = nil
 	}
 
-	ssl := &govultr.SSL{}
-	sslData, sslOk := d.GetOk("ssl")
-	if sslOk {
-		for _, value := range sslData.(*schema.Set).List() {
-			ssl = generateSSL(value.(map[string]interface{}))
-			break
-		}
-	} else {
-		ssl = nil
-	}
+	//ssl := &govultr.SSL{}
+	//sslData, sslOk := d.GetOk("ssl")
+	//if sslOk {
+	//	for _, value := range sslData.(*schema.Set).List() {
+	//		ssl = generateSSL(value.(map[string]interface{}))
+	//		break
+	//	}
+	//} else {
+	//	ssl = nil
+	//}
 
 	instanceList := &govultr.InstanceList{}
-	attachInstances, attachInstancesOk := d.GetOk("attached_instances")
-	if attachInstancesOk {
-		for _, value := range attachInstances.([]interface{}) {
-			idInt := value.(int)
-			instance, err := client.Server.GetServer(context.Background(), strconv.Itoa(idInt))
-			if err != nil || instance.Status != "active" {
-				return fmt.Errorf("Could not attach requested instance  %v to load balancer: %v", idInt, err)
-			}
-		}
-
-		for _, value := range attachInstances.([]interface{}) {
-			instanceList.InstanceList = append(instanceList.InstanceList, value.(int))
+	if attachInstances, attachInstancesOk := d.GetOk("attached_instances"); attachInstancesOk {
+		for _, id := range attachInstances.([]interface{}) {
+			instanceList.InstanceList = append(instanceList.InstanceList, id.(int))
 		}
 	} else {
 		instanceList = nil
 	}
 
-	lb, err := client.LoadBalancer.Create(context.Background(), regionID, label, genericInfo, healthCheck, fwMap, ssl, instanceList)
+	lb, err := client.LoadBalancer.Create(context.Background(), regionID, label, genericInfo, healthCheck, fwMap, nil, instanceList)
 	if err != nil {
 		return fmt.Errorf("Error creating load balancer: %v", err)
 	}
 	id := strconv.Itoa(lb.ID)
 	d.SetId(id)
+	d.Set("region_id", regionID)
 
 	_, err = waitForLBAvailable(d, "active", []string{"pending", "installing"}, "status", meta)
 	if err != nil {
@@ -279,12 +251,13 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 
 func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
-
 	id, _ := strconv.Atoi(d.Id())
 
 	lbConfig, err := client.LoadBalancer.GetFullConfig(context.Background(), id)
 	if err != nil {
-		return fmt.Errorf("Error getting load balancer: %v", err)
+		log.Printf("[WARN] Vultr load balancer (%v) not found", id)
+		d.SetId("")
+		return nil
 	}
 
 	lbs, err := client.LoadBalancer.List(context.Background())
@@ -345,10 +318,7 @@ func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) err
 	d.Set("ssl_redirect", lbConfig.SSLRedirect)
 	d.Set("proxy_protocol", lbConfig.ProxyProtocol)
 	d.Set("cookie_name", lbConfig.StickySessions.CookieName)
-
 	d.Set("date_created", lb.DateCreated)
-	d.Set("region_id", lb.RegionID)
-	d.Set("location", lb.Location)
 	d.Set("label", lb.Label)
 	d.Set("status", lb.Status)
 	d.Set("ipv4", lb.IPV4)
@@ -358,180 +328,183 @@ func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) err
 }
 
 func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) error {
-	client := meta.(*Client).govultrClient()
-	id, _ := strconv.Atoi(d.Id())
-
-	sslRedirect := d.Get("ssl_redirect").(bool)
-	cookieName := d.Get("cookie_name").(string)
-	proxyProtocol := d.Get("proxy_protocol").(bool)
-
-	stickySessions := govultr.StickySessions{
-		StickySessionsEnabled: "on",
-		CookieName:            cookieName,
-	}
-
-	if cookieName == "" {
-		stickySessions.StickySessionsEnabled = "off"
-	}
-
-	genericInfo := govultr.GenericInfo{
-		SSLRedirect:    &sslRedirect,
-		StickySessions: &stickySessions,
-		ProxyProtocol:  &proxyProtocol,
-	}
-
-	balancingAlgorithm, baOK := d.GetOk("balancing_algorithm")
-	if baOK {
-		genericInfo.BalancingAlgorithm = balancingAlgorithm.(string)
-	} else {
-		genericInfo.BalancingAlgorithm = "roundrobin"
-	}
-
-	log.Printf(`[INFO] Updating load balancer generic info (%v)`, id)
-	err := client.LoadBalancer.UpdateGenericInfo(context.Background(), id, d.Get("label").(string), &genericInfo)
-	if err != nil {
-		return fmt.Errorf("Error updating load balancer generic info (%v): %v", id, err)
-	}
-
-	if d.HasChange("health_check") {
-		hc := d.Get("health_check")
-		healthCheck := &govultr.HealthCheck{}
-		hcList := hc.(*schema.Set).List()
-		for _, value := range hcList {
-			healthCheck = generateHealthCheck(value)
-			break
-		}
-
-		if healthCheck.Protocol == "tcp" && healthCheck.Path != "" {
-			return fmt.Errorf("Error updating load balancer (%v) health check. Cannot set health check path when protocol is TCP", id)
-		}
-
-		if len(hcList) == 0 {
-			healthCheck.CheckInterval = 15
-			healthCheck.Path = "/"
-			healthCheck.Protocol = "http"
-			healthCheck.Port = 80
-			healthCheck.UnhealthyThreshold = 5
-			healthCheck.HealthyThreshold = 5
-			healthCheck.ResponseTimeout = 5
-		}
-
-		log.Printf(`[INFO] Updating load balancer health info (%v)`, id)
-		err := client.LoadBalancer.SetHealthCheck(context.Background(), id, healthCheck)
-		if err != nil {
-			return fmt.Errorf("Error updating load balancer health info (%v): %v", id, err)
-		}
-	}
-
-	if d.HasChange("ssl") {
-		ssl := &govultr.SSL{}
-		_, sslData := d.GetChange("ssl")
-		for _, value := range sslData.(*schema.Set).List() {
-			ssl = generateSSL(value.(map[string]interface{}))
-			break
-		}
-
-		if d.Get("has_ssl").(bool) {
-			log.Printf(`[INFO] Removing load balancer SSL certificate (%v)`, id)
-			err := client.LoadBalancer.RemoveSSL(context.Background(), id)
-			if err != nil {
-				return fmt.Errorf("Error removing SSL certificate for load balancer (%v): %v", id, err)
-			}
-
-			if len(sslData.(*schema.Set).List()) > 0 {
-				err := client.LoadBalancer.AddSSL(context.Background(), id, ssl)
-				if err != nil {
-					return fmt.Errorf("Error adding SSL certificate for load balancer (%v): %v", id, err)
-				}
-			}
-		}
-
-		if !d.Get("has_ssl").(bool) {
-			log.Printf(`[INFO] Adding load balancer SSL certificate (%v)`, id)
-			err := client.LoadBalancer.AddSSL(context.Background(), id, ssl)
-			if err != nil {
-				return fmt.Errorf("Error adding SSL certificate for load balancer (%v): %v", id, err)
-			}
-		}
-	}
-
-	if d.HasChange("forwarding_rules") {
-		oldFR, newFR := d.GetChange("forwarding_rules")
-
-		oldFRList := oldFR.(*schema.Set).Difference(newFR.(*schema.Set))
-		newFRList := newFR.(*schema.Set).Difference(oldFR.(*schema.Set))
-
-		for _, value := range oldFRList.List() {
-			for key, val := range value.(map[string]interface{}) {
-				if key == "rule_id" {
-					err := client.LoadBalancer.DeleteForwardingRule(context.Background(), id, val.(string))
-
-					if err != nil {
-						return fmt.Errorf("Error removing forwarding rules for load balancer (%v): %v", id, err)
-					}
-				}
-			}
-		}
-
-		for _, value := range newFRList.List() {
-			rule := generateRule(value.(map[string]interface{}))
-			_, err := client.LoadBalancer.CreateForwardingRule(context.Background(), id, &rule)
-
-			if err != nil {
-				return fmt.Errorf("Error adding forwarding rules for load balancer (%v): %v", id, err)
-			}
-		}
-	}
-
-	if d.HasChange("attached_instances") {
-		oldInstances, newInstances := d.GetChange("attached_instances")
-
-		var oldIDs []int
-		for _, v := range oldInstances.([]interface{}) {
-			oldIDs = append(oldIDs, v.(int))
-		}
-
-		var newIDs []int
-		for _, v := range newInstances.([]interface{}) {
-			newIDs = append(newIDs, v.(int))
-		}
-
-		diff := func(in, out []int) []int {
-			var diff []int
-
-			b := map[int]int{}
-			for i := range in {
-				b[in[i]] = 0
-			}
-
-			for i := range out {
-				if _, ok := b[out[i]]; !ok {
-					diff = append(diff, out[i])
-				}
-			}
-
-			return diff
-		}
-
-		for _, v := range diff(newIDs, oldIDs) {
-			err := client.LoadBalancer.DetachInstance(context.Background(), id, v)
-
-			if err != nil {
-				return fmt.Errorf("Error detaching instance id %v from load balancer (%v): %v", v, id, err)
-			}
-		}
-
-		for _, v := range diff(oldIDs, newIDs) {
-			err := client.LoadBalancer.AttachInstance(context.Background(), id, v)
-
-			if err != nil {
-				return fmt.Errorf("Error attaching instance id %v to load balancer (%v): %v", v, id, err)
-			}
-		}
-	}
-
-	return resourceVultrLoadBalancerRead(d, meta)
+	return nil
 }
+
+//	client := meta.(*Client).govultrClient()
+//	id, _ := strconv.Atoi(d.Id())
+//
+//	sslRedirect := d.Get("ssl_redirect").(bool)
+//	cookieName := d.Get("cookie_name").(string)
+//	proxyProtocol := d.Get("proxy_protocol").(bool)
+//
+//	stickySessions := govultr.StickySessions{
+//		StickySessionsEnabled: "on",
+//		CookieName:            cookieName,
+//	}
+//
+//	if cookieName == "" {
+//		stickySessions.StickySessionsEnabled = "off"
+//	}
+//
+//	genericInfo := govultr.GenericInfo{
+//		SSLRedirect:    &sslRedirect,
+//		StickySessions: &stickySessions,
+//		ProxyProtocol:  &proxyProtocol,
+//	}
+//
+//	balancingAlgorithm, baOK := d.GetOk("balancing_algorithm")
+//	if baOK {
+//		genericInfo.BalancingAlgorithm = balancingAlgorithm.(string)
+//	} else {
+//		genericInfo.BalancingAlgorithm = "roundrobin"
+//	}
+//
+//	log.Printf(`[INFO] Updating load balancer generic info (%v)`, id)
+//	err := client.LoadBalancer.UpdateGenericInfo(context.Background(), id, d.Get("label").(string), &genericInfo)
+//	if err != nil {
+//		return fmt.Errorf("Error updating load balancer generic info (%v): %v", id, err)
+//	}
+//
+//	if d.HasChange("health_check") {
+//		hc := d.Get("health_check")
+//		healthCheck := &govultr.HealthCheck{}
+//		hcList := hc.(*schema.Set).List()
+//		for _, value := range hcList {
+//			healthCheck = generateHealthCheck(value)
+//			break
+//		}
+//
+//		if healthCheck.Protocol == "tcp" && healthCheck.Path != "" {
+//			return fmt.Errorf("Error updating load balancer (%v) health check. Cannot set health check path when protocol is TCP", id)
+//		}
+//
+//		if len(hcList) == 0 {
+//			healthCheck.CheckInterval = 15
+//			healthCheck.Path = "/"
+//			healthCheck.Protocol = "http"
+//			healthCheck.Port = 80
+//			healthCheck.UnhealthyThreshold = 5
+//			healthCheck.HealthyThreshold = 5
+//			healthCheck.ResponseTimeout = 5
+//		}
+//
+//		log.Printf(`[INFO] Updating load balancer health info (%v)`, id)
+//		err := client.LoadBalancer.SetHealthCheck(context.Background(), id, healthCheck)
+//		if err != nil {
+//			return fmt.Errorf("Error updating load balancer health info (%v): %v", id, err)
+//		}
+//	}
+//
+//	if d.HasChange("ssl") {
+//		ssl := &govultr.SSL{}
+//		_, sslData := d.GetChange("ssl")
+//		for _, value := range sslData.(*schema.Set).List() {
+//			ssl = generateSSL(value.(map[string]interface{}))
+//			break
+//		}
+//
+//		if d.Get("has_ssl").(bool) {
+//			log.Printf(`[INFO] Removing load balancer SSL certificate (%v)`, id)
+//			err := client.LoadBalancer.RemoveSSL(context.Background(), id)
+//			if err != nil {
+//				return fmt.Errorf("Error removing SSL certificate for load balancer (%v): %v", id, err)
+//			}
+//
+//			if len(sslData.(*schema.Set).List()) > 0 {
+//				err := client.LoadBalancer.AddSSL(context.Background(), id, ssl)
+//				if err != nil {
+//					return fmt.Errorf("Error adding SSL certificate for load balancer (%v): %v", id, err)
+//				}
+//			}
+//		}
+//
+//		if !d.Get("has_ssl").(bool) {
+//			log.Printf(`[INFO] Adding load balancer SSL certificate (%v)`, id)
+//			err := client.LoadBalancer.AddSSL(context.Background(), id, ssl)
+//			if err != nil {
+//				return fmt.Errorf("Error adding SSL certificate for load balancer (%v): %v", id, err)
+//			}
+//		}
+//	}
+//
+//	if d.HasChange("forwarding_rules") {
+//		oldFR, _ := d.GetChange("forwarding_rules")
+//
+//		oldFRList := oldFR.(*schema.Set).Difference(newFR.(*schema.Set))
+//		//newFRList := newFR.(*schema.Set).Difference(oldFR.(*schema.Set))
+//
+//		for _, value := range oldFRList.List() {
+//			for key, val := range value.(map[string]interface{}) {
+//				if key == "rule_id" {
+//					err := client.LoadBalancer.DeleteForwardingRule(context.Background(), id, val.(string))
+//
+//					if err != nil {
+//						return fmt.Errorf("Error removing forwarding rules for load balancer (%v): %v", id, err)
+//					}
+//				}
+//			}
+//		}
+//
+//		//for _, value := range newFRList.List() {
+//		//	//rule := generateRules(value.(map[string]interface{}))
+//		//	_, err := client.LoadBalancer.CreateForwardingRule(context.Background(), id, nil)
+//		//
+//		//	if err != nil {
+//		//		return fmt.Errorf("Error adding forwarding rules for load balancer (%v): %v", id, err)
+//		//	}
+//		//}
+//	}
+//
+//	if d.HasChange("attached_instances") {
+//		oldInstances, newInstances := d.GetChange("attached_instances")
+//
+//		var oldIDs []int
+//		for _, v := range oldInstances.([]interface{}) {
+//			oldIDs = append(oldIDs, v.(int))
+//		}
+//
+//		var newIDs []int
+//		for _, v := range newInstances.([]interface{}) {
+//			newIDs = append(newIDs, v.(int))
+//		}
+//
+//		diff := func(in, out []int) []int {
+//			var diff []int
+//
+//			b := map[int]int{}
+//			for i := range in {
+//				b[in[i]] = 0
+//			}
+//
+//			for i := range out {
+//				if _, ok := b[out[i]]; !ok {
+//					diff = append(diff, out[i])
+//				}
+//			}
+//
+//			return diff
+//		}
+//
+//		for _, v := range diff(newIDs, oldIDs) {
+//			err := client.LoadBalancer.DetachInstance(context.Background(), id, v)
+//
+//			if err != nil {
+//				return fmt.Errorf("Error detaching instance id %v from load balancer (%v): %v", v, id, err)
+//			}
+//		}
+//
+//		for _, v := range diff(oldIDs, newIDs) {
+//			err := client.LoadBalancer.AttachInstance(context.Background(), id, v)
+//
+//			if err != nil {
+//				return fmt.Errorf("Error attaching instance id %v to load balancer (%v): %v", v, id, err)
+//			}
+//		}
+//	}
+//
+//	return resourceVultrLoadBalancerRead(d, meta)
+//}
 
 func resourceVultrLoadBalancerDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
@@ -599,45 +572,34 @@ func newLBStateRefresh(d *schema.ResourceData, meta interface{}, attr string) re
 	}
 }
 
-func generateRule(rule map[string]interface{}) govultr.ForwardingRule {
-	r := govultr.ForwardingRule{}
-	for k, v := range rule {
-		switch k {
-		case "frontend_port":
-			r.FrontendPort = v.(int)
-		case "frontend_protocol":
-			r.FrontendProtocol = v.(string)
-		case "backend_port":
-			r.BackendPort = v.(int)
-		case "backend_protocol":
-			r.BackendProtocol = v.(string)
+func generateRules(rules interface{}) *govultr.ForwardingRules {
+	fwMap := &govultr.ForwardingRules{}
+	for _, rule := range rules.([]interface{}) {
+		r := rule.(map[string]interface{})
+		t := govultr.ForwardingRule{
+			FrontendProtocol: r["frontend_protocol"].(string),
+			FrontendPort:     r["frontend_port"].(int),
+			BackendProtocol:  r["backend_protocol"].(string),
+			BackendPort:      r["backend_port"].(int),
 		}
+		fwMap.ForwardRuleList = append(fwMap.ForwardRuleList, t)
 	}
-	return r
+	return fwMap
 }
 
-func generateHealthCheck(params interface{}) *govultr.HealthCheck {
-	healthCheck := &govultr.HealthCheck{}
-	for k, v := range params.(map[string]interface{}) {
-		switch k {
-		case "protocol":
-			healthCheck.Protocol = v.(string)
-		case "port":
-			healthCheck.Port = v.(int)
-		case "path":
-			healthCheck.Path = v.(string)
-		case "check_interval":
-			healthCheck.CheckInterval = v.(int)
-		case "response_timeout":
-			healthCheck.ResponseTimeout = v.(int)
-		case "unhealthy_threshold":
-			healthCheck.UnhealthyThreshold = v.(int)
-		case "healthy_threshold":
-			healthCheck.HealthyThreshold = v.(int)
-		}
-	}
+func generateHealthCheck(health interface{}) *govultr.HealthCheck {
+	k := health.([]interface{})
+	config := k[0].(map[string]interface{})
 
-	return healthCheck
+	return &govultr.HealthCheck{
+		Protocol:           config["protocol"].(string),
+		Port:               config["port"].(int),
+		Path:               config["path"].(string),
+		CheckInterval:      config["check_interval"].(int),
+		ResponseTimeout:    config["response_timeout"].(int),
+		UnhealthyThreshold: config["unhealthy_threshold"].(int),
+		HealthyThreshold:   config["healthy_threshold"].(int),
+	}
 }
 
 func generateSSL(sslData interface{}) *govultr.SSL {
