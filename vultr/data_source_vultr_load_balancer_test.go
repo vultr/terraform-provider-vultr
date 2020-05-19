@@ -9,7 +9,6 @@ import (
 )
 
 func TestAccVultrLoadBalancer(t *testing.T) {
-	t.Parallel()
 	rLabel := acctest.RandomWithPrefix("tf-test-ds")
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
@@ -20,7 +19,6 @@ func TestAccVultrLoadBalancer(t *testing.T) {
 				Config: testAccCheckVultrLoadBalancer(rLabel),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.vultr_load_balancer.lb", "id"),
-					resource.TestCheckResourceAttrSet("data.vultr_load_balancer.lb", "date_created"),
 					resource.TestCheckResourceAttrSet("data.vultr_load_balancer.lb", "status"),
 					resource.TestCheckResourceAttrSet("data.vultr_load_balancer.lb", "region_id"),
 					resource.TestCheckResourceAttrSet("data.vultr_load_balancer.lb", "label"),
@@ -37,23 +35,12 @@ func testAccCheckVultrLoadBalancer(label string) string {
 			label = "%s"
 			  
 			forwarding_rules {
-			frontend_protocol = "http"
-			frontend_port     = 80
-			backend_protocol  = "http"
-			backend_port      = 80
+				frontend_protocol = "http"
+				frontend_port     = 80
+				backend_protocol  = "http"
+				backend_port      = 80
 			}
-		
-			health_check {
-			protocol            = "http"
-			port                = 80
-			path                = "/health"
-			check_interval      = 15
-			response_timeout    = 10
-			unhealthy_threshold = 7
-			healthy_threshold   = 6
-			}
-		
-			attached_instances = [123456, 654321]			  
+
 		}
 
 		data "vultr_load_balancer" "lb" {

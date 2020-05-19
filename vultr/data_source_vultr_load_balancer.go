@@ -4,10 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"strconv"
-
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/vultr/govultr"
+	"strconv"
 )
 
 func dataSourceVultrLoadBalancer() *schema.Resource {
@@ -111,17 +110,32 @@ func dataSourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) e
 		return errors.New("no results were found")
 	}
 
-	// tk fix rix rule_id
-	id, _ := strconv.Atoi(d.Id())
-	frList, err := client.LoadBalancer.ListForwardingRules(context.Background(), id)
+	id := lbList[0].ID
+
+	lb, err := client.LoadBalancer.GetFullConfig(context.Background(), id)
 	if err != nil {
-		return fmt.Errorf("Error updating forwarding rules for load balancer (%v): %v", id, err)
+		return fmt.Errorf("error retrieving load balancer configuration (%d): %v", id, err)
+
 	}
 
+	d.SetId(strconv.Itoa(id))
+	d.Set("has_ssl", lb.SSLInfo)
+	d.Set("attached_instances", lb.InstanceList)
+	d.Set("balancing_algorithm", lb.BalancingAlgorithm)
+	d.Set("ssl_redirect", lb.SSLRedirect)
+	d.Set("proxy_protocol", lb.ProxyProtocol)
+	d.Set("cookie_name", lb.StickySessions.CookieName)
+	d.Set("date_created", lbList[0].DateCreated)
+	d.Set("status", lbList[0].Status)
+	d.Set("region_id", lbList[0].RegionID)
+	d.Set("label", lbList[0].Label)
+	d.Set("ipv4", lbList[0].IPV4)
+	d.Set("ipv6", lbList[0].IPV6)
+
 	var rulesList []map[string]interface{}
-	for _, rules := range frList.ForwardRuleList {
+	for _, rules := range lb.ForwardRuleList {
 		rule := map[string]interface{}{
-			// "rule_id":            rules.RuleID,
+			"rule_id":           rules.RuleID,
 			"frontend_protocol": rules.FrontendProtocol,
 			"frontend_port":     strconv.Itoa(rules.FrontendPort),
 			"backend_protocol":  rules.BackendProtocol,
@@ -131,56 +145,22 @@ func dataSourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) e
 	}
 
 	if err := d.Set("forwarding_rules", rulesList); err != nil {
-		return fmt.Errorf("Error setting `forwarding_rules`: %#v", err)
-	}
-
-	genericInfo, err := client.LoadBalancer.GetGenericInfo(context.Background(), id)
-	if err != nil {
-		return fmt.Errorf("Error getting generic info for loadbalancer (%v): %v", id, err)
-	}
-
-	instanceList, err := client.LoadBalancer.AttachedInstances(context.Background(), id)
-	if err != nil {
-		return fmt.Errorf("Error getting attached instance list for loadbalancer (%v): %v", id, err)
-	}
-
-	healthCheck, err := client.LoadBalancer.GetHealthCheck(context.Background(), id)
-	if err != nil {
-		return fmt.Errorf("Error getting health check info for loadbalancer (%v): %v", id, err)
+		return fmt.Errorf("error setting `forwarding_rules`: %#v", err)
 	}
 
 	hcInfo := map[string]interface{}{
-		"protocol":            healthCheck.Protocol,
-		"port":                healthCheck.Port,
-		"path":                healthCheck.Path,
-		"check_interval":      healthCheck.CheckInterval,
-		"response_timeout":    healthCheck.ResponseTimeout,
-		"unhealthy_threshold": healthCheck.UnhealthyThreshold,
-		"healthy_threshold":   healthCheck.HealthyThreshold,
+		"protocol":            lb.HealthCheck.Protocol,
+		"port":                strconv.Itoa(lb.HealthCheck.Port),
+		"path":                lb.HealthCheck.Path,
+		"check_interval":      strconv.Itoa(lb.HealthCheck.CheckInterval),
+		"response_timeout":    strconv.Itoa(lb.HealthCheck.ResponseTimeout),
+		"unhealthy_threshold": strconv.Itoa(lb.HealthCheck.UnhealthyThreshold),
+		"healthy_threshold":   strconv.Itoa(lb.HealthCheck.HealthyThreshold),
 	}
 
 	if err := d.Set("health_check", hcInfo); err != nil {
-		return fmt.Errorf("Error setting `v6_networks`: %#v", err)
+		return fmt.Errorf("error setting `health_check`: %#v", err)
 	}
-
-	ssl, err := client.LoadBalancer.HasSSL(context.Background(), id)
-	if err != nil {
-		return fmt.Errorf("Error getting health check info for loadbalancer (%v): %v", id, err)
-	}
-
-	d.SetId(strconv.Itoa(lbList[0].ID))
-	d.Set("has_ssl", ssl.SSLInfo)
-	d.Set("attached_instances", instanceList.InstanceList)
-	d.Set("balancing_algorithm", genericInfo.BalancingAlgorithm)
-	d.Set("ssl_redirect", genericInfo.SSLRedirect)
-	d.Set("proxy_protocol", genericInfo.ProxyProtocol)
-	d.Set("cookie_name", genericInfo.StickySessions.CookieName)
-	d.Set("date_created", lbList[0].DateCreated)
-	d.Set("status", lbList[0].Status)
-	d.Set("region_id", lbList[0].RegionID)
-	d.Set("label", lbList[0].Label)
-	d.Set("ipv4", lbList[0].IPV4)
-	d.Set("ipv6", lbList[0].IPV6)
 
 	return nil
 }
