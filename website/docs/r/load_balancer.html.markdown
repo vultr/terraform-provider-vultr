@@ -1,18 +1,18 @@
 ---
 layout: "vultr"
 page_title: "Vultr: vultr_load_balancer"
-sidebar_current: "docs-vultr-datasource-load-balancer"
+sidebar_current: "docs-vultr-resource-load-balancer"
 description: |-
   Get information about a Vultr Load Balancer.
 ---
 
-# vultr_server
+# vultr_load_balancer
 
 Get information about a Vultr load balancer.
 
 ## Example Usage
 
-Get the information for a server by `label`:
+Create a new load balancer:
 
 ```hcl
 resource "vultr_load_balancer" "lb" {

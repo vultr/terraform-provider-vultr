@@ -6,7 +6,7 @@ description: |-
   Get information about a Vultr Load Balancer.
 ---
 
-# vultr_server
+# vultr_load_balancer
 
 Get information about a Vultr load balancer.
 
