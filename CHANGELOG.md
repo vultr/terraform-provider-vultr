@@ -1,3 +1,4 @@
+## 1.3.0 (Unreleased)
 ## 1.2.0 (May 27, 2020)
 BUG FIXES:
 - Typo in `website/docs/index.html.markdown` [38](https://github.com/terraform-providers/terraform-provider-vultr/pull/38)
