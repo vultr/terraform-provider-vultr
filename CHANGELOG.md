@@ -1,4 +1,11 @@
 ## 1.2.0 (Unreleased)
+BUG FIXES:
+- Typo in `website/docs/index.html.markdown` [38](https://github.com/terraform-providers/terraform-provider-vultr/pull/38)
+
+FEATURES:
+- New Resource : vultr_load_balancer [37](https://github.com/terraform-providers/terraform-provider-vultr/pull/37)
+- New Data Source : vultr_load_balancer [37](https://github.com/terraform-providers/terraform-provider-vultr/pull/37)
+
 ## 1.1.5 (April 07, 2020)
 BUG FIXES:
 - resource/vultr_server: Detach ISO prior to deletion if instance was created with ISO. [34](https://github.com/terraform-providers/terraform-provider-vultr/issues/34)
