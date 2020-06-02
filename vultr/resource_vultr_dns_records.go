@@ -59,15 +59,8 @@ func resourceVultrDnsRecordCreate(d *schema.ResourceData, meta interface{}) erro
 	domain := d.Get("domain").(string)
 	name := d.Get("name").(string)
 	recordType := d.Get("type").(string)
-
-	priority, priorityOK := d.GetOk("priority")
+	priority := d.Get("priority")
 	ttl := d.Get("ttl").(int)
-
-	if recordType == "MX" || recordType == "SRV" {
-		if !priorityOK {
-			return fmt.Errorf("Priorty is required for use of record type : %s", recordType)
-		}
-	}
 
 	log.Print("[INFO] Creating DNS record")
 	err := client.DNSRecord.Create(context.Background(), domain, recordType, name, data, ttl, priority.(int))
@@ -118,7 +111,7 @@ func resourceVultrDnsRecordRead(d *schema.ResourceData, meta interface{}) error 
 	d.Set("type", record.Type)
 	d.Set("name", record.Name)
 	d.Set("data", record.Data)
-	d.Set("priority", record.Priority)
+	d.Set("priority", *record.Priority)
 	d.Set("ttl", record.TTL)
 	return nil
 }
@@ -132,12 +125,13 @@ func resourceVultrDnsRecordUpdate(d *schema.ResourceData, meta interface{}) erro
 		return fmt.Errorf("Error retreiving DNS record ID : %s", d.Id())
 	}
 
+	p := d.Get("priority").(int)
 	record := &govultr.DNSRecord{
 		RecordID: id,
 		Data:     d.Get("data").(string),
 		Name:     d.Get("name").(string),
 		TTL:      d.Get("ttl").(int),
-		Priority: d.Get("priority").(int),
+		Priority: &p,
 	}
 
 	err = client.DNSRecord.Update(context.Background(), d.Get("domain").(string), record)
