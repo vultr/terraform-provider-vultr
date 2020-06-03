@@ -1,4 +1,4 @@
-## 1.3.0 (Unreleased)
+## 1.3.0 (June 03, 2020)
 BUG FIXES:
 - resource/vultr_dns_record: Able to create record with `priority` of `0` [45](https://github.com/terraform-providers/terraform-provider-vultr/pull/45)
 
