@@ -2,9 +2,9 @@ package vultr
 
 import (
 	"encoding/json"
-	"strconv"
-
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"strconv"
+	"strings"
 )
 
 type filter struct {
@@ -44,15 +44,15 @@ func structToMap(data interface{}) (map[string]interface{}, error) {
 	for k, v := range structMap {
 		switch v.(type) {
 		case string:
-			newMap[k] = v.(string)
+			newMap[strings.ToLower(k)] = v.(string)
 		case bool:
-			newMap[k] = strconv.FormatBool(v.(bool))
+			newMap[strings.ToLower(k)] = strconv.FormatBool(v.(bool))
 		case int:
-			newMap[k] = strconv.FormatInt(int64(v.(int)), 10)
+			newMap[strings.ToLower(k)] = strconv.FormatInt(int64(v.(int)), 10)
 		case float64:
-			newMap[k] = strconv.FormatFloat(v.(float64), 'f', -1, 64)
+			newMap[strings.ToLower(k)] = strconv.FormatFloat(v.(float64), 'f', -1, 64)
 		default:
-			newMap[k] = v
+			newMap[strings.ToLower(k)] = v
 		}
 	}
 
