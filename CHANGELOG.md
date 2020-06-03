@@ -1,4 +1,11 @@
 ## 1.3.0 (Unreleased)
+BUG FIXES:
+- resource/vultr_dns_record: Able to create record with `priority` of `0` [45](https://github.com/terraform-providers/terraform-provider-vultr/pull/45)
+
+FEATURES:
+- New Resource : vultr_object_storage [41](https://github.com/terraform-providers/terraform-provider-vultr/pull/41)
+- New Data Source : vultr_object_storage [41](https://github.com/terraform-providers/terraform-provider-vultr/pull/41)
+
 ## 1.2.0 (May 27, 2020)
 BUG FIXES:
 - Typo in `website/docs/index.html.markdown` [38](https://github.com/terraform-providers/terraform-provider-vultr/pull/38)
