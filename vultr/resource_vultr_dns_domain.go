@@ -44,7 +44,7 @@ func resourceVultrDnsDomainCreate(d *schema.ResourceData, meta interface{}) erro
 	if ipOk {
 		validIp := net.ParseIP(ip.(string))
 		if validIp == nil {
-			return fmt.Errorf("The supplied IP address is invalid : %s", ip)
+			return fmt.Errorf("the supplied IP address is invalid : %s", ip)
 		}
 	} else {
 		ip = "169.254.1.1"
@@ -53,7 +53,7 @@ func resourceVultrDnsDomainCreate(d *schema.ResourceData, meta interface{}) erro
 
 	err := client.DNSDomain.Create(context.Background(), domain, ip.(string))
 	if err != nil {
-		return fmt.Errorf("Error while creating DNS domain : %s", err)
+		return fmt.Errorf("error while creating DNS domain : %s", err)
 	}
 
 	d.Set("server_ip", ip)
@@ -65,11 +65,11 @@ func resourceVultrDnsDomainCreate(d *schema.ResourceData, meta interface{}) erro
 			return fmt.Errorf("error while retrieving records for delete : %s", err)
 		}
 
-		// clear out all records expect NS
-		for i := range records {
-			if (records[i].Type == "A" && records[i].Name == "") || (records[i].Type == "CNAME" && records[i].Name == "*") || (records[i].Type == "MX" && records[i].Name == "") {
-				if err := client.DNSRecord.Delete(context.Background(), domain, strconv.Itoa(records[i].RecordID)); err != nil {
-					return fmt.Errorf("error while delete record %d : %s", records[i].RecordID, err)
+		// clear out all records except NS
+		for _, v := range records {
+			if (v.Type == "A" && v.Name == "") || (v.Type == "CNAME" && v.Name == "*") || (v.Type == "MX" && v.Name == "") {
+				if err := client.DNSRecord.Delete(context.Background(), domain, strconv.Itoa(v.RecordID)); err != nil {
+					return fmt.Errorf("error while delete record %d : %s", v.RecordID, err)
 				}
 			}
 		}
@@ -86,13 +86,13 @@ func resourceVultrDnsDomainRead(d *schema.ResourceData, meta interface{}) error 
 	domains, err := client.DNSDomain.List(context.Background())
 
 	if err != nil {
-		return fmt.Errorf("Error getting domains ")
+		return fmt.Errorf("error getting domains : %v", err)
 	}
 
 	var domain *govultr.DNSDomain
-	for i := range domains {
-		if domains[i].Domain == d.Id() {
-			domain = &domains[i]
+	for _, v := range domains {
+		if v.Domain == d.Id() {
+			domain = &v
 			break
 		}
 	}
@@ -115,7 +115,7 @@ func resourceVultrDnsDomainDelete(d *schema.ResourceData, meta interface{}) erro
 	err := client.DNSDomain.Delete(context.Background(), d.Id())
 
 	if err != nil {
-		return fmt.Errorf("Error destroying DNS domain %s: %v", d.Id(), err)
+		return fmt.Errorf("error destroying DNS domain %s: %v", d.Id(), err)
 	}
 
 	return nil
