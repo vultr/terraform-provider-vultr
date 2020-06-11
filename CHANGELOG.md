@@ -1,4 +1,4 @@
-## 1.3.1 (Unreleased)
+## 1.3.1 (June 11, 2020)
 IMPROVEMENTS:
 - resource/vultr_dns_domain: Making `server_ip` optional. If `server_ip` is not supplied terraform will now create the DNS resource with no records. [48](https://github.com/terraform-providers/terraform-provider-vultr/pull/48)
 
