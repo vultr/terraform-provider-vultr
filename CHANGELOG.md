@@ -1,4 +1,7 @@
-## 1.4.0 (Unreleased)
+## 1.3.1 (Unreleased)
+IMPROVEMENTS:
+- resource/vultr_dns_domain: Making `server_ip` optional. If `server_ip` is not supplied terraform will now create the DNS resource with no records. [48](https://github.com/terraform-providers/terraform-provider-vultr/pull/48)
+
 ## 1.3.0 (June 03, 2020)
 BUG FIXES:
 - resource/vultr_dns_record: Able to create record with `priority` of `0` [45](https://github.com/terraform-providers/terraform-provider-vultr/pull/45)
