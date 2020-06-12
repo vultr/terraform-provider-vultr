@@ -51,3 +51,11 @@ The following attributes are exported:
 * `type` - Type of record.
 * `priority` - Priority of this record (only required for MX and SRV). 
 * `ttl` -  The time to live of this record.
+
+## Import
+
+DNS Records can be imported using the Dns Domain `domain` and DNS Record `ID` e.g.
+
+```
+terraform import vultr_dns_record.rec domain.com,123
+```
