@@ -63,6 +63,28 @@ func TestAccVultrFirewallRule_update(t *testing.T) {
 	})
 }
 
+func TestAccVultrFirewallRule_importBasic(t *testing.T) {
+
+	rString := acctest.RandString(13)
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckVultrFirewallRuleDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccVultrFirewallRule_base(rString),
+			},
+			{
+				ResourceName:      "vultr_firewall_rule.tcp",
+				ImportState:       true,
+				ImportStateVerify: true,
+				ImportStateIdFunc: testFirewallImportID("vultr_firewall_group.fwg", "vultr_firewall_rule.tcp"),
+			},
+		},
+	})
+}
+
 func testAccCheckVultrFirewallRuleDestroy(s *terraform.State) error {
 	client := testAccProvider.Meta().(*Client).govultrClient()
 
@@ -127,4 +149,20 @@ func testAccVultrFirewallRule_update(desc string) string {
 			network = "10.0.0.0/32"
 			from_port = "3046"
 		}`, desc)
+}
+
+func testFirewallImportID(g, r string) resource.ImportStateIdFunc {
+	return func(s *terraform.State) (string, error) {
+		rs, ok := s.RootModule().Resources[g]
+		if !ok {
+			return "", fmt.Errorf("not found: %s", g)
+		}
+
+		rs2, ok := s.RootModule().Resources[r]
+		if !ok {
+			return "", fmt.Errorf("not found: %s", r)
+		}
+
+		return fmt.Sprintf("%s,%s", rs.Primary.Attributes["id"], rs2.Primary.Attributes["id"]), nil
+	}
 }

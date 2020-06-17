@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/vultr/govultr"
 )
 
 func resourceVultrFirewallRule() *schema.Resource {
@@ -17,7 +18,7 @@ func resourceVultrFirewallRule() *schema.Resource {
 		Read:   resourceVultrFirewallRuleRead,
 		Delete: resourceVultrFirewallRuleDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			State: resourceVultrFirewallRuleImport,
 		},
 		Schema: map[string]*schema.Schema{
 			"firewall_group_id": {
@@ -66,7 +67,7 @@ func resourceVultrFirewallRuleCreate(d *schema.ResourceData, meta interface{}) e
 	_, ipNet, err := net.ParseCIDR(d.Get("network").(string))
 
 	if err != nil {
-		return fmt.Errorf("Error parsing %q for firewall rule: %v", "cidr_block", err)
+		return fmt.Errorf("error parsing %q for firewall rule: %v", "cidr_block", err)
 	}
 
 	firewallGroupID := d.Get("firewall_group_id").(string)
@@ -97,7 +98,7 @@ func resourceVultrFirewallRuleCreate(d *schema.ResourceData, meta interface{}) e
 	rule, err := client.FirewallRule.Create(context.Background(), firewallGroupID, protocol, port, ipNet.String(), notes)
 
 	if err != nil {
-		return fmt.Errorf("Err creating firewall group : %v", err)
+		return fmt.Errorf("error creating firewall group : %v", err)
 	}
 
 	d.SetId(strconv.Itoa(rule.RuleNumber))
@@ -114,10 +115,10 @@ func resourceVultrFirewallRuleCreate(d *schema.ResourceData, meta interface{}) e
 func resourceVultrFirewallRuleRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	firewallRuleList, err := client.FirewallRule.ListByIPType(context.Background(), d.Get("firewall_group_id").(string), d.Get("ip_type").(string))
+	firewallRuleList, err := client.FirewallRule.List(context.Background(), d.Get("firewall_group_id").(string))
 
 	if err != nil {
-		return fmt.Errorf("Error getting firewall rule %s: %v", d.Get("firewall_group_id").(string), err)
+		return fmt.Errorf("error getting firewall rule %s: %v", d.Get("firewall_group_id").(string), err)
 	}
 
 	counter := 0
@@ -165,7 +166,7 @@ func resourceVultrFirewallRuleDelete(d *schema.ResourceData, meta interface{}) e
 	err := client.FirewallRule.Delete(context.Background(), d.Get("firewall_group_id").(string), d.Id())
 
 	if err != nil {
-		return fmt.Errorf("Error destroying firewall rule %s: %v", d.Id(), err)
+		return fmt.Errorf("error destroying firewall rule %s: %v", d.Id(), err)
 	}
 	return nil
 }
@@ -200,4 +201,36 @@ func splitFirewallRule(portRange string) (int, int, error) {
 		return 0, 0, nil
 	}
 
+}
+
+func resourceVultrFirewallRuleImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	client := meta.(*Client).govultrClient()
+
+	importID := d.Id()
+	commaIdx := strings.IndexByte(importID, ',')
+
+	if commaIdx == -1 {
+		return nil, fmt.Errorf(`invalid import format, expected "firewallGroupID,firewallRuleID"`)
+	}
+	fwGroup, ruleID := importID[:commaIdx], importID[commaIdx+1:]
+
+	rules, err := client.FirewallRule.List(context.Background(), fwGroup)
+	if err != nil {
+		return nil, fmt.Errorf("error getting Firewall Rules for Firewall Group %s: %v", fwGroup, err)
+	}
+
+	var rule *govultr.FirewallRule
+	for _, v := range rules {
+		if strconv.Itoa(v.RuleNumber) == ruleID {
+			rule = &v
+			break
+		}
+	}
+	if rule == nil {
+		return nil, fmt.Errorf("firewall Rule %s not found for firewall group %s", ruleID, fwGroup)
+	}
+
+	d.SetId(strconv.Itoa(rule.RuleNumber))
+	d.Set("firewall_group_id", fwGroup)
+	return []*schema.ResourceData{d}, nil
 }

@@ -51,3 +51,11 @@ The following attributes are exported:
 * `to_port` - This can be used with the from port if you want to define multiple ports. Example from port 8085 to port 8090
 * `notes` - A simple note for a given firewall rule
 * `ip_type` - The type of ip this rule is - may be either v4 or v6.
+
+## Import
+
+Firewall Rules can be imported using the Firewall Group `ID` and Firewall Rule `ID`, e.g.
+
+```
+terraform import vultr_firewall_rule.my_rule c342f929,1
+```
