@@ -1,4 +1,8 @@
-## 1.4.0 (Unreleased)
+## 1.3.2 (Unreleased)
+IMPROVEMENTS:
+- resource/vultr_dns_record: New custom importer allows you to import DNS Records [51](https://github.com/terraform-providers/terraform-provider-vultr/pull/51)
+- resource/vultr_firewall_rule: New custom importer allows you to import Firewall Rules [52](https://github.com/terraform-providers/terraform-provider-vultr/pull/52)
+
 ## 1.3.1 (June 11, 2020)
 IMPROVEMENTS:
 - resource/vultr_dns_domain: Making `server_ip` optional. If `server_ip` is not supplied terraform will now create the DNS resource with no records. [48](https://github.com/terraform-providers/terraform-provider-vultr/pull/48)
