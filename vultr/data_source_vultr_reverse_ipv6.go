@@ -52,12 +52,7 @@ func dataSourceVultrReverseIPV6Read(d *schema.ResourceData, meta interface{}) er
 
 		if name == "ip" {
 			for i, value := range values {
-				ip, err := getCanonicalIPV6(value.(string))
-				if err != nil {
-					return err
-				}
-
-				values[i] = ip
+				values[i] = value.(string)
 			}
 		}
 	}
