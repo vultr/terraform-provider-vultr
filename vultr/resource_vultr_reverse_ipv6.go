@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"net"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/vultr/govultr"
