@@ -85,7 +85,7 @@ func resourceVultrServer() *schema.Resource {
 			},
 			"auto_backup": {
 				Type:     schema.TypeBool,
-				Computed: true,
+				Default:  false,
 				Optional: true,
 			},
 			"app_id": {
@@ -117,8 +117,8 @@ func resourceVultrServer() *schema.Resource {
 			},
 			"ddos_protection": {
 				Type:     schema.TypeBool,
-				Computed: true,
 				Optional: true,
+				Default:  false,
 			},
 			"hostname": {
 				Type:     schema.TypeString,
@@ -441,11 +441,16 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	}
 	d.Set("app_id", appID)
 
+	if vps.AutoBackups == "yes" {
+		d.Set("auto_backup", true)
+	} else {
+		d.Set("auto_backup", false)
+	}
+
 	return nil
 }
 func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
-
 
 	if d.HasChange("ddos_protection") {
 		log.Printf("[INFO] Updating DDOS Protection")
