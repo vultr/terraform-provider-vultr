@@ -85,7 +85,7 @@ func resourceVultrServer() *schema.Resource {
 			},
 			"auto_backup": {
 				Type:     schema.TypeBool,
-				Computed: true,
+				Default:  false,
 				Optional: true,
 			},
 			"app_id": {
@@ -117,8 +117,8 @@ func resourceVultrServer() *schema.Resource {
 			},
 			"ddos_protection": {
 				Type:     schema.TypeBool,
-				Computed: true,
 				Optional: true,
+				Default:  false,
 			},
 			"hostname": {
 				Type:     schema.TypeString,
@@ -441,10 +441,33 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	}
 	d.Set("app_id", appID)
 
+	if vps.AutoBackups == "yes" {
+		d.Set("auto_backup", true)
+	} else {
+		d.Set("auto_backup", false)
+	}
+
 	return nil
 }
 func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
+
+	if d.HasChange("ddos_protection") {
+		log.Printf("[INFO] Updating DDOS Protection")
+
+		_, newVal := d.GetChange("ddos_protection")
+		if newVal.(bool) {
+			err := client.Server.EnableDDOS(context.Background(), d.Id())
+			if err != nil {
+				return fmt.Errorf("error occured while enabling ddos_protection for server %s : %v", d.Id(), err)
+			}
+		} else {
+			err := client.Server.DisableDDOS(context.Background(), d.Id())
+			if err != nil {
+				return fmt.Errorf("error occured while disabling ddos_protection for server %s : %v", d.Id(), err)
+			}
+		}
+	}
 
 	if d.HasChange("auto_backup") {
 		log.Printf("[INFO] Updating auto backups")
@@ -461,7 +484,6 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 				return fmt.Errorf("Error occured while disabling auto_backup for server %s : %v", d.Id(), err)
 			}
 		}
-		d.SetPartial("auto_backup")
 	}
 
 	if d.HasChange("app_id") {
@@ -482,7 +504,6 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 			return fmt.Errorf("Error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 		}
 
-		d.SetPartial("app_id")
 	}
 
 	if d.HasChange("os_id") {
@@ -503,7 +524,6 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 			return fmt.Errorf("Error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 		}
 
-		d.SetPartial("os_id")
 	}
 
 	if d.HasChange("user_data") {
@@ -512,7 +532,6 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		if err != nil {
 			return fmt.Errorf("Error occured while updating user_data for server %s : %v", d.Id(), err)
 		}
-		d.SetPartial("user_data")
 	}
 
 	if d.HasChange("firewall_group_id") {
@@ -521,7 +540,6 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		if err != nil {
 			return fmt.Errorf("Error occured while updating firewall_group_id for server %s : %v", d.Id(), err)
 		}
-		d.SetPartial("firewall_group_id")
 	}
 
 	if d.HasChange("tag") {
@@ -530,7 +548,6 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		if err != nil {
 			return fmt.Errorf("Error occured while updating tag for server %s : %v", d.Id(), err)
 		}
-		d.SetPartial("tag")
 	}
 
 	if d.HasChange("label") {
@@ -539,7 +556,6 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		if err != nil {
 			return fmt.Errorf("Error occured while updating label for server %s : %v", d.Id(), err)
 		}
-		d.SetPartial("label")
 	}
 
 	if d.HasChange("network_ids") {
@@ -589,10 +605,8 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 			}
 		}
 
-		d.SetPartial("network_ids")
 	}
 
-	d.Partial(false)
 	return resourceVultrServerRead(d, meta)
 }
 

@@ -41,10 +41,10 @@ func resourceVultrReverseIPV6Create(d *schema.ResourceData, meta interface{}) er
 	instanceID := d.Get("instance_id").(string)
 
 	ip := d.Get("ip").(string)
-	
+
 	reverse := d.Get("reverse").(string)
 	log.Printf("[INFO] Creating reverse IPv6")
-	
+
 	err := client.Server.SetReverseIPV6(context.Background(), instanceID, ip, reverse)
 	if err != nil {
 		return fmt.Errorf("Error creating reverse IPv6: %v", err)
