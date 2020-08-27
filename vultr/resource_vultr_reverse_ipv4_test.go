@@ -91,7 +91,7 @@ func testAccVultrReverseIPV4(rServerLabel, reverse string) string {
 
 		resource "vultr_reverse_ipv4" "test" {
 			instance_id = "${vultr_server.foo.id}"
-			ip = "${vultr_server.foo.v6_networks[0].v6_main_ip}"
+			ip = "${vultr_server.foo.main_ip}"
 			reverse = "%s"
 		}
 	`, rServerLabel, reverse)

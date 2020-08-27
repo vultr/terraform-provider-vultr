@@ -65,10 +65,7 @@ func dataSourceVultrServerIPV4Read(d *schema.ResourceData, meta interface{}) err
 		}
 
 		for _, server := range servers {
-			// Consider servers with at least one assigned IPv6 subnet
-			if len(server.V6Networks) > 0 {
-				instanceIDs = append(instanceIDs, server.InstanceID)
-			}
+			instanceIDs = append(instanceIDs, server.InstanceID)
 		}
 	}
 
