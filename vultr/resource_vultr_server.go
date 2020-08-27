@@ -44,8 +44,7 @@ func resourceVultrServer() *schema.Resource {
 			},
 			"iso_id": {
 				Type:     schema.TypeInt,
-				Computed: true,
-				ForceNew: true,
+				Default:  0,
 				Optional: true,
 			},
 			"script_id": {
@@ -296,7 +295,7 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 		os = osSnapID
 
 	default:
-		return errors.New("Error occurred while getting your intended os type")
+		return errors.New("error occurred while getting your intended os type")
 	}
 
 	regionID := d.Get("region_id").(int)
@@ -321,7 +320,7 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 	server, err := client.Server.Create(context.Background(), regionID, planID, os, options)
 
 	if err != nil {
-		return fmt.Errorf("Error creating server: %v", err)
+		return fmt.Errorf("error creating server: %v", err)
 	}
 
 	d.SetId(server.InstanceID)
@@ -329,12 +328,12 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 	_, err = waitForServerAvailable(d, "active", []string{"pending", "installing"}, "status", meta)
 	if err != nil {
 		return fmt.Errorf(
-			"Error while waiting for Server %s to be completed: %s", d.Id(), err)
+			"error while waiting for Server %s to be completed: %s", d.Id(), err)
 	}
 
 	_, err = waitForServerAvailable(d, "running", []string{"stopped"}, "power_status", meta)
 	if err != nil {
-		return fmt.Errorf("Error while waiting for Server %s to be in a active state : %s", d.Id(), err)
+		return fmt.Errorf("error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 	}
 
 	return resourceVultrServerRead(d, meta)
@@ -352,12 +351,12 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 			d.SetId("")
 			return nil
 		}
-		return fmt.Errorf("Error getting instance (%s): %v", d.Id(), err)
+		return fmt.Errorf("error getting instance (%s): %v", d.Id(), err)
 	}
 
 	networks, err := client.Server.ListPrivateNetworks(context.Background(), d.Id())
 	if err != nil {
-		return fmt.Errorf("Error getting private networks for server  %s : %v", d.Id(), err)
+		return fmt.Errorf("error getting private networks for server  %s : %v", d.Id(), err)
 	}
 
 	var networkIDs []string
@@ -390,15 +389,15 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("kvm_url", vps.KVMUrl)
 
 	if err := d.Set("network_macs", networkMacs); err != nil {
-		return fmt.Errorf("Error setting `network_macs`: %#v", err)
+		return fmt.Errorf("error setting `network_macs`: %#v", err)
 	}
 
 	if err := d.Set("network_ips", networkIPs); err != nil {
-		return fmt.Errorf("Error setting `network_ips`: %#v", err)
+		return fmt.Errorf("error setting `network_ips`: %#v", err)
 	}
 
 	if err := d.Set("network_ids", networkIDs); err != nil {
-		return fmt.Errorf("Error setting `network_ids`: %#v", err)
+		return fmt.Errorf("error setting `network_ids`: %#v", err)
 	}
 
 	var ipv6s []map[string]string
@@ -411,7 +410,7 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 		ipv6s = append(ipv6s, v6network)
 	}
 	if err := d.Set("v6_networks", ipv6s); err != nil {
-		return fmt.Errorf("Error setting `v6_networks`: %#v", err)
+		return fmt.Errorf("error setting `v6_networks`: %#v", err)
 	}
 
 	d.Set("tag", vps.Tag)
@@ -419,25 +418,25 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 
 	regionID, err := strconv.Atoi(vps.RegionID)
 	if err != nil {
-		return fmt.Errorf("Error while getting regionID for server : %v", err)
+		return fmt.Errorf("error while getting regionID for server : %v", err)
 	}
 	d.Set("region_id", regionID)
 
 	planID, err := strconv.Atoi(vps.PlanID)
 	if err != nil {
-		return fmt.Errorf("Error while getting planID for server : %v", err)
+		return fmt.Errorf("error while getting planID for server : %v", err)
 	}
 	d.Set("plan_id", planID)
 
 	osID, err := strconv.Atoi(vps.OsID)
 	if err != nil {
-		return fmt.Errorf("Error while getting osID for server : %v", err)
+		return fmt.Errorf("error while getting osID for server : %v", err)
 	}
 	d.Set("os_id", osID)
 
 	appID, err := strconv.Atoi(vps.AppID)
 	if err != nil {
-		return fmt.Errorf("Error while getting appID for server : %v", err)
+		return fmt.Errorf("error while getting appID for server : %v", err)
 	}
 	d.Set("app_id", appID)
 
@@ -476,12 +475,12 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		if newVal.(bool) {
 			err := client.Server.EnableBackup(context.Background(), d.Id())
 			if err != nil {
-				return fmt.Errorf("Error occured while enabling auto_backup for server %s : %v", d.Id(), err)
+				return fmt.Errorf("error occured while enabling auto_backup for server %s : %v", d.Id(), err)
 			}
 		} else {
 			err := client.Server.DisableBackup(context.Background(), d.Id())
 			if err != nil {
-				return fmt.Errorf("Error occured while disabling auto_backup for server %s : %v", d.Id(), err)
+				return fmt.Errorf("error occured while disabling auto_backup for server %s : %v", d.Id(), err)
 			}
 		}
 	}
@@ -491,17 +490,17 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		_, newer := d.GetChange("app_id")
 		err := client.Server.ChangeApp(context.Background(), d.Id(), strconv.Itoa(newer.(int)))
 		if err != nil {
-			return fmt.Errorf("Error occured while updating app_id for server %s : %v", d.Id(), err)
+			return fmt.Errorf("error occured while updating app_id for server %s : %v", d.Id(), err)
 		}
 
 		_, err = waitForServerAvailable(d, "active", []string{"pending", "installing"}, "status", meta)
 		if err != nil {
-			return fmt.Errorf("Error while waiting for Server %s to be in a active state : %s", d.Id(), err)
+			return fmt.Errorf("error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 		}
 
 		_, err = waitForServerAvailable(d, "running", []string{"stopped"}, "power_status", meta)
 		if err != nil {
-			return fmt.Errorf("Error while waiting for Server %s to be in a active state : %s", d.Id(), err)
+			return fmt.Errorf("error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 		}
 
 	}
@@ -511,50 +510,46 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		_, newer := d.GetChange("os_id")
 		err := client.Server.ChangeOS(context.Background(), d.Id(), strconv.Itoa(newer.(int)))
 		if err != nil {
-			return fmt.Errorf("Error occured while updating os_id for server %s : %v", d.Id(), err)
+			return fmt.Errorf("error occured while updating os_id for server %s : %v", d.Id(), err)
 		}
 
 		_, err = waitForServerAvailable(d, "active", []string{"pending", "installing"}, "status", meta)
 		if err != nil {
-			return fmt.Errorf("Error while waiting for Server %s to be in a active state : %s", d.Id(), err)
+			return fmt.Errorf("error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 		}
 
 		_, err = waitForServerAvailable(d, "running", []string{"stopped"}, "power_status", meta)
 		if err != nil {
-			return fmt.Errorf("Error while waiting for Server %s to be in a active state : %s", d.Id(), err)
+			return fmt.Errorf("error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 		}
 
 	}
 
 	if d.HasChange("user_data") {
 		log.Printf("[INFO] Updating user_data")
-		err := client.Server.SetUserData(context.Background(), d.Id(), d.Get("user_data").(string))
-		if err != nil {
-			return fmt.Errorf("Error occured while updating user_data for server %s : %v", d.Id(), err)
+		if err := client.Server.SetUserData(context.Background(), d.Id(), d.Get("user_data").(string)); err != nil {
+			return fmt.Errorf("error occured while updating user_data for server %s : %v", d.Id(), err)
 		}
 	}
 
 	if d.HasChange("firewall_group_id") {
 		log.Printf("[INFO] Updating firewall_group_id")
-		err := client.Server.SetFirewallGroup(context.Background(), d.Id(), d.Get("firewall_group_id").(string))
-		if err != nil {
-			return fmt.Errorf("Error occured while updating firewall_group_id for server %s : %v", d.Id(), err)
+		if err := client.Server.SetFirewallGroup(context.Background(), d.Id(), d.Get("firewall_group_id").(string)); err != nil {
+			return fmt.Errorf("error occured while updating firewall_group_id for server %s : %v", d.Id(), err)
 		}
 	}
 
 	if d.HasChange("tag") {
 		log.Printf("[INFO] Updating tag")
-		err := client.Server.SetTag(context.Background(), d.Id(), d.Get("tag").(string))
-		if err != nil {
-			return fmt.Errorf("Error occured while updating tag for server %s : %v", d.Id(), err)
+		if err := client.Server.SetTag(context.Background(), d.Id(), d.Get("tag").(string)); err != nil {
+			return fmt.Errorf("error occured while updating tag for server %s : %v", d.Id(), err)
 		}
 	}
 
 	if d.HasChange("label") {
 		log.Printf("[INFO] Updating label")
-		err := client.Server.SetLabel(context.Background(), d.Id(), d.Get("label").(string))
-		if err != nil {
-			return fmt.Errorf("Error occured while updating label for server %s : %v", d.Id(), err)
+		if err := client.Server.SetLabel(context.Background(), d.Id(), d.Get("label").(string)); err != nil {
+			return fmt.Errorf("error occured while updating label for server %s : %v", d.Id(), err)
 		}
 	}
 
@@ -590,18 +585,30 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		}
 
 		for _, v := range diff(oldIDs, newIDs) {
-			err := client.Server.EnablePrivateNetwork(context.Background(), d.Id(), v)
-
-			if err != nil {
-				return fmt.Errorf("Error attaching network id %s to server %s : %v", v, d.Id(), err)
+			if err := client.Server.EnablePrivateNetwork(context.Background(), d.Id(), v); err != nil {
+				return fmt.Errorf("error attaching network id %s to server %s : %v", v, d.Id(), err)
 			}
 		}
 
 		for _, v := range diff(newIDs, oldIDs) {
-			err := client.Server.DisablePrivateNetwork(context.Background(), d.Id(), v)
+			if err := client.Server.DisablePrivateNetwork(context.Background(), d.Id(), v); err != nil {
+				return fmt.Errorf("error detaching network id %s from server %s : %v", v, d.Id(), err)
+			}
+		}
 
-			if err != nil {
-				return fmt.Errorf("Error detaching network id %s from server %s : %v", v, d.Id(), err)
+	}
+
+	if d.HasChange("iso_id") {
+		log.Printf("[INFO] Updating ISO")
+
+		_, newISOId := d.GetChange("iso_id")
+		if newISOId == 0 {
+			if err := client.Server.IsoDetach(context.Background(), d.Id()); err != nil {
+				return fmt.Errorf("error detaching iso from server %s : %v", d.Id(), err)
+			}
+		} else {
+			if err := client.Server.IsoAttach(context.Background(), d.Id(), strconv.Itoa(newISOId.(int))); err != nil {
+				return fmt.Errorf("error detaching iso from server %s : %v", d.Id(), err)
 			}
 		}
 
@@ -617,14 +624,13 @@ func resourceVultrServerDelete(d *schema.ResourceData, meta interface{}) error {
 
 	ids, err := client.Server.ListPrivateNetworks(context.Background(), d.Id())
 	if err != nil {
-		return fmt.Errorf("Error grabbing private networks associated to server %s : %v", d.Id(), err)
+		return fmt.Errorf("error grabbing private networks associated to server %s : %v", d.Id(), err)
 	}
 
 	for i := range ids {
 		err := client.Server.DisablePrivateNetwork(context.Background(), d.Id(), ids[i].NetworkID)
-
 		if err != nil {
-			return fmt.Errorf("Error detaching network id %s from server %s : %v", ids[i].NetworkID, d.Id(), err)
+			return fmt.Errorf("error detaching network id %s from server %s : %v", ids[i].NetworkID, d.Id(), err)
 		}
 	}
 
@@ -637,9 +643,8 @@ func resourceVultrServerDelete(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	err = client.Server.Delete(context.Background(), d.Id())
-
 	if err != nil {
-		return fmt.Errorf("Error destroying instance %s : %v", d.Id(), err)
+		return fmt.Errorf("error destroying instance %s : %v", d.Id(), err)
 	}
 
 	return nil
@@ -655,7 +660,7 @@ func optionCheck(options map[string]bool) (string, error) {
 	}
 
 	if len(result) > 1 {
-		return "", fmt.Errorf("Too many options have been selected : %v : please select one", result)
+		return "", fmt.Errorf("too many options have been selected : %v : please select one", result)
 	}
 
 	// Return back an empty slice so we can possibly add in osID
@@ -690,9 +695,8 @@ func newServerStateRefresh(d *schema.ResourceData, meta interface{}, attr string
 
 		log.Printf("[INFO] Creating Server")
 		server, err := client.Server.GetServer(context.Background(), d.Id())
-
 		if err != nil {
-			return nil, "", fmt.Errorf("Error retrieving Server %s : %s", d.Id(), err)
+			return nil, "", fmt.Errorf("error retrieving Server %s : %s", d.Id(), err)
 		}
 
 		if attr == "status" {
