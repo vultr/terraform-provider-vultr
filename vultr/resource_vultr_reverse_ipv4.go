@@ -44,9 +44,8 @@ func resourceVultrReverseIPV4Create(d *schema.ResourceData, meta interface{}) er
 
 	log.Printf("[INFO] Creating reverse IPv4")
 
-	err := client.Server.SetReverseIPV4(context.Background(), instanceID, ip, reverse)
-	if err != nil {
-		return fmt.Errorf("Error creating reverse IPv4: %v", err)
+	if err := client.Server.SetReverseIPV4(context.Background(), instanceID, ip, reverse); err != nil {
+		return fmt.Errorf("error creating reverse IPv4: %v", err)
 	}
 
 	d.SetId(ip)
@@ -61,7 +60,7 @@ func resourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) erro
 
 	ReverseIPV4s, err := client.Server.IPV4Info(context.Background(), instanceID, true)
 	if err != nil {
-		return fmt.Errorf("Error getting reverse IPv4s: %v", err)
+		return fmt.Errorf("error getting reverse IPv4s: %v, %v", err, instanceID)
 	}
 
 	var ReverseIPV4 *govultr.IPV4
@@ -90,10 +89,8 @@ func resourceVultrReverseIPV4Delete(d *schema.ResourceData, meta interface{}) er
 	instanceID := d.Get("instance_id").(string)
 
 	log.Printf("[INFO] Deleting reverse IPv4: %s", d.Id())
-	err := client.Server.SetDefaultReverseIPV4(context.Background(), instanceID, d.Id())
-
-	if err != nil {
-		return fmt.Errorf("Error resetting reverse IPv4 (%s): %v", d.Id(), err)
+	if err := client.Server.SetDefaultReverseIPV4(context.Background(), instanceID, d.Id()); err != nil {
+		return fmt.Errorf("error resetting reverse IPv4 (%s): %v", d.Id(), err)
 	}
 
 	return nil

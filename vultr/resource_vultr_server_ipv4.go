@@ -21,6 +21,10 @@ func resourceVultrServerIPV4() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			"ip": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"reboot": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -44,7 +48,7 @@ func resourceVultrServerIPV4Create(d *schema.ResourceData, meta interface{}) err
 
 	ip, err := client.Server.AddIPV4(context.Background(), instanceID, reboot)
 	if err != nil {
-		return fmt.Errorf("Error creating IPv4: %v", err)
+		return fmt.Errorf("error creating IPv4: %v", err)
 	}
 
 	d.SetId(ip.IPv4)
@@ -61,7 +65,7 @@ func resourceVultrServerIPV4Read(d *schema.ResourceData, meta interface{}) error
 
 	ips, err := client.Server.IPV4Info(context.Background(), instanceID, true)
 	if err != nil {
-		return fmt.Errorf("Error getting IPv4s: %v", err)
+		return fmt.Errorf("error getting IPv4s: %v", err)
 	}
 
 	var ipv4s *govultr.IPV4
@@ -94,7 +98,7 @@ func resourceVultrServerIPV4Delete(d *schema.ResourceData, meta interface{}) err
 	err := client.Server.DestroyIPV4(context.Background(), instanceID, d.Id())
 
 	if err != nil {
-		return fmt.Errorf("Error destroying IPv4 (%s): %v", d.Id(), err)
+		return fmt.Errorf("error destroying IPv4 (%s): %v", d.Id(), err)
 	}
 
 	return nil

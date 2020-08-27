@@ -16,13 +16,12 @@ func TestAccVultrReverseIPV4_basic(t *testing.T) {
 
 	name := "vultr_reverse_ipv4.test"
 
-	rServerLabel := acctest.RandomWithPrefix("tf-vps-reverse-ipv4")
+	rServerLabel := acctest.RandomWithPrefix("tf-rs-vps-reverse-ipv4")
 	reverse := fmt.Sprintf("host-%d.example.com", acctest.RandInt())
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrReverseIPV4Destroy,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrReverseIPV4(rServerLabel, reverse),
@@ -49,7 +48,7 @@ func testAccCheckVultrReverseIPV4Destroy(s *terraform.State) error {
 		}
 
 		if exists {
-			return fmt.Errorf("Reverse IPv4 still exists: %s", rs.Primary.ID)
+			return fmt.Errorf("reverse IPv4 still exists: %s", rs.Primary.ID)
 		}
 	}
 
@@ -60,11 +59,11 @@ func testAccCheckVultrReverseIPV4Exists(n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 		if !ok {
-			return fmt.Errorf("Reverse IPv4 not found: %s", n)
+			return fmt.Errorf("reverse IPv4 not found: %s", n)
 		}
 
 		if rs.Primary.ID == "" {
-			return errors.New("Reverse IPv4 ID is not set")
+			return errors.New("reverse IPv4 ID is not set")
 		}
 
 		exists, err := vultrReverseIPV4Exists(rs)
@@ -73,7 +72,7 @@ func testAccCheckVultrReverseIPV4Exists(n string) resource.TestCheckFunc {
 		}
 
 		if !exists {
-			return fmt.Errorf("Reverse IPv4 does not exist: %s", rs.Primary.ID)
+			return fmt.Errorf("reverse IPv4 does not exist: %s", rs.Primary.ID)
 		}
 
 		return nil
@@ -102,12 +101,12 @@ func vultrReverseIPV4Exists(rs *terraform.ResourceState) (bool, error) {
 
 	instanceID, ok := rs.Primary.Attributes["instance_id"]
 	if !ok {
-		return false, errors.New("Error getting instance ID")
+		return false, errors.New("error getting instance ID")
 	}
 
 	reverseIPV4s, err := client.Server.IPV4Info(context.Background(), instanceID, true)
 	if err != nil {
-		return false, fmt.Errorf("Error getting reverse IPv4s: %v", err)
+		return false, fmt.Errorf("error getting reverse IPv4s: %v", err)
 	}
 
 	ip := rs.Primary.ID

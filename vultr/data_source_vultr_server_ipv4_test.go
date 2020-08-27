@@ -13,26 +13,24 @@ func TestAccDataSourceVultrServerIPv4_basic(t *testing.T) {
 
 	name := "data.vultr_server_ipv4.test"
 
-	serverLabel := acctest.RandomWithPrefix("tf-vps-server-ipv4")
-	reboot := "false"
+	serverLabel := acctest.RandomWithPrefix("tf-ds-vps-server-ipv4")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccDataSourceVultrServerIPv4(serverLabel, reboot),
+				Config: testAccDataSourceVultrServerIPv4(serverLabel),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(name, "instance_id"),
 					resource.TestCheckResourceAttrSet(name, "ip"),
-					resource.TestCheckResourceAttr(name, "reboot", reboot),
 				),
 			},
 		},
 	})
 }
 
-func testAccDataSourceVultrServerIPv4(serverLabel, reboot string) string {
+func testAccDataSourceVultrServerIPv4(serverLabel string) string {
 	return fmt.Sprintf(`
 		resource "vultr_server" "foo" {
 			plan_id = "201"
@@ -43,7 +41,6 @@ func testAccDataSourceVultrServerIPv4(serverLabel, reboot string) string {
 
 		resource "vultr_server_ipv4" "bar" {
 			instance_id = "123456"
-			reboot = "%s"
 		}
 
 		data "vultr_server_ipv4" "test" {
@@ -52,5 +49,5 @@ func testAccDataSourceVultrServerIPv4(serverLabel, reboot string) string {
 				values = ["${vultr_server_ipv4.bar.ip}"]
 			}
 		}
-	`, serverLabel, reboot)
+	`, serverLabel)
 }

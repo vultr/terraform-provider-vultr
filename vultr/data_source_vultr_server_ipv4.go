@@ -61,7 +61,7 @@ func dataSourceVultrServerIPV4Read(d *schema.ResourceData, meta interface{}) err
 	if len(instanceIDs) == 0 {
 		servers, err := client.Server.List(context.Background())
 		if err != nil {
-			return fmt.Errorf("Error getting servers: %v", err)
+			return fmt.Errorf("error getting servers: %v", err)
 		}
 
 		for _, server := range servers {
@@ -75,7 +75,7 @@ func dataSourceVultrServerIPV4Read(d *schema.ResourceData, meta interface{}) err
 	for _, instanceID := range instanceIDs {
 		ipv4s, err := client.Server.IPV4Info(context.Background(), instanceID, true)
 		if err != nil {
-			return fmt.Errorf("Error getting IPv4s: %v", err)
+			return fmt.Errorf("error getting IPv4s: %v", err)
 		}
 
 		for _, ipv4 := range ipv4s {

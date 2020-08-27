@@ -33,7 +33,7 @@ func dataSourceVultrReverseIPV4() *schema.Resource {
 func dataSourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) error {
 	filters, ok := d.GetOk("filter")
 	if !ok {
-		return errors.New("Error getting filter")
+		return errors.New("error getting filter")
 	}
 
 	var instanceIDs []string
@@ -64,7 +64,7 @@ func dataSourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) er
 	if len(instanceIDs) == 0 {
 		servers, err := client.Server.List(context.Background())
 		if err != nil {
-			return fmt.Errorf("Error getting servers: %v", err)
+			return fmt.Errorf("error getting servers: %v", err)
 		}
 
 		for _, server := range servers {
@@ -78,7 +78,7 @@ func dataSourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) er
 	for _, instanceID := range instanceIDs {
 		reverseIPv4s, err := client.Server.IPV4Info(context.Background(), instanceID, true)
 		if err != nil {
-			return fmt.Errorf("Error getting reverse IPv4s: %v", err)
+			return fmt.Errorf("error getting reverse IPv4s: %v", err)
 		}
 
 		for _, reverseIPv4 := range reverseIPv4s {
@@ -88,7 +88,7 @@ func dataSourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) er
 	}
 
 	if result == nil {
-		return errors.New("No results were found")
+		return errors.New("no results were found")
 	}
 
 	d.SetId(result.IP)

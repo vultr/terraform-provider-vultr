@@ -13,7 +13,7 @@ func TestAccDataSourceVultrReverseIPV4_basic(t *testing.T) {
 
 	name := "data.vultr_reverse_ipv4.test"
 
-	serverLabel := acctest.RandomWithPrefix("tf-vps-reverse-ipv4")
+	serverLabel := acctest.RandomWithPrefix("tf-ds-vps-reverse-ipv4")
 	reverse := fmt.Sprintf("host-%d.example.com", acctest.RandInt())
 
 	resource.Test(t, resource.TestCase{
@@ -24,7 +24,6 @@ func TestAccDataSourceVultrReverseIPV4_basic(t *testing.T) {
 				Config: testAccDataSourceVultrReverseIPV4(serverLabel, reverse),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(name, "instance_id"),
-					resource.TestCheckResourceAttrSet(name, "ip"),
 					resource.TestCheckResourceAttr(name, "reverse", reverse),
 				),
 			},
