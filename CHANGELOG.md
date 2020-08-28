@@ -1,4 +1,16 @@
-## 1.3.3 (Unreleased)
+## 1.4.0 (August 28, 2020)
+FEATURES:
+- New Resource : vultr_server_ipv4 [61](https://github.com/terraform-providers/terraform-provider-vultr/pull/61)
+- New Resource : vultr_reverse_ipv4 [61](https://github.com/terraform-providers/terraform-provider-vultr/pull/61)
+- New Resource : vultr_reverse_ipv6 [20](https://github.com/terraform-providers/terraform-provider-vultr/pull/20)
+- New Data Source : vultr_server_ipv4 [61](https://github.com/terraform-providers/terraform-provider-vultr/pull/61)
+- New Data Source : vultr_reverse_ipv4 [61](https://github.com/terraform-providers/terraform-provider-vultr/pull/61)
+- New Data Source : vultr_reverse_ipv6 [20](https://github.com/terraform-providers/terraform-provider-vultr/pull/20)
+
+IMPROVEMENTS:
+- resource/vultr_server: Ability to enable/disable DDOS post create [59](https://github.com/vultr/terraform-provider-vultr/pull/59)
+- resource/vultr_server: Ability to detach ISO post create [60](https://github.com/vultr/terraform-provider-vultr/pull/60)
+
 ## 1.3.2 (June 17, 2020)
 IMPROVEMENTS:
 - resource/vultr_dns_record: New custom importer allows you to import DNS Records [51](https://github.com/terraform-providers/terraform-provider-vultr/pull/51)
