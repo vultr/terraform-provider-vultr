@@ -40,7 +40,7 @@ func testAccDataSourceVultrServerIPv4(serverLabel string) string {
 		}
 
 		resource "vultr_server_ipv4" "bar" {
-			instance_id = "123456"
+			instance_id = "${vultr_server.foo.id}"
 		}
 
 		data "vultr_server_ipv4" "test" {
