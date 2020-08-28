@@ -27,6 +27,7 @@ func TestAccVultrServerIPV4_basic(t *testing.T) {
 					testAccCheckvultrServerIPV4Exists(name),
 					resource.TestCheckResourceAttrSet(name, "instance_id"),
 					resource.TestCheckResourceAttrSet(name, "ip"),
+					resource.TestCheckResourceAttrSet(name, "reverse"),
 				),
 			},
 		},

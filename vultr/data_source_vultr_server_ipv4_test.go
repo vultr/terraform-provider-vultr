@@ -24,6 +24,7 @@ func TestAccDataSourceVultrServerIPv4_basic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(name, "instance_id"),
 					resource.TestCheckResourceAttrSet(name, "ip"),
+					resource.TestCheckResourceAttrSet(name, "reverse"),
 				),
 			},
 		},

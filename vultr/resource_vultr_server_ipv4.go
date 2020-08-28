@@ -25,6 +25,10 @@ func resourceVultrServerIPV4() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"reverse": {
+				Type: schema.TypeString,
+				Computed: true,
+			},
 			"reboot": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -84,6 +88,7 @@ func resourceVultrServerIPV4Read(d *schema.ResourceData, meta interface{}) error
 
 	d.Set("ip", ipv4s.IP)
 	d.Set("instance_id", instanceID)
+	d.Set("reverse", ipv4s.Reverse)
 	d.Set("reboot", d.Get("reboot").(bool))
 
 	return nil

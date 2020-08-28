@@ -22,6 +22,7 @@ func TestAccDataSourceVultrReverseIPV4_basic(t *testing.T) {
 				Config: testAccDataSourceVultrReverseIPV4(serverLabel),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(name, "instance_id"),
+					resource.TestCheckResourceAttrSet(name, "reverse"),
 				),
 			},
 		},

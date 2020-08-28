@@ -1,7 +1,7 @@
 ---
 layout: "vultr"
-page_title: "Vultr: vultr_reverse_ipv4"
-sidebar_current: "docs-vultr-resource-reverse-ipv4"
+page_title: "Vultr: vultr_server_ipv4"
+sidebar_current: "docs-vultr-resource-server-ipv4"
 description: |-
   Provides a server IPv4 resource. This can be used to create, read, and modify a IPv4 address.
 ---

@@ -22,6 +22,10 @@ func dataSourceVultrServerIPV4() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"reverse": {
+				Type: schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -91,6 +95,7 @@ func dataSourceVultrServerIPV4Read(d *schema.ResourceData, meta interface{}) err
 	d.SetId(result.IP)
 	d.Set("instance_id", resultInstanceID)
 	d.Set("ip", result.IP)
+	d.Set("reverse", result.Reverse)
 
 	return nil
 }
