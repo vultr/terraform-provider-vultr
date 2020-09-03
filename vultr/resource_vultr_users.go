@@ -6,7 +6,7 @@ import (
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/vultr/govultr"
+	"github.com/vultr/govultr/v2"
 )
 
 func resourceVultrUsers() *schema.Resource {
@@ -50,39 +50,34 @@ func resourceVultrUsers() *schema.Resource {
 }
 
 func resourceVultrUsersCreate(d *schema.ResourceData, meta interface{}) error {
-
 	client := meta.(*Client).govultrClient()
 
-	name := d.Get("name").(string)
-	email := d.Get("email").(string)
-	password := d.Get("password").(string)
-
-	// optional param
-	apiEnabled := d.Get("api_enabled")
-
-	api := ""
-	if apiEnabled.(bool) == true {
-		api = "yes"
-	} else {
-		api = "no"
+	userReq := &govultr.UserReq{
+		Email:    d.Get("email").(string),
+		Name:     d.Get("name").(string),
+		Password: d.Get("password").(string),
+		//todo fix govultr
+		//APIEnabled:  d.Get("apiEnabled").(string),
 	}
 
-	acl, aclOK := d.GetOk("acl")
-	a := acl.([]interface{})
-	aclMap := []string{}
-	if aclOK {
-		for _, v := range a {
-			aclMap = append(aclMap, v.(string))
-		}
-	}
+	//todo fix govultr
+	//acl, aclOK := d.GetOk("acl")
+	//a := acl.([]interface{})
+	//aclMap := []string{}
+	//if aclOK {
+	//	for _, v := range a {
+	//		aclMap = append(aclMap, v.(string))
+	//	}
+	//
+	//	userReq.ACL = aclMap
+	//}
 
-	user, err := client.User.Create(context.Background(), email, name, password, api, aclMap)
-
+	user, err := client.User.Create(context.Background(), userReq)
 	if err != nil {
 		return fmt.Errorf("error creating user: %v", err)
 	}
 
-	d.SetId(user.UserID)
+	d.SetId(user.ID)
 	d.Set("api_key", user.APIKey)
 
 	return resourceVultrUsersRead(d, meta)
@@ -91,38 +86,16 @@ func resourceVultrUsersCreate(d *schema.ResourceData, meta interface{}) error {
 func resourceVultrUsersRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	users, err := client.User.List(context.Background())
-
+	user, err := client.User.Get(context.Background(), d.Id())
 	if err != nil {
 		return fmt.Errorf("error getting user: %v", err)
 	}
 
-	counter := 0
-	flag := false
-	for _, v := range users {
-		if d.Id() == v.UserID {
-			flag = true
-			break
-		}
-		counter++
-	}
-
-	if !flag {
-		log.Printf("[WARN] Removing user (%s) because it is gone", d.Id())
-		d.SetId("")
-		return nil
-	}
-
-	enabled := false
-	if users[counter].APIEnabled == "yes" {
-		enabled = true
-	}
-
-	d.Set("name", users[counter].Name)
-	d.Set("email", users[counter].Email)
-	d.Set("api_enabled", enabled)
-	if err := d.Set("acl", users[counter].ACL); err != nil {
-		return fmt.Errorf("Error setting `acl`: %#v", err)
+	d.Set("name", user.Name)
+	d.Set("email", user.Email)
+	d.Set("api_enabled", user.APIEnabled)
+	if err := d.Set("acl", user.ACL); err != nil {
+		return fmt.Errorf("error setting `acl`: %#v", err)
 	}
 
 	return nil
@@ -130,18 +103,22 @@ func resourceVultrUsersRead(d *schema.ResourceData, meta interface{}) error {
 
 func resourceVultrUsersUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
+	userReq := &govultr.UserReq{}
 
-	user := &govultr.User{
-		UserID:   d.Id(),
-		Name:     d.Get("name").(string),
-		Email:    d.Get("email").(string),
-		Password: d.Get("password").(string),
+	if d.HasChange("email") {
+		userReq.Email = d.Get("email").(string)
 	}
 
-	if d.Get("api_enabled").(bool) == true {
-		user.APIEnabled = "yes"
-	} else {
-		user.APIEnabled = "no"
+	if d.HasChange("name") {
+		userReq.Name = d.Get("name").(string)
+	}
+
+	if d.HasChange("password") {
+		userReq.Password = d.Get("password").(string)
+	}
+
+	if d.HasChange("api_enabled") {
+		userReq.APIEnabled = d.Get("api_enabled").(string)
 	}
 
 	acl, aclOK := d.GetOk("acl")
@@ -151,11 +128,10 @@ func resourceVultrUsersUpdate(d *schema.ResourceData, meta interface{}) error {
 		for _, v := range a {
 			aclMap = append(aclMap, v.(string))
 		}
+		userReq.ACL = aclMap
 	}
 
-	user.ACL = aclMap
-
-	err := client.User.Update(context.Background(), user)
+	err := client.User.Update(context.Background(), d.Id(), userReq)
 	if err != nil {
 		return fmt.Errorf("Error updating user %s : %v", d.Id(), err)
 	}
@@ -170,7 +146,7 @@ func resourceVultrUsersDelete(d *schema.ResourceData, meta interface{}) error {
 
 	err := client.User.Delete(context.Background(), d.Id())
 	if err != nil {
-		return fmt.Errorf("Error deleting user %s : %v", d.Id(), err)
+		return fmt.Errorf("error deleting user %s : %v", d.Id(), err)
 	}
 	return nil
 }

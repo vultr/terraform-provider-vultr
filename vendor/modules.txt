@@ -73,6 +73,8 @@ github.com/google/go-cmp/cmp/internal/diff
 github.com/google/go-cmp/cmp/internal/flags
 github.com/google/go-cmp/cmp/internal/function
 github.com/google/go-cmp/cmp/internal/value
+# github.com/google/go-querystring v1.0.0
+github.com/google/go-querystring/query
 # github.com/google/uuid v1.1.1
 github.com/google/uuid
 # github.com/googleapis/gax-go/v2 v2.0.5
@@ -225,8 +227,8 @@ github.com/ulikunitz/xz/lzma
 # github.com/vmihailenco/msgpack v4.0.1+incompatible
 github.com/vmihailenco/msgpack
 github.com/vmihailenco/msgpack/codes
-# github.com/vultr/govultr v0.5.0
-github.com/vultr/govultr
+# github.com/vultr/govultr/v2 v2.0.0-beta.1
+github.com/vultr/govultr/v2
 # github.com/zclconf/go-cty v1.2.1
 github.com/zclconf/go-cty/cty
 github.com/zclconf/go-cty/cty/convert

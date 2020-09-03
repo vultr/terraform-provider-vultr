@@ -1,14 +1,14 @@
 package vultr
 
 import (
-	"crypto/tls"
+	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/meta"
-	"net/http"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/logging"
-	"github.com/vultr/govultr"
+	"github.com/hashicorp/terraform-plugin-sdk/meta"
+	"github.com/vultr/govultr/v2"
+	"golang.org/x/oauth2"
 )
 
 // Config is the configuration structure used to instantiate Vultr
@@ -29,18 +29,15 @@ func (c *Client) govultrClient() *govultr.Client {
 
 // Client configures govultr and returns an initialized client
 func (c *Config) Client() (*Client, error) {
-
 	userAgent := fmt.Sprintf("Terraform/%s", meta.SDKVersionString())
+	tokenSrc := oauth2.StaticTokenSource(&oauth2.Token{
+		AccessToken: c.APIKey,
+	})
 
-	transport := &http.Transport{
-		TLSNextProto: make(map[string]func(string, *tls.Conn) http.RoundTripper),
-	}
-	client := http.DefaultClient
-	client.Transport = transport
-
+	client := oauth2.NewClient(context.Background(), tokenSrc)
 	client.Transport = logging.NewTransport("Vultr", client.Transport)
 
-	vultrClient := govultr.NewClient(client, c.APIKey)
+	vultrClient := govultr.NewClient(client)
 	vultrClient.SetUserAgent(userAgent)
 
 	if c.RateLimit != 0 {
