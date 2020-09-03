@@ -1,6 +1,5 @@
 package vultr
 
-
 import (
 	"context"
 	"fmt"
