@@ -73,7 +73,7 @@ func Provider() terraform.ResourceProvider {
 			//"vultr_snapshot_from_url": resourceVultrSnapshotFromURL(),
 			//"vultr_server":            resourceVultrServer(),
 			//"vultr_server_ipv4":       resourceVultrServerIPV4(),
-			//"vultr_ssh_key":           resourceVultrSSHKey(),
+			"vultr_ssh_key": resourceVultrSSHKey(),
 			//"vultr_startup_script":    resourceVultrStartupScript(),
 			"vultr_user": resourceVultrUsers(),
 		},
