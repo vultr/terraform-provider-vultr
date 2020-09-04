@@ -65,7 +65,7 @@ func Provider() terraform.ResourceProvider {
 			//"vultr_iso_private":       resourceVultrIsoPrivate(),
 			//"vultr_load_balancer":     resourceVultrLoadBalancer(),
 			//"vultr_network":           resourceVultrNetwork(),
-			//"vultr_object_storage":    resourceVultrObjectStorage(),
+			"vultr_object_storage": resourceVultrObjectStorage(),
 			//"vultr_reserved_ip":       resourceVultrReservedIP(),
 			//"vultr_reverse_ipv4":      resourceVultrReverseIPV4(),
 			//"vultr_reverse_ipv6":      resourceVultrReverseIPV6(),
