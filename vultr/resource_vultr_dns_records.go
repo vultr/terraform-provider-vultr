@@ -137,7 +137,6 @@ func resourceVultrDnsRecordImport(d *schema.ResourceData, meta interface{}) ([]*
 		return nil, fmt.Errorf("DNS record not found for domain %s", domain)
 	}
 
-
 	d.SetId(record.ID)
 	d.Set("domain", domain)
 	return []*schema.ResourceData{d}, nil
