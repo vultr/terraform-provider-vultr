@@ -72,8 +72,6 @@ func testAccCheckVultrSnapshotExists(n string) resource.TestCheckFunc {
 			return fmt.Errorf("snapshot does not exist: %s", snapshotID)
 		}
 
-
-
 		return nil
 	}
 }
