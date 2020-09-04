@@ -69,7 +69,7 @@ func Provider() terraform.ResourceProvider {
 			//"vultr_reserved_ip":       resourceVultrReservedIP(),
 			//"vultr_reverse_ipv4":      resourceVultrReverseIPV4(),
 			//"vultr_reverse_ipv6":      resourceVultrReverseIPV6(),
-			//"vultr_snapshot":          resourceVultrSnapshot(),
+			"vultr_snapshot": resourceVultrSnapshot(),
 			//"vultr_snapshot_from_url": resourceVultrSnapshotFromURL(),
 			//"vultr_server":            resourceVultrServer(),
 			//"vultr_server_ipv4":       resourceVultrServerIPV4(),
