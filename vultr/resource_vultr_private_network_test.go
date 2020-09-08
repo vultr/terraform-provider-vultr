@@ -88,7 +88,6 @@ func testAccCheckVultrNetworkExists(n string) resource.TestCheckFunc {
 			return fmt.Errorf("network does not exist: %s", networkID)
 		}
 
-
 		return nil
 	}
 }
