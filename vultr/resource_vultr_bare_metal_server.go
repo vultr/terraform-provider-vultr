@@ -1,5 +1,4 @@
-package vultr
-
+//package vultr
 //
 //import (
 //	"context"
@@ -31,28 +30,31 @@ package vultr
 //		},
 //
 //		Schema: map[string]*schema.Schema{
-//			"region_id": {
-//				Type:     schema.TypeInt,
+//			"region": {
+//				Type:     schema.TypeString,
 //				Required: true,
 //				ForceNew: true,
 //			},
-//			"plan_id": {
-//				Type:     schema.TypeInt,
+//			"plan": {
+//				Type:     schema.TypeString,
 //				Required: true,
 //				ForceNew: true,
 //			},
 //			"label": {
 //				Type:     schema.TypeString,
 //				Optional: true,
+//				Default:  "",
 //			},
 //			"tag": {
 //				Type:     schema.TypeString,
 //				Optional: true,
+//				Default:  "",
 //			},
 //			"script_id": {
 //				Type:     schema.TypeString,
 //				Optional: true,
 //				ForceNew: true,
+//				Default:  "",
 //			},
 //			"snapshot_id": {
 //				Type:     schema.TypeString,
@@ -63,26 +65,31 @@ package vultr
 //				Type:     schema.TypeBool,
 //				Optional: true,
 //				ForceNew: true,
+//				Default:  false,
 //			},
 //			"ssh_key_ids": {
 //				Type:     schema.TypeList,
 //				Optional: true,
 //				ForceNew: true,
 //				Elem:     &schema.Schema{Type: schema.TypeString},
+//				Default: nil,
 //			},
 //			"user_data": {
 //				Type:     schema.TypeString,
 //				Optional: true,
+//				Default:  "",
 //			},
 //			"notify_activate": {
 //				Type:     schema.TypeBool,
 //				Optional: true,
 //				ForceNew: true,
+//				Default:  true,
 //			},
 //			"hostname": {
 //				Type:     schema.TypeString,
 //				Optional: true,
 //				ForceNew: true,
+//				Default:  "",
 //			},
 //			"os_id": {
 //				Type:     schema.TypeString,
@@ -94,6 +101,8 @@ package vultr
 //				Computed: true,
 //				Optional: true,
 //			},
+//
+//			// computed
 //			"os": {
 //				Type:     schema.TypeString,
 //				Computed: true,
@@ -135,10 +144,17 @@ package vultr
 //				Type:     schema.TypeString,
 //				Computed: true,
 //			},
-//			"v6_networks": {
-//				Type:     schema.TypeList,
+//			"v6_network": {
+//				Type:     schema.TypeString,
 //				Computed: true,
-//				Elem:     &schema.Schema{Type: schema.TypeMap},
+//			},
+//			"v6_main_ip": {
+//				Type:     schema.TypeString,
+//				Computed: true,
+//			},
+//			"v6_subnet": {
+//				Type:     schema.TypeString,
+//				Computed: true,
 //			},
 //		},
 //	}
@@ -155,34 +171,39 @@ package vultr
 //		return err
 //	}
 //
-//	enableIPV6 := d.Get("enable_ipv6")
-//	ipv6 := "no"
-//	if enableIPV6.(bool) == true {
-//		ipv6 = "yes"
-//	}
-//
-//	notifyActivate := d.Get("notify_activate")
-//	notify := "no"
-//	if notifyActivate.(bool) == true {
-//		notify = "yes"
-//	}
+//	//enableIPV6 := d.Get("enable_ipv6")
+//	//ipv6 := "no"
+//	//if enableIPV6.(bool) == true {
+//	//	ipv6 = "yes"
+//	//}
+//	//
+//	//notifyActivate := d.Get("notify_activate")
+//	//notify := "no"
+//	//if notifyActivate.(bool) == true {
+//	//	notify = "yes"
+//	//}
 //
 //	keyIDs := make([]string, d.Get("ssh_key_ids.#").(int))
 //	for i, id := range d.Get("ssh_key_ids").([]interface{}) {
 //		keyIDs[i] = id.(string)
 //	}
 //
-//	options := &govultr.BareMetalServerOptions{
-//		StartupScriptID: d.Get("script_id").(string),
-//		EnableIPV6:      ipv6,
-//		Label:           d.Get("label").(string),
-//		SSHKeyIDs:       keyIDs,
+//	req := &govultr.BareMetalReq{
+//		Region: d.Get("region").(string),
+//		Plan:   d.Get("plan").(string),
+//		//OsID:            0,
+//		//StartupScriptID: "",
+//		//SnapshotID:      "",
+//		EnableIPv6:     d.Get("enable_ipv6").(bool),
+//		Label:          d.Get("label").(string),
+//		SSHKeyIDs:      nil,
+//		//AppID:          0,
 //		UserData:        d.Get("user_data").(string),
-//		NotifyActivate:  notify,
-//		Hostname:        d.Get("hostname").(string),
-//		Tag:             d.Get("tag").(string),
+//		NotifyActivate: d.Get("notify_activate").(bool),
+//		Hostname:       d.Get("hostname").(string),
+//		Tag:            d.Get("tag").(string),
+//		//ReservedIPv4:   "",
 //	}
-//
 //	switch osOption {
 //	case "app_id":
 //		options.AppID = appID.(string)
@@ -194,20 +215,18 @@ package vultr
 //
 //	client := meta.(*Client).govultrClient()
 //
-//	regionID := d.Get("region_id").(int)
-//	planID := d.Get("plan_id").(int)
 //
-//	bm, err := client.BareMetalServer.Create(context.Background(), strconv.Itoa(regionID), strconv.Itoa(planID), osID.(string), options)
+//
+//	bm, err := client.BareMetalServer.Create(context.Background(), req)
 //	if err != nil {
-//		return fmt.Errorf("Error creating bare metal server: %v", err)
+//		return fmt.Errorf("error creating bare metal server: %v", err)
 //	}
 //
-//	d.SetId(bm.BareMetalServerID)
+//	d.SetId(bm.ID)
 //	log.Printf("[INFO] Bare Metal Server ID: %s", d.Id())
 //
-//	_, err = waitForBareMetalServerActiveStatus(d, meta)
-//	if err != nil {
-//		return fmt.Errorf("Error while waiting for bare metal server (%s) to be in active state: %s", d.Id(), err)
+//	if _, err = waitForBareMetalServerActiveStatus(d, meta); err != nil {
+//		return fmt.Errorf("error while waiting for bare metal server (%s) to be in active state: %s", d.Id(), err)
 //	}
 //
 //	return resourceVultrBareMetalServerRead(d, meta)
@@ -216,45 +235,35 @@ package vultr
 //func resourceVultrBareMetalServerRead(d *schema.ResourceData, meta interface{}) error {
 //	client := meta.(*Client).govultrClient()
 //
-//	bms, err := client.BareMetalServer.GetServer(context.Background(), d.Id())
+//	bms, err := client.BareMetalServer.Get(context.Background(), d.Id())
 //	if err != nil {
 //		if strings.Contains(err.Error(), "Invalid server") {
 //			log.Printf("[WARN] Removing bare metal server %s because it is gone", d.Id())
 //			d.SetId("")
 //			return nil
 //		}
-//		return fmt.Errorf("Error getting bare metal server: %v", err)
+//		return fmt.Errorf("error getting bare metal server: %v", err)
 //	}
 //
 //	d.Set("os", bms.Os)
 //	d.Set("ram", bms.RAM)
 //	d.Set("disk", bms.Disk)
 //	d.Set("main_ip", bms.MainIP)
-//	d.Set("cpu_count", bms.CPUs)
-//	d.Set("region_id", bms.RegionID)
+//	d.Set("cpu_count", bms.CPUCount)
+//	d.Set("region", bms.Region)
 //	d.Set("default_password", bms.DefaultPassword)
 //	d.Set("date_created", bms.DateCreated)
 //	d.Set("status", bms.Status)
 //	d.Set("netmask_v4", bms.NetmaskV4)
 //	d.Set("gateway_v4", bms.GatewayV4)
-//	d.Set("plan_id", bms.BareMetalPlanID)
+//	d.Set("plan", bms.Plan)
 //	d.Set("label", bms.Label)
 //	d.Set("tag", bms.Tag)
 //	d.Set("os_id", bms.OsID)
 //	d.Set("app_id", bms.AppID)
-//
-//	var ipv6s []map[string]string
-//	for _, net := range bms.V6Networks {
-//		v6network := map[string]string{
-//			"v6_network":      net.Network,
-//			"v6_main_ip":      net.MainIP,
-//			"v6_network_size": net.NetworkSize,
-//		}
-//		ipv6s = append(ipv6s, v6network)
-//	}
-//	if err := d.Set("v6_networks", ipv6s); err != nil {
-//		return fmt.Errorf("Error setting `v6_networks`: %#v", err)
-//	}
+//	d.Set("v6_network", bms.V6Network)
+//	d.Set("v6_main_ip", bms.V6MainIP)
+//	d.Set("v6_subnet", bms.V6Subnet)
 //
 //	return nil
 //}
@@ -333,7 +342,7 @@ package vultr
 //	log.Printf("[INFO] Deleting bare metal server: %s", d.Id())
 //	err := client.BareMetalServer.Delete(context.Background(), d.Id())
 //	if err != nil {
-//		return fmt.Errorf("Error deleting bare metal server (%s): %v", d.Id(), err)
+//		return fmt.Errorf("error deleting bare metal server (%s): %v", d.Id(), err)
 //	}
 //
 //	return nil
