@@ -12,9 +12,9 @@ import (
 
 func resourceVultrFirewallRule() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrFirewallRuleCreate,
-		Read:   resourceVultrFirewallRuleRead,
-		Delete: resourceVultrFirewallRuleDelete,
+		Create:   resourceVultrFirewallRuleCreate,
+		Read:     resourceVultrFirewallRuleRead,
+		Delete:   resourceVultrFirewallRuleDelete,
 		Importer: &schema.ResourceImporter{
 			//State: resourceVultrFirewallRuleImport,
 		},

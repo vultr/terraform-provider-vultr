@@ -17,8 +17,8 @@ func TestAccVultrFirewallRule_basic(t *testing.T) {
 
 	rString := acctest.RandString(13)
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
 		//CheckDestroy: testAccCheckVultrFirewallRuleDestroy,
 		Steps: []resource.TestStep{
 			{
@@ -37,8 +37,8 @@ func TestAccVultrFirewallRule_update(t *testing.T) {
 	rString := acctest.RandString(13)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
 		//CheckDestroy: testAccCheckVultrFirewallRuleDestroy,
 		Steps: []resource.TestStep{
 			{
