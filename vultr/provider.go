@@ -61,7 +61,7 @@ func Provider() terraform.ResourceProvider {
 			"vultr_dns_domain":     resourceVultrDnsDomain(),
 			"vultr_dns_record":     resourceVultrDnsRecord(),
 			"vultr_firewall_group": resourceVultrFirewallGroup(),
-			//"vultr_firewall_rule":     resourceVultrFirewallRule(),
+			"vultr_firewall_rule":  resourceVultrFirewallRule(),
 			//"vultr_iso_private":       resourceVultrIsoPrivate(),
 			//"vultr_load_balancer":     resourceVultrLoadBalancer(),
 			//"vultr_network":           resourceVultrNetwork(),
