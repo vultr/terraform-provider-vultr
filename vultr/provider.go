@@ -52,7 +52,7 @@ func Provider() terraform.ResourceProvider {
 			//"vultr_snapshot":          dataSourceVultrSnapshot(),
 			//"vultr_ssh_key":           dataSourceVultrSSHKey(),
 			//"vultr_startup_script":    dataSourceVultrStartupScript(),
-			//"vultr_user":              dataSourceVultrUser(),
+			"vultr_user": dataSourceVultrUser(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{

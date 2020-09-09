@@ -35,6 +35,7 @@ func resourceVultrUsers() *schema.Resource {
 			"api_enabled": {
 				Type:     schema.TypeBool,
 				Optional: true,
+				Default:  true,
 			},
 			"acl": {
 				Type:     schema.TypeList,
@@ -56,21 +57,19 @@ func resourceVultrUsersCreate(d *schema.ResourceData, meta interface{}) error {
 		Email:    d.Get("email").(string),
 		Name:     d.Get("name").(string),
 		Password: d.Get("password").(string),
-		//todo fix govultr
-		//APIEnabled:  d.Get("apiEnabled").(string),
+		//APIEnabled:  d.Get("apiEnabled").(bool),
 	}
 
-	//todo fix govultr
-	//acl, aclOK := d.GetOk("acl")
-	//a := acl.([]interface{})
-	//aclMap := []string{}
-	//if aclOK {
-	//	for _, v := range a {
-	//		aclMap = append(aclMap, v.(string))
-	//	}
-	//
-	//	userReq.ACL = aclMap
-	//}
+	acl, aclOK := d.GetOk("acl")
+	a := acl.([]interface{})
+	var aclMap []string
+	if aclOK {
+		for _, v := range a {
+			aclMap = append(aclMap, v.(string))
+		}
+
+		userReq.ACL = aclMap
+	}
 
 	user, err := client.User.Create(context.Background(), userReq)
 	if err != nil {
