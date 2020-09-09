@@ -43,7 +43,7 @@ func Provider() terraform.ResourceProvider {
 			//"vultr_object_storage":    dataSourceVultrObjectStorage(),
 			"vultr_os": dataSourceVultrOS(),
 			//"vultr_plan":              dataSourceVultrPlan(),
-			//"vultr_region":            dataSourceVultrRegion(),
+			"vultr_region": dataSourceVultrRegion(),
 			//"vultr_reserved_ip":       dataSourceVultrReservedIP(),
 			//"vultr_reverse_ipv4":      dataSourceVultrReverseIPV4(),
 			//"vultr_reverse_ipv6":      dataSourceVultrReverseIPV6(),
