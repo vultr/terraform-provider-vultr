@@ -117,7 +117,7 @@ func resourceVultrUsersUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if d.HasChange("api_enabled") {
-		userReq.APIEnabled = d.Get("api_enabled").(string)
+		userReq.APIEnabled = d.Get("api_enabled").(bool)
 	}
 
 	acl, aclOK := d.GetOk("acl")
