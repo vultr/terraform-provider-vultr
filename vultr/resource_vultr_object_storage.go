@@ -34,6 +34,10 @@ func resourceVultrObjectStorage() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"location": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"region": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -91,6 +95,7 @@ func resourceVultrObjectStorageRead(d *schema.ResourceData, meta interface{}) er
 	d.Set("date_created", obj.DateCreated)
 	d.Set("cluster_id", obj.ObjectStoreClusterID)
 	d.Set("label", obj.Label)
+	d.Set("location", obj.Location)
 	d.Set("region", obj.Region)
 	d.Set("status", obj.Status)
 	d.Set("s3_hostname", obj.S3Hostname)
