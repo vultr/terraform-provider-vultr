@@ -39,8 +39,8 @@ The following attributes are exported:
 
 ## Import
 
-SSH keys can be imported using the SSH key `SSHKEYID`, e.g.
+SSH keys can be imported using the SSH key `ID`, e.g.
 
 ```
-terraform import vultr_ssh_key.my_key 541b4960f23bd
+terraform import vultr_ssh_key.my_key 6b0876a7-f709-41ba-aed8-abed9d38ae45
 ```
