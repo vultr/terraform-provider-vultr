@@ -3,11 +3,11 @@ package vultr
 import (
 	"context"
 	"fmt"
-	"github.com/vultr/govultr/v2"
 	"log"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/vultr/govultr/v2"
 )
 
 func resourceVultrBlockStorage() *schema.Resource {
@@ -186,16 +186,6 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 
 func resourceVultrBlockStorageDelete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
-
-	// todo have API v2 handle this
-	if _, ok := d.GetOkExists("attached_to_instance"); ok {
-		log.Printf("[INFO] Detaching block storage (%s)", d.Id())
-		detach := &govultr.BlockStorageDetach{Live: d.Get("live").(bool)}
-
-		if err := client.BlockStorage.Detach(context.Background(), d.Id(), detach); err != nil {
-			return fmt.Errorf("error detaching block storage (%s): %v", d.Id(), err)
-		}
-	}
 
 	log.Printf("[INFO] Deleting block storage: %s", d.Id())
 	if err := client.BlockStorage.Delete(context.Background(), d.Id()); err != nil {
