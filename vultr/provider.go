@@ -31,7 +31,7 @@ func Provider() terraform.ResourceProvider {
 			//"vultr_api_key":           dataSourceVultrApi(),
 			"vultr_application": dataSourceVultrApplication(),
 			//"vultr_backup":            dataSourceVultrBackup(),
-			//"vultr_bare_metal_plan":   dataSourceVultrBareMetalPlan(),
+			"vultr_bare_metal_plan":   dataSourceVultrBareMetalPlan(),
 			"vultr_bare_metal_server": dataSourceVultrBareMetalServer(),
 			"vultr_block_storage":     dataSourceVultrBlockStorage(),
 			"vultr_dns_domain":        dataSourceVultrDnsDomain(),

@@ -66,7 +66,7 @@ func dataSourceVultrBareMetalServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"v6_subnet": {
+			"v6_network_size": {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
@@ -160,7 +160,7 @@ func dataSourceVultrBareMetalServerRead(d *schema.ResourceData, meta interface{}
 	d.Set("app_id", serverList[0].AppID)
 	d.Set("v6_network", serverList[0].V6Network)
 	d.Set("v6_main_ip", serverList[0].V6MainIP)
-	d.Set("v6_subnet", serverList[0].V6Subnet)
+	d.Set("v6_network_size", serverList[0].V6NetworkSize)
 	d.Set("features", serverList[0].Features)
 
 	return nil
