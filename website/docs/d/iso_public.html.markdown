@@ -40,3 +40,4 @@ The following attributes are exported:
 
 * `name` - The ISO file's name.
 * `description` - The description of the ISO file.
+* `md5sum` - The MD5Sum of the ISO file.
