@@ -39,7 +39,7 @@ The following arguments are supported:
 The following attributes are exported:
 
 * `id` - The ID for the given snapshot.
-* `vps_id` - The ID of the server that the snapshot was created from.
+* `instance_id` - The ID of the server that the snapshot was created from.
 * `description` - The description for the given snapshot.
 * `date_created` - The date the snapshot was created.
 * `size` - The size of the snapshot in Bytes.
@@ -49,8 +49,8 @@ The following attributes are exported:
 
 ## Import
 
-Snapshots can be imported using the Snapshot `SNAPSHOTID`, e.g.
+Snapshots can be imported using the Snapshot `ID`, e.g.
 
 ```
-terraform import vultr_snapshot_url.my_snapshot 9735ced831ed2
+terraform import vultr_snapshot_url.my_snapshot 283941e8-0783-410e-9540-71c86b833992
 ```

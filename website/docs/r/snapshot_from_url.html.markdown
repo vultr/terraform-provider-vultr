@@ -43,8 +43,8 @@ The following attributes are exported:
 
 ## Import
 
-Snapshots from Url can be imported using the Snapshot `SNAPSHOTID`, e.g.
+Snapshots from Url can be imported using the Snapshot `ID`, e.g.
 
 ```
-terraform import vultr_snapshot_from_url.my_snapshot 9735ced831ed2
+terraform import vultr_snapshot_from_url.my_snapshot e60dc0a2-9313-4bab-bffc-57ffe33d99f6
 ```

@@ -38,6 +38,7 @@ The `filter` block supports the following:
 
 The following attributes are exported:
 
+* `id` - The ID for the given snapshot.
 * `description` - The description of the snapshot.
 * `size` - The size of the snapshot in bytes.
 * `status` - The status of the snapshot.
