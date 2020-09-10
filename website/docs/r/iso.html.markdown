@@ -41,8 +41,8 @@ The following attributes are exported:
 
 ## Import
 
-ISOs can be imported using the ISO `ISOID`, e.g.
+ISOs can be imported using the ISO `ID`, e.g.
 
 ```
-terraform import vultr_iso_private.my_iso 2349859
+terraform import vultr_iso_private.my_iso eb807c23-c311-4d35-a77f-e49bfeb2dec5
 ```
