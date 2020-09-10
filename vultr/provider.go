@@ -38,7 +38,7 @@ func Provider() terraform.ResourceProvider {
 			//"vultr_firewall_group":    dataSourceVultrFirewallGroup(),
 			//"vultr_iso_private":       dataSourceVultrIsoPrivate(),
 			//"vultr_iso_public":        dataSourceVultrIsoPublic(),
-			//"vultr_load_balancer":     dataSourceVultrLoadBalancer(),
+			"vultr_load_balancer": dataSourceVultrLoadBalancer(),
 			//"vultr_network":           dataSourceVultrNetwork(),
 			//"vultr_object_storage":    dataSourceVultrObjectStorage(),
 			"vultr_os":     dataSourceVultrOS(),
