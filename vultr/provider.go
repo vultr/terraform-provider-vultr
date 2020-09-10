@@ -29,11 +29,11 @@ func Provider() terraform.ResourceProvider {
 		DataSourcesMap: map[string]*schema.Resource{
 			//"vultr_account":           dataSourceVultrAccount(),
 			//"vultr_api_key":           dataSourceVultrApi(),
-			//"vultr_application":       dataSourceVultrApplication(),
+			"vultr_application": dataSourceVultrApplication(),
 			//"vultr_backup":            dataSourceVultrBackup(),
 			//"vultr_bare_metal_plan":   dataSourceVultrBareMetalPlan(),
 			//"vultr_bare_metal_server": dataSourceVultrBareMetalServer(),
-			//"vultr_block_storage":     dataSourceVultrBlockStorage(),
+			//"vultr_block_storage":     dataSourceVultrBlockSttorage(),
 			"vultr_dns_domain": dataSourceVultrDnsDomain(),
 			//"vultr_firewall_group":    dataSourceVultrFirewallGroup(),
 			//"vultr_iso_private":       dataSourceVultrIsoPrivate(),
