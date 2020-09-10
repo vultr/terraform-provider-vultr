@@ -12,7 +12,7 @@ Get information about a Vultr startup script. This data source provides the name
 
 ## Example Usage
 
-Get the information for an startup script by `name`:
+Get the information for a startup script by `name`:
 
 ```hcl
 data "vultr_startup_script" "my_startup_script" {
@@ -39,7 +39,7 @@ The `filter` block supports the following:
 The following attributes are exported:
 
 * `name` - The name of the startup script.
-* `script` - The contents of the startup script.
+* `script` - The contents of the startup script base64 encoded.
 * `type` - The type of the startup script.
 * `date_created` - The date the startup script was added to your Vultr account.
 * `date_modified` - The date the startup script was last modified.

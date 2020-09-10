@@ -26,8 +26,8 @@ resource "vultr_startup_script" "my_script" {
 The following arguments are supported:
 
 * `name` - (Required) Name of the given script.
-* `script` - (Required) Contents of the startup script.
-* `type` - (Optional) Type of startup script. Default is boot.
+* `script` - (Required) Contents of the startup script base64 encoded.
+* `type` - (Optional) Type of startup script. Possible values are boot or pxe - default is boot.
 
 ## Attributes Reference
 
@@ -38,12 +38,12 @@ The following attributes are exported:
 * `date_created` - Date the script was created.
 * `date_modified` - Date the script was last modified.
 * `type` - The type of startup script this is.
-* `script` - The contents of the startup script.
+* `script` - The contents of the startup script base64 encoded.
 
 ## Import
 
 Startup Scripts can be imported using the Startup Scripts `SCRIPTID`, e.g.
 
 ```
-terraform import vultr_startup_script.my_script 537932
+terraform import vultr_startup_script.my_script ff8f36a8-eb86-4b8d-8667-b9d5459b6390
 ```

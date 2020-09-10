@@ -8,7 +8,7 @@ description: |-
 
 # vultr_object_storage
 
-Get information about a Object Storage subscription on Vultr.
+Get information about an Object Storage subscription on Vultr.
 
 ## Example Usage
 
@@ -40,8 +40,8 @@ The following attributes are exported:
 
 * `label` - The label of the object storage subscription.
 * `location` - The location which this subscription resides in.
-* `object_storage_cluster_id` - The identifying cluster ID.
-* `region_id` - The region ID (DCID in the Vultr API) of the object storage subscription.
+* `cluster_id` - The identifying cluster ID.
+* `region` - The region ID of the object storage subscription.
 * `s3_access_key` - Your access key.
 * `s3_hostname` - The hostname for this subscription.
 * `s3_secret_key` - Your secret key.
