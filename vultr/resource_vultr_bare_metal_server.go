@@ -1,23 +1,16 @@
 package vultr
-
 //
 //import (
 //	"context"
 //	"errors"
 //	"fmt"
 //	"log"
-//	"strconv"
 //	"strings"
 //	"time"
 //
 //	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 //	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 //	"github.com/vultr/govultr/v2"
-//)
-//
-//const (
-//	appOSID      = "186"
-//	snapshotOSID = "164"
 //)
 //
 //func resourceVultrBareMetalServer() *schema.Resource {
@@ -73,14 +66,14 @@ package vultr
 //				Optional: true,
 //				ForceNew: true,
 //				Elem:     &schema.Schema{Type: schema.TypeString},
-//				Default: nil,
+//				Default:  nil,
 //			},
 //			"user_data": {
 //				Type:     schema.TypeString,
 //				Optional: true,
 //				Default:  "",
 //			},
-//			"notify_activate": {
+//			"activation_email": {
 //				Type:     schema.TypeBool,
 //				Optional: true,
 //				ForceNew: true,
@@ -93,12 +86,12 @@ package vultr
 //				Default:  "",
 //			},
 //			"os_id": {
-//				Type:     schema.TypeString,
+//				Type:     schema.TypeInt,
 //				Computed: true,
 //				Optional: true,
 //			},
 //			"app_id": {
-//				Type:     schema.TypeString,
+//				Type:     schema.TypeInt,
 //				Computed: true,
 //				Optional: true,
 //			},
@@ -153,7 +146,7 @@ package vultr
 //				Type:     schema.TypeString,
 //				Computed: true,
 //			},
-//			"v6_subnet": {
+//			"v6_network_size": {
 //				Type:     schema.TypeString,
 //				Computed: true,
 //			},
@@ -172,51 +165,34 @@ package vultr
 //		return err
 //	}
 //
-//	//enableIPV6 := d.Get("enable_ipv6")
-//	//ipv6 := "no"
-//	//if enableIPV6.(bool) == true {
-//	//	ipv6 = "yes"
-//	//}
-//	//
-//	//notifyActivate := d.Get("notify_activate")
-//	//notify := "no"
-//	//if notifyActivate.(bool) == true {
-//	//	notify = "yes"
-//	//}
-//
 //	keyIDs := make([]string, d.Get("ssh_key_ids.#").(int))
 //	for i, id := range d.Get("ssh_key_ids").([]interface{}) {
 //		keyIDs[i] = id.(string)
 //	}
 //
 //	req := &govultr.BareMetalReq{
-//		Region: d.Get("region").(string),
-//		Plan:   d.Get("plan").(string),
-//		//OsID:            0,
-//		//StartupScriptID: "",
-//		//SnapshotID:      "",
-//		EnableIPv6:     d.Get("enable_ipv6").(bool),
-//		Label:          d.Get("label").(string),
-//		SSHKeyIDs:      nil,
-//		//AppID:          0,
+//		Region:          d.Get("region").(string),
+//		Plan:            d.Get("plan").(string),
+//		StartupScriptID: d.Get("script_id").(string),
+//		EnableIPv6:      d.Get("enable_ipv6").(bool),
+//		Label:           d.Get("label").(string),
+//		SSHKeyIDs:       keyIDs,
 //		UserData:        d.Get("user_data").(string),
-//		NotifyActivate: d.Get("notify_activate").(bool),
-//		Hostname:       d.Get("hostname").(string),
-//		Tag:            d.Get("tag").(string),
+//		ActivationEmail: d.Get("activation_email").(bool),
+//		Hostname:        d.Get("hostname").(string),
+//		Tag:             d.Get("tag").(string),
 //		//ReservedIPv4:   "",
 //	}
 //	switch osOption {
 //	case "app_id":
-//		options.AppID = appID.(string)
-//		osID = appOSID
+//		req.AppID = appID.(int)
 //	case "snapshot_id":
-//		options.SnapshotID = snapshotID.(string)
-//		osID = snapshotOSID
+//		req.SnapshotID = snapshotID.(string)
+//	case "os_id":
+//		req.OsID = osID.(int)
 //	}
 //
 //	client := meta.(*Client).govultrClient()
-//
-//
 //
 //	bm, err := client.BareMetalServer.Create(context.Background(), req)
 //	if err != nil {
@@ -264,85 +240,85 @@ package vultr
 //	d.Set("app_id", bms.AppID)
 //	d.Set("v6_network", bms.V6Network)
 //	d.Set("v6_main_ip", bms.V6MainIP)
-//	d.Set("v6_subnet", bms.V6Subnet)
+//	d.Set("v6_network_size", bms.V6NetworkSize)
 //
 //	return nil
 //}
 //
 //func resourceVultrBareMetalServerUpdate(d *schema.ResourceData, meta interface{}) error {
-//	client := meta.(*Client).govultrClient()
+//	//client := meta.(*Client).govultrClient()
+//	//
+//	//d.Partial(true)
+//	//
+//	//if d.HasChange("app_id") {
+//	//	log.Printf(`[INFO] Changing bare metal server (%s) application`, d.Id())
+//	//	_, newVal := d.GetChange("app_id")
+//	//	err := client.BareMetalServer.ChangeApp(context.Background(), d.Id(), newVal.(string))
+//	//	if err != nil {
+//	//		return fmt.Errorf("Error changing bare metal server (%s) application: %v", d.Id(), err)
+//	//	}
+//	//	_, err = waitForBareMetalServerActiveStatus(d, meta)
+//	//	if err != nil {
+//	//		return fmt.Errorf("Error while waiting for bare metal server (%s) to be in active state: %s", d.Id(), err)
+//	//	}
+//	//	d.SetPartial("app_id")
+//	//}
+//	//
+//	//if d.HasChange("label") {
+//	//	log.Printf(`[INFO] Updating bare metal server label (%s)`, d.Id())
+//	//	_, newVal := d.GetChange("label")
+//	//	err := client.BareMetalServer.SetLabel(context.Background(), d.Id(), newVal.(string))
+//	//	if err != nil {
+//	//		return fmt.Errorf("Error updating bare metal server label (%s): %v", d.Id(), err)
+//	//	}
+//	//	d.SetPartial("label")
+//	//}
+//	//
+//	//if d.HasChange("os_id") {
+//	//	log.Printf(`[INFO] Changing bare metal server (%s) operating system`, d.Id())
+//	//	_, newVal := d.GetChange("os_id")
+//	//	err := client.BareMetalServer.ChangeOS(context.Background(), d.Id(), newVal.(string))
+//	//	if err != nil {
+//	//		return fmt.Errorf("Error changing bare metal server (%s) operating system: %v", d.Id(), err)
+//	//	}
+//	//	_, err = waitForBareMetalServerActiveStatus(d, meta)
+//	//	if err != nil {
+//	//		return fmt.Errorf("Error while waiting for bare metal server (%s) to be in active state: %s", d.Id(), err)
+//	//	}
+//	//	d.SetPartial("os_id")
+//	//}
+//	//
+//	//if d.HasChange("tag") {
+//	//	log.Printf(`[INFO] Updating bare metal server (%s) tag`, d.Id())
+//	//	_, newVal := d.GetChange("tag")
+//	//	err := client.BareMetalServer.SetTag(context.Background(), d.Id(), newVal.(string))
+//	//	if err != nil {
+//	//		return fmt.Errorf("Error updating bare metal server (%s) tag: %v", d.Id(), err)
+//	//	}
+//	//	d.SetPartial("tag")
+//	//}
+//	//
+//	//if d.HasChange("user_data") {
+//	//	log.Printf(`[INFO] Updating bare metal server (%s) user_data`, d.Id())
+//	//	_, newVal := d.GetChange("user_data")
+//	//	err := client.BareMetalServer.SetUserData(context.Background(), d.Id(), newVal.(string))
+//	//	if err != nil {
+//	//		return fmt.Errorf("Error updating bare metal server (%s) user_data: %v", d.Id(), err)
+//	//	}
+//	//	d.SetPartial("user_data")
+//	//}
+//	//
+//	//d.Partial(false)
 //
-//	d.Partial(true)
-//
-//	if d.HasChange("app_id") {
-//		log.Printf(`[INFO] Changing bare metal server (%s) application`, d.Id())
-//		_, newVal := d.GetChange("app_id")
-//		err := client.BareMetalServer.ChangeApp(context.Background(), d.Id(), newVal.(string))
-//		if err != nil {
-//			return fmt.Errorf("Error changing bare metal server (%s) application: %v", d.Id(), err)
-//		}
-//		_, err = waitForBareMetalServerActiveStatus(d, meta)
-//		if err != nil {
-//			return fmt.Errorf("Error while waiting for bare metal server (%s) to be in active state: %s", d.Id(), err)
-//		}
-//		d.SetPartial("app_id")
-//	}
-//
-//	if d.HasChange("label") {
-//		log.Printf(`[INFO] Updating bare metal server label (%s)`, d.Id())
-//		_, newVal := d.GetChange("label")
-//		err := client.BareMetalServer.SetLabel(context.Background(), d.Id(), newVal.(string))
-//		if err != nil {
-//			return fmt.Errorf("Error updating bare metal server label (%s): %v", d.Id(), err)
-//		}
-//		d.SetPartial("label")
-//	}
-//
-//	if d.HasChange("os_id") {
-//		log.Printf(`[INFO] Changing bare metal server (%s) operating system`, d.Id())
-//		_, newVal := d.GetChange("os_id")
-//		err := client.BareMetalServer.ChangeOS(context.Background(), d.Id(), newVal.(string))
-//		if err != nil {
-//			return fmt.Errorf("Error changing bare metal server (%s) operating system: %v", d.Id(), err)
-//		}
-//		_, err = waitForBareMetalServerActiveStatus(d, meta)
-//		if err != nil {
-//			return fmt.Errorf("Error while waiting for bare metal server (%s) to be in active state: %s", d.Id(), err)
-//		}
-//		d.SetPartial("os_id")
-//	}
-//
-//	if d.HasChange("tag") {
-//		log.Printf(`[INFO] Updating bare metal server (%s) tag`, d.Id())
-//		_, newVal := d.GetChange("tag")
-//		err := client.BareMetalServer.SetTag(context.Background(), d.Id(), newVal.(string))
-//		if err != nil {
-//			return fmt.Errorf("Error updating bare metal server (%s) tag: %v", d.Id(), err)
-//		}
-//		d.SetPartial("tag")
-//	}
-//
-//	if d.HasChange("user_data") {
-//		log.Printf(`[INFO] Updating bare metal server (%s) user_data`, d.Id())
-//		_, newVal := d.GetChange("user_data")
-//		err := client.BareMetalServer.SetUserData(context.Background(), d.Id(), newVal.(string))
-//		if err != nil {
-//			return fmt.Errorf("Error updating bare metal server (%s) user_data: %v", d.Id(), err)
-//		}
-//		d.SetPartial("user_data")
-//	}
-//
-//	d.Partial(false)
-//
-//	return resourceVultrBareMetalServerRead(d, meta)
+//	//return resourceVultrBareMetalServerRead(d, meta)
+//	return nil
 //}
 //
 //func resourceVultrBareMetalServerDelete(d *schema.ResourceData, meta interface{}) error {
 //	client := meta.(*Client).govultrClient()
 //
 //	log.Printf("[INFO] Deleting bare metal server: %s", d.Id())
-//	err := client.BareMetalServer.Delete(context.Background(), d.Id())
-//	if err != nil {
+//	if err := client.BareMetalServer.Delete(context.Background(), d.Id()); err != nil {
 //		return fmt.Errorf("error deleting bare metal server (%s): %v", d.Id(), err)
 //	}
 //
@@ -350,7 +326,7 @@ package vultr
 //}
 //
 //func bareMetalServerOSCheck(options map[string]bool) (string, error) {
-//	result := []string{}
+//	var result []string
 //	for k, v := range options {
 //		if v == true {
 //			result = append(result, k)
@@ -358,10 +334,10 @@ package vultr
 //	}
 //
 //	if len(result) > 1 {
-//		return "", fmt.Errorf("Too many OS options have been selected: %v - please select one", result)
+//		return "", fmt.Errorf("too many OS options have been selected: %v - please select one", result)
 //	}
 //	if len(result) == 0 {
-//		return "", errors.New("You must set one of the following: os_id, app_id, or snapshot_id")
+//		return "", errors.New("you must set one of the following: os_id, app_id, or snapshot_id")
 //	}
 //
 //	return result[0], nil
@@ -388,10 +364,9 @@ package vultr
 //	client := meta.(*Client).govultrClient()
 //
 //	return func() (interface{}, string, error) {
-//		bms, err := client.BareMetalServer.GetServer(context.Background(), d.Id())
-//
+//		bms, err := client.BareMetalServer.Get(context.Background(), d.Id())
 //		if err != nil {
-//			return nil, "", fmt.Errorf("Error retrieving bare metal server %s : %s", d.Id(), err)
+//			return nil, "", fmt.Errorf("error retrieving bare metal server %s : %s", d.Id(), err)
 //		}
 //
 //		log.Printf("[INFO] Bare metal server (%s) status: %s", d.Id(), bms.Status)
