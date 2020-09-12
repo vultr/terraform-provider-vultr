@@ -26,6 +26,9 @@ This data source does not take any arguments. It will return the account informa
 
 The following attributes are exported:
 
+* `name` - The name on your Vultr account.
+* `email` - The email address on your Vultr account.
+* `acl` - The access control list on your Vultr account.
 * `balance` - The current balance on your Vultr account.
 * `pending_charges` - The pending charges on your Vultr account.
 * `last_payment_date` - The date of the last payment made on your Vultr account.
