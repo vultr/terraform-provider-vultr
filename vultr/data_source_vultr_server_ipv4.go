@@ -23,7 +23,7 @@ func dataSourceVultrServerIPV4() *schema.Resource {
 				Computed: true,
 			},
 			"reverse": {
-				Type: schema.TypeString,
+				Type:     schema.TypeString,
 				Computed: true,
 			},
 		},

@@ -2,6 +2,7 @@ package vultr
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"strconv"
@@ -259,7 +260,7 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 		EnablePrivateNetwork: d.Get("enable_private_network").(bool),
 		Label:                d.Get("label").(string),
 		AutoBackups:          d.Get("auto_backup").(bool),
-		UserData:             d.Get("user_data").(string),
+		UserData:             base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string))),
 		NotifyActivate:       d.Get("notify_activate").(bool),
 		DDOSProtection:       d.Get("ddos_protection").(bool),
 		Hostname:             d.Get("hostname").(string),
@@ -527,7 +528,7 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 
 	if d.HasChange("user_data") {
 		log.Printf("[INFO] Updating user_data")
-		if err := client.Server.SetUserData(context.Background(), d.Id(), d.Get("user_data").(string)); err != nil {
+		if err := client.Server.SetUserData(context.Background(), d.Id(), base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string)))); err != nil {
 			return fmt.Errorf("error occured while updating user_data for server %s : %v", d.Id(), err)
 		}
 	}
