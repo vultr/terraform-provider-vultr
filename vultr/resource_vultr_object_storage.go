@@ -72,7 +72,7 @@ func resourceVultrObjectStorageCreate(d *schema.ResourceData, meta interface{}) 
 
 	obj, err := client.ObjectStorage.Create(context.Background(), objStoreCluster, label)
 	if err != nil {
-		return fmt.Errorf("error creating user: %v", err)
+		return fmt.Errorf("error creating object storage: %v", err)
 	}
 
 	d.SetId(obj.ID)
