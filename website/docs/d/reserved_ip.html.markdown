@@ -38,7 +38,7 @@ The `filter` block supports the following:
 
 The following attributes are exported:
 
-* `region_id` - The ID of the region that the reserved IP is in.
+* `region` - The ID of the region that the reserved IP is in.
 * `ip_type` - The IP type of the reserved IP.
 * `subnet` - The subnet of the reserved IP.
 * `subnet_size` - The subnet size of the reserved IP.

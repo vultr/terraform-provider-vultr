@@ -41,3 +41,6 @@ The following attributes are exported:
 * `instance_id` - The ID of the server the IPv4 reverse DNS record was set for.
 * `ip` - The IPv4 address in canonical format used in the reverse DNS record.
 * `reverse` - The hostname used in the IPv4 reverse DNS record.
+* `gateway` - The gateway IP address.
+* `netmask` - The IPv4 netmask in dot-decimal notation.
+* `reverse` - The reverse DNS information for this IP address.

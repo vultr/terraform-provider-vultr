@@ -17,7 +17,7 @@ Create a new reserved IP:
 ```hcl
 resource "vultr_reserved_ip" "my_reserved_ip" {
 	label = "my-reserved-ip"
-	region_id = 6
+	region = "sea"
 	ip_type = "v4"
 }
 ```
@@ -27,9 +27,9 @@ Attach a reserved IP to a server:
 ```hcl
 resource "vultr_reserved_ip" "my_reserved_ip" {
 	label = "my-reserved-ip"
-	region_id = 6
+	region = "sea"
 	ip_type = "v4"
-	attached_id = "923483"
+	attached_id = "b9cc6fad-70b1-40ee-ab6a-4d622858962f"
 }
 ```
 
@@ -40,17 +40,17 @@ The following arguments are supported:
 * `region_id` - (Required) The region ID that you want the reserved IP to be created in.
 * `ip_type` - (Required) The type of reserved IP that you want. Either "v4" or "v6".
 * `label` - (Optional) The label you want to give your reserved IP.
-* `attached_id` - (Optional) The VPS ID you want this reserved IP to be attached to.
+* `instance_id` - (Optional) The VPS ID you want this reserved IP to be attached to.
 
 ## Attributes Reference
 
 The following attributes are exported:
 
 * `id` - ID of the reserved IP.
-* `region_id` - The region ID (`DCID` in the Vultr API) that this reserved IP belongs to.
+* `region` - The region ID that this reserved IP belongs to.
 * `ip_type` - The reserved IP's type.
 * `label` - The reserved IP's label.
-* `attached_id` - The ID of the server the reserved IP is attached to.
+* `instance_id` - The ID of the server the reserved IP is attached to.
 * `subnet` - The reserved IP's subnet.
 * `subnet_size` - The reserved IP's subnet size.
 
@@ -59,5 +59,5 @@ The following attributes are exported:
 Reserved IPs can be imported using the reserved IP `SUBID`, e.g.
 
 ```
-terraform import vultr_reserved_ip.my_reserved_ip 1313044
+terraform import vultr_reserved_ip.my_reserved_ip b9cc6fad-70b1-40ee-ab6a-4d622858962f
 ```

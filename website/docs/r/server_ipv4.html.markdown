@@ -44,3 +44,6 @@ The following attributes are exported:
 * `id` - The ID is the IPv4 address in canonical format.
 * `instance_id` - The ID of the server the IPv4 was set for.
 * `ip` - The IPv4 address in canonical format.
+* `gateway` - The gateway IP address.
+* `netmask` - The IPv4 netmask in dot-decimal notation.
+* `reverse` - The reverse DNS information for this IP address.

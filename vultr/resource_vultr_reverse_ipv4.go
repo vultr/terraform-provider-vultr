@@ -31,6 +31,14 @@ func resourceVultrReverseIPV4() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			"netmask": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"gateway": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -52,6 +60,7 @@ func resourceVultrReverseIPV4Create(d *schema.ResourceData, meta interface{}) er
 	}
 
 	d.SetId(ip)
+	d.Set("instance_id", instanceID)
 
 	return resourceVultrReverseIPV4Read(d, meta)
 }
@@ -91,6 +100,8 @@ func resourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) erro
 
 	d.Set("ip", ReverseIPV4.IP)
 	d.Set("reverse", ReverseIPV4.Reverse)
+	d.Set("netmask", ReverseIPV4.Netmask)
+	d.Set("gateway", ReverseIPV4.Gateway)
 
 	return nil
 }
