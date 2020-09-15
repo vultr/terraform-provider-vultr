@@ -329,7 +329,7 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("power_status", instance.PowerStatus)
 	d.Set("server_status", instance.ServerStatus)
 	d.Set("internal_ip", instance.InternalIP)
-	d.Set("kvm_url", instance.KVM)
+	d.Set("kvm", instance.KVM)
 	d.Set("v6_network", instance.V6Network)
 	d.Set("v6_main_ip", instance.V6MainIP)
 	d.Set("v6_network_size", instance.V6NetworkSize)
