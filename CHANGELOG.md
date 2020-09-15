@@ -1,3 +1,7 @@
+## 1.4.1 (September 15, 2020)
+BUG FIXES:
+- resource/vultr_server: Fix bug that did not allow user-data to be passed in as a string [65](https://github.com/terraform-providers/terraform-provider-vultr/pull/65)
+
 ## 1.4.0 (August 28, 2020)
 FEATURES:
 - New Resource : vultr_server_ipv4 [61](https://github.com/terraform-providers/terraform-provider-vultr/pull/61)
