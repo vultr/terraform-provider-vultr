@@ -279,7 +279,7 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 
 	if sshKeyIDs, sshKeyOK := d.GetOk("ssh_key_ids"); sshKeyOK {
 		for _, v := range sshKeyIDs.([]interface{}) {
-			req.SSHKey = append(req.SSHKey, v.(string))
+			req.SSHKeys = append(req.SSHKeys, v.(string))
 		}
 	}
 
