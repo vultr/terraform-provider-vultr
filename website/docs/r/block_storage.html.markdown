@@ -17,7 +17,7 @@ Create a new Block Storage
 ```hcl
 resource "vultr_block_storage" "my_blockstorage" {
 	size_gb = 10
-	region_id = 1
+	region_id = "ewr"
 }
 ```
 
@@ -26,8 +26,8 @@ resource "vultr_block_storage" "my_blockstorage" {
 The following arguments are supported:
 
 * `size_gb` - (Required) The size of the given block storage.
-* `region_id` - (Required) Region in which this block storage will reside in. (Currently only NJ/NY supported region_id 1)
-* `attached_id` - (Optional) VPS ID that you want to have this block storage attached to.
+* `region` - (Required) Region in which this block storage will reside in. (Currently only NJ/NY supported region_id 1)
+* `attached_to_instance` - (Optional) VPS ID that you want to have this block storage attached to.
 * `label` - (Optional) Label that is given to your block storage.
 * `live` - (Optional) Live will allow attachment of the volume to an instance without a restart. Values are `yes` or `no` default is `no`.
 
@@ -38,10 +38,10 @@ The following arguments are supported:
 The following attributes are exported:
 
 * `size_gb` - The size of the given block storage.
-* `region_id` - Region in which this block storage will reside in. (Currently only NJ/NY supported region_id 1)
-* `attached_id` - VPS ID that is attached to this block storage.
+* `region` - Region in which this block storage will reside in. (Currently only NJ/NY supported region_id 1)
+* `attached_to_instance` - VPS ID that is attached to this block storage.
 * `label` - Label that is given to your block storage.
-* `cost_per_month` - The monthly cost of this block storage.
+* `cost` - The monthly cost of this block storage.
 * `date_created` - The date this block storage was created.
 * `status` - Current status of your block storage.
 * `id` - The ID for this block storage.
@@ -49,8 +49,8 @@ The following attributes are exported:
 
 ## Import
 
-Block Storage can be imported using the Block Storage `SUBID`, e.g.
+Block Storage can be imported using the Block Storage `ID`, e.g.
 
 ```
-terraform import vultr_block_storage.my_blockstorage 25058682
+terraform import vultr_block_storage.my_blockstorage e315835e-d466-4e89-9b4c-dfd8788d7685
 ```

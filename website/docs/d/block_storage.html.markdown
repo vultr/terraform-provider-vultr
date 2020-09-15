@@ -39,9 +39,9 @@ The `filter` block supports the following:
 The following attributes are exported:
 
 * `label` - The label of the block storage subscription.
-* `cost_per_month` - The cost per month of the block storage subscription in USD.
+* `cost` - The cost per month of the block storage subscription in USD.
 * `status` - The status of the block storage subscription.
 * `size_gb` - The size of the block storage subscription in GB.
-* `region_id` - The region ID (`DCID` in the Vultr API) of the block storage subscription.
-* `attached_to_vps` - The ID of the VPS the block storage subscription is attached to.
+* `region` - The region ID (`DCID` in the Vultr API) of the block storage subscription.
+* `attached_to_instance` - The ID of the VPS the block storage subscription is attached to.
 * `date_created` - The date the block storage subscription was added to your Vultr account.
