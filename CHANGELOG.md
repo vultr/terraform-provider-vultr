@@ -1,3 +1,10 @@
+## 1.5.0 (November 09, 2020)
+Breaking Change:
+- resource/vultr_server: Changing `user_data` will now trigger a `force_new` [70](https://github.com/terraform-providers/terraform-provider-vultr/pull/70)
+
+Dependency:
+- updated GoVultr to v1.1.1 [70](https://github.com/terraform-providers/terraform-provider-vultr/pull/70)
+
 ## 1.4.1 (September 15, 2020)
 BUG FIXES:
 - resource/vultr_server: Fix bug that did not allow user-data to be passed in as a string [65](https://github.com/terraform-providers/terraform-provider-vultr/pull/65)
