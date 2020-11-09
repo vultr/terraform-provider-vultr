@@ -108,6 +108,7 @@ func resourceVultrServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 				Optional: true,
+				ForceNew: true,
 			},
 			"notify_activate": {
 				Type:     schema.TypeBool,
@@ -524,13 +525,6 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 			return fmt.Errorf("error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 		}
 
-	}
-
-	if d.HasChange("user_data") {
-		log.Printf("[INFO] Updating user_data")
-		if err := client.Server.SetUserData(context.Background(), d.Id(), base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string)))); err != nil {
-			return fmt.Errorf("error occured while updating user_data for server %s : %v", d.Id(), err)
-		}
 	}
 
 	if d.HasChange("firewall_group_id") {
