@@ -43,4 +43,3 @@ The following attributes are exported:
 * `reverse` - The hostname used in the IPv4 reverse DNS record.
 * `gateway` - The gateway IP address.
 * `netmask` - The IPv4 netmask in dot-decimal notation.
-* `reverse` - The reverse DNS information for this IP address.

@@ -43,7 +43,7 @@ The following attributes are exported:
 * `disk` - The description of the disk(s) on the server.
 * `main_ip` - The server's main IP address.
 * `vcpu_count` - The number of virtual CPUs available on the server.
-* `region` - The region ID (`DCID` in the Vultr API) of the server.
+* `region` - The region ID of the server.
 * `date_created` - The date the server was added to your Vultr account.
 * `allowed_bandwidth` - The server's allowed bandwidth usage in GB.
 * `netmask_v4` - The server's IPv4 netmask.

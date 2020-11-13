@@ -22,10 +22,10 @@ func dataSourceVultrUser() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			//"api_enabled": {
-			//	Type:     schema.TypeBool,
-			//	Computed: true,
-			//},
+			"api_enabled": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
 			"acl": {
 				Type:     schema.TypeList,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -83,7 +83,7 @@ func dataSourceVultrUserRead(d *schema.ResourceData, meta interface{}) error {
 	d.SetId(userList[0].ID)
 	d.Set("name", userList[0].Name)
 	d.Set("email", userList[0].Email)
-	//d.Set("api_enabled", userList[0].APIEnabled)
+	d.Set("api_enabled", userList[0].APIEnabled)
 	if err := d.Set("acl", userList[0].ACL); err != nil {
 		return fmt.Errorf("error setting `acl`: %#v", err)
 	}

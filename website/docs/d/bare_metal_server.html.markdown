@@ -44,13 +44,13 @@ The following attributes are exported:
 * `main_ip` - The server's main IP address.
 * `cpu_count` - The number of CPUs available on the server.
 * `location` - The location of the server.
-* `region_id` - The region ID (`DCID` in the Vultr API) of the server.
+* `region` - The region ID of the server.
 * `default_password` - The server's default password.
 * `date_created` - The date the server was added to your Vultr account.
 * `status` - The status of the server's subscription.
 * `netmask_v4` - The server's IPv4 netmask.
 * `gateway_v4` - The server's IPv4 gateway.
-* `plan_id` - The server's plan ID.
+* `plan` - The server's plan ID.
 * `v6_networks` - A list of the server's IPv6 networks.
 * `label` - The server's label.
 * `tag` - The server's tag.

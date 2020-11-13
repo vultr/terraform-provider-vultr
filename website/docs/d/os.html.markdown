@@ -41,4 +41,3 @@ The following attributes are exported:
 * `name` - The name of the operating system.
 * `arch` - The architecture of the operating system.
 * `family` - The family of the operating system.
-* `windows` - If true, a Windows license will be included with the instance, which will increase the cost.

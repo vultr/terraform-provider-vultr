@@ -18,7 +18,7 @@ Create a new DNS Record
 
 resource "vultr_dns_domain" "my_domain" {
 	domain = "domain.com"
-	server_ip = "66.42.94.227"
+	ip = "66.42.94.227"
 }
 
 resource "vultr_dns_record" "my_record" {

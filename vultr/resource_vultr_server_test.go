@@ -226,42 +226,42 @@ func testAccVultrServerBaseUpdateFirewall(name string) string {
 		`, name)
 }
 
-//func testAccVultrServerBaseUpdateNetworkIDs(name string) string {
-//	return fmt.Sprintf(`
-//		resource "vultr_network" "foo" {
-//			region   = "4"
-//			description = "foo"
-//			cidr_block  = "10.0.0.0/24"
-//		}
-//
-//   	resource "vultr_network" "bar" {
-//			region   = "4"
-//			description = "bar"
-//			cidr_block  = "10.0.0.0/24"
-//		}
-//
-//		resource "vultr_server" "test" {
-// 			plan = "vc2-1c-2gb"
-// 			region = "sea"
-// 			os_id = "147"
-// 			label = "%s"
-// 			hostname = "testing-the-hostname"
-// 			enable_ipv6 = true
-// 			auto_backup = true
-// 			activtion = false
-// 			ddos_protection = true
-// 			tag = "even better tag"
-//       	network_ids = ["${vultr_network.foo.id}","${vultr_network.bar.id}"]
-//		}
-//		`, name)
-//}
+func testAccVultrServerBaseUpdateNetworkIDs(name string) string {
+	return fmt.Sprintf(`
+		resource "vultr_network" "foo" {
+			region   = "sea"
+			description = "foo"
+			cidr_block  = "10.0.0.0/24"
+		}
+
+  	resource "vultr_network" "bar" {
+			region   = "sea"
+			description = "bar"
+			cidr_block  = "10.0.0.0/24"
+		}
+
+		resource "vultr_server" "test" {
+			plan = "vc2-1c-2gb"
+			region = "sea"
+			os_id = 147
+			label = "%s"
+			hostname = "testing-the-hostname"
+			enable_ipv6 = true
+			auto_backup = true
+			activation_email = false
+			ddos_protection = true
+			tag = "even better tag"
+      	network_ids = ["${vultr_network.foo.id}","${vultr_network.bar.id}"]
+		}
+		`, name)
+}
 
 func testAccVultrServerBaseUpdatedRegion(name string) string {
 	return fmt.Sprintf(`
 		resource "vultr_server" "test" {
  			plan = "vc2-1c-1gb"
  			region = "ewr"
- 			os_id = "147"
+ 			os_id = 147
  			label = "%s"
  			hostname = "testing-the-hostname"
  			enable_ipv6 = true

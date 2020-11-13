@@ -37,7 +37,7 @@ resource "vultr_reserved_ip" "my_reserved_ip" {
 
 The following arguments are supported:
 
-* `region_id` - (Required) The region ID that you want the reserved IP to be created in.
+* `region` - (Required) The region ID that you want the reserved IP to be created in.
 * `ip_type` - (Required) The type of reserved IP that you want. Either "v4" or "v6".
 * `label` - (Optional) The label you want to give your reserved IP.
 * `instance_id` - (Optional) The VPS ID you want this reserved IP to be attached to.
@@ -56,7 +56,7 @@ The following attributes are exported:
 
 ## Import
 
-Reserved IPs can be imported using the reserved IP `SUBID`, e.g.
+Reserved IPs can be imported using the reserved IP `ID`, e.g.
 
 ```
 terraform import vultr_reserved_ip.my_reserved_ip b9cc6fad-70b1-40ee-ab6a-4d622858962f

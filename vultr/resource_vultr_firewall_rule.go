@@ -3,20 +3,22 @@ package vultr
 import (
 	"context"
 	"fmt"
+	"log"
+	"strconv"
+	"strings"
+
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 	"github.com/vultr/govultr/v2"
-	"log"
-	"strconv"
 )
 
 func resourceVultrFirewallRule() *schema.Resource {
 	return &schema.Resource{
-		Create:   resourceVultrFirewallRuleCreate,
-		Read:     resourceVultrFirewallRuleRead,
-		Delete:   resourceVultrFirewallRuleDelete,
+		Create: resourceVultrFirewallRuleCreate,
+		Read:   resourceVultrFirewallRuleRead,
+		Delete: resourceVultrFirewallRuleDelete,
 		Importer: &schema.ResourceImporter{
-			//State: resourceVultrFirewallRuleImport,
+			State: resourceVultrFirewallRuleImport,
 		},
 		Schema: map[string]*schema.Schema{
 			"firewall_group_id": {
@@ -34,7 +36,7 @@ func resourceVultrFirewallRule() *schema.Resource {
 				Type:         schema.TypeString,
 				Required:     true,
 				ForceNew:     true,
-				ValidateFunc: validation.StringInSlice([]string{"tcmp", "tcp", "udp", "gre"}, false),
+				ValidateFunc: validation.StringInSlice([]string{"tcmp", "tcp", "udp", "gre", "ah", "esp"}, false),
 			},
 			"subnet": {
 				Type:         schema.TypeString,
@@ -93,35 +95,6 @@ func resourceVultrFirewallRuleCreate(d *schema.ResourceData, meta interface{}) e
 	}
 
 	d.SetId(strconv.Itoa(rule.ID))
-	//
-	//Port:
-	//	"",
-	//		Source:     "",
-	//		Notes:      "",
-
-	//protocol := d.Get("protocol").(string)
-	//notes := d.Get("notes").(string)
-	//
-	//from, fromOk := d.GetOk("from_port")
-	//to, toOk := d.GetOk("to_port")
-	//
-	//port := ""
-
-	//if protocol != strings.ToLower(protocol) {
-	//	return fmt.Errorf("%q is required to be all lowercase", protocol)
-	//}
-	//
-	//if protocol == "tcp" || protocol == "udp" {
-	//	if fromOk {
-	//		if fromOk && toOk {
-	//			port = fmt.Sprintf("%d:%d", from, to)
-	//		} else {
-	//			port = strconv.Itoa(from.(int))
-	//		}
-	//	} else {
-	//		return fmt.Errorf("%q requires at requires at least from_port or from_port and to_port", protocol)
-	//	}
-	//}
 
 	return resourceVultrFirewallRuleRead(d, meta)
 }
@@ -129,38 +102,19 @@ func resourceVultrFirewallRuleCreate(d *schema.ResourceData, meta interface{}) e
 func resourceVultrFirewallRuleRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
-	// todo conver this to a single get call
-	options := &govultr.ListOptions{
-		PerPage: 1,
-	}
-	var fwRule *govultr.FirewallRule
-	for {
-		fw, meta, err := client.FirewallRule.List(context.Background(), d.Get("firewall_group_id").(string), options)
-		if err != nil {
-			return fmt.Errorf("1 error getting firewall rule %s: %v", d.Get("firewall_group_id").(string), err)
-		}
-
-		if strconv.Itoa(fw[0].ID) == d.Id() {
-			fwRule = &fw[0]
-			break
-		}
-
-		if meta.Links.Next == "" {
-			log.Printf("[WARN] Removing firewall rule (%s) because it is gone", d.Id())
-			d.SetId("")
-			return fmt.Errorf("2 error getting firewall rule %s: %v", d.Get("firewall_group_id").(string), err)
-		}
-
-		options.Cursor = meta.Links.Next
+	ruleID, _ := strconv.Atoi(d.Id())
+	fw, err := client.FirewallRule.Get(context.Background(), d.Get("firewall_group_id").(string), ruleID)
+	if err != nil {
+		return fmt.Errorf("error getting firewall rule %s: %v", d.Get("firewall_group_id").(string), err)
 	}
 
-	d.Set("ip_type", fwRule.Type)
-	d.Set("protocol", fwRule.Protocol)
-	d.Set("subnet", fwRule.Subnet)
-	d.Set("subnet_size", fwRule.SubnetSize)
-	d.Set("notes", fwRule.Notes)
-	d.Set("port", fwRule.Port)
-	d.Set("source", fwRule.Source)
+	d.Set("ip_type", fw.Type)
+	d.Set("protocol", fw.Protocol)
+	d.Set("subnet", fw.Subnet)
+	d.Set("subnet_size", fw.SubnetSize)
+	d.Set("notes", fw.Notes)
+	d.Set("port", fw.Port)
+	d.Set("source", fw.Source)
 
 	return nil
 }
@@ -170,7 +124,7 @@ func resourceVultrFirewallRuleDelete(d *schema.ResourceData, meta interface{}) e
 
 	id, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return fmt.Errorf("error convering firewall rule ID")
+		return fmt.Errorf("error converting firewall rule ID")
 	}
 
 	log.Printf("[INFO] Delete firewall rule : %s", d.Id())
@@ -180,47 +134,24 @@ func resourceVultrFirewallRuleDelete(d *schema.ResourceData, meta interface{}) e
 	return nil
 }
 
-// todo
-//func resourceVultrFirewallRuleImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
-//	client := meta.(*Client).govultrClient()
-//
-//	importID := d.Id()
-//	commaIdx := strings.IndexByte(importID, ',')
-//
-//	if commaIdx == -1 {
-//		return nil, fmt.Errorf(`invalid import format, expected "firewallGroupID,firewallRuleID"`)
-//	}
-//	fwGroup, ruleID := importID[:commaIdx], importID[commaIdx+1:]
-//
-//	options := &govultr.ListOptions{
-//		PerPage: 25,
-//	}
-//
-//	var rule *govultr.FirewallRule
-//	for {
-//		rules, meta, err := client.FirewallRule.List(context.Background(), fwGroup, options)
-//		if err != nil {
-//			return nil, fmt.Errorf("error getting Firewall Rules for Firewall Group %s: %v", fwGroup, err)
-//		}
-//		for _, v := range rules {
-//			if strconv.Itoa(v.ID) == ruleID {
-//				rule = &v
-//				break
-//			}
-//		}
-//
-//		if rule == nil {
-//			break
-//		}
-//
-//		if meta.Links.Next == "" {
-//			return nil, fmt.Errorf("firewall Rule %s not found for firewall group %s", ruleID, fwGroup)
-//		}
-//
-//		options.Cursor = meta.Links.Next
-//	}
-//
-//	d.SetId(strconv.Itoa(rule.ID))
-//	d.Set("firewall_group_id", fwGroup)
-//	return []*schema.ResourceData{d}, nil
-//}
+func resourceVultrFirewallRuleImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+	client := meta.(*Client).govultrClient()
+
+	importID := d.Id()
+	commaIdx := strings.IndexByte(importID, ',')
+
+	if commaIdx == -1 {
+		return nil, fmt.Errorf(`invalid import format, expected "firewallGroupID,firewallRuleID"`)
+	}
+	fwGroup, ruleID := importID[:commaIdx], importID[commaIdx+1:]
+
+	rule, _ := strconv.Atoi(ruleID)
+	fw, err := client.FirewallRule.Get(context.Background(), d.Get("firewall_group_id").(string), rule)
+	if err != nil {
+		return nil, fmt.Errorf("firewall Rule %s not found for firewall group %s", ruleID, fwGroup)
+	}
+
+	d.SetId(strconv.Itoa(fw.ID))
+	d.Set("firewall_group_id", fwGroup)
+	return []*schema.ResourceData{d}, nil
+}

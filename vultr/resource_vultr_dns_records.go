@@ -3,9 +3,10 @@ package vultr
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 	"log"
 	"strings"
+
+	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/vultr/govultr/v2"
@@ -84,6 +85,7 @@ func resourceVultrDnsRecordRead(d *schema.ResourceData, meta interface{}) error 
 		return nil
 	}
 
+	d.Set("domain", d.Get("domain").(string))
 	d.Set("type", record.Type)
 	d.Set("name", record.Name)
 	d.Set("data", record.Data)

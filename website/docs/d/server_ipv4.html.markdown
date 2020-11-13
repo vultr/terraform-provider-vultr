@@ -17,7 +17,7 @@ Get the information for an IPv4 address by `instance_id`:
 ```hcl
 data "vultr_reverse_ipv4" "my_reverse_ipv4" {
   filter {
-    name = "instance_id"
+    name = "ip"
     values = ["123.123.123.123"]
   }
 }

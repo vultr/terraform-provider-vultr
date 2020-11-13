@@ -17,10 +17,10 @@ Create a new IPv4 address for a server:
 
 ```hcl
 resource "vultr_server" "my_server" {
-	plan_id = "201"
-	region_id = "6"
-	os_id = "167"
-	enable_ipv4 = true
+	plan = "vc2-1c-1gb"
+	region = "ewr"
+	os_id = 167
+	enable_ipv6 = true
 }
 
 resource "vultr_server_ipv4" "my_server_ipv4" {

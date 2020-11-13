@@ -18,9 +18,9 @@ Create a new reverse DNS record for an IPv6 address:
 
 ```hcl
 resource "vultr_server" "my_server" {
-	plan_id = "201"
-	region_id = "6"
-	os_id = "167"
+	plan = "vc2-1c-1gb"
+	region = "ewr"
+	os_id = 167
 	enable_ipv6 = true
 }
 

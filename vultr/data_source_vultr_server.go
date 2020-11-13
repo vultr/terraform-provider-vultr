@@ -199,6 +199,7 @@ func dataSourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("v6_network", serverList[0].V6Network)
 	d.Set("v6_main_ip", serverList[0].V6MainIP)
 	d.Set("v6_network_size", serverList[0].V6NetworkSize)
+	d.Set("features", serverList[0].Features)
 
 	return nil
 }

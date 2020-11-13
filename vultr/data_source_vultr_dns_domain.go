@@ -35,6 +35,7 @@ func dataSourceVultrDnsDomainRead(d *schema.ResourceData, meta interface{}) erro
 	}
 
 	d.SetId(domain.Domain)
+	d.Set("domain", domain.Domain)
 	d.Set("date_created", domain.DateCreated)
 	return nil
 }
