@@ -77,9 +77,15 @@ func resourceVultrFirewallRuleCreate(d *schema.ResourceData, meta interface{}) e
 
 	log.Printf("[INFO] Creating new firewall rule")
 
+	protocol := d.Get("protocol").(string)
+
+	if protocol != strings.ToLower(protocol) {
+		return fmt.Errorf("%q is required to be all lowercase", protocol)
+	}
+
 	fwRule := &govultr.FirewallRuleReq{
 		IPType:     d.Get("ip_type").(string),
-		Protocol:   d.Get("protocol").(string),
+		Protocol:   protocol,
 		Subnet:     d.Get("subnet").(string),
 		SubnetSize: d.Get("subnet_size").(int),
 		Port:       d.Get("port").(string),
