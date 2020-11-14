@@ -48,8 +48,8 @@ func TestAccVultrUser_base(t *testing.T) {
 						"vultr_user.admin", "acl.10", "alerts"),
 					resource.TestCheckResourceAttr(
 						"vultr_user.admin", "acl.11", "objstore"),
-					//resource.TestCheckResourceAttr(
-					//	"vultr_user.admin", "api_enabled", "true"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "api_enabled", "true"),
 					resource.TestCheckResourceAttrSet("vultr_user.admin", "api_key"),
 				),
 			},
@@ -84,8 +84,8 @@ func TestAccVultrUser_base(t *testing.T) {
 						"vultr_user.admin", "acl.9", "firewall"),
 					resource.TestCheckResourceAttr(
 						"vultr_user.admin", "acl.10", "alerts"),
-					//resource.TestCheckResourceAttr(
-					//	"vultr_user.admin", "api_enabled", "false"),
+					resource.TestCheckResourceAttr(
+						"vultr_user.admin", "api_enabled", "false"),
 					resource.TestCheckResourceAttrSet("vultr_user.admin", "api_key"),
 				),
 			},
@@ -128,7 +128,7 @@ acl = [
           "alerts",
 			"objstore"
 ]
-#api_enabled = true
+api_enabled = true
 }`
 }
 
@@ -150,6 +150,6 @@ acl = [
           "firewall",
           "alerts"
 ]
-#api_enabled = false
+api_enabled = false
 }`
 }
