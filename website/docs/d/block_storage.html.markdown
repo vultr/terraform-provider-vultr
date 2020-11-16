@@ -42,6 +42,6 @@ The following attributes are exported:
 * `cost` - The cost per month of the block storage subscription in USD.
 * `status` - The status of the block storage subscription.
 * `size_gb` - The size of the block storage subscription in GB.
-* `region` - The region ID (`DCID` in the Vultr API) of the block storage subscription.
+* `region` - The region ID of the block storage subscription.
 * `attached_to_instance` - The ID of the VPS the block storage subscription is attached to.
 * `date_created` - The date the block storage subscription was added to your Vultr account.

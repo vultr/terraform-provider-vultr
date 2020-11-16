@@ -20,11 +20,13 @@ resource "vultr_firewall_group" "my_firewallgroup" {
 }
 
 resource "vultr_firewall_rule" "my_firewallrule" {
-    firewall_group_id = "${vultr_firewall_group.my_firewallgroup.id}"
+    firewall_group_id = vultr_firewall_group.my_firewallgroup.id
     protocol = "tcp"
-    network = "0.0.0.0/0"
-    from_port = "8085"
-    to_port = "8090"
+    ip_type = "v4"
+    subnet = "0.0.0.0"
+    subnet_size = 0
+    port = "8090"
+    notes = "my firewall rule"
 }
 ```
 
@@ -33,11 +35,13 @@ resource "vultr_firewall_rule" "my_firewallrule" {
 The following arguments are supported:
 
 * `firewall_group_id` - (Required) The firewall group that the firewall rule will belong to.
-* `protocol` - (Required) The type of protocol for this firewall rule. Possible values (icmp, tcp, udp, gre) **Note** they must be lowercase
-* `network` - (Required) IP address that you want to define for this firewall rule.
-* `from_port` - (Optional) Port that you want to define for this rule.
-* `to_port` - (Optional) This can be used with the from port if you want to define multiple ports. Example from port 8085 to port 8090
+* `protocol` - (Required) The type of protocol for this firewall rule. Possible values (icmp, tcp, udp, gre, esp, ah) **Note** they must be lowercase
+* `ip_type` - (Required) The type of ip for this firewall rule. Possible values (v4, v6) **Note** they must be lowercase
+* `subnet` - (Required) IP address that you want to define for this firewall rule.
+* `subnet_size` - (Required) The number of bits for the subnet in CIDR notation. Example: 32.
+* `port` - (Optional) TCP/UDP only. This field can be a specific port or a colon separated port range.
 * `notes` - (Optional) A simple note for a given firewall rule
+* `source` - (Optional) Possible values ("", cloudflare)
 
 ## Attributes Reference
 
@@ -45,10 +49,9 @@ The following attributes are exported:
 
 * `id` - The given ID for a firewall rule.
 * `firewall_group_id` - The firewall group that the firewall rule belongs to.
-* `protocol` - The type of protocol for this firewall rule. Possible values (icmp, tcp, udp, gre)
+* `protocol` - The type of protocol for this firewall rule. Possible values (icmp, tcp, udp, gre, esp, ah)
 * `network` - IP address that is defined for this rule.
-* `from_port` - Port that is defined for this rule.
-* `to_port` - This can be used with the from port if you want to define multiple ports. Example from port 8085 to port 8090
+* `port` - This field can be a specific port or a colon separated port range.
 * `notes` - A simple note for a given firewall rule
 * `ip_type` - The type of ip this rule is - may be either v4 or v6.
 
@@ -57,5 +60,5 @@ The following attributes are exported:
 Firewall Rules can be imported using the Firewall Group `ID` and Firewall Rule `ID`, e.g.
 
 ```
-terraform import vultr_firewall_rule.my_rule c342f929,1
+terraform import vultr_firewall_rule.my_rule b6a859c5-b299-49dd-8888-b1abbc517d08,1
 ```

@@ -43,4 +43,4 @@ The following attributes are exported:
 * `subnet` - The subnet of the reserved IP.
 * `subnet_size` - The subnet size of the reserved IP.
 * `label` - The label of the reserved IP.
-* `attached_to_vps` - The ID of the VPS the reserved IP is attached to.
+* `instance_id` - The ID of the VPS the reserved IP is attached to.

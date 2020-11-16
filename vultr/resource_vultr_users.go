@@ -54,10 +54,10 @@ func resourceVultrUsersCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	userReq := &govultr.UserReq{
-		Email:    d.Get("email").(string),
-		Name:     d.Get("name").(string),
-		Password: d.Get("password").(string),
-		//APIEnabled:  d.Get("apiEnabled").(bool),
+		Email:      d.Get("email").(string),
+		Name:       d.Get("name").(string),
+		Password:   d.Get("password").(string),
+		APIEnabled: d.Get("apiEnabled").(bool),
 	}
 
 	acl, aclOK := d.GetOk("acl")

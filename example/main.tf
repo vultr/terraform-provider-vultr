@@ -4,15 +4,15 @@ provider "vultr" {
 }
 
 resource "vultr_server" "my_server" {
-  plan_id                = "${var.one_cpu_one_gb_ram}"
-  region_id              = "${var.vultr_seattle}"
+  plan                   = "${var.one_cpu_one_gb_ram}"
+  region                 = "${var.vultr_seattle}"
   app_id                 = "${var.docker_centos}"
   os_id                  = "${var.os_type}"
   label                  = "terraform example"
   enable_ipv6            = true
   auto_backup            = true
   enable_private_network = true
-  notify_activate        = false
+  activation_email        = false
   ddos_protection        = true
   tag                    = "tag"
   firewall_group_id      = "${vultr_firewall_group.fwg.id}}"
@@ -43,7 +43,7 @@ resource "vultr_dns_record" "a-record" {
 }
 
 resource "vultr_load_balancer" "lb" {
-  region_id           = 1
+  region              = "ewr"
   label               = "terraform lb example"
   balancing_algorithm = "roundrobin"
 

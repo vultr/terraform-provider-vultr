@@ -15,7 +15,7 @@ Get information about a Vultr private network.
 Get the information for a private network by `description`:
 
 ```hcl
-data "vultr_network" "my_network" {
+data "vultr_private_network" "my_network" {
   filter {
     name = "description"
     values = ["my-network-description"]
@@ -38,7 +38,8 @@ The `filter` block supports the following:
 
 The following attributes are exported:
 
-* `region_id` - The ID of the region that the private network is in.
-* `cidr_block` - The CIDR block of the private network.
+* `region` - The ID of the region that the private network is in.
+* `v4_subnet` - The IPv4 network address. For example: 10.1.1.0.
+* `v4_subnet_mask` - The number of bits for the netmask in CIDR notation. Example: 20
 * `description` - The private network's description.
 * `date_created` - The date the private network was added to your Vultr account.

@@ -12,13 +12,13 @@ Get information about a Vultr region.
 
 ## Example Usage
 
-Get the information for a region by `name`:
+Get the information for a region by `id`:
 
 ```hcl
 data "vultr_region" "my_region" {
   filter {
-    name   = "name"
-    values = ["Miami"]
+    name   = "id"
+    values = ["sea"]
   }
 }
 ```
@@ -38,10 +38,7 @@ The `filter` block supports the following:
 
 The following attributes are exported:
 
-* `name` - The name of the region.
 * `continent` - The continent the region is in.
 * `country` - The country the region is in.
-* `state` - The state the region is in.
-* `ddos_protection` - Whether the region has DDoS protection.
-* `block_storage` - Whether the region has block storage.
-* `regioncode` - The region code of the region.
+* `city` - The city the region is in.
+* `options` - Shows whether options like ddos protection or block storage are available in the region.

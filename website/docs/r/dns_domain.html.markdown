@@ -17,7 +17,7 @@ Create a new DNS Domain
 ```hcl
 resource "vultr_dns_domain" "my_domain" {
 	domain = "domain.com"
-	server_ip = "66.42.94.227"
+	ip = "66.42.94.227"
 }
 ```
 
@@ -26,7 +26,7 @@ resource "vultr_dns_domain" "my_domain" {
 The following arguments are supported:
 
 * `domain` - (Required) Name of domain.
-* `server_ip` - (Optional) Server IP you want associated to domain. If omitted this will create a domain with no records.
+* `ip` - (Optional) Server IP you want associated to domain. If omitted this will create a domain with no records.
 
 ## Attributes Reference
 
@@ -34,7 +34,7 @@ The following attributes are exported:
 
 * `id` - The ID is the name of the domain.
 * `domain` -  Name of domain.
-* `server_ip` - Server IP you want associated to domain.
+* `date_created` - The date the domain was added to your account.
 
 ## Import
 

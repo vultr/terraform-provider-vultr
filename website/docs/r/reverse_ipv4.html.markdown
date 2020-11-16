@@ -20,8 +20,8 @@ Create a new reverse DNS record for an IPv4 address:
 resource "vultr_server" "my_server" {
 	plan = "vc2-1c-1gb"
 	region = "ewr"
-	os_id = "167"
-	enable_ipv4 = true
+	os_id = 167
+	enable_ipv6 = true
 }
 
 resource "vultr_reverse_ipv4" "my_reverse_ipv4" {

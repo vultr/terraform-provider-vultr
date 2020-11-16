@@ -238,7 +238,7 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 		EnableIPv6:           d.Get("enable_ipv6").(bool),
 		EnablePrivateNetwork: d.Get("enable_private_network").(bool),
 		Label:                d.Get("label").(string),
-		Backups:              d.Get("backups").(bool),
+		Backups:              d.Get("backups").(string),
 		UserData:             d.Get("user_data").(string),
 		ActivationEmail:      d.Get("activation_email").(bool),
 		DDOSProtection:       d.Get("ddos_protection").(bool),
@@ -347,13 +347,19 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	req := &govultr.InstanceUpdateReq{
-		//UpgradePlan:          "",
 		Label:                d.Get("label").(string),
 		Tag:                  d.Get("tag").(string),
 		FirewallGroupID:      d.Get("firewall_group_id").(string),
 		EnableIPv6:           d.Get("enable_ipv6").(bool),
 		EnablePrivateNetwork: d.Get("enable_private_network").(bool),
 		UserData:             d.Get("user_data").(string),
+	}
+
+	if d.HasChange("plan") {
+		log.Printf("[INFO] Updating Plan")
+		_, newVal := d.GetChange("plan")
+		plan := newVal.(string)
+		req.Plan = plan
 	}
 
 	if d.HasChange("ddos_protection") {
@@ -366,8 +372,8 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 	if d.HasChange("backups") {
 		log.Printf("[INFO] Updating Backups")
 		_, newVal := d.GetChange("backups")
-		ddos := newVal.(bool)
-		req.Backups = &ddos
+		backups := newVal.(string)
+		req.Backups = backups
 	}
 
 	if d.HasChange("private_network_ids") {
@@ -403,22 +409,16 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 
 		for _, v := range diff(oldIDs, newIDs) {
 			req.AttachPrivateNetwork = append(req.AttachPrivateNetwork, v)
-			//if err := client.Instance.AttachPrivateNetwork(context.Background(), d.Id(), v); err != nil {
-			//	return fmt.Errorf("error attaching network id %s to server %s : %v", v, d.Id(), err)
-			//}
 		}
 
 		for _, v := range diff(newIDs, oldIDs) {
 			req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, v)
-			//if err := client.Instance.DetachPrivateNetwork(context.Background(), d.Id(), v); err != nil {
-			//	return fmt.Errorf("error detaching network id %s from server %s : %v", v, d.Id(), err)
-			//}
 		}
 
 	}
 
 	if err := client.Instance.Update(context.Background(), d.Id(), req); err != nil {
-		return fmt.Errorf("error updated instance %s : %s", d.Id(), err.Error())
+		return fmt.Errorf("error updating instance %s : %s", d.Id(), err.Error())
 	}
 
 	if d.HasChange("iso_id") {
@@ -427,11 +427,11 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		_, newISOId := d.GetChange("iso_id")
 		if newISOId == "" {
 			if err := client.Instance.DetachISO(context.Background(), d.Id()); err != nil {
-				return fmt.Errorf("error detaching iso from server %s : %v", d.Id(), err)
+				return fmt.Errorf("error detaching iso from instance %s : %v", d.Id(), err)
 			}
 		} else {
 			if err := client.Instance.AttachISO(context.Background(), d.Id(), newISOId.(string)); err != nil {
-				return fmt.Errorf("error detaching iso from server %s : %v", d.Id(), err)
+				return fmt.Errorf("error detaching iso from instance %s : %v", d.Id(), err)
 			}
 		}
 	}

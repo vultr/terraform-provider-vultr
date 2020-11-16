@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
@@ -45,7 +46,7 @@ func dataSourceVultrIsoPublicRead(d *schema.ResourceData, meta interface{}) erro
 	for {
 		iso, meta, err := client.ISO.ListPublic(context.Background(), options)
 		if err != nil {
-			return fmt.Errorf("Error getting applications: %v", err)
+			return fmt.Errorf("Error getting isos: %v", err)
 		}
 
 		for _, i := range iso {

@@ -38,7 +38,7 @@ The `filter` block supports the following:
 
 The following attributes are exported:
 
-* `region_id` - The region your load balancer is deployed in.
+* `region` - The region your load balancer is deployed in.
 * `label` - The load balancers label.
 * `balancing_algorithm` - The balancing algorithm for your load balancer.
 * `proxy_protocol` - Boolean value that indicates if Proxy Protocol is enabled.
@@ -54,7 +54,7 @@ The following attributes are exported:
 
 `health_check` supports the following
 
-* `protocol` - The protocol used to traffic requests to the load balancer. Possible values are `http`, or `tcp`.
+* `protocol` - The protocol used to traffic requests to the load balancer. Possible values are "http", "https", or "tcp".
 * `path` - The path on the attached instances that the load balancer should check against.
 * `port` - The assigned port (integer) on the attached instances that the load balancer should check against.
 * `check_interval` - Time in seconds to perform health check. Default value is 15.

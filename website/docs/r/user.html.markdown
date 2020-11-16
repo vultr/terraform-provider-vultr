@@ -62,11 +62,10 @@ The following attributes are exported:
 * `name` - Name for this user.
 * `email` - Email for this user.
 * `api_enabled` - Whether API is enabled for the user.
-* `api_key` - API Key that is assigned to this user.
 
 ## Import
 
-Users can be imported using the User `USERID`, e.g.
+Users can be imported using the User `ID`, e.g.
 
 ```
 terraform import vultr_user.myuser cbe5ced2ae716

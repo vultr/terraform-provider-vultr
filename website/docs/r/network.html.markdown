@@ -17,7 +17,7 @@ Create a new private network with an automatically generated CIDR block:
 ```hcl
 resource "vultr_network" "my_network" {
 	description = "my private network"
-	region_id = 6
+	region = "ewr"
 }
 ```
 
@@ -26,8 +26,9 @@ Create a new private network with a specified CIDR block:
 ```hcl
 resource "vultr_network" "my_network" {
 	description = "my private network"
-	region_id = 6
-	cidr_block  = "10.0.0.0/24"
+	region = "ewr"
+	subnet  = "10.0.0.0"
+	subnet_size = 24
 }
 ```
 
@@ -35,24 +36,26 @@ resource "vultr_network" "my_network" {
 
 The following arguments are supported:
 
-* `region_id` - (Required) The region ID that you want the network to be created in.
+* `region` - (Required) The region ID that you want the network to be created in.
 * `description` - (Optional) The description you want to give your network.
-* `cidr_block` - (Optional) The IPv4 subnet and subnet mask to be used when attaching servers to this network.
+* `v4_subnet` - (Optional) The IPv4 subnet to be used when attaching servers to this network.
+* `v4_subnet_size` - The number of bits for the netmask in CIDR notation. Example: 32
 
 ## Attributes Reference
 
 The following attributes are exported:
 
 * `id` - ID of the network.
-* `region_id` - The region ID that the network operates in.
+* `region` - The region ID that the network operates in.
 * `description` - The description of the network.
-* `cidr_block` - The IPv4 subnet and subnet mask to be used when attaching servers to this network.
+* `v4_subnet` - The IPv4 subnet used when attaching servers to this network.
+* `v4_subnet_size` - The number of bits for the netmask in CIDR notation. Example: 32
 * `date_created` - The date that the network was added to your Vultr account.
 
 ## Import
 
-Networks can be imported using the network `NETWORKID`, e.g.
+Networks can be imported using the network `ID`, e.g.
 
 ```
-terraform import vultr_network.my_network net539626f0798d7
+terraform import vultr_network.my_network 0e04f918-575e-41cb-86f6-d729b354a5a1
 ```

@@ -16,8 +16,8 @@ Create a new server:
 
 ```hcl
 resource "vultr_server" "my_server" {
-	plan_id = "vc2-1c-1gb"
-	region_id = "sea"
+	plan = "vc2-1c-1gb"
+	region = "sea"
 	os_id = "167"
 }
 ```
@@ -26,8 +26,8 @@ Create a new server with options:
 
 ```hcl
 resource "vultr_server" "my_server" {
-	plan_id = "vc2-1c-1gb"
-	region_id = "sea"
+	plan = "vc2-1c-1gb"
+	region = "sea"
 	os_id = "167"
 	label = "my-server-label"
 	tag = "my-server-tag"
@@ -35,7 +35,7 @@ resource "vultr_server" "my_server" {
 	enable_ipv6 = true
 	auto_backup = true
 	ddos_protection = true
-	notify_activate = false
+	activation_email = false
 }
 ```
 
@@ -101,7 +101,7 @@ The following attributes are exported:
 * `backups` - Whether automatic backups are enabled for this server.
 * `enable_ipv6` - Whether the server has IPv6 networking activated.
 * `enable_private_network` - Whether the server has private networking support enabled.
-* `notify_activate` - Whether an activation email was sent when the server was ready.
+* `activation_email` - Whether an activation email was sent when the server was ready.
 * `ddos_protection` - Whether DDOS protection is enabled on the server.
 * `hostname` - The hostname assigned to the server.
 * `tag` - The tag assigned to the server.

@@ -95,7 +95,7 @@ func resourceVultrBlockStorageCreate(d *schema.ResourceData, meta interface{}) e
 		}
 
 		if !bsReady {
-			return fmt.Errorf("blockstorage was not in ready state after 30 seconds")
+			return fmt.Errorf("block storage was not in ready state after 30 seconds")
 		}
 
 		attachReq := &govultr.BlockStorageAttach{

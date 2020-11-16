@@ -45,7 +45,7 @@ func dataSourceVultrOSRead(d *schema.ResourceData, meta interface{}) error {
 	for {
 		os, meta, err := client.OS.List(context.Background(), options)
 		if err != nil {
-			return fmt.Errorf("error getting applications: %v", err)
+			return fmt.Errorf("error getting os list: %v", err)
 		}
 
 		for _, o := range os {

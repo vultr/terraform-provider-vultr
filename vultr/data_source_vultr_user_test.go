@@ -35,7 +35,7 @@ func TestAccVultrUser_dataBase(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "acl.8", "upgrade"),
 					resource.TestCheckResourceAttr(name, "acl.9", "firewall"),
 					resource.TestCheckResourceAttr(name, "acl.10", "alerts"),
-					//resource.TestCheckResourceAttr(name, "api_enabled", "yes"),
+					resource.TestCheckResourceAttr(name, "api_enabled", "yes"),
 					resource.TestCheckResourceAttrSet(name, "id"),
 				),
 			},

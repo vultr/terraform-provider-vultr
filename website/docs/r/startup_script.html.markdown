@@ -42,7 +42,7 @@ The following attributes are exported:
 
 ## Import
 
-Startup Scripts can be imported using the Startup Scripts `SCRIPTID`, e.g.
+Startup Scripts can be imported using the Startup Scripts `ID`, e.g.
 
 ```
 terraform import vultr_startup_script.my_script ff8f36a8-eb86-4b8d-8667-b9d5459b6390

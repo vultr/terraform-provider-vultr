@@ -27,9 +27,9 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"vultr_account":     dataSourceVultrAccount(),
-			"vultr_application": dataSourceVultrApplication(),
-			//"vultr_backup":            dataSourceVultrBackup(),
+			"vultr_account":           dataSourceVultrAccount(),
+			"vultr_application":       dataSourceVultrApplication(),
+			"vultr_backup":            dataSourceVultrBackup(),
 			"vultr_bare_metal_plan":   dataSourceVultrBareMetalPlan(),
 			"vultr_bare_metal_server": dataSourceVultrBareMetalServer(),
 			"vultr_block_storage":     dataSourceVultrBlockStorage(),
@@ -55,7 +55,7 @@ func Provider() terraform.ResourceProvider {
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
-			//"vultr_bare_metal_server": resourceVultrBareMetalServer(),
+			"vultr_bare_metal_server": resourceVultrBareMetalServer(),
 			"vultr_block_storage":     resourceVultrBlockStorage(),
 			"vultr_dns_domain":        resourceVultrDnsDomain(),
 			"vultr_dns_record":        resourceVultrDnsRecord(),

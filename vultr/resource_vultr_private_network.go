@@ -87,7 +87,7 @@ func resourceVultrNetworkRead(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("error getting private network: %v", err)
 	}
 
-	d.Set("region_id", network.Region)
+	d.Set("region", network.Region)
 	d.Set("description", network.Description)
 	d.Set("v4_subnet", network.V4Subnet)
 	d.Set("v4_subnet_mask", network.V4SubnetMask)
