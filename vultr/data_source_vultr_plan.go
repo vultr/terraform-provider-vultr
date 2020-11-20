@@ -96,7 +96,7 @@ func dataSourceVultrPlanRead(d *schema.ResourceData, meta interface{}) error {
 
 	d.SetId(planList[0].ID)
 	d.Set("vcpu_count", planList[0].VCPUCount)
-	d.Set("ram", planList[0].Ram)
+	d.Set("ram", planList[0].RAM)
 	d.Set("disk", planList[0].Disk)
 	d.Set("bandwidth", planList[0].Bandwidth)
 	d.Set("monthly_cost", planList[0].MonthlyCost)
