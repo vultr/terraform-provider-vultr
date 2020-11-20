@@ -3,10 +3,11 @@ package vultr
 import (
 	"context"
 	"fmt"
-	"github.com/vultr/govultr/v2"
 	"log"
 	"strings"
 	"time"
+
+	"github.com/vultr/govultr/v2"
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
@@ -59,7 +60,7 @@ func resourceVultrIsoCreate(d *schema.ResourceData, meta interface{}) error {
 
 	log.Printf("[INFO] Creating new ISO")
 
-	isoReq := &govultr.ISOReq{Url: d.Get("url").(string)}
+	isoReq := &govultr.ISOReq{URL: d.Get("url").(string)}
 	iso, err := client.ISO.Create(context.Background(), isoReq)
 	if err != nil {
 		return fmt.Errorf("Error creating ISO : %v", err)

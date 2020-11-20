@@ -317,7 +317,7 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	d.Set("os", instance.Os)
-	d.Set("ram", instance.Ram)
+	d.Set("ram", instance.RAM)
 	d.Set("disk", instance.Disk)
 	d.Set("main_ip", instance.MainIP)
 	d.Set("vcpu_count", instance.VCPUCount)
