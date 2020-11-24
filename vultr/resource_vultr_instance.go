@@ -308,7 +308,7 @@ func resourceVultrInstanceRead(d *schema.ResourceData, meta interface{}) error {
 
 	instance, err := client.Instance.Get(context.Background(), d.Id())
 	if err != nil {
-		if strings.HasPrefix(err.Error(), "invalid instance") {
+		if strings.HasPrefix(err.Error(), "invalid server") {
 			log.Printf("[WARN] Removing instance (%s) because it is gone", d.Id())
 			d.SetId("")
 			return nil

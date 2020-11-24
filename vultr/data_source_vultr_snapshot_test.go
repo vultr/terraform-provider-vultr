@@ -25,7 +25,6 @@ func TestAccDataSourceVultrSnapshot(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "description", rDesc),
 					resource.TestCheckResourceAttrSet(name, "date_created"),
-					resource.TestCheckResourceAttrSet(name, "size"),
 					resource.TestCheckResourceAttrSet(name, "status"),
 					resource.TestCheckResourceAttrSet(name, "os_id"),
 					resource.TestCheckResourceAttrSet(name, "app_id"),
@@ -47,7 +46,7 @@ func testAccDataSourceVultrSnapshotBase(vpsLabel, desc string) string {
 		}
 
 		resource "vultr_snapshot" "foo" {
-			vps_id       = "${vultr_instance.test.id}"
+			instance_id  = "${vultr_instance.test.id}"
 			description  = "%s"
 		}
 

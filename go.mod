@@ -9,5 +9,6 @@ require (
 	github.com/hashicorp/terraform-config-inspect v0.0.0-20191212124732-c6ae6269b9d7 // indirect
 	github.com/hashicorp/terraform-plugin-sdk v1.8.0
 	github.com/vultr/govultr/v2 v2.0.0
+	github.com/vultr/terraform-provider-vultr v1.5.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 )

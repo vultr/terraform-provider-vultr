@@ -21,12 +21,10 @@ func TestAccDataSourceVultrReverseIPV4_basic(t *testing.T) {
 			{
 				Config: testAccDataSourceVultrReverseIPV4(serverLabel),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttrSet(name, "id"),
-					resource.TestCheckResourceAttrSet(name, "subnet_size"),
-					resource.TestCheckResourceAttrSet(name, "subnet"),
-					resource.TestCheckResourceAttrSet(name, "region"),
-					resource.TestCheckResourceAttrSet(name, "label"),
-					resource.TestCheckResourceAttrSet(name, "ip_type"),
+					resource.TestCheckResourceAttrSet(name, "reverse"),
+					resource.TestCheckResourceAttrSet(name, "netmask"),
+					resource.TestCheckResourceAttrSet(name, "gateway"),
+					resource.TestCheckResourceAttrSet(name, "instance_id"),
 				),
 			},
 		},

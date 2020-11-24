@@ -35,7 +35,6 @@ func TestAccVultrBareMetalServer_basic(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "main_ip"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "cpu_count"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "region"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "default_password"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "date_created"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "status"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "netmask_v4"),
