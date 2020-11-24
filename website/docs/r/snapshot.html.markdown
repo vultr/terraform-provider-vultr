@@ -19,7 +19,7 @@ resource "vultr_server" "my_server" {
     label = "my_server"
     region = "ewr"
     plan = 201
-    os_id = 147
+    os_id = 167
 }
 resource "vultr_snapshot" "my_snapshot" {
     vps_id       = "${vultr_server.my_server.id}"

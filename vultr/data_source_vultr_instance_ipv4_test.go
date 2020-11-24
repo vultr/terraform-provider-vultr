@@ -8,19 +8,19 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 )
 
-func TestAccDataSourceVultrServerIPv4_basic(t *testing.T) {
+func TestAccDataSourceVultrInstanceIPv4_basic(t *testing.T) {
 	t.Parallel()
 
-	name := "data.vultr_server_ipv4.test"
+	name := "data.vultr_instance_ipv4.test"
 
-	serverLabel := acctest.RandomWithPrefix("tf-ds-vps-server-ipv4")
+	serverLabel := acctest.RandomWithPrefix("tf-ds-vps-instance-ipv4")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:  func() { testAccPreCheck(t) },
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccDataSourceVultrServerIPv4(serverLabel),
+				Config: testAccDataSourceVultrInstanceIPv4(serverLabel),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(name, "instance_id"),
 					resource.TestCheckResourceAttrSet(name, "ip"),
@@ -33,23 +33,23 @@ func TestAccDataSourceVultrServerIPv4_basic(t *testing.T) {
 	})
 }
 
-func testAccDataSourceVultrServerIPv4(serverLabel string) string {
+func testAccDataSourceVultrInstanceIPv4(serverLabel string) string {
 	return fmt.Sprintf(`
-		resource "vultr_server" "foo" {
+		resource "vultr_instance" "foo" {
 			plan = "vc2-1c-1gb"
 			region = "ewr"
 			os_id = "167"
 			label = "%s"
 		}
 
-		resource "vultr_server_ipv4" "bar" {
-			instance_id = "${vultr_server.foo.id}"
+		resource "vultr_instance_ipv4" "bar" {
+			instance_id = "${vultr_instance.foo.id}"
 		}
 
-		data "vultr_server_ipv4" "test" {
+		data "vultr_instance_ipv4" "test" {
 			filter {
 				name = "ip"
-				values = ["${vultr_server_ipv4.bar.ip}"]
+				values = ["${vultr_instance_ipv4.bar.ip}"]
 			}
 		}
 	`, serverLabel)

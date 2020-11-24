@@ -149,11 +149,11 @@ func testAccCheckVultrReservedIPExists(n string) resource.TestCheckFunc {
 
 func testAccVultrReservedIPConfig(rServerLabel, label, ipType string) string {
 	return fmt.Sprintf(`
-	resource "vultr_server" "ip" {
+	resource "vultr_instance" "ip" {
        label       = "%s"
        region      = "ewr"
        plan        = "vc2-1c-1gb"
-       os_id       = 147
+       os_id       = 167
 	   enable_ipv6 = true
    }
    resource "vultr_reserved_ip" "foo" {
@@ -166,18 +166,18 @@ func testAccVultrReservedIPConfig(rServerLabel, label, ipType string) string {
 
 func testAccVultrReservedIPConfig_attach(rServerLabel, label, ipType string) string {
 	return fmt.Sprintf(`
-	resource "vultr_server" "ip" {
+	resource "vultr_instance" "ip" {
        label = "%s"
        region = "ewr
        plan = "vc2-1c-1gb"
-       os_id = 147
+       os_id = 167
        enable_ipv6 = true
    }
    resource "vultr_reserved_ip" "foo" {
        label       = "%s"
        region      = "ewr"
        ip_type     = "%s"
-       instance_id = "${vultr_server.ip.id}"
+       instance_id = "${vultr_instance.ip.id}"
    }
   `, rServerLabel, label, ipType)
 }

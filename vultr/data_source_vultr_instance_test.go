@@ -8,17 +8,17 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 )
 
-func TestAccVultrServer(t *testing.T) {
+func TestAccVultrInstance(t *testing.T) {
 	t.Parallel()
 	rLabel := acctest.RandomWithPrefix("tf-test-ds")
-	name := "data.vultr_server.server"
+	name := "data.vultr_instance.instance"
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrServerDestroy,
+		CheckDestroy: testAccCheckVultrInstanceDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckVultrServer(rLabel),
+				Config: testAccCheckVultrInstance(rLabel),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(name, "os"),
 					resource.TestCheckResourceAttrSet(name, "ram"),
@@ -48,12 +48,12 @@ func TestAccVultrServer(t *testing.T) {
 	})
 }
 
-func testAccCheckVultrServer(label string) string {
+func testAccCheckVultrInstance(label string) string {
 	return fmt.Sprintf(`
-		resource "vultr_server" "test" {
+		resource "vultr_instance" "test" {
  			plan = "vc2-1c-1gb"
  			region = "sea"
- 			os_id = "147"
+ 			os_id = "167"
  			label = "%s"
  			hostname = "testing-the-hostname"
  			enable_ipv6 = true
@@ -62,10 +62,10 @@ func testAccCheckVultrServer(label string) string {
  			tag = "even better tag"
 		}
 
-		data "vultr_server" "server" {
+		data "vultr_instance" "instance" {
 			filter {
 				name = "label"
-				values = ["${vultr_server.test.label}"]
+				values = ["${vultr_instance.test.label}"]
 			}
 		}`, label)
 }

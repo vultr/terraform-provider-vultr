@@ -37,7 +37,7 @@ func TestAccDataSourceVultrSnapshot(t *testing.T) {
 
 func testAccDataSourceVultrSnapshotBase(vpsLabel, desc string) string {
 	return fmt.Sprintf(`
-	resource "vultr_server" "test" {
+	resource "vultr_instance" "test" {
  			plan = "vc2-1c-1gb"
  			region = "ewr"
 			os_id = "167"
@@ -47,7 +47,7 @@ func testAccDataSourceVultrSnapshotBase(vpsLabel, desc string) string {
 		}
 
 		resource "vultr_snapshot" "foo" {
-			vps_id       = "${vultr_server.test.id}"
+			vps_id       = "${vultr_instance.test.id}"
 			description  = "%s"
 		}
 

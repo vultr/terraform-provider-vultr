@@ -25,6 +25,7 @@ func TestAccVultrFirewallRule_basic(t *testing.T) {
 			{
 				Config: testAccVultrFirewallRule_base(rString),
 				Check: resource.ComposeTestCheckFunc(
+					testAccCheckVultrFirewallGroupExists("vultr_firewall_group.fwg"),
 					resource.TestCheckResourceAttrSet("vultr_firewall_rule.tcp", "firewall_group_id"),
 					resource.TestCheckResourceAttr("vultr_firewall_rule.tcp", "protocol", "tcp"),
 					resource.TestCheckResourceAttr("vultr_firewall_rule.tcp", "port", "3048"),

@@ -9,9 +9,9 @@ import (
 	"github.com/vultr/govultr/v2"
 )
 
-func dataSourceVultrServerIPV4() *schema.Resource {
+func dataSourceVultrInstanceIPV4() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrServerIPV4Read,
+		Read: dataSourceVultrInstanceIPV4Read,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"instance_id": {
@@ -38,7 +38,7 @@ func dataSourceVultrServerIPV4() *schema.Resource {
 	}
 }
 
-func dataSourceVultrServerIPV4Read(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrInstanceIPV4Read(d *schema.ResourceData, meta interface{}) error {
 	filters, filtersOk := d.GetOk("filter")
 
 	if !filtersOk {

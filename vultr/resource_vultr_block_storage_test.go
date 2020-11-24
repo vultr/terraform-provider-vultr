@@ -133,11 +133,11 @@ func testAccVultrBlockStorageConfig(label, serverLabel string) string {
 		label       = "%s"
 	  }
 
-	    resource "vultr_server" "ip" {
+	    resource "vultr_instance" "ip" {
        label = "%s"
        region = "ewr"
        plan = "vc2-1c-1gb"
-       os_id = 147
+       os_id = 167
    }
   `, label, serverLabel)
 }
@@ -148,14 +148,14 @@ func testAccVultrBlockStorageConfig_attach(label, serverLabel string) string {
 		region   = "ewr"
 		size_gb     = 10
 		label       = "%s"
-		attached_to_instance = "${vultr_server.ip.id}"
+		attached_to_instance = "${vultr_instance.ip.id}"
 	  }
 
-   resource "vultr_server" "ip" {
+   resource "vultr_instance" "ip" {
        label = "%s"
        region = "ewr"
        plan = "vc2-1c-1gb"
-       os_id = 147
+       os_id = 167
    }
   `, label, serverLabel)
 }
@@ -166,14 +166,14 @@ func testAccVultrBlockStorageConfig_updateLabel(label, serverLabel string) strin
 		region   = "ewr"
 		size_gb     = 10
 		label       = "%s"
-		attached_to_instance = "${vultr_server.ip.id}"
+		attached_to_instance = "${vultr_instance.ip.id}"
 	  }
 
-   resource "vultr_server" "ip" {
+   resource "vultr_instance" "ip" {
        label = "%s"
        region = "ewr"
        plan = "vc2-1c-1gb"
-       os_id = 147
+       os_id = 167
    }
   `, label, serverLabel)
 }
@@ -184,13 +184,13 @@ func testAccVultrBlockStorageConfig_resize(label, serverLabel string) string {
 		region   = "ewr"
 		size_gb     = 15
 		label       = "%s"
-		attached_to_instance = "${vultr_server.ip.id}"
+		attached_to_instance = "${vultr_instance.ip.id}"
 	  }
-   resource "vultr_server" "ip" {
+   resource "vultr_instance" "ip" {
        label = "%s"
        region = "ewr"
        plan = "vc2-1c-1gb"
-       os_id = 147
+       os_id = 167
    }
   `, label, serverLabel)
 }
@@ -203,11 +203,11 @@ func testAccVultrBlockStorageConfig_detach(label, serverLabel string) string {
 		label       = "%s"
 	  }
 
-   resource "vultr_server" "ip" {
+   resource "vultr_instance" "ip" {
        label = "%s"
        region = "ewr"
        plan = "vc2-1c-1gb"
-       os_id = 147
+       os_id = 167
    }
   `, label, serverLabel)
 }

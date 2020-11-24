@@ -11,25 +11,25 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
-func TestAccVultrServer_Basic(t *testing.T) {
+func TestAccVultrInstance_Basic(t *testing.T) {
 	t.Parallel()
 	rName := acctest.RandomWithPrefix("tf-vps-rs")
 
-	name := "vultr_server.test"
+	name := "vultr_instance.test"
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrServerDestroy,
+		CheckDestroy: testAccCheckVultrInstanceDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrServerBase(rName),
+				Config: testAccVultrInstanceBase(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "label", rName),
-					resource.TestCheckResourceAttr(name, "os", "CentOS 6 i386"),
+					resource.TestCheckResourceAttr(name, "os", "CentOS 7 x64"),
 					resource.TestCheckResourceAttr(name, "ram", "1024"),
 					resource.TestCheckResourceAttr(name, "disk", "25"),
 					resource.TestCheckResourceAttr(name, "region", "sea"),
-					resource.TestCheckResourceAttr(name, "os_id", "147"),
+					resource.TestCheckResourceAttr(name, "os_id", "167"),
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region", "sea"),
@@ -39,24 +39,24 @@ func TestAccVultrServer_Basic(t *testing.T) {
 		},
 	})
 }
-func TestAccVultrServer_Update(t *testing.T) {
+func TestAccVultrInstance_Update(t *testing.T) {
 	t.Parallel()
 	rName := acctest.RandomWithPrefix("tf-vps-rs-up")
 
-	name := "vultr_server.test"
+	name := "vultr_instance.test"
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrServerDestroy,
+		CheckDestroy: testAccCheckVultrInstanceDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrServerBase(rName),
+				Config: testAccVultrInstanceBase(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "label", rName),
-					resource.TestCheckResourceAttr(name, "os", "CentOS 6 i386"),
+					resource.TestCheckResourceAttr(name, "os", "CentOS 7 x64"),
 					resource.TestCheckResourceAttr(name, "ram", "1024"),
 					resource.TestCheckResourceAttr(name, "disk", "25"),
-					resource.TestCheckResourceAttr(name, "os_id", "147"),
+					resource.TestCheckResourceAttr(name, "os_id", "167"),
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region", "sea"),
@@ -64,13 +64,13 @@ func TestAccVultrServer_Update(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrServerBaseUpdatedRegion(rName),
+				Config: testAccVultrInstanceBaseUpdatedRegion(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "label", rName),
-					resource.TestCheckResourceAttr(name, "os", "CentOS 6 i386"),
+					resource.TestCheckResourceAttr(name, "os", "CentOS 7 x64"),
 					resource.TestCheckResourceAttr(name, "ram", "1024"),
 					resource.TestCheckResourceAttr(name, "disk", "25"),
-					resource.TestCheckResourceAttr(name, "os_id", "147"),
+					resource.TestCheckResourceAttr(name, "os_id", "167"),
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region", "ewr"),
@@ -81,24 +81,24 @@ func TestAccVultrServer_Update(t *testing.T) {
 	})
 }
 
-func TestAccVultrServer_UpdateFirewall(t *testing.T) {
+func TestAccVultrInstance_UpdateFirewall(t *testing.T) {
 	t.Parallel()
 	rName := acctest.RandomWithPrefix("tf-vps-rs-upfw")
 
-	name := "vultr_server.test"
+	name := "vultr_instance.test"
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrServerDestroy,
+		CheckDestroy: testAccCheckVultrInstanceDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrServerBase(rName),
+				Config: testAccVultrInstanceBase(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "label", rName),
-					resource.TestCheckResourceAttr(name, "os", "CentOS 6 i386"),
+					resource.TestCheckResourceAttr(name, "os", "CentOS 7 x64"),
 					resource.TestCheckResourceAttr(name, "ram", "1024"),
 					resource.TestCheckResourceAttr(name, "disk", "25"),
-					resource.TestCheckResourceAttr(name, "os_id", "147"),
+					resource.TestCheckResourceAttr(name, "os_id", "167"),
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region", "sea"),
@@ -106,13 +106,13 @@ func TestAccVultrServer_UpdateFirewall(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrServerBaseUpdateFirewall(rName),
+				Config: testAccVultrInstanceBaseUpdateFirewall(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "label", rName),
-					resource.TestCheckResourceAttr(name, "os", "CentOS 6 i386"),
+					resource.TestCheckResourceAttr(name, "os", "CentOS 7 x64"),
 					resource.TestCheckResourceAttr(name, "ram", "1024"),
 					resource.TestCheckResourceAttr(name, "disk", "25"),
-					resource.TestCheckResourceAttr(name, "os_id", "147"),
+					resource.TestCheckResourceAttr(name, "os_id", "167"),
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region", "sea"),
@@ -124,24 +124,24 @@ func TestAccVultrServer_UpdateFirewall(t *testing.T) {
 	})
 }
 
-//func TestAccVultrServer_UpdateNetworkIDs(t *testing.T) {
+//func TestAccVultrInstance_UpdateNetworkIDs(t *testing.T) {
 //	t.Parallel()
 //	rName := acctest.RandomWithPrefix("tf-vps-rs-upnid")
 //
-//	name := "vultr_server.test"
+//	name := "vultr_instance.test"
 //	resource.Test(t, resource.TestCase{
 //		PreCheck:     func() { testAccPreCheck(t) },
 //		Providers:    testAccProviders,
-//		CheckDestroy: testAccCheckVultrServerDestroy,
+//		CheckDestroy: testAccCheckVultrInstanceDestroy,
 //		Steps: []resource.TestStep{
 //			{
-//				Config: testAccVultrServerBase(rName),
+//				Config: testAccVultrInstanceBase(rName),
 //				Check: resource.ComposeTestCheckFunc(
 //					resource.TestCheckResourceAttr(name, "label", rName),
-//					resource.TestCheckResourceAttr(name, "os", "CentOS 6 i386"),
+//					resource.TestCheckResourceAttr(name, "os", "CentOS 7 x64"),
 //					resource.TestCheckResourceAttr(name, "ram", "1024"),
 //					resource.TestCheckResourceAttr(name, "disk", "25"),
-//					resource.TestCheckResourceAttr(name, "os_id", "147"),
+//					resource.TestCheckResourceAttr(name, "os_id", "167"),
 //					resource.TestCheckResourceAttr(name, "status", "active"),
 //					resource.TestCheckResourceAttr(name, "power_status", "running"),
 //					resource.TestCheckResourceAttr(name, "region", "sea"),
@@ -149,14 +149,14 @@ func TestAccVultrServer_UpdateFirewall(t *testing.T) {
 //				),
 //			},
 //			{
-//				Config: testAccVultrServerBaseUpdateNetworkIDs(rName),
+//				Config: testAccVultrInstanceBaseUpdateNetworkIDs(rName),
 //				Check: resource.ComposeTestCheckFunc(
 //					resource.TestCheckResourceAttr(name, "label", rName),
-//					resource.TestCheckResourceAttr(name, "os", "CentOS 6 i386"),
+//					resource.TestCheckResourceAttr(name, "os", "CentOS 7 x64"),
 //					resource.TestCheckResourceAttr(name, "ram", "1024"),
 //					resource.TestCheckResourceAttr(name, "disk", "Virtual 25 GB"),
 //					resource.TestCheckResourceAttr(name, "location", "Seattle"),
-//					resource.TestCheckResourceAttr(name, "os_id", "147"),
+//					resource.TestCheckResourceAttr(name, "os_id", "167"),
 //					resource.TestCheckResourceAttr(name, "status", "active"),
 //					resource.TestCheckResourceAttr(name, "power_status", "running"),
 //					resource.TestCheckResourceAttr(name, "region", "4"),
@@ -168,16 +168,16 @@ func TestAccVultrServer_UpdateFirewall(t *testing.T) {
 //	})
 //}
 
-func testAccCheckVultrServerDestroy(s *terraform.State) error {
+func testAccCheckVultrInstanceDestroy(s *terraform.State) error {
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != "vultr_server" {
+		if rs.Type != "vultr_instance" {
 			continue
 		}
 
 		client := testAccProvider.Meta().(*Client).govultrClient()
 		_, err := client.Instance.Get(context.Background(), rs.Primary.ID)
 		if err != nil {
-			if strings.Contains(err.Error(), "Server is pending destruction") {
+			if strings.Contains(err.Error(), "Instance is pending destruction") {
 				return nil
 			}
 			return fmt.Errorf("error getting instance: %s", err)
@@ -188,12 +188,12 @@ func testAccCheckVultrServerDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccVultrServerBase(name string) string {
+func testAccVultrInstanceBase(name string) string {
 	return fmt.Sprintf(`
-		resource "vultr_server" "test" {
+		resource "vultr_instance" "test" {
  			plan = "vc2-1c-1gb"
  			region = "sea"
- 			os_id = "147"
+ 			os_id = "167"
  			label = "%s"
  			hostname = "testing-the-hostname"
  			enable_ipv6 = true
@@ -204,12 +204,12 @@ func testAccVultrServerBase(name string) string {
 		} `, name)
 }
 
-func testAccVultrServerBaseUpdateFirewall(name string) string {
+func testAccVultrInstanceBaseUpdateFirewall(name string) string {
 	return fmt.Sprintf(`
-		resource "vultr_server" "test" {
+		resource "vultr_instance" "test" {
  			plan = "vc2-1c-1gb"
  			region = "sea"
- 			os_id = "147"
+ 			os_id = "167"
  			label = "%s"
  			hostname = "testing-the-hostname"
  			enable_ipv6 = true
@@ -226,7 +226,7 @@ func testAccVultrServerBaseUpdateFirewall(name string) string {
 		`, name)
 }
 
-func testAccVultrServerBaseUpdateNetworkIDs(name string) string {
+func testAccVultrInstanceBaseUpdateNetworkIDs(name string) string {
 	return fmt.Sprintf(`
 		resource "vultr_network" "foo" {
 			region   = "sea"
@@ -240,10 +240,10 @@ func testAccVultrServerBaseUpdateNetworkIDs(name string) string {
 			cidr_block  = "10.0.0.0/24"
 		}
 
-		resource "vultr_server" "test" {
+		resource "vultr_instance" "test" {
 			plan = "vc2-1c-2gb"
 			region = "sea"
-			os_id = 147
+			os_id = 167
 			label = "%s"
 			hostname = "testing-the-hostname"
 			enable_ipv6 = true
@@ -256,12 +256,12 @@ func testAccVultrServerBaseUpdateNetworkIDs(name string) string {
 		`, name)
 }
 
-func testAccVultrServerBaseUpdatedRegion(name string) string {
+func testAccVultrInstanceBaseUpdatedRegion(name string) string {
 	return fmt.Sprintf(`
-		resource "vultr_server" "test" {
+		resource "vultr_instance" "test" {
  			plan = "vc2-1c-1gb"
  			region = "ewr"
- 			os_id = 147
+ 			os_id = 167
  			label = "%s"
  			hostname = "testing-the-hostname"
  			enable_ipv6 = true

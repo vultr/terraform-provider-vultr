@@ -11,10 +11,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
-func TestAccVultrServerIPV4_basic(t *testing.T) {
+func TestAccVultrInstanceIPV4_basic(t *testing.T) {
 	t.Parallel()
 
-	name := "vultr_server_ipv4.test"
+	name := "vultr_instance_ipv4.test"
 	serverLabel := acctest.RandomWithPrefix("tf-rs-vps-server-ipv4")
 
 	resource.Test(t, resource.TestCase{
@@ -22,9 +22,9 @@ func TestAccVultrServerIPV4_basic(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrServerIPV4(serverLabel),
+				Config: testAccVultrInstanceIPV4(serverLabel),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckvultrServerIPV4Exists(name),
+					testAccCheckvultrInstanceIPV4Exists(name),
 					resource.TestCheckResourceAttrSet(name, "instance_id"),
 					resource.TestCheckResourceAttrSet(name, "ip"),
 					resource.TestCheckResourceAttrSet(name, "reverse"),
@@ -34,7 +34,7 @@ func TestAccVultrServerIPV4_basic(t *testing.T) {
 	})
 }
 
-func testAccCheckvultrServerIPV4Exists(n string) resource.TestCheckFunc {
+func testAccCheckvultrInstanceIPV4Exists(n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 		if !ok {
@@ -45,7 +45,7 @@ func testAccCheckvultrServerIPV4Exists(n string) resource.TestCheckFunc {
 			return errors.New("ipv4 ID is not set")
 		}
 
-		exists, err := vultrServerIPV4Exists(rs)
+		exists, err := vultrInstanceIPV4Exists(rs)
 		if err != nil {
 			return err
 		}
@@ -58,23 +58,23 @@ func testAccCheckvultrServerIPV4Exists(n string) resource.TestCheckFunc {
 	}
 }
 
-func testAccVultrServerIPV4(serverLabel string) string {
+func testAccVultrInstanceIPV4(serverLabel string) string {
 	return fmt.Sprintf(`
-		resource "vultr_server" "foo" {
+		resource "vultr_instance" "foo" {
 			plan = "vc2-1c-1gb"
 			region = "sea"
 			os_id = "167"
 			label = "%s"
 		}
 
-		resource "vultr_server_ipv4" "test" {
-			instance_id = "${vultr_server.foo.id}"
+		resource "vultr_instance_ipv4" "test" {
+			instance_id = "${vultr_instance.foo.id}"
 			reboot = false
 		}
 	`, serverLabel)
 }
 
-func vultrServerIPV4Exists(rs *terraform.ResourceState) (bool, error) {
+func vultrInstanceIPV4Exists(rs *terraform.ResourceState) (bool, error) {
 	client := testAccProvider.Meta().(*Client).govultrClient()
 
 	instanceID, ok := rs.Primary.Attributes["instance_id"]

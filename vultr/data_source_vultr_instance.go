@@ -9,9 +9,9 @@ import (
 	"github.com/vultr/govultr/v2"
 )
 
-func dataSourceVultrServer() *schema.Resource {
+func dataSourceVultrInstance() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrServerRead,
+		Read: dataSourceVultrInstanceRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"os": {
@@ -127,7 +127,7 @@ func dataSourceVultrServer() *schema.Resource {
 	}
 }
 
-func dataSourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrInstanceRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")

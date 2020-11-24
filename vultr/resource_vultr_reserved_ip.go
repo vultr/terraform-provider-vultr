@@ -95,7 +95,7 @@ func resourceVultrReservedIPRead(d *schema.ResourceData, meta interface{}) error
 		return nil
 	}
 
-	d.Set("region", rip.ID)
+	d.Set("region", rip.Region)
 	d.Set("ip_type", rip.IPType)
 	d.Set("subnet", rip.Subnet)
 	d.Set("subnet_size", rip.SubnetSize)

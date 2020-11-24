@@ -50,7 +50,6 @@ func TestAccVultrUser_base(t *testing.T) {
 						"vultr_user.admin", "acl.11", "objstore"),
 					resource.TestCheckResourceAttr(
 						"vultr_user.admin", "api_enabled", "true"),
-					resource.TestCheckResourceAttrSet("vultr_user.admin", "api_key"),
 				),
 			},
 			{

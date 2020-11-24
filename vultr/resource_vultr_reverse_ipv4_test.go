@@ -83,7 +83,7 @@ func testAccCheckVultrReverseIPV4Exists(n string) resource.TestCheckFunc {
 
 func testAccVultrReverseIPV4(rServerLabel, reverse string) string {
 	return fmt.Sprintf(`
-		resource "vultr_server" "foo" {
+		resource "vultr_instance" "foo" {
 			plan = "vc2-1c-1gb"
 			region = "sea"
 			os_id = "167"
@@ -91,8 +91,8 @@ func testAccVultrReverseIPV4(rServerLabel, reverse string) string {
 		}
 
 		resource "vultr_reverse_ipv4" "test" {
-			instance_id = "${vultr_server.foo.id}"
-			ip = "${vultr_server.foo.main_ip}"
+			instance_id = "${vultr_instance.foo.id}"
+			ip = "${vultr_instance.foo.main_ip}"
 			reverse = "%s"
 		}
 	`, rServerLabel, reverse)

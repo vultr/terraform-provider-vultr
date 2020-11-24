@@ -57,7 +57,7 @@ func resourceVultrUsersCreate(d *schema.ResourceData, meta interface{}) error {
 		Email:      d.Get("email").(string),
 		Name:       d.Get("name").(string),
 		Password:   d.Get("password").(string),
-		APIEnabled: d.Get("apiEnabled").(bool),
+		APIEnabled: d.Get("api_enabled").(bool),
 	}
 
 	acl, aclOK := d.GetOk("acl")

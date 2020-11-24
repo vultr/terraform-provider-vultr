@@ -14,12 +14,12 @@ import (
 	"github.com/vultr/govultr/v2"
 )
 
-func resourceVultrServer() *schema.Resource {
+func resourceVultrInstance() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrServerCreate,
-		Read:   resourceVultrServerRead,
-		Update: resourceVultrServerUpdate,
-		Delete: resourceVultrServerDelete,
+		Create: resourceVultrInstanceCreate,
+		Read:   resourceVultrInstanceRead,
+		Update: resourceVultrInstanceUpdate,
+		Delete: resourceVultrInstanceDelete,
 		Importer: &schema.ResourceImporter{
 			State: schema.ImportStatePassthrough,
 		},
@@ -87,9 +87,9 @@ func resourceVultrServer() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"backups": {
-				Type:     schema.TypeBool,
+				Type:     schema.TypeString,
 				Optional: true,
-				Default:  false,
+				Default:  "disabled",
 			},
 			"snapshot_id": {
 				Type:     schema.TypeString,
@@ -219,7 +219,7 @@ func resourceVultrServer() *schema.Resource {
 	}
 }
 
-func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrInstanceCreate(d *schema.ResourceData, meta interface{}) error {
 	// Four unique options to image your server
 	osID := d.Get("os_id")
 	appID, appOK := d.GetOk("app_id")
@@ -300,10 +300,10 @@ func resourceVultrServerCreate(d *schema.ResourceData, meta interface{}) error {
 		return fmt.Errorf("error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 	}
 
-	return resourceVultrServerRead(d, meta)
+	return resourceVultrInstanceRead(d, meta)
 }
 
-func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrInstanceRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	instance, err := client.Instance.Get(context.Background(), d.Id())
@@ -343,7 +343,7 @@ func resourceVultrServerRead(d *schema.ResourceData, meta interface{}) error {
 
 	return nil
 }
-func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	req := &govultr.InstanceUpdateReq{
@@ -436,10 +436,10 @@ func resourceVultrServerUpdate(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 
-	return resourceVultrServerRead(d, meta)
+	return resourceVultrInstanceRead(d, meta)
 }
 
-func resourceVultrServerDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrInstanceDelete(d *schema.ResourceData, meta interface{}) error {
 
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting instance (%s)", d.Id())

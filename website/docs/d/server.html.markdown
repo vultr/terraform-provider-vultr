@@ -1,6 +1,6 @@
 ---
 layout: "vultr"
-page_title: "Vultr: vultr_server"
+page_title: "Vultr: vultr_instance"
 sidebar_current: "docs-vultr-datasource-server"
 description: |-
   Get information about a Vultr server.

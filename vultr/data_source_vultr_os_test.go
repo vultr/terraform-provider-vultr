@@ -13,14 +13,14 @@ func TestAccVultrOS(t *testing.T) {
 		Providers: testAccProviders,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckVultrOS("CentOS 6 x64"),
+				Config: testAccCheckVultrOS("CentOS 7 x64"),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(
-						"data.vultr_os.centos", "name", "CentOS 6 x64"),
+						"data.vultr_os.centos", "name", "CentOS 7 x64"),
 					resource.TestCheckResourceAttr(
 						"data.vultr_os.centos", "arch", "x64"),
 					resource.TestCheckResourceAttr(
-						"data.vultr_os.centos", "id", "127"),
+						"data.vultr_os.centos", "id", "167"),
 					resource.TestCheckResourceAttr(
 						"data.vultr_os.centos", "family", "centos"),
 				),

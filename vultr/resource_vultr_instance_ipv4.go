@@ -9,11 +9,11 @@ import (
 	"github.com/vultr/govultr/v2"
 )
 
-func resourceVultrServerIPV4() *schema.Resource {
+func resourceVultrInstanceIPV4() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrServerIPV4Create,
-		Read:   resourceVultrServerIPV4Read,
-		Delete: resourceVultrServerIPV4Delete,
+		Create: resourceVultrInstanceIPV4Create,
+		Read:   resourceVultrInstanceIPV4Read,
+		Delete: resourceVultrInstanceIPV4Delete,
 
 		Schema: map[string]*schema.Schema{
 			"instance_id": {
@@ -47,7 +47,7 @@ func resourceVultrServerIPV4() *schema.Resource {
 	}
 }
 
-func resourceVultrServerIPV4Create(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrInstanceIPV4Create(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	instanceID := d.Get("instance_id").(string)
@@ -62,10 +62,10 @@ func resourceVultrServerIPV4Create(d *schema.ResourceData, meta interface{}) err
 	d.SetId(ip.IP)
 	d.Set("instance_id", instanceID)
 
-	return resourceVultrServerIPV4Read(d, meta)
+	return resourceVultrInstanceIPV4Read(d, meta)
 }
 
-func resourceVultrServerIPV4Read(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrInstanceIPV4Read(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	instanceID := d.Get("instance_id").(string)
@@ -108,7 +108,7 @@ func resourceVultrServerIPV4Read(d *schema.ResourceData, meta interface{}) error
 	return nil
 }
 
-func resourceVultrServerIPV4Delete(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrInstanceIPV4Delete(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	instanceID := d.Get("instance_id").(string)

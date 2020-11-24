@@ -40,7 +40,7 @@ func testAccDataSourceVultrReverseIPV4(serverLabel string) string {
 			default     = "vultr.com"
 		}
 
-		resource "vultr_server" "foo" {
+		resource "vultr_instance" "foo" {
 			plan = "vc2-1c-1gb"
 			region = "sea"
 			os_id = "167"
@@ -48,9 +48,9 @@ func testAccDataSourceVultrReverseIPV4(serverLabel string) string {
 		}
 
 		resource "vultr_reverse_ipv4" "bar" {
-			instance_id = "${vultr_server.foo.id}"
-			ip = "${vultr_server.foo.main_ip}"
-			reverse = "${vultr_server.foo.main_ip}${var.hostname}"
+			instance_id = "${vultr_instance.foo.id}"
+			ip = "${vultr_instance.foo.main_ip}"
+			reverse = "${vultr_instance.foo.main_ip}${var.hostname}"
 		}
 
 		data "vultr_reverse_ipv4" "test" {
