@@ -20,7 +20,6 @@ func TestAccVultrFirewallRule_basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrFirewallRuleDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrFirewallRule_base(rString),
@@ -41,7 +40,6 @@ func TestAccVultrFirewallRule_update(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrFirewallRuleDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrFirewallRule_base(rString),
@@ -72,7 +70,6 @@ func TestAccVultrFirewallRule_importBasic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrFirewallRuleDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrFirewallRule_base(rString),

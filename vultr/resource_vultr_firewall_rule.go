@@ -152,7 +152,7 @@ func resourceVultrFirewallRuleImport(d *schema.ResourceData, meta interface{}) (
 	fwGroup, ruleID := importID[:commaIdx], importID[commaIdx+1:]
 
 	rule, _ := strconv.Atoi(ruleID)
-	fw, err := client.FirewallRule.Get(context.Background(), d.Get("firewall_group_id").(string), rule)
+	fw, err := client.FirewallRule.Get(context.Background(), fwGroup, rule)
 	if err != nil {
 		return nil, fmt.Errorf("firewall Rule %s not found for firewall group %s", ruleID, fwGroup)
 	}
