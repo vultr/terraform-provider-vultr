@@ -34,7 +34,7 @@ The following attributes are exported:
 * `description` - Description of the firewall group.
 * `date_created` - The date the firewall group was created.
 * `date_modified` - The date the firewall group was modified.
-* `instance_count` - The number of servers that are currently using this firewall group.
+* `instance_count` - The number of instances that are currently using this firewall group.
 * `max_rule_count` - The number of max firewall rules this group can have.
 * `rule_count` - The number of firewall rules this group currently has.
 

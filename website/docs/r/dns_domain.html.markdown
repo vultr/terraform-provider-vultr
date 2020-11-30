@@ -26,7 +26,7 @@ resource "vultr_dns_domain" "my_domain" {
 The following arguments are supported:
 
 * `domain` - (Required) Name of domain.
-* `ip` - (Optional) Server IP you want associated to domain. If omitted this will create a domain with no records.
+* `ip` - (Optional) instance IP you want associated to domain. If omitted this will create a domain with no records.
 
 ## Attributes Reference
 

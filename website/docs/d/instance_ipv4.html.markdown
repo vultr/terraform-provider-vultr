@@ -1,14 +1,14 @@
 ---
 layout: "vultr"
 page_title: "Vultr: vultr_reverse_ipv4"
-sidebar_current: "docs-vultr-datasource-server-ipv4"
+sidebar_current: "docs-vultr-datasource-instance-ipv4"
 description: |-
-  Get information about a Vultr Server IPv4.
+  Get information about a Vultr instance IPv4.
 ---
 
 # vultr_reverse_ipv4
 
-Get information about a Vultr Server IPv4.
+Get information about a Vultr instance IPv4.
 
 ## Example Usage
 
@@ -38,7 +38,7 @@ The `filter` block supports the following:
 
 The following attributes are exported:
 
-* `instance_id` - The ID of the server the IPv4 address.
+* `instance_id` - The ID of the instance the IPv4 address.
 * `ip` - The IPv4 address in canonical format.
 * `gateway` - The gateway IP address.
 * `netmask` - The IPv4 netmask in dot-decimal notation.

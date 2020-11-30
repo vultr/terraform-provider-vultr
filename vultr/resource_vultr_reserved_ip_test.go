@@ -40,7 +40,7 @@ func TestAccVultrReservedIP_IPv4(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_reserved_ip.foo", "region"),
 					resource.TestCheckResourceAttrSet("vultr_reserved_ip.foo", "subnet"),
 					resource.TestCheckResourceAttrSet("vultr_reserved_ip.foo", "subnet_size"),
-					resource.TestCheckResourceAttrSet("vultr_reserved_ip.foo", "attached_id"),
+					resource.TestCheckResourceAttrSet("vultr_reserved_ip.foo", "instance_id"),
 				),
 			},
 			{
@@ -89,7 +89,7 @@ func TestAccVultrReservedIP_IPv6(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_reserved_ip.foo", "region"),
 					resource.TestCheckResourceAttrSet("vultr_reserved_ip.foo", "subnet"),
 					resource.TestCheckResourceAttrSet("vultr_reserved_ip.foo", "subnet_size"),
-					resource.TestCheckResourceAttrSet("vultr_reserved_ip.foo", "attached_id"),
+					resource.TestCheckResourceAttrSet("vultr_reserved_ip.foo", "instance_id"),
 				),
 			},
 			{

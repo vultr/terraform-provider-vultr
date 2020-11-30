@@ -17,7 +17,7 @@ changes may take 6-12 hours to become active.
 Create a new reverse DNS record for an IPv6 address:
 
 ```hcl
-resource "vultr_server" "my_server" {
+resource "vultr_instance" "my_server" {
 	plan = "vc2-1c-1gb"
 	region = "ewr"
 	os_id = 167

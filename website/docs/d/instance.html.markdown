@@ -1,24 +1,24 @@
 ---
 layout: "vultr"
 page_title: "Vultr: vultr_instance"
-sidebar_current: "docs-vultr-datasource-server"
+sidebar_current: "docs-vultr-datasource-instance"
 description: |-
-  Get information about a Vultr server.
+  Get information about a Vultr instance.
 ---
 
-# vultr_server
+# vultr_instance
 
-Get information about a Vultr server.
+Get information about a Vultr instance.
 
 ## Example Usage
 
-Get the information for a server by `label`:
+Get the information for a instance by `label`:
 
 ```hcl
-data "vultr_server" "my_server" {
+data "vultr_instance" "my_instance" {
   filter {
     name   = "label"
-    values = ["my-server-label"]
+    values = ["my-instance-label"]
   }
 }
 ```
@@ -27,7 +27,7 @@ data "vultr_server" "my_server" {
 
 The following arguments are supported:
 
-* `filter` - (Required) Query parameters for finding servers.
+* `filter` - (Required) Query parameters for finding instances.
 
 The `filter` block supports the following:
 
@@ -38,8 +38,8 @@ The `filter` block supports the following:
 
 The following attributes are exported:
 
-* `os` - The operating system of the server.
-* `ram` - The amount of memory available on the server in MB.
+* `os` - The operating system of the instance.
+* `ram` - The amount of memory available on the instance in MB.
 * `disk` - The description of the disk(s) on the server.
 * `main_ip` - The server's main IP address.
 * `vcpu_count` - The number of virtual CPUs available on the server.

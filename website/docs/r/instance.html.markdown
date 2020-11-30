@@ -1,37 +1,37 @@
 ---
 layout: "vultr"
-page_title: "Vultr: vultr_server"
-sidebar_current: "docs-vultr-resource-server"
+page_title: "Vultr: vultr_instance"
+sidebar_current: "docs-vultr-resource-instance"
 description: |-
-  Provides a Vultr server resource. This can be used to create, read, modify, and delete servers on your Vultr account.
+  Provides a Vultr instance resource. This can be used to create, read, modify, and delete instances on your Vultr account.
 ---
 
-# vultr_server
+# vultr_instance
 
-Provides a Vultr server resource. This can be used to create, read, modify, and delete servers on your Vultr account.
+Provides a Vultr instance resource. This can be used to create, read, modify, and delete instances on your Vultr account.
 
 ## Example Usage
 
-Create a new server:
+Create a new instance:
 
 ```hcl
-resource "vultr_server" "my_server" {
+resource "vultr_instance" "my_instance" {
 	plan = "vc2-1c-1gb"
 	region = "sea"
 	os_id = "167"
 }
 ```
 
-Create a new server with options:
+Create a new instance with options:
 
 ```hcl
-resource "vultr_server" "my_server" {
+resource "vultr_instance" "my_instance" {
 	plan = "vc2-1c-1gb"
 	region = "sea"
 	os_id = "167"
-	label = "my-server-label"
-	tag = "my-server-tag"
-	hostname = "my-server-hostname"
+	label = "my-instance-label"
+	tag = "my-instance-tag"
+	hostname = "my-instance-hostname"
 	enable_ipv6 = true
 	auto_backup = true
 	ddos_protection = true
@@ -43,8 +43,8 @@ resource "vultr_server" "my_server" {
 
 The following arguments are supported:
 
-* `region` - (Required) The ID of the region that the server is to be created in.
-* `plan` - (Required) The ID of the plan that you want the server to subscribe to.
+* `region` - (Required) The ID of the region that the instance is to be created in.
+* `plan` - (Required) The ID of the plan that you want the instance to subscribe to.
 * `os_id` - (Optional) The ID of the operating system to be installed on the server.
 * `iso_id` - (Optional) The ID of the ISO file to be installed on the server.
 * `app_id` - (Optional) The ID of the Vultr application to be installed on the server.

@@ -22,7 +22,7 @@ resource "vultr_reserved_ip" "my_reserved_ip" {
 }
 ```
 
-Attach a reserved IP to a server:
+Attach a reserved IP to a instance:
 
 ```hcl
 resource "vultr_reserved_ip" "my_reserved_ip" {
@@ -50,7 +50,7 @@ The following attributes are exported:
 * `region` - The region ID that this reserved IP belongs to.
 * `ip_type` - The reserved IP's type.
 * `label` - The reserved IP's label.
-* `instance_id` - The ID of the server the reserved IP is attached to.
+* `instance_id` - The ID of the instance the reserved IP is attached to.
 * `subnet` - The reserved IP's subnet.
 * `subnet_size` - The reserved IP's subnet size.
 

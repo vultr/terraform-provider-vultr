@@ -38,6 +38,6 @@ The `filter` block supports the following:
 
 The following attributes are exported:
 
-* `instance_id` - The ID of the server the IPv6 reverse DNS record was set for.
+* `instance_id` - The ID of the instance the IPv6 reverse DNS record was set for.
 * `ip` - The IPv6 address in canonical format used in the reverse DNS record.
 * `reverse` - The hostname used in the IPv6 reverse DNS record.

@@ -33,7 +33,7 @@ resource "vultr_dns_record" "my_record" {
 
 The following arguments are supported:
 
-* `data` - (Required) IP Address of the server the domain is associated with.
+* `data` - (Required) IP Address of the instance the domain is associated with.
 * `domain` - (Required) Name of the DNS Domain this record will belong to.
 * `name` - (Required) Name (subdomain) for this record.
 * `type` - (Required) Type of record.
@@ -45,7 +45,7 @@ The following arguments are supported:
 The following attributes are exported:
 
 * `id` - ID associated with the record.
-* `data` - IP Address of the server the domain is associated with.
+* `data` - IP Address of the instance the domain is associated with.
 * `domain` - Name of the DNS Domain this record will belong to.
 * `name` - Name for this record (Can be subdomain).
 * `type` - Type of record.

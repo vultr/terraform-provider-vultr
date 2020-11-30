@@ -52,12 +52,12 @@ func resourceVultrUsers() *schema.Resource {
 
 func resourceVultrUsersCreate(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
-
+	test := d.Get("api_enabled").(bool)
 	userReq := &govultr.UserReq{
 		Email:      d.Get("email").(string),
 		Name:       d.Get("name").(string),
 		Password:   d.Get("password").(string),
-		APIEnabled: d.Get("api_enabled").(bool),
+		APIEnabled: &test,
 	}
 
 	acl, aclOK := d.GetOk("acl")
@@ -117,7 +117,8 @@ func resourceVultrUsersUpdate(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if d.HasChange("api_enabled") {
-		userReq.APIEnabled = d.Get("api_enabled").(bool)
+		api := d.Get("api_enabled").(bool)
+		userReq.APIEnabled = &api
 	}
 
 	acl, aclOK := d.GetOk("acl")

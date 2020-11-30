@@ -15,15 +15,15 @@ Provides a Vultr Snapshot resource. This can be used to create, read, modify, an
 Create a new Snapshot
 
 ```hcl
-resource "vultr_server" "my_server" {
-    label = "my_server"
+resource "vultr_instance" "my_instance" {
+    label = "my_instance"
     region = "ewr"
     plan = 201
     os_id = 167
 }
 resource "vultr_snapshot" "my_snapshot" {
-    vps_id       = "${vultr_server.my_server.id}"
-    description  = "my servers snapshot"
+    vps_id       = "${vultr_instance.my_instance.id}"
+    description  = "my instances snapshot"
 }
 ```
 
@@ -31,7 +31,7 @@ resource "vultr_snapshot" "my_snapshot" {
 
 The following arguments are supported:
 
-* `vps_id` - (Required) ID of a given server that you want to create a snapshot from.
+* `vps_id` - (Required) ID of a given instance that you want to create a snapshot from.
 * `description` - (Optional) The description for the given snapshot.
 
 ## Attributes Reference
@@ -39,7 +39,7 @@ The following arguments are supported:
 The following attributes are exported:
 
 * `id` - The ID for the given snapshot.
-* `instance_id` - The ID of the server that the snapshot was created from.
+* `instance_id` - The ID of the instance that the snapshot was created from.
 * `description` - The description for the given snapshot.
 * `date_created` - The date the snapshot was created.
 * `size` - The size of the snapshot in Bytes.

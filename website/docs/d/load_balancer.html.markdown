@@ -12,7 +12,7 @@ Get information about a Vultr load balancer.
 
 ## Example Usage
 
-Get the information for a server by `label`:
+Get the information for a load balancer by `label`:
 
 ```hcl
 data "vultr_load_balancer" "my_lb" {

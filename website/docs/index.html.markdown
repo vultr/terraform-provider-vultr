@@ -15,6 +15,15 @@ with the proper credentials before it can be used.
 ## Example Usage
 
 ```hcl
+terraform {
+  required_providers {
+    vultr = {
+      source = "vultr/vultr"
+      version = "1.5.0"
+    }
+  }
+}
+
 # Configure the Vultr Provider
 provider "vultr" {
   api_key = "VULTR_API_KEY"
@@ -22,8 +31,8 @@ provider "vultr" {
   retry_limit = 3
 }
 
-# Create a web server
-resource "vultr_server" "web" {
+# Create a web instance
+resource "vultr_instance" "web" {
   # ...
 }
 ```
