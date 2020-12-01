@@ -9,8 +9,8 @@ Terraform Provider for Vultr
 Requirements
 ------------
 
--	[Terraform](https://www.terraform.io/downloads.html) 0.13.x
--	[Go](https://golang.org/doc/install) 1.14 (to build the provider plugin)
+-	[Terraform](https://www.terraform.io/downloads.html) 0.12.x+
+-	[Go](https://golang.org/doc/install) 1.11 (to build the provider plugin)
 
 Building The Provider
 ---------------------
@@ -27,12 +27,6 @@ Enter the provider directory and build the provider
 ```sh
 $ cd $GOPATH/src/github.com/vultr/terraform-provider-vultr
 $ make build
-```
-
-Link the build to Terraform
-
-```sh
-$ln -s $GOPATH/bin/terraform-provider-vultr ~/.terraform.d/plugins/terraform-provider-vultr 
 ```
 
 Using the provider
