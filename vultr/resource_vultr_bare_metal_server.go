@@ -2,6 +2,7 @@ package vultr
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
 	"log"
@@ -70,8 +71,9 @@ func resourceVultrBareMetalServer() *schema.Resource {
 			},
 			"user_data": {
 				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
-				Default:  "",
+				ForceNew: true,
 			},
 			"activation_email": {
 				Type:     schema.TypeBool,
@@ -181,7 +183,7 @@ func resourceVultrBareMetalServerCreate(d *schema.ResourceData, meta interface{}
 		EnableIPv6:      d.Get("enable_ipv6").(bool),
 		Label:           d.Get("label").(string),
 		SSHKeyIDs:       keyIDs,
-		UserData:        d.Get("user_data").(string),
+		UserData:        base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string))),
 		ActivationEmail: d.Get("activation_email").(bool),
 		Hostname:        d.Get("hostname").(string),
 		Tag:             d.Get("tag").(string),
@@ -258,7 +260,6 @@ func resourceVultrBareMetalServerUpdate(d *schema.ResourceData, meta interface{}
 		Label:      d.Get("label").(string),
 		Tag:        d.Get("tag").(string),
 		EnableIPv6: d.Get("enable_ipv6").(bool),
-		UserData:   d.Get("user_data").(string),
 	}
 
 	if d.HasChange("app_id") {

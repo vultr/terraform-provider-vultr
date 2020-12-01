@@ -2,6 +2,7 @@ package vultr
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"strings"
@@ -98,10 +99,10 @@ func resourceVultrInstance() *schema.Resource {
 				Optional: true,
 			},
 			"user_data": {
-				Type:         schema.TypeString,
-				Computed:     true,
-				Optional:     true,
-				ValidateFunc: validation.StringIsBase64,
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+				ForceNew: true,
 			},
 			"activation_email": {
 				Type:     schema.TypeBool,
@@ -239,7 +240,7 @@ func resourceVultrInstanceCreate(d *schema.ResourceData, meta interface{}) error
 		EnablePrivateNetwork: d.Get("enable_private_network").(bool),
 		Label:                d.Get("label").(string),
 		Backups:              d.Get("backups").(string),
-		UserData:             d.Get("user_data").(string),
+		UserData:             base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string))),
 		ActivationEmail:      d.Get("activation_email").(bool),
 		DDOSProtection:       d.Get("ddos_protection").(bool),
 		Hostname:             d.Get("hostname").(string),
@@ -352,7 +353,6 @@ func resourceVultrInstanceUpdate(d *schema.ResourceData, meta interface{}) error
 		FirewallGroupID:      d.Get("firewall_group_id").(string),
 		EnableIPv6:           d.Get("enable_ipv6").(bool),
 		EnablePrivateNetwork: d.Get("enable_private_network").(bool),
-		UserData:             d.Get("user_data").(string),
 	}
 
 	if d.HasChange("plan") {

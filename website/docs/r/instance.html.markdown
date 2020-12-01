@@ -97,7 +97,7 @@ The following attributes are exported:
 * `firewall_group_id` - The ID of the firewall group assigned to the server.
 * `private_network_ids` - A list of private network IDs attached to the server.
 * `ssh_key_ids` - A list of SSH key IDs applied to the server on install.
-* `user_data` - Base64 encoded generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
+* `user_data` - Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
 * `backups` - Whether automatic backups are enabled for this server.
 * `enable_ipv6` - Whether the server has IPv6 networking activated.
 * `enable_private_network` - Whether the server has private networking support enabled.

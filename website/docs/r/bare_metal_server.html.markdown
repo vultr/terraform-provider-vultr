@@ -32,7 +32,7 @@ resource "vultr_bare_metal_server" "my_server" {
 	label = "my-server-label"
 	tag = "my-server-tag"
 	hostname = "my-server-hostname"
-	user_data = "dXNlcmRhdGE="
+	user_data = "this is my user data"
 	enable_ipv6 = true
 	activation_email = false
 }
@@ -82,7 +82,7 @@ The following attributes are exported:
 * `snapshot_id` - The ID of the Vultr snapshot that the server was restored from.
 * `script_id` - The ID of the startup script that was added to the server.
 * `ssh_key_ids` - A list of SSH key IDs applied to the server on install.
-* `user_data` - Base64 encoded generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
+* `user_data` - Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
 * `enable_ipv6` - Whether the server has IPv6 networking activated.
 * `activation_email` - Whether an activation email was sent when the server was ready.
 * `hostname` - The hostname assigned to the server.
