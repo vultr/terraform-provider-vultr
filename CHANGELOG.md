@@ -1,4 +1,35 @@
-## 1.3.3 (Unreleased)
+## 2.0.0 (December 01, 2020)
+
+Breaking Changes:
+- The TF Vultr provider v2.0.0 is a large change that has uses the new Vultr API v2. This change resolves quite a few limitations and improves overall performance of tooling. These changes include field and resource/datasource name updates to match the API and offer a consistent experience.
+
+Dependency:
+- updated GoVultr to v2.1.0 
+
+## 1.5.0 (November 09, 2020)
+Breaking Change:
+- resource/vultr_server: Changing `user_data` will now trigger a `force_new` [70](https://github.com/terraform-providers/terraform-provider-vultr/pull/70)
+
+Dependency:
+- updated GoVultr to v1.1.1 [70](https://github.com/terraform-providers/terraform-provider-vultr/pull/70)
+
+## 1.4.1 (September 15, 2020)
+BUG FIXES:
+- resource/vultr_server: Fix bug that did not allow user-data to be passed in as a string [65](https://github.com/terraform-providers/terraform-provider-vultr/pull/65)
+
+## 1.4.0 (August 28, 2020)
+FEATURES:
+- New Resource : vultr_server_ipv4 [61](https://github.com/terraform-providers/terraform-provider-vultr/pull/61)
+- New Resource : vultr_reverse_ipv4 [61](https://github.com/terraform-providers/terraform-provider-vultr/pull/61)
+- New Resource : vultr_reverse_ipv6 [20](https://github.com/terraform-providers/terraform-provider-vultr/pull/20)
+- New Data Source : vultr_server_ipv4 [61](https://github.com/terraform-providers/terraform-provider-vultr/pull/61)
+- New Data Source : vultr_reverse_ipv4 [61](https://github.com/terraform-providers/terraform-provider-vultr/pull/61)
+- New Data Source : vultr_reverse_ipv6 [20](https://github.com/terraform-providers/terraform-provider-vultr/pull/20)
+
+IMPROVEMENTS:
+- resource/vultr_server: Ability to enable/disable DDOS post create [59](https://github.com/vultr/terraform-provider-vultr/pull/59)
+- resource/vultr_server: Ability to detach ISO post create [60](https://github.com/vultr/terraform-provider-vultr/pull/60)
+
 ## 1.3.2 (June 17, 2020)
 IMPROVEMENTS:
 - resource/vultr_dns_record: New custom importer allows you to import DNS Records [51](https://github.com/terraform-providers/terraform-provider-vultr/pull/51)
