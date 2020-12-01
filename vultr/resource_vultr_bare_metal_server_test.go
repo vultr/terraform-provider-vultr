@@ -143,7 +143,7 @@ func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string
 			activation_email   = false
 			ssh_key_ids       = ["${vultr_ssh_key.foo.id}"]
 			script_id 		  = "${vultr_startup_script.foo.id}"
-			user_data         = "dXNlcmRhdGEy"
+			user_data         = "my user data"
 			tag               = "%s"
 			label             = "%s"
 			hostname 		  = "%s"
@@ -161,7 +161,7 @@ func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) strin
 			activation_email   = false
 			ssh_key_ids       = ["${vultr_ssh_key.foo.id}"]
 			script_id 		  = "${vultr_startup_script.foo.id}"
-			user_data         = "dXNlcmRhdGE="
+			user_data         = "my user data"
 			tag               = "%s-update"
 			label             = "%s-update"
 			hostname 		  = "%s"
