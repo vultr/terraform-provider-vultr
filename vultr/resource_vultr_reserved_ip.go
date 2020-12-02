@@ -74,7 +74,7 @@ func resourceVultrReservedIPCreate(d *schema.ResourceData, meta interface{}) err
 
 	if a, attachedOK := d.GetOk("instance_id"); attachedOK {
 		if err := client.ReservedIP.Attach(context.Background(), d.Id(), a.(string)); err != nil {
-			return fmt.Errorf("error attaching reserved IP: %v %v", d.Id(), a.(string))
+			return fmt.Errorf("error attaching reserved IP: %v %v : %v", d.Id(), a.(string), err)
 		}
 	}
 
