@@ -1,7 +1,7 @@
 ## 2.0.0 (December 01, 2020)
 
 Breaking Changes:
-- The TF Vultr provider v2.0.0 is a large change that has uses the new Vultr API v2. This change resolves quite a few limitations and improves overall performance of tooling. These changes include field and resource/datasource name updates to match the API and offer a consistent experience.
+- The TF Vultr provider v2.0.0 is a large change that uses the new Vultr API v2. This change resolves quite a few limitations and improves overall performance of tooling. These changes include field and resource/datasource name updates to match the API and offer a consistent experience.
 
 Dependency:
 - updated GoVultr to v2.1.0 
