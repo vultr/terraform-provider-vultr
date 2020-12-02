@@ -8,8 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/vultr/govultr/v2"
@@ -126,11 +124,10 @@ func resourceVultrInstance() *schema.Resource {
 				Optional: true,
 			},
 			"reserved_ip": {
-				Type:         schema.TypeString,
-				ForceNew:     true, // force new?
-				Computed:     true,
-				Optional:     true,
-				ValidateFunc: validation.IsIPv4Address,
+				Type:     schema.TypeString,
+				ForceNew: true,
+				Computed: true,
+				Optional: true,
 			},
 			"firewall_group_id": {
 				Type:     schema.TypeString,
