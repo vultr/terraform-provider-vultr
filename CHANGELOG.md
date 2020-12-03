@@ -1,3 +1,10 @@
+## 2.1.0 (December 03, 2020)
+BUG FIXES:
+- resource/vultr_instances: In v2 the ID of the Reserved IP, not the IP itself, is required for creation. [79](https://github.com/vultr/terraform-provider-vultr/pull/79) 
+
+Breaking Change:
+- resource/vultr_instances: Changing `reservered_ip` to `reservered_ip_id` to make it clear that the ID should be passed [79](https://github.com/vultr/terraform-provider-vultr/pull/79)
+
 ## 2.0.0 (December 01, 2020)
 
 Breaking Changes:
