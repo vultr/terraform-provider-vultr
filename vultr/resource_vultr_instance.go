@@ -123,7 +123,7 @@ func resourceVultrInstance() *schema.Resource {
 				Computed: true,
 				Optional: true,
 			},
-			"reserved_ip": {
+			"reserved_ip_id": {
 				Type:     schema.TypeString,
 				ForceNew: true,
 				Computed: true,
@@ -244,7 +244,7 @@ func resourceVultrInstanceCreate(d *schema.ResourceData, meta interface{}) error
 		Tag:                  d.Get("tag").(string),
 		FirewallGroupID:      d.Get("firewall_group_id").(string),
 		ScriptID:             d.Get("script_id").(string),
-		ReservedIPv4:         d.Get("reserved_ip").(string),
+		ReservedIPv4:         d.Get("reserved_ip_id").(string),
 		Region:               d.Get("region").(string),
 		Plan:                 d.Get("plan").(string),
 	}
