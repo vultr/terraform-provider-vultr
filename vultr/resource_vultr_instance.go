@@ -104,7 +104,6 @@ func resourceVultrInstance() *schema.Resource {
 			},
 			"activation_email": {
 				Type:     schema.TypeBool,
-				ForceNew: true,
 				Optional: true,
 				Default:  true,
 			},
