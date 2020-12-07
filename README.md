@@ -34,6 +34,8 @@ Using the provider
 
 See the [Vultr Provider documentation](website/docs/index.html.markdown) to get started using the Vultr provider.
 
+Please read about [V2 changes from V1](example/V2Changes.md) for a list of new changes made to the Vultr Terraform Provider
+
 Developing the Provider
 ---------------------------
 
