@@ -57,5 +57,5 @@ The following attributes are exported:
 DNS Records can be imported using the Dns Domain `domain` and DNS Record `ID` e.g.
 
 ```
-terraform import vultr_dns_record.rec domain.com,123
+terraform import vultr_dns_record.rec domain.com,1a0019bd-7645-4310-81bd-03bc5906940f
 ```

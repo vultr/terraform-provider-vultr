@@ -68,5 +68,5 @@ The following attributes are exported:
 Users can be imported using the User `ID`, e.g.
 
 ```
-terraform import vultr_user.myuser cbe5ced2ae716
+terraform import vultr_user.myuser 1345fef0-8ed3-4a66-bd8c-822a7b7bd05a
 ```
