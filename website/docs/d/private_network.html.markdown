@@ -1,7 +1,7 @@
 ---
 layout: "vultr"
-page_title: "Vultr: vultr_network"
-sidebar_current: "docs-vultr-datasource-network"
+page_title: "Vultr: vultr_private_network"
+sidebar_current: "docs-vultr-datasource-private-network"
 description: |-
   Get information about a Vultr private network.
 ---
