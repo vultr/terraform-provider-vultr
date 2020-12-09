@@ -28,8 +28,8 @@ func testAccVultrBackup_read(description string) string {
 	return fmt.Sprintf(`
 		data "vultr_backup" "backs" {
 			filter {
-   			name = "description"
-   			values = ["%s"]
+				name = "description"
+				values = ["%s"]
 			}
 		}`, description)
 }

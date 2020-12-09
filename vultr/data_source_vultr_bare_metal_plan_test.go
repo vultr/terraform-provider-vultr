@@ -33,9 +33,9 @@ func TestAccVultrBareMetalPlan(t *testing.T) {
 func testAccCheckVultrBareMetalPlan(name string) string {
 	return fmt.Sprintf(`
 		data "vultr_bare_metal_plan" "my_bm_plan" {
-   	filter {
-   	name = "id"
-   	values = ["%s"]
-	}
-	}`, name)
+			filter {
+				name = "id"
+				values = ["%s"]
+			}
+		}`, name)
 }

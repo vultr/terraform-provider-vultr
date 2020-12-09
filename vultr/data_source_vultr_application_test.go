@@ -32,9 +32,9 @@ func TestAccVultrApplication(t *testing.T) {
 func testAccCheckVultrApplication(deployName string) string {
 	return fmt.Sprintf(`
 		data "vultr_application" "docker" {
-   	filter {
-   	name = "deploy_name"
-   	values = ["%s"]
-	}
-	}`, deployName)
+			filter {
+				name = "deploy_name"
+				values = ["%s"]
+			}
+		}`, deployName)
 }

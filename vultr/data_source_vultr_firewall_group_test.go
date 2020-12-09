@@ -41,8 +41,8 @@ func testAccVultrFirewallGroup_read(description string) string {
 
 		data "vultr_firewall_group" "fwg" {
 			filter {
-   			name = "description"
-   			values = ["${vultr_firewall_group.fwg.description}"]
+				name = "description"
+				values = ["${vultr_firewall_group.fwg.description}"]
 			}
 		}`, description)
 }

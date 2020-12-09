@@ -108,7 +108,7 @@ func testAccVultrLoadBalancerBase(label string) string {
 				backend_protocol  = "http"
 				backend_port      = 80
 			}
-	  	}`, label)
+		}`, label)
 }
 
 func testAccVultrLoadBalancerConfig_updateHealth(label string) string {
@@ -124,14 +124,14 @@ func testAccVultrLoadBalancerConfig_updateHealth(label string) string {
 				backend_port      = 80
 			}
 
-	  		health_check {
-   				path = "/test"
-   				port = "1212"
-   				protocol = "http"
-   				response_timeout = 1
-   				unhealthy_threshold =2
-   				check_interval = 3
-   				healthy_threshold =4
+			health_check {
+				path = "/test"
+				port = "1212"
+				protocol = "http"
+				response_timeout = 1
+				unhealthy_threshold =2
+				check_interval = 3
+				healthy_threshold =4
 			}
-	  	}`, label)
+		}`, label)
 }

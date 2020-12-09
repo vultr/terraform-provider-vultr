@@ -51,9 +51,9 @@ func testAccDataSourceVultrSnapshotBase(vpsLabel, desc string) string {
 		}
 
 		data "vultr_snapshot" "my_snapshot" {
-   		filter {
-   			name = "description"
-   			values = ["${vultr_snapshot.foo.description}"]
+		filter {
+			name = "description"
+			values = ["${vultr_snapshot.foo.description}"]
 			}
 		}
 		`, vpsLabel, desc)

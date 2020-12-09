@@ -79,11 +79,11 @@ func testAccCheckVultrSnapshotExists(n string) resource.TestCheckFunc {
 func testAccVultrSnapshotConfigBasic(rServerLabel, desc string) string {
 	return fmt.Sprintf(`
 		resource "vultr_instance" "snap" {
-       	label = "%s"
-       	region = "ewr"
-       	plan = "vc2-1c-1gb"
-       	os_id = 167
-   	}
+			label = "%s"
+			region = "ewr"
+			plan = "vc2-1c-1gb"
+			os_id = 167
+		}
 		resource "vultr_snapshot" "foo" {
 			instance_id  = "${vultr_instance.snap.id}"
 			description  = "%s"

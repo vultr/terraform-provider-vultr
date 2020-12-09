@@ -40,9 +40,9 @@ func testAccDataSourceVultrBlockStorageConfig(label string) string {
 	  }
 
 	data "vultr_block_storage" "block" {
-   	filter {
-   		name = "label"
-   		values = ["${vultr_block_storage.foo.label}"]
+	filter {
+		name = "label"
+		values = ["${vultr_block_storage.foo.label}"]
 		}
 	}`, label)
 }

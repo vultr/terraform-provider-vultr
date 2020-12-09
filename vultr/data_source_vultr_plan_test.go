@@ -30,9 +30,9 @@ func TestAccVultrPlan(t *testing.T) {
 func testAccCheckVultrPlan(name string) string {
 	return fmt.Sprintf(`
 		data "vultr_plan" "plan1gb" {
-   		filter {
-   			name = "id"
-   			values = ["%s"]
+			filter {
+				name = "id"
+				values = ["%s"]
 			}
 		}`, name)
 }
