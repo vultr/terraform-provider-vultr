@@ -51,15 +51,15 @@ func TestAccVultrInstance(t *testing.T) {
 func testAccCheckVultrInstance(label string) string {
 	return fmt.Sprintf(`
 		resource "vultr_instance" "test" {
- 			plan = "vc2-1c-1gb"
- 			region = "sea"
- 			os_id = "167"
- 			label = "%s"
- 			hostname = "testing-the-hostname"
- 			enable_ipv6 = true
- 			backups = true
- 			ddos_protection = true
- 			tag = "even better tag"
+			plan = "vc2-1c-1gb"
+			region = "sea"
+			os_id = "167"
+			label = "%s"
+			hostname = "testing-the-hostname"
+			enable_ipv6 = true
+			backups = true
+			ddos_protection = true
+			tag = "even better tag"
 		}
 
 		data "vultr_instance" "instance" {

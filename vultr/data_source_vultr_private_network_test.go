@@ -42,5 +42,5 @@ func testAccDataSourceVultrNetworkConfig(description string) string {
 				name = "description"
 				values = ["${vultr_private_network.foo.description}"]
 			}
- 		}`, description)
+		}`, description)
 }

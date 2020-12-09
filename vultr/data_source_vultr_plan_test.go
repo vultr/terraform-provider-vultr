@@ -34,5 +34,5 @@ func testAccCheckVultrPlan(name string) string {
    			name = "id"
    			values = ["%s"]
 			}
- 		}`, name)
+		}`, name)
 }

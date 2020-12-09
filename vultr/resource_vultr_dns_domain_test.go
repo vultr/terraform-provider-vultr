@@ -91,8 +91,8 @@ func testAccVultrDnsDomain_base(domain string) string {
 	time.Sleep(1 * time.Second)
 	return fmt.Sprintf(`
 		resource "vultr_dns_domain" "my-site" {
- 			domain = "%s"
- 			ip = "10.0.0.0"
+			domain = "%s"
+			ip = "10.0.0.0"
 		}`, domain)
 }
 
@@ -100,7 +100,7 @@ func testAccVultrDnsDomain_update(domain string) string {
 	time.Sleep(1 * time.Second)
 	return fmt.Sprintf(`
 		resource "vultr_dns_domain" "my-site" {
- 			domain = "%s"
- 			ip = "10.0.0.1"
+			domain = "%s"
+			ip = "10.0.0.1"
 		}`, domain)
 }

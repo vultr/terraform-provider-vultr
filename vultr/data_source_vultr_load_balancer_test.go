@@ -31,7 +31,7 @@ func TestAccVultrLoadBalancer(t *testing.T) {
 func testAccCheckVultrLoadBalancer(label string) string {
 	return fmt.Sprintf(`
 		resource "vultr_load_balancer" "test" {
- 			region = "ewr"
+			region = "ewr"
 			label = "%s"
 
 			forwarding_rules {

@@ -45,6 +45,6 @@ func testAccCheckVultrStartupScriptConfig_base(name string) string {
    			name = "name"
    			values = ["${vultr_startup_script.foo.name}"]
 			}
- 		}
+		}
 		`, name)
 }

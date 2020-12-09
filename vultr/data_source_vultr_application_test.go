@@ -36,5 +36,5 @@ func testAccCheckVultrApplication(deployName string) string {
    	name = "deploy_name"
    	values = ["%s"]
 	}
- 	}`, deployName)
+	}`, deployName)
 }
