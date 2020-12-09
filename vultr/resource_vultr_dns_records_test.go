@@ -90,11 +90,11 @@ func testAccVultrDnsRecord_base(name string) string {
 	time.Sleep(1 * time.Second)
 	return fmt.Sprintf(`
 		resource "vultr_dns_record" "a-record" {
- 			data = "10.0.0.1"
- 			domain = "${vultr_dns_domain.my-site.id}"
- 			name = "%s"
- 			type = "A"
- 			ttl = "3600"
+			data = "10.0.0.1"
+			domain = "${vultr_dns_domain.my-site.id}"
+			name = "%s"
+			type = "A"
+			ttl = "3600"
 		}`, name)
 }
 
@@ -102,15 +102,15 @@ func testAccVultrDnsRecord_import(domainName string) string {
 	time.Sleep(1 * time.Second)
 	return fmt.Sprintf(`
 		resource "vultr_dns_domain" "my-site" {
- 			domain = "%s"
- 			ip = "10.0.0.0"
+			domain = "%s"
+			ip = "10.0.0.0"
 		}
 
 		resource "vultr_dns_record" "example" {
- 			data = "10.0.0.1"
- 			domain = "${vultr_dns_domain.my-site.id}"
- 			name = "terra"
- 			type = "A"
- 			ttl = "3600"
+			data = "10.0.0.1"
+			domain = "${vultr_dns_domain.my-site.id}"
+			name = "terra"
+			type = "A"
+			ttl = "3600"
 		}`, domainName)
 }

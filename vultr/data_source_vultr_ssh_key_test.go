@@ -46,6 +46,6 @@ func testAccCheckVultrSSHKeyConfig_basic(name, ssh string) string {
    			name = "name"
    			values = ["${vultr_ssh_key.foo.name}"]
 			}
- 		}
+		}
 		`, name, ssh)
 }

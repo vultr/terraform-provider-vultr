@@ -126,7 +126,7 @@ func testAccCheckVultrFirewallRuleDestroy(s *terraform.State) error {
 func testAccVultrFirewallRule_base(desc string) string {
 	return fmt.Sprintf(`
 		resource "vultr_firewall_group" "fwg" {
- 			description = "%s"
+			description = "%s"
 		}
 
 		resource "vultr_firewall_rule" "tcp" {
@@ -142,14 +142,14 @@ func testAccVultrFirewallRule_base(desc string) string {
 func testAccVultrFirewallRule_update(desc string) string {
 	return fmt.Sprintf(`
 		resource "vultr_firewall_group" "fwg" {
- 			description = "%s"
+			description = "%s"
 		}
 
 		resource "vultr_firewall_rule" "tcp" {
 			firewall_group_id = "${vultr_firewall_group.fwg.id}"
 			ip_type = "v4"
 			protocol = "udp"
-            subnet = "10.0.0.0"
+			subnet = "10.0.0.0"
 			subnet_size = 32
 			port = "3048"
 		}`, desc)

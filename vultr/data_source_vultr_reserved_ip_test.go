@@ -44,7 +44,7 @@ func testAccVultrReservedIP_read(label string) string {
 			filter {
    			name = "label"
    			values = ["${vultr_reserved_ip.bar.label}"]
- 			}
+			}
 		}
 		`, label)
 }

@@ -132,6 +132,6 @@ func testAccVultrLoadBalancerConfig_updateHealth(label string) string {
    				unhealthy_threshold =2
    				check_interval = 3
    				healthy_threshold =4
- 			}
+			}
 	  	}`, label)
 }

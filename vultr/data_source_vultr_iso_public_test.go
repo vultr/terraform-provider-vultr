@@ -35,19 +35,19 @@ func TestAccVultrIsoPublic(t *testing.T) {
 func testAccVultrIsoPublic_read(description string) string {
 	return fmt.Sprintf(`
 		data "vultr_iso_public" "cent" {
- 			filter {
+			filter {
    			name = "description"
    			values = ["%s"]
- 			}
+			}
 		}`, description)
 }
 
 func testAccVultrIsoPublic_tooMany(name string) string {
 	return fmt.Sprintf(`
 		data "vultr_iso_public" "cent" {
- 			filter {
+			filter {
    			name = "name"
    			values = ["%s"]
- 			}
+			}
 		}`, name)
 }

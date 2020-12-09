@@ -36,13 +36,13 @@ func TestAccVultrFirewallGroup(t *testing.T) {
 func testAccVultrFirewallGroup_read(description string) string {
 	return fmt.Sprintf(`
 		resource "vultr_firewall_group" "fwg" {
- 			description = "%s"
+			description = "%s"
 		}
 
 		data "vultr_firewall_group" "fwg" {
- 			filter {
+			filter {
    			name = "description"
    			values = ["${vultr_firewall_group.fwg.description}"]
- 			}
+			}
 		}`, description)
 }

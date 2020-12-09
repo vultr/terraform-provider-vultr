@@ -37,5 +37,5 @@ func testAccCheckVultrBareMetalPlan(name string) string {
    	name = "id"
    	values = ["%s"]
 	}
- 	}`, name)
+	}`, name)
 }

@@ -37,7 +37,7 @@ func testAccCheckVultrRegion(name string) string {
    	name = "id"
    	values = ["%s"]
 	}
- 	}`, name)
+	}`, name)
 }
 
 func testAccCheckVultrRegion_tooManyResults(country string) string {
@@ -47,5 +47,5 @@ func testAccCheckVultrRegion_tooManyResults(country string) string {
    	name = "country"
    	values = ["%s"]
 	}
- 	}`, country)
+	}`, country)
 }

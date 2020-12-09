@@ -30,11 +30,11 @@ func TestAccVultrDnsDomain_dataBase(t *testing.T) {
 func testAccVultrDnsDomainConfig(domain string) string {
 	return fmt.Sprintf(`
 			data "vultr_dns_domain" "my-site" {
- 				domain = "${vultr_dns_domain.my-site.id}"
+				domain = "${vultr_dns_domain.my-site.id}"
 			}
 
 			resource "vultr_dns_domain" "my-site" {
- 				domain = "%s"
- 				ip = "10.0.0.0"
+				domain = "%s"
+				ip = "10.0.0.0"
 			}`, domain)
 }

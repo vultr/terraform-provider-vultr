@@ -38,7 +38,7 @@ func testAccCheckVultrObjectStorage(label string) string {
 	return fmt.Sprintf(`
 		resource "vultr_object_storage" "tf" {
 			cluster_id = 2
- 			label = "%s"
+			label = "%s"
 		}
 
 		data "vultr_object_storage" "s3" {

@@ -191,32 +191,32 @@ func testAccCheckVultrInstanceDestroy(s *terraform.State) error {
 func testAccVultrInstanceBase(name string) string {
 	return fmt.Sprintf(`
 		resource "vultr_instance" "test" {
- 			plan = "vc2-1c-1gb"
- 			region = "sea"
- 			os_id = "167"
- 			label = "%s"
- 			hostname = "testing-the-hostname"
- 			enable_ipv6 = true
- 			backups = true
- 			activation_email = false
- 			ddos_protection = true
- 			tag = "even better tag"
+			plan = "vc2-1c-1gb"
+			region = "sea"
+			os_id = "167"
+			label = "%s"
+			hostname = "testing-the-hostname"
+			enable_ipv6 = true
+			backups = true
+			activation_email = false
+			ddos_protection = true
+			tag = "even better tag"
 		} `, name)
 }
 
 func testAccVultrInstanceBaseUpdateFirewall(name string) string {
 	return fmt.Sprintf(`
 		resource "vultr_instance" "test" {
- 			plan = "vc2-1c-1gb"
- 			region = "sea"
- 			os_id = "167"
- 			label = "%s"
- 			hostname = "testing-the-hostname"
- 			enable_ipv6 = true
- 			backups = true
- 			activation_email = false
- 			ddos_protection = true
- 			tag = "even better tag"
+			plan = "vc2-1c-1gb"
+			region = "sea"
+			os_id = "167"
+			label = "%s"
+			hostname = "testing-the-hostname"
+			enable_ipv6 = true
+			backups = true
+			activation_email = false
+			ddos_protection = true
+			tag = "even better tag"
 			firewall_group_id = "${vultr_firewall_group.fwg.id}"
 		}
 
@@ -259,15 +259,15 @@ func testAccVultrInstanceBaseUpdateNetworkIDs(name string) string {
 func testAccVultrInstanceBaseUpdatedRegion(name string) string {
 	return fmt.Sprintf(`
 		resource "vultr_instance" "test" {
- 			plan = "vc2-1c-1gb"
- 			region = "ewr"
- 			os_id = 167
- 			label = "%s"
- 			hostname = "testing-the-hostname"
- 			enable_ipv6 = true
- 			backups = true
- 			activation_email = false
- 			ddos_protection = true
- 			tag = "even better tag"
+			plan = "vc2-1c-1gb"
+			region = "ewr"
+			os_id = 167
+			label = "%s"
+			hostname = "testing-the-hostname"
+			enable_ipv6 = true
+			backups = true
+			activation_email = false
+			ddos_protection = true
+			tag = "even better tag"
 		} `, name)
 }
