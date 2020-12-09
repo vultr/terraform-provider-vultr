@@ -78,7 +78,6 @@ func resourceVultrBareMetalServer() *schema.Resource {
 			"activation_email": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				ForceNew: true,
 				Default:  true,
 			},
 			"hostname": {
