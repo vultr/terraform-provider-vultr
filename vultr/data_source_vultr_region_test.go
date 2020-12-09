@@ -33,19 +33,19 @@ func TestAccVultrRegion(t *testing.T) {
 func testAccCheckVultrRegion(name string) string {
 	return fmt.Sprintf(`
 		data "vultr_region" "miami" {
-   	filter {
-   	name = "id"
-   	values = ["%s"]
-	}
-	}`, name)
+			filter {
+				name = "id"
+				values = ["%s"]
+			}
+		}`, name)
 }
 
 func testAccCheckVultrRegion_tooManyResults(country string) string {
 	return fmt.Sprintf(`
 		data "vultr_region" "miami" {
-   	filter {
-   	name = "country"
-   	values = ["%s"]
-	}
-	}`, country)
+			filter {
+				name = "country"
+				values = ["%s"]
+			}
+		}`, country)
 }

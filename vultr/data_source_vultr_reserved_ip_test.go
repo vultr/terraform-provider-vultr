@@ -35,15 +35,15 @@ func TestAccDataSourceVultrReservedIP(t *testing.T) {
 func testAccVultrReservedIP_read(label string) string {
 	return fmt.Sprintf(`
 		resource "vultr_reserved_ip" "bar" {
-       	label       = "%s"
-       	region   = "sea"
-       	ip_type = "v4"
-   	}
+		label = "%s"
+		region = "sea"
+		ip_type = "v4"
+	}
 
 		data "vultr_reserved_ip" "foo" {
 			filter {
-   			name = "label"
-   			values = ["${vultr_reserved_ip.bar.label}"]
+				name = "label"
+				values = ["${vultr_reserved_ip.bar.label}"]
 			}
 		}
 		`, label)

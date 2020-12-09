@@ -42,9 +42,9 @@ func testAccCheckVultrSSHKeyConfig_basic(name, ssh string) string {
 		}
 
 		data "vultr_ssh_key" "my_key" {
-   		filter {
-   			name = "name"
-   			values = ["${vultr_ssh_key.foo.name}"]
+		filter {
+			name = "name"
+			values = ["${vultr_ssh_key.foo.name}"]
 			}
 		}
 		`, name, ssh)

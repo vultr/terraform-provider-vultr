@@ -136,17 +136,17 @@ func testAccCheckVultrBareMetalServerExists(n string) resource.TestCheckFunc {
 func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string {
 	return testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + fmt.Sprintf(`
 		resource "vultr_bare_metal_server" "foo" {
-			region 		      = "ewr"
-			os_id 			  = 270
-			plan           = "vbm-4c-32gb"
-			enable_ipv6       = true
-			activation_email   = false
-			ssh_key_ids       = ["${vultr_ssh_key.foo.id}"]
-			script_id 		  = "${vultr_startup_script.foo.id}"
-			user_data         = "my user data"
-			tag               = "%s"
-			label             = "%s"
-			hostname 		  = "%s"
+			region = "ewr"
+			os_id = 270
+			plan = "vbm-4c-32gb"
+			enable_ipv6 = true
+			activation_email = false
+			ssh_key_ids = ["${vultr_ssh_key.foo.id}"]
+			script_id = "${vultr_startup_script.foo.id}"
+			user_data = "my user data"
+			tag = "%s"
+			label = "%s"
+			hostname = "%s"
 		}
 	`, rName, rName, rName)
 }
@@ -154,17 +154,17 @@ func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string
 func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) string {
 	return testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + fmt.Sprintf(`
 		resource "vultr_bare_metal_server" "foo" {
-			region 		      = "ewr"
-			os_id 			  = 270
-			plan           = "vbm-4c-32gb"
-			enable_ipv6       = true
-			activation_email   = false
-			ssh_key_ids       = ["${vultr_ssh_key.foo.id}"]
-			script_id 		  = "${vultr_startup_script.foo.id}"
-			user_data         = "my user data"
-			tag               = "%s-update"
-			label             = "%s-update"
-			hostname 		  = "%s"
+			region = "ewr"
+			os_id = 270
+			plan = "vbm-4c-32gb"
+			enable_ipv6 = true
+			activation_email = false
+			ssh_key_ids = ["${vultr_ssh_key.foo.id}"]
+			script_id = "${vultr_startup_script.foo.id}"
+			user_data = "my user data"
+			tag = "%s-update"
+			label = "%s-update"
+			hostnam = "%s"
 		}
 	`, rName, rName, rName)
 }

@@ -234,24 +234,42 @@ func testAccVultrInstanceBaseUpdateNetworkIDs(name string) string {
 			cidr_block  = "10.0.0.0/24"
 		}
 
-  	resource "vultr_network" "bar" {
+	resource "vultr_network" "bar" {
 			region   = "sea"
 			description = "bar"
 			cidr_block  = "10.0.0.0/24"
 		}
 
+	resource "vultr_instance" "test" {
+		plan = "vc2-1c-2gb"
+		region = "sea"
+		os_id = 167
+		label = "%s"
+		hostname = "testing-the-hostname"
+		enable_ipv6 = true
+		backups = "enabled"
+		activation_email = false
+		ddos_protection = true
+		tag = "even better tag"
+		network_ids = ["${vultr_network.foo.id}","${vultr_network.bar.id}"]
+	}
+	`, name)
+}
+
+func testAccVultrInstanceBaseUpdatedRegion(name string) string {
+	return fmt.Sprintf(`
 		resource "vultr_instance" "test" {
-			plan = "vc2-1c-2gb"
-			region = "sea"
+			plan = "vc2-1c-1gb"
+			region = "ewr"
 			os_id = 167
 			label = "%s"
 			hostname = "testing-the-hostname"
 			enable_ipv6 = true
-			backups = "enabled"
+			backups = true
 			activation_email = false
 			ddos_protection = true
 			tag = "even better tag"
-      	network_ids = ["${vultr_network.foo.id}","${vultr_network.bar.id}"]
+			network_ids = ["${vultr_network.foo.id}","${vultr_network.bar.id}"]
 		}
 		`, name)
 }
