@@ -34,6 +34,25 @@ func TestAccVultrFirewallRule_basic(t *testing.T) {
 	})
 }
 
+func TestAccVultrFirewallRule_icmp(t *testing.T) {
+
+	rString := acctest.RandString(13)
+	resource.Test(t, resource.TestCase{
+		PreCheck:  func() { testAccPreCheck(t) },
+		Providers: testAccProviders,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccVultrFirewallRule_icmp(rString),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckVultrFirewallGroupExists("vultr_firewall_group.fwg"),
+					resource.TestCheckResourceAttrSet("vultr_firewall_rule.tcp", "firewall_group_id"),
+					resource.TestCheckResourceAttr("vultr_firewall_rule.tcp", "protocol", "icmp"),
+					resource.TestCheckResourceAttr("vultr_firewall_rule.tcp", "subnet", "0.0.0.0")),
+			},
+		},
+	})
+}
+
 func TestAccVultrFirewallRule_update(t *testing.T) {
 	rString := acctest.RandString(13)
 
@@ -136,6 +155,21 @@ func testAccVultrFirewallRule_base(desc string) string {
 			subnet = "10.0.0.0"
 			subnet_size = 32
 			port = "3048"
+		}`, desc)
+}
+
+func testAccVultrFirewallRule_icmp(desc string) string {
+	return fmt.Sprintf(`
+		resource "vultr_firewall_group" "fwg" {
+			description = "%s"
+		}
+
+		resource "vultr_firewall_rule" "tcp" {
+			firewall_group_id = "${vultr_firewall_group.fwg.id}"
+			ip_type = "v4"
+			protocol = "icmp"
+			subnet = "0.0.0.0"
+			subnet_size = 0
 		}`, desc)
 }
 
