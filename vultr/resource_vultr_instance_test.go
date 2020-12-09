@@ -247,7 +247,7 @@ func testAccVultrInstanceBaseUpdateNetworkIDs(name string) string {
 			label = "%s"
 			hostname = "testing-the-hostname"
 			enable_ipv6 = true
-			auto_backup = true
+			backups = "enabled"
 			activation_email = false
 			ddos_protection = true
 			tag = "even better tag"

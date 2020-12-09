@@ -10,9 +10,9 @@ resource "vultr_instance" "my_instance" {
   os_id                  = "${var.os_type}"
   label                  = "terraform example"
   enable_ipv6            = true
-  auto_backup            = true
+  backups                = "enabled"
   enable_private_network = true
-  activation_email        = false
+  activation_email       = false
   ddos_protection        = true
   tag                    = "tag"
   firewall_group_id      = "${vultr_firewall_group.fwg.id}}"

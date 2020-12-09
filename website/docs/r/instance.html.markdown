@@ -33,7 +33,7 @@ resource "vultr_instance" "my_instance" {
 	tag = "my-instance-tag"
 	hostname = "my-instance-hostname"
 	enable_ipv6 = true
-	auto_backup = true
+	backups = "enabled"
 	ddos_protection = true
 	activation_email = false
 }
@@ -54,7 +54,7 @@ The following arguments are supported:
 * `private_network_ids` - (Optional) A list of private network IDs to be attached to the server.
 * `ssh_key_ids` - (Optional) A list of SSH key IDs to apply to the server on install (only valid for Linux/FreeBSD).
 * `user_data` - (Optional) Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
-* `auto_backup` - (Optional) Whether automatic backups will be enabled for this server (these have an extra charge associated with them).
+* `backups` - (Optional) Whether automatic backups will be enabled for this server (these have an extra charge associated with them). Values can be enabled or disabled.
 * `enable_ipv6` - (Optional) Whether the server has IPv6 networking activated.
 * `enable_private_network` - (Optional) Whether the server has private networking support enabled.
 * `activation_email` - (Optional) Whether an activation email will be sent when the server is ready.
