@@ -440,6 +440,17 @@ func resourceVultrInstanceDelete(d *schema.ResourceData, meta interface{}) error
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting instance (%s)", d.Id())
 
+	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
+		detach := &govultr.InstanceUpdateReq{}
+		for _, v := range networkIDs.([]interface{}) {
+			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string))
+		}
+
+		if err := client.Instance.Update(context.Background(), d.Id(), detach); err != nil {
+			return fmt.Errorf("error detaching private networks prior to deleting instance %s : %v", d.Id(), err)
+		}
+	}
+
 	if err := client.Instance.Delete(context.Background(), d.Id()); err != nil {
 		return fmt.Errorf("error destroying instance %s : %v", d.Id(), err)
 	}
