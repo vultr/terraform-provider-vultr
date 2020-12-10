@@ -1,3 +1,8 @@
+## 2.1.1 (December 09, 2020)
+IMPROVEMENTS:
+- resource/vultr_instances: Private-networks will be detached prior to deletion [93](https://github.com/vultr/terraform-provider-vultr/pull/93)
+- resource/vultr_instances: Removal of `forcenew` on `activiation_email` [84](https://github.com/vultr/terraform-provider-vultr/pull/84)
+
 ## 2.1.0 (December 03, 2020)
 BUG FIXES:
 - resource/vultr_instances: In v2 the ID of the Reserved IP, not the IP itself, is required for creation. [79](https://github.com/vultr/terraform-provider-vultr/pull/79) 
