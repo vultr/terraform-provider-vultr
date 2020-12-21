@@ -54,7 +54,7 @@ func resourceVultrInstanceIPV4Create(d *schema.ResourceData, meta interface{}) e
 
 	log.Printf("[INFO] Creating IPv4")
 
-	ip, err := client.Instance.CreateIPv4(context.Background(), instanceID, d.Get("reboot").(bool))
+	ip, err := client.Instance.CreateIPv4(context.Background(), instanceID, govultr.BoolToBoolPtr(d.Get("reboot").(bool)))
 	if err != nil {
 		return fmt.Errorf("error creating IPv4: %v", err)
 	}

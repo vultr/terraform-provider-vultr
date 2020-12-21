@@ -232,8 +232,8 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 		StickySessions:     stickySessions,
 		ForwardingRules:    fwMap,
 		SSL:                ssl,
-		SSLRedirect:        d.Get("ssl_redirect").(bool),
-		ProxyProtocol:      d.Get("proxy_protocol").(bool),
+		SSLRedirect:        govultr.BoolToBoolPtr(d.Get("ssl_redirect").(bool)),
+		ProxyProtocol:      govultr.BoolToBoolPtr(d.Get("proxy_protocol").(bool)),
 		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
 	}
 
@@ -317,8 +317,8 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 	req := &govultr.LoadBalancerReq{
 		Region:             d.Get("region").(string),
 		Label:              d.Get("label").(string),
-		SSLRedirect:        d.Get("ssl_redirect").(bool),
-		ProxyProtocol:      d.Get("proxy_protocol").(bool),
+		SSLRedirect:        govultr.BoolToBoolPtr(d.Get("ssl_redirect").(bool)),
+		ProxyProtocol:      govultr.BoolToBoolPtr(d.Get("proxy_protocol").(bool)),
 		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
 	}
 

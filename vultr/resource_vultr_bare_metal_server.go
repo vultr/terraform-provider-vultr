@@ -179,11 +179,11 @@ func resourceVultrBareMetalServerCreate(d *schema.ResourceData, meta interface{}
 		Region:          d.Get("region").(string),
 		Plan:            d.Get("plan").(string),
 		StartupScriptID: d.Get("script_id").(string),
-		EnableIPv6:      d.Get("enable_ipv6").(bool),
+		EnableIPv6:      govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
 		Label:           d.Get("label").(string),
 		SSHKeyIDs:       keyIDs,
 		UserData:        base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string))),
-		ActivationEmail: d.Get("activation_email").(bool),
+		ActivationEmail: govultr.BoolToBoolPtr(d.Get("activation_email").(bool)),
 		Hostname:        d.Get("hostname").(string),
 		Tag:             d.Get("tag").(string),
 		ReservedIPv4:    d.Get("reserved_ipv4").(string),
@@ -258,7 +258,7 @@ func resourceVultrBareMetalServerUpdate(d *schema.ResourceData, meta interface{}
 	req := &govultr.BareMetalUpdate{
 		Label:      d.Get("label").(string),
 		Tag:        d.Get("tag").(string),
-		EnableIPv6: d.Get("enable_ipv6").(bool),
+		EnableIPv6: govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
 	}
 
 	if d.HasChange("app_id") {

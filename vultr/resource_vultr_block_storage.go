@@ -100,7 +100,7 @@ func resourceVultrBlockStorageCreate(d *schema.ResourceData, meta interface{}) e
 
 		attachReq := &govultr.BlockStorageAttach{
 			InstanceID: instanceID.(string),
-			Live:       d.Get("live").(bool),
+			Live:       govultr.BoolToBoolPtr(d.Get("live").(bool)),
 		}
 
 		if err := client.BlockStorage.Attach(context.Background(), d.Id(), attachReq); err != nil {
@@ -149,7 +149,6 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 
 	if d.HasChange("attached_to_instance") {
 		old, newVal := d.GetChange("attached_to_instance")
-		live := d.Get("live").(bool)
 
 		if old.(string) != "" {
 			// The following check is necessary so we do not erroneously detach after a formerly attached server has been tainted and/or destroyed.
@@ -161,7 +160,7 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 			if bs.AttachedToInstance != "" {
 				log.Printf(`[INFO] Detaching block storage (%s)`, d.Id())
 
-				blockReq := &govultr.BlockStorageDetach{Live: live}
+				blockReq := &govultr.BlockStorageDetach{Live: govultr.BoolToBoolPtr(d.Get("live").(bool))}
 				err := client.BlockStorage.Detach(context.Background(), d.Id(), blockReq)
 				if err != nil {
 					return fmt.Errorf("error detaching block storage (%s): %v", d.Id(), err)
@@ -173,7 +172,7 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 			log.Printf(`[INFO] Attaching block storage (%s)`, d.Id())
 			blockReq := &govultr.BlockStorageAttach{
 				InstanceID: newVal.(string),
-				Live:       live,
+				Live:       govultr.BoolToBoolPtr(d.Get("live").(bool)),
 			}
 			if err := client.BlockStorage.Attach(context.Background(), d.Id(), blockReq); err != nil {
 				return fmt.Errorf("error attaching block storage (%s): %v", d.Id(), err)
