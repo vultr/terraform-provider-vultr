@@ -344,11 +344,10 @@ func resourceVultrInstanceUpdate(d *schema.ResourceData, meta interface{}) error
 	client := meta.(*Client).govultrClient()
 
 	req := &govultr.InstanceUpdateReq{
-		Label:                d.Get("label").(string),
-		Tag:                  d.Get("tag").(string),
-		FirewallGroupID:      d.Get("firewall_group_id").(string),
-		EnableIPv6:           govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
-		EnablePrivateNetwork: govultr.BoolToBoolPtr(d.Get("enable_private_network").(bool)),
+		Label:           d.Get("label").(string),
+		Tag:             d.Get("tag").(string),
+		FirewallGroupID: d.Get("firewall_group_id").(string),
+		EnableIPv6:      govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
 	}
 
 	if d.HasChange("plan") {
@@ -363,6 +362,12 @@ func resourceVultrInstanceUpdate(d *schema.ResourceData, meta interface{}) error
 		_, newVal := d.GetChange("ddos_protection")
 		ddos := newVal.(bool)
 		req.DDOSProtection = &ddos
+	}
+
+	if d.HasChange("enable_private_network") {
+		log.Printf("[INFO] Updating private networking")
+		_, newVal := d.GetChange("enable_private_network")
+		req.EnablePrivateNetwork = govultr.BoolToBoolPtr(newVal.(bool))
 	}
 
 	if d.HasChange("backups") {
