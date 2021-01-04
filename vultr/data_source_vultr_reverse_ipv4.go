@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
@@ -90,6 +89,7 @@ func dataSourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) er
 
 	}
 
+	filter := buildVultrDataSourceFilter(filters.(*schema.Set))
 	var result *govultr.IPv4
 	resultInstanceID := ""
 
@@ -100,13 +100,24 @@ func dataSourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) er
 		}
 
 		for _, ipv4 := range ipv4s {
-			result = &ipv4
-			resultInstanceID = instanceID
+			m, err := structToMap(ipv4)
+			if err != nil {
+				return err
+			}
+
+			if filterLoop(filter, m) {
+				if result != nil {
+					return fmt.Errorf("your search returned too many results - please refine your search to be more specific")
+				}
+
+				result = &ipv4
+				resultInstanceID = instanceID
+			}
 		}
 	}
 
 	if result == nil {
-		return errors.New(resultInstanceID)
+		return errors.New("no results were found")
 	}
 
 	d.SetId(result.IP)
