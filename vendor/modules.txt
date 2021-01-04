@@ -224,7 +224,7 @@ github.com/ulikunitz/xz/lzma
 # github.com/vmihailenco/msgpack v4.0.1+incompatible
 github.com/vmihailenco/msgpack
 github.com/vmihailenco/msgpack/codes
-# github.com/vultr/govultr/v2 v2.1.0
+# github.com/vultr/govultr/v2 v2.3.1
 github.com/vultr/govultr/v2
 # github.com/zclconf/go-cty v1.2.1
 github.com/zclconf/go-cty/cty

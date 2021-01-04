@@ -232,13 +232,13 @@ func resourceVultrInstanceCreate(d *schema.ResourceData, meta interface{}) error
 	client := meta.(*Client).govultrClient()
 
 	req := &govultr.InstanceCreateReq{
-		EnableIPv6:           d.Get("enable_ipv6").(bool),
-		EnablePrivateNetwork: d.Get("enable_private_network").(bool),
+		EnableIPv6:           govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
+		EnablePrivateNetwork: govultr.BoolToBoolPtr(d.Get("enable_private_network").(bool)),
 		Label:                d.Get("label").(string),
 		Backups:              d.Get("backups").(string),
 		UserData:             base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string))),
-		ActivationEmail:      d.Get("activation_email").(bool),
-		DDOSProtection:       d.Get("ddos_protection").(bool),
+		ActivationEmail:      govultr.BoolToBoolPtr(d.Get("activation_email").(bool)),
+		DDOSProtection:       govultr.BoolToBoolPtr(d.Get("ddos_protection").(bool)),
 		Hostname:             d.Get("hostname").(string),
 		Tag:                  d.Get("tag").(string),
 		FirewallGroupID:      d.Get("firewall_group_id").(string),
@@ -344,11 +344,10 @@ func resourceVultrInstanceUpdate(d *schema.ResourceData, meta interface{}) error
 	client := meta.(*Client).govultrClient()
 
 	req := &govultr.InstanceUpdateReq{
-		Label:                d.Get("label").(string),
-		Tag:                  d.Get("tag").(string),
-		FirewallGroupID:      d.Get("firewall_group_id").(string),
-		EnableIPv6:           d.Get("enable_ipv6").(bool),
-		EnablePrivateNetwork: d.Get("enable_private_network").(bool),
+		Label:           d.Get("label").(string),
+		Tag:             d.Get("tag").(string),
+		FirewallGroupID: d.Get("firewall_group_id").(string),
+		EnableIPv6:      govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
 	}
 
 	if d.HasChange("plan") {
@@ -363,6 +362,12 @@ func resourceVultrInstanceUpdate(d *schema.ResourceData, meta interface{}) error
 		_, newVal := d.GetChange("ddos_protection")
 		ddos := newVal.(bool)
 		req.DDOSProtection = &ddos
+	}
+
+	if d.HasChange("enable_private_network") {
+		log.Printf("[INFO] Updating private networking")
+		_, newVal := d.GetChange("enable_private_network")
+		req.EnablePrivateNetwork = govultr.BoolToBoolPtr(newVal.(bool))
 	}
 
 	if d.HasChange("backups") {
