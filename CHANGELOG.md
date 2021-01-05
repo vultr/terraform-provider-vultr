@@ -1,3 +1,10 @@
+## 2.1.2 (January 05, 2021)
+Dependency:
+- updated GoVultr to v2.3.1 (fixes #102 #105) [106](https://github.com/terraform-providers/terraform-provider-vultr/pull/106)
+
+IMPROVEMENTS:
+- datasource/vultr_instance_ip4 & reverse_ipv4 improved filter and cleaned up docs [107](https://github.com/vultr/terraform-provider-vultr/pull/107)
+
 ## 2.1.1 (December 09, 2020)
 IMPROVEMENTS:
 - resource/vultr_instances: Private-networks will be detached prior to deletion [93](https://github.com/vultr/terraform-provider-vultr/pull/93)
