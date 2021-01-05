@@ -1,6 +1,6 @@
 ---
 layout: "vultr"
-page_title: "Vultr: vultr_reverse_ipv4"
+page_title: "Vultr: vultr_instance_ipv4"
 sidebar_current: "docs-vultr-datasource-instance-ipv4"
 description: |-
   Get information about a Vultr instance IPv4.
@@ -15,7 +15,7 @@ Get information about a Vultr instance IPv4.
 Get the information for an IPv4 address by `instance_id`:
 
 ```hcl
-data "vultr_reverse_ipv4" "my_reverse_ipv4" {
+data "vultr_instance_ipv4" "my_instance_ipv4" {
   filter {
     name = "ip"
     values = ["123.123.123.123"]
