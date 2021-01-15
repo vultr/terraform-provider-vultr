@@ -34,3 +34,14 @@ jobs:
         env:
           GPG_FINGERPRINT: ${{ steps.import_gpg.outputs.fingerprint }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  release:
+    runs-on: ubuntu-latest
+    name: Release Notification
+    steps:
+      - run: |
+          echo "{\"text\":\"Terraform : Release https://github.com/vultr/terraform-provider-vultr/releases/tag/${{ GITHUB_REF#refs/*/ }} \"}" > mattermost.json
+      - uses: mattermost/action-mattermost-notify@master
+        env:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_USERNAME: ${{ secrets.MATTERMOST_USERNAME}}
+          MATTERMOST_ICON: ${{ secrets.MATTERMOST_ICON }}
