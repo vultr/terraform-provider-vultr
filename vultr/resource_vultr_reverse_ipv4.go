@@ -2,18 +2,18 @@ package vultr
 
 import (
 	"context"
-	"fmt"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func resourceVultrReverseIPV4() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrReverseIPV4Create,
-		Read:   resourceVultrReverseIPV4Read,
-		Delete: resourceVultrReverseIPV4Delete,
+		CreateContext: resourceVultrReverseIPV4Create,
+		ReadContext:   resourceVultrReverseIPV4Read,
+		DeleteContext: resourceVultrReverseIPV4Delete,
 
 		Schema: map[string]*schema.Schema{
 			"instance_id": {
@@ -43,7 +43,7 @@ func resourceVultrReverseIPV4() *schema.Resource {
 	}
 }
 
-func resourceVultrReverseIPV4Create(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrReverseIPV4Create(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	instanceID := d.Get("instance_id").(string)
@@ -55,17 +55,17 @@ func resourceVultrReverseIPV4Create(d *schema.ResourceData, meta interface{}) er
 
 	log.Printf("[INFO] Creating reverse IPv4")
 
-	if err := client.Instance.CreateReverseIPv4(context.Background(), instanceID, req); err != nil {
-		return fmt.Errorf("error creating reverse IPv4: %v", err)
+	if err := client.Instance.CreateReverseIPv4(ctx, instanceID, req); err != nil {
+		return diag.Errorf("error creating reverse IPv4: %v", err)
 	}
 
 	d.SetId(ip)
 	d.Set("instance_id", instanceID)
 
-	return resourceVultrReverseIPV4Read(d, meta)
+	return resourceVultrReverseIPV4Read(ctx, d, meta)
 }
 
-func resourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrReverseIPV4Read(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	instanceID := d.Get("instance_id").(string)
@@ -74,9 +74,9 @@ func resourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) erro
 
 	options := &govultr.ListOptions{}
 	for {
-		ReverseIPV4s, meta, err := client.Instance.ListIPv4(context.Background(), instanceID, options)
+		ReverseIPV4s, meta, err := client.Instance.ListIPv4(ctx, instanceID, options)
 		if err != nil {
-			return fmt.Errorf("error getting reverse IPv4s: %v, %v", err, instanceID)
+			return diag.Errorf("error getting reverse IPv4s: %v, %v", err, instanceID)
 		}
 
 		for _, v := range ReverseIPV4s {
@@ -92,7 +92,7 @@ func resourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) erro
 		}
 
 		if meta.Links.Next == "" {
-			return fmt.Errorf("error getting reverse IPv4s: %v, %v", err, instanceID)
+			return diag.Errorf("error getting reverse IPv4s: %v, %v", err, instanceID)
 		}
 
 		options.Cursor = meta.Links.Next
@@ -106,14 +106,14 @@ func resourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) erro
 	return nil
 }
 
-func resourceVultrReverseIPV4Delete(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrReverseIPV4Delete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	instanceID := d.Get("instance_id").(string)
 
 	log.Printf("[INFO] Deleting reverse IPv4: %s", d.Id())
-	if err := client.Instance.DefaultReverseIPv4(context.Background(), instanceID, d.Id()); err != nil {
-		return fmt.Errorf("error resetting reverse IPv4 (%s): %v", d.Id(), err)
+	if err := client.Instance.DefaultReverseIPv4(ctx, instanceID, d.Id()); err != nil {
+		return diag.Errorf("error resetting reverse IPv4 (%s): %v", d.Id(), err)
 	}
 
 	return nil

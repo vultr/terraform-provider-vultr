@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrReverseIPV6_basic(t *testing.T) {
+func TestAccVultrReverseIPV6Basic(t *testing.T) {
 	t.Parallel()
 
 	name := "vultr_reverse_ipv6.test"
@@ -20,9 +20,9 @@ func TestAccVultrReverseIPV6_basic(t *testing.T) {
 	reverse := fmt.Sprintf("host-%d.example.com", acctest.RandInt())
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrReverseIPV6Destroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrReverseIPV6Destroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrReverseIPV6(rServerLabel, reverse),
