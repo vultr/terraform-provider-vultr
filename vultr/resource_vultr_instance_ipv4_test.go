@@ -11,15 +11,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrInstanceIPV4_basic(t *testing.T) {
+func TestAccVultrInstanceIPV4Basic(t *testing.T) {
 	t.Parallel()
 
 	name := "vultr_instance_ipv4.test"
 	serverLabel := acctest.RandomWithPrefix("tf-rs-vps-server-ipv4")
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrInstanceIPV4(serverLabel),

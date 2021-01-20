@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
@@ -15,12 +16,12 @@ import (
 
 func resourceVultrInstance() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrInstanceCreate,
-		Read:   resourceVultrInstanceRead,
-		Update: resourceVultrInstanceUpdate,
-		Delete: resourceVultrInstanceDelete,
+		CreateContext: resourceVultrInstanceCreate,
+		ReadContext:   resourceVultrInstanceRead,
+		UpdateContext: resourceVultrInstanceUpdate,
+		DeleteContext: resourceVultrInstanceDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -216,7 +217,7 @@ func resourceVultrInstance() *schema.Resource {
 	}
 }
 
-func resourceVultrInstanceCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	// Four unique options to image your server
 	osID := d.Get("os_id")
 	appID, appOK := d.GetOk("app_id")
@@ -226,7 +227,7 @@ func resourceVultrInstanceCreate(d *schema.ResourceData, meta interface{}) error
 	osOptions := map[string]bool{"app_id": appOK, "iso_id": isoOK, "snapshot_id": snapOK}
 	osOption, err := optionCheck(osOptions)
 	if err != nil {
-		return err
+		return diag.FromErr(err)
 	}
 
 	client := meta.(*Client).govultrClient()
@@ -252,7 +253,7 @@ func resourceVultrInstanceCreate(d *schema.ResourceData, meta interface{}) error
 	if osOption == "" && osID.(int) != 0 {
 		osOption = "os_id"
 	} else if osOption != "" && osID.(int) != 0 {
-		return fmt.Errorf(fmt.Sprintf("Please do not set %s with os_id", osOption))
+		return diag.Errorf(fmt.Sprintf("Please do not set %s with os_id", osOption))
 	}
 
 	switch osOption {
@@ -265,7 +266,7 @@ func resourceVultrInstanceCreate(d *schema.ResourceData, meta interface{}) error
 	case "snapshot_id":
 		req.SnapshotID = snapID.(string)
 	default:
-		return fmt.Errorf("error occurred while getting your intended os type")
+		return diag.Errorf("error occurred while getting your intended os type")
 	}
 
 	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
@@ -281,36 +282,36 @@ func resourceVultrInstanceCreate(d *schema.ResourceData, meta interface{}) error
 	}
 
 	log.Printf("[INFO] Creating server")
-	instance, err := client.Instance.Create(context.Background(), req)
+	instance, err := client.Instance.Create(ctx, req)
 	if err != nil {
-		return fmt.Errorf("error creating server: %v", err)
+		return diag.Errorf("error creating server: %v", err)
 	}
 
 	d.SetId(instance.ID)
 	d.Set("default_password", instance.DefaultPassword)
 
-	if _, err = waitForServerAvailable(d, "active", []string{"pending", "installing"}, "status", meta); err != nil {
-		return fmt.Errorf("error while waiting for Server %s to be completed: %s", d.Id(), err)
+	if _, err = waitForServerAvailable(ctx, d, "active", []string{"pending", "installing"}, "status", meta); err != nil {
+		return diag.Errorf("error while waiting for Server %s to be completed: %s", d.Id(), err)
 	}
 
-	if _, err = waitForServerAvailable(d, "running", []string{"stopped"}, "power_status", meta); err != nil {
-		return fmt.Errorf("error while waiting for Server %s to be in a active state : %s", d.Id(), err)
+	if _, err = waitForServerAvailable(ctx, d, "running", []string{"stopped"}, "power_status", meta); err != nil {
+		return diag.Errorf("error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 	}
 
-	return resourceVultrInstanceRead(d, meta)
+	return resourceVultrInstanceRead(ctx, d, meta)
 }
 
-func resourceVultrInstanceRead(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	instance, err := client.Instance.Get(context.Background(), d.Id())
+	instance, err := client.Instance.Get(ctx, d.Id())
 	if err != nil {
 		if strings.HasPrefix(err.Error(), "invalid server") {
 			log.Printf("[WARN] Removing instance (%s) because it is gone", d.Id())
 			d.SetId("")
 			return nil
 		}
-		return fmt.Errorf("error getting instance (%s): %v", d.Id(), err)
+		return diag.Errorf("error getting instance (%s): %v", d.Id(), err)
 	}
 
 	d.Set("os", instance.Os)
@@ -340,7 +341,7 @@ func resourceVultrInstanceRead(d *schema.ResourceData, meta interface{}) error {
 
 	return nil
 }
-func resourceVultrInstanceUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	req := &govultr.InstanceUpdateReq{
@@ -418,8 +419,8 @@ func resourceVultrInstanceUpdate(d *schema.ResourceData, meta interface{}) error
 
 	}
 
-	if err := client.Instance.Update(context.Background(), d.Id(), req); err != nil {
-		return fmt.Errorf("error updating instance %s : %s", d.Id(), err.Error())
+	if err := client.Instance.Update(ctx, d.Id(), req); err != nil {
+		return diag.Errorf("error updating instance %s : %s", d.Id(), err.Error())
 	}
 
 	if d.HasChange("iso_id") {
@@ -427,20 +428,20 @@ func resourceVultrInstanceUpdate(d *schema.ResourceData, meta interface{}) error
 
 		_, newISOId := d.GetChange("iso_id")
 		if newISOId == "" {
-			if err := client.Instance.DetachISO(context.Background(), d.Id()); err != nil {
-				return fmt.Errorf("error detaching iso from instance %s : %v", d.Id(), err)
+			if err := client.Instance.DetachISO(ctx, d.Id()); err != nil {
+				return diag.Errorf("error detaching iso from instance %s : %v", d.Id(), err)
 			}
 		} else {
-			if err := client.Instance.AttachISO(context.Background(), d.Id(), newISOId.(string)); err != nil {
-				return fmt.Errorf("error detaching iso from instance %s : %v", d.Id(), err)
+			if err := client.Instance.AttachISO(ctx, d.Id(), newISOId.(string)); err != nil {
+				return diag.Errorf("error detaching iso from instance %s : %v", d.Id(), err)
 			}
 		}
 	}
 
-	return resourceVultrInstanceRead(d, meta)
+	return resourceVultrInstanceRead(ctx, d, meta)
 }
 
-func resourceVultrInstanceDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting instance (%s)", d.Id())
@@ -451,13 +452,13 @@ func resourceVultrInstanceDelete(d *schema.ResourceData, meta interface{}) error
 			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string))
 		}
 
-		if err := client.Instance.Update(context.Background(), d.Id(), detach); err != nil {
-			return fmt.Errorf("error detaching private networks prior to deleting instance %s : %v", d.Id(), err)
+		if err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
+			return diag.Errorf("error detaching private networks prior to deleting instance %s : %v", d.Id(), err)
 		}
 	}
 
-	if err := client.Instance.Delete(context.Background(), d.Id()); err != nil {
-		return fmt.Errorf("error destroying instance %s : %v", d.Id(), err)
+	if err := client.Instance.Delete(ctx, d.Id()); err != nil {
+		return diag.Errorf("error destroying instance %s : %v", d.Id(), err)
 	}
 
 	return nil
@@ -484,7 +485,7 @@ func optionCheck(options map[string]bool) (string, error) {
 	return result[0], nil
 }
 
-func waitForServerAvailable(d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+func waitForServerAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
 	log.Printf(
 		"[INFO] Waiting for Server (%s) to have %s of %s",
 		d.Id(), attribute, target)
@@ -492,22 +493,22 @@ func waitForServerAvailable(d *schema.ResourceData, target string, pending []str
 	stateConf := &resource.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
-		Refresh:        newServerStateRefresh(d, meta, attribute),
+		Refresh:        newServerStateRefresh(ctx, d, meta, attribute),
 		Timeout:        60 * time.Minute,
 		Delay:          10 * time.Second,
 		MinTimeout:     3 * time.Second,
 		NotFoundChecks: 60,
 	}
 
-	return stateConf.WaitForState()
+	return stateConf.WaitForStateContext(ctx)
 }
 
-func newServerStateRefresh(d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc {
+func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 
 		log.Printf("[INFO] Creating Server")
-		server, err := client.Instance.Get(context.Background(), d.Id())
+		server, err := client.Instance.Get(ctx, d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving Server %s : %s", d.Id(), err)
 		}
