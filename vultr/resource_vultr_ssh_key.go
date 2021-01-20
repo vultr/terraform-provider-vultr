@@ -2,21 +2,21 @@ package vultr
 
 import (
 	"context"
-	"fmt"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func resourceVultrSSHKey() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrSSHKeyCreate,
-		Read:   resourceVultrSSHKeyRead,
-		Update: resourceVultrSSHKeyUpdate,
-		Delete: resourceVultrSSHKeyDelete,
+		CreateContext: resourceVultrSSHKeyCreate,
+		ReadContext:   resourceVultrSSHKeyRead,
+		UpdateContext: resourceVultrSSHKeyUpdate,
+		DeleteContext: resourceVultrSSHKeyDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -38,30 +38,30 @@ func resourceVultrSSHKey() *schema.Resource {
 	}
 }
 
-func resourceVultrSSHKeyCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrSSHKeyCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 	sshReq := &govultr.SSHKeyReq{
 		Name:   d.Get("name").(string),
 		SSHKey: d.Get("ssh_key").(string),
 	}
 
-	key, err := client.SSHKey.Create(context.Background(), sshReq)
+	key, err := client.SSHKey.Create(ctx, sshReq)
 	if err != nil {
-		return fmt.Errorf("error creating SSH key: %v", err)
+		return diag.Errorf("error creating SSH key: %v", err)
 	}
 
 	d.SetId(key.ID)
 	log.Printf("[INFO] SSH Key ID: %s", d.Id())
 
-	return resourceVultrSSHKeyRead(d, meta)
+	return resourceVultrSSHKeyRead(ctx, d, meta)
 }
 
-func resourceVultrSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrSSHKeyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	key, err := client.SSHKey.Get(context.Background(), d.Id())
+	key, err := client.SSHKey.Get(ctx, d.Id())
 	if err != nil {
-		return fmt.Errorf("error getting SSH keys: %v", err)
+		return diag.Errorf("error getting SSH keys: %v", err)
 	}
 
 	d.Set("name", key.Name)
@@ -71,7 +71,7 @@ func resourceVultrSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func resourceVultrSSHKeyUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrSSHKeyUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	key := &govultr.SSHKeyReq{}
@@ -86,18 +86,18 @@ func resourceVultrSSHKeyUpdate(d *schema.ResourceData, meta interface{}) error {
 
 	log.Printf("[INFO] Updating SSH Key: %s", d.Id())
 	if err := client.SSHKey.Update(context.Background(), d.Id(), key); err != nil {
-		return fmt.Errorf("error updating SSH key (%s): %v", d.Id(), err)
+		return diag.Errorf("error updating SSH key (%s): %v", d.Id(), err)
 	}
 
-	return resourceVultrSSHKeyRead(d, meta)
+	return resourceVultrSSHKeyRead(ctx, d, meta)
 }
 
-func resourceVultrSSHKeyDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrSSHKeyDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting SSH Key: %s", d.Id())
 
-	if err := client.SSHKey.Delete(context.Background(), d.Id()); err != nil {
-		return fmt.Errorf("error destroying SSH key (%s): %v", d.Id(), err)
+	if err := client.SSHKey.Delete(ctx, d.Id()); err != nil {
+		return diag.Errorf("error destroying SSH key (%s): %v", d.Id(), err)
 	}
 
 	return nil

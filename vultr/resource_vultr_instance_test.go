@@ -11,15 +11,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrInstance_Basic(t *testing.T) {
+func TestAccVultrInstanceBasic(t *testing.T) {
 	t.Parallel()
 	rName := acctest.RandomWithPrefix("tf-vps-rs")
 
 	name := "vultr_instance.test"
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrInstanceDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		CheckDestroy:      testAccCheckVultrInstanceDestroy,
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrInstanceBase(rName),
@@ -39,15 +39,15 @@ func TestAccVultrInstance_Basic(t *testing.T) {
 		},
 	})
 }
-func TestAccVultrInstance_Update(t *testing.T) {
+func TestAccVultrInstanceUpdate(t *testing.T) {
 	t.Parallel()
 	rName := acctest.RandomWithPrefix("tf-vps-rs-up")
 
 	name := "vultr_instance.test"
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrInstanceDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrInstanceDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrInstanceBase(rName),
@@ -81,15 +81,15 @@ func TestAccVultrInstance_Update(t *testing.T) {
 	})
 }
 
-func TestAccVultrInstance_UpdateFirewall(t *testing.T) {
+func TestAccVultrInstanceUpdateFirewall(t *testing.T) {
 	t.Parallel()
 	rName := acctest.RandomWithPrefix("tf-vps-rs-upfw")
 
 	name := "vultr_instance.test"
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrInstanceDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrInstanceDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrInstanceBase(rName),

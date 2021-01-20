@@ -2,21 +2,21 @@ package vultr
 
 import (
 	"context"
-	"fmt"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func resourceVultrUsers() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrUsersCreate,
-		Read:   resourceVultrUsersRead,
-		Update: resourceVultrUsersUpdate,
-		Delete: resourceVultrUsersDelete,
+		CreateContext: resourceVultrUsersCreate,
+		ReadContext:   resourceVultrUsersRead,
+		UpdateContext: resourceVultrUsersUpdate,
+		DeleteContext: resourceVultrUsersDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"name": {
@@ -50,7 +50,7 @@ func resourceVultrUsers() *schema.Resource {
 	}
 }
 
-func resourceVultrUsersCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrUsersCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 	test := d.Get("api_enabled").(bool)
 	userReq := &govultr.UserReq{
@@ -73,34 +73,34 @@ func resourceVultrUsersCreate(d *schema.ResourceData, meta interface{}) error {
 
 	user, err := client.User.Create(context.Background(), userReq)
 	if err != nil {
-		return fmt.Errorf("error creating user: %v", err)
+		return diag.Errorf("error creating user: %v", err)
 	}
 
 	d.SetId(user.ID)
 	d.Set("api_key", user.APIKey)
 
-	return resourceVultrUsersRead(d, meta)
+	return resourceVultrUsersRead(ctx, d, meta)
 }
 
-func resourceVultrUsersRead(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrUsersRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	user, err := client.User.Get(context.Background(), d.Id())
+	user, err := client.User.Get(ctx, d.Id())
 	if err != nil {
-		return fmt.Errorf("error getting user: %v", err)
+		return diag.Errorf("error getting user: %v", err)
 	}
 
 	d.Set("name", user.Name)
 	d.Set("email", user.Email)
 	d.Set("api_enabled", user.APIEnabled)
 	if err := d.Set("acl", user.ACL); err != nil {
-		return fmt.Errorf("error setting `acl`: %#v", err)
+		return diag.Errorf("error setting `acl`: %#v", err)
 	}
 
 	return nil
 }
 
-func resourceVultrUsersUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrUsersUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 	userReq := &govultr.UserReq{}
 
@@ -123,7 +123,7 @@ func resourceVultrUsersUpdate(d *schema.ResourceData, meta interface{}) error {
 
 	acl, aclOK := d.GetOk("acl")
 	a := acl.([]interface{})
-	aclMap := []string{}
+	var aclMap []string
 	if aclOK {
 		for _, v := range a {
 			aclMap = append(aclMap, v.(string))
@@ -133,20 +133,20 @@ func resourceVultrUsersUpdate(d *schema.ResourceData, meta interface{}) error {
 
 	err := client.User.Update(context.Background(), d.Id(), userReq)
 	if err != nil {
-		return fmt.Errorf("Error updating user %s : %v", d.Id(), err)
+		return diag.Errorf("Error updating user %s : %v", d.Id(), err)
 	}
 
-	return resourceVultrUsersRead(d, meta)
+	return resourceVultrUsersRead(ctx, d, meta)
 }
 
-func resourceVultrUsersDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrUsersDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting User %s", d.Id())
 
-	err := client.User.Delete(context.Background(), d.Id())
+	err := client.User.Delete(ctx, d.Id())
 	if err != nil {
-		return fmt.Errorf("error deleting user %s : %v", d.Id(), err)
+		return diag.Errorf("error deleting user %s : %v", d.Id(), err)
 	}
 	return nil
 }

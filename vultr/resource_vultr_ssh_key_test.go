@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrSSHKey_basic(t *testing.T) {
+func TestAccVultrSSHKeyBasic(t *testing.T) {
 	rInt := acctest.RandInt()
 	rSSH, _, err := acctest.RandSSHKeyPair("foobar")
 
@@ -19,9 +19,9 @@ func TestAccVultrSSHKey_basic(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrSSHKeyDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrSSHKeyDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrSSHKeyConfigBasic(rInt, rSSH),

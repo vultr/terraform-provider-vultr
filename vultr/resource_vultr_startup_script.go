@@ -2,22 +2,22 @@ package vultr
 
 import (
 	"context"
-	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v2"
 )
 
 func resourceVultrStartupScript() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrStartupScriptCreate,
-		Read:   resourceVultrStartupScriptRead,
-		Update: resourceVultrStartupScriptUpdate,
-		Delete: resourceVultrStartupScriptDelete,
+		CreateContext: resourceVultrStartupScriptCreate,
+		ReadContext:   resourceVultrStartupScriptRead,
+		UpdateContext: resourceVultrStartupScriptUpdate,
+		DeleteContext: resourceVultrStartupScriptDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -49,7 +49,7 @@ func resourceVultrStartupScript() *schema.Resource {
 	}
 }
 
-func resourceVultrStartupScriptCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrStartupScriptCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	scriptReq := &govultr.StartupScriptReq{
@@ -58,23 +58,23 @@ func resourceVultrStartupScriptCreate(d *schema.ResourceData, meta interface{}) 
 		Type:   d.Get("type").(string),
 	}
 
-	s, err := client.StartupScript.Create(context.Background(), scriptReq)
+	s, err := client.StartupScript.Create(ctx, scriptReq)
 	if err != nil {
-		return fmt.Errorf("Error creating startup script: %v", err)
+		return diag.Errorf("Error creating startup script: %v", err)
 	}
 
 	d.SetId(s.ID)
 	log.Printf("[INFO] startup script ID: %s", d.Id())
 
-	return resourceVultrStartupScriptRead(d, meta)
+	return resourceVultrStartupScriptRead(ctx, d, meta)
 }
 
-func resourceVultrStartupScriptRead(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrStartupScriptRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	script, err := client.StartupScript.Get(context.Background(), d.Id())
+	script, err := client.StartupScript.Get(ctx, d.Id())
 	if err != nil {
-		return fmt.Errorf("error getting startup script: %v", err)
+		return diag.Errorf("error getting startup script: %v", err)
 	}
 
 	d.Set("name", script.Name)
@@ -86,7 +86,7 @@ func resourceVultrStartupScriptRead(d *schema.ResourceData, meta interface{}) er
 	return nil
 }
 
-func resourceVultrStartupScriptUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrStartupScriptUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	if d.HasChange("name") || d.HasChange("type") || d.HasChange("script") {
@@ -97,20 +97,20 @@ func resourceVultrStartupScriptUpdate(d *schema.ResourceData, meta interface{}) 
 		}
 
 		log.Printf("[INFO] Updating startup script: %s", d.Id())
-		if err := client.StartupScript.Update(context.Background(), d.Id(), scriptReq); err != nil {
-			return fmt.Errorf("Error updating startup script (%s): %v", d.Id(), err)
+		if err := client.StartupScript.Update(ctx, d.Id(), scriptReq); err != nil {
+			return diag.Errorf("Error updating startup script (%s): %v", d.Id(), err)
 		}
 	}
 
-	return resourceVultrStartupScriptRead(d, meta)
+	return resourceVultrStartupScriptRead(ctx, d, meta)
 }
 
-func resourceVultrStartupScriptDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrStartupScriptDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting startup script: %s", d.Id())
-	if err := client.StartupScript.Delete(context.Background(), d.Id()); err != nil {
-		return fmt.Errorf("error destroying startup script (%s): %v", d.Id(), err)
+	if err := client.StartupScript.Delete(ctx, d.Id()); err != nil {
+		return diag.Errorf("error destroying startup script (%s): %v", d.Id(), err)
 	}
 
 	return nil
