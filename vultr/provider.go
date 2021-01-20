@@ -56,8 +56,8 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"vultr_bare_metal_server": resourceVultrBareMetalServer(),
 			"vultr_block_storage":     resourceVultrBlockStorage(),
-			"vultr_dns_domain":        resourceVultrDnsDomain(),
-			"vultr_dns_record":        resourceVultrDnsRecord(),
+			"vultr_dns_domain":        resourceVultrDNSDomain(),
+			"vultr_dns_record":        resourceVultrDNSRecord(),
 			"vultr_firewall_group":    resourceVultrFirewallGroup(),
 			"vultr_firewall_rule":     resourceVultrFirewallRule(),
 			"vultr_iso_private":       resourceVultrIsoPrivate(),

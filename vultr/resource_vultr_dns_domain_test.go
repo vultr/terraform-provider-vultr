@@ -11,17 +11,17 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrDnsDomain_basic(t *testing.T) {
+func TestAccVultrDNSDomainBasic(t *testing.T) {
 
 	rString := acctest.RandString(6) + ".com"
 	name := "vultr_dns_domain.my-site"
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrDnsDomainDestroy,
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy: testAccCheckVultrDNSDomainDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrDnsDomain_base(rString),
+				Config: testAccVultrDNSDomainBase(rString),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "id", rString),
 					resource.TestCheckResourceAttr(name, "domain", rString),
@@ -29,7 +29,7 @@ func TestAccVultrDnsDomain_basic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrDnsDomain_update(rString),
+				Config: testAccVultrDNSDomainUpdate(rString),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "id", rString),
 					resource.TestCheckResourceAttr(name, "domain", rString),
@@ -40,18 +40,18 @@ func TestAccVultrDnsDomain_basic(t *testing.T) {
 	})
 }
 
-func TestAccVultrDnsDomain_newDomainForce(t *testing.T) {
+func TestAccVultrDNSDomainNewDomainForce(t *testing.T) {
 	rString := acctest.RandString(6) + ".com"
 	newDomain := acctest.RandString(6) + ".com"
 	name := "vultr_dns_domain.my-site"
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrDnsDomainDestroy,
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy: testAccCheckVultrDNSDomainDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrDnsDomain_base(rString),
+				Config: testAccVultrDNSDomainBase(rString),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "id", rString),
 					resource.TestCheckResourceAttr(name, "domain", rString),
@@ -59,7 +59,7 @@ func TestAccVultrDnsDomain_newDomainForce(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrDnsDomain_update(newDomain),
+				Config: testAccVultrDNSDomainUpdate(newDomain),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "id", newDomain),
 					resource.TestCheckResourceAttr(name, "domain", newDomain),
@@ -70,7 +70,7 @@ func TestAccVultrDnsDomain_newDomainForce(t *testing.T) {
 	})
 }
 
-func testAccCheckVultrDnsDomainDestroy(s *terraform.State) error {
+func testAccCheckVultrDNSDomainDestroy(s *terraform.State) error {
 	time.Sleep(1 * time.Second)
 	client := testAccProvider.Meta().(*Client).govultrClient()
 	for _, rs := range s.RootModule().Resources {
@@ -87,7 +87,7 @@ func testAccCheckVultrDnsDomainDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccVultrDnsDomain_base(domain string) string {
+func testAccVultrDNSDomainBase(domain string) string {
 	time.Sleep(1 * time.Second)
 	return fmt.Sprintf(`
 		resource "vultr_dns_domain" "my-site" {
@@ -96,7 +96,7 @@ func testAccVultrDnsDomain_base(domain string) string {
 		}`, domain)
 }
 
-func testAccVultrDnsDomain_update(domain string) string {
+func testAccVultrDNSDomainUpdate(domain string) string {
 	time.Sleep(1 * time.Second)
 	return fmt.Sprintf(`
 		resource "vultr_dns_domain" "my-site" {
