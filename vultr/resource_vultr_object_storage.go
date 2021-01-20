@@ -6,18 +6,19 @@ import (
 	"log"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceVultrObjectStorage() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrObjectStorageCreate,
-		Read:   resourceVultrObjectStorageRead,
-		Update: resourceVultrObjectStorageUpdate,
-		Delete: resourceVultrObjectStorageDelete,
+		CreateContext: resourceVultrObjectStorageCreate,
+		ReadContext:   resourceVultrObjectStorageRead,
+		UpdateContext: resourceVultrObjectStorageUpdate,
+		DeleteContext: resourceVultrObjectStorageDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"cluster_id": {
@@ -64,32 +65,32 @@ func resourceVultrObjectStorage() *schema.Resource {
 	}
 }
 
-func resourceVultrObjectStorageCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrObjectStorageCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	objStoreCluster := d.Get("cluster_id").(int)
 	label := d.Get("label").(string)
 
-	obj, err := client.ObjectStorage.Create(context.Background(), objStoreCluster, label)
+	obj, err := client.ObjectStorage.Create(ctx, objStoreCluster, label)
 	if err != nil {
-		return fmt.Errorf("error creating object storage: %v", err)
+		return diag.Errorf("error creating object storage: %v", err)
 	}
 
 	d.SetId(obj.ID)
 
-	if _, err = waitForObjAvailable(d, "active", []string{"pending"}, "status", meta); err != nil {
-		return fmt.Errorf("error while waiting for Object Storage %s to be in a active state : %s", d.Id(), err)
+	if _, err = waitForObjAvailable(ctx, d, "active", []string{"pending"}, "status", meta); err != nil {
+		return diag.Errorf("error while waiting for Object Storage %s to be in a active state : %s", d.Id(), err)
 	}
 
-	return resourceVultrObjectStorageRead(d, meta)
+	return resourceVultrObjectStorageRead(ctx, d, meta)
 }
 
-func resourceVultrObjectStorageRead(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrObjectStorageRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	obj, err := client.ObjectStorage.Get(context.Background(), d.Id())
+	obj, err := client.ObjectStorage.Get(ctx, d.Id())
 	if err != nil {
-		return fmt.Errorf("error getting object storage account: %v", err)
+		return diag.Errorf("error getting object storage account: %v", err)
 	}
 
 	d.Set("date_created", obj.DateCreated)
@@ -105,31 +106,31 @@ func resourceVultrObjectStorageRead(d *schema.ResourceData, meta interface{}) er
 	return nil
 }
 
-func resourceVultrObjectStorageUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrObjectStorageUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	label := d.Get("label").(string)
 
-	if err := client.ObjectStorage.Update(context.Background(), d.Id(), label); err != nil {
-		return fmt.Errorf("error updating object storage %s label : %v", d.Id(), err)
+	if err := client.ObjectStorage.Update(ctx, d.Id(), label); err != nil {
+		return diag.Errorf("error updating object storage %s label : %v", d.Id(), err)
 	}
 
-	return resourceVultrObjectStorageRead(d, meta)
+	return resourceVultrObjectStorageRead(ctx, d, meta)
 }
 
-func resourceVultrObjectStorageDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrObjectStorageDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting Object storage subscription %s", d.Id())
 
-	if err := client.ObjectStorage.Delete(context.Background(), d.Id()); err != nil {
-		return fmt.Errorf("error deleting object storage subscription %s : %v", d.Id(), err)
+	if err := client.ObjectStorage.Delete(ctx, d.Id()); err != nil {
+		return diag.Errorf("error deleting object storage subscription %s : %v", d.Id(), err)
 	}
 
 	return nil
 }
 
-func waitForObjAvailable(d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+func waitForObjAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
 	log.Printf(
 		"[INFO] Waiting for Object Storage (%s) to have %s of %s",
 		d.Id(), attribute, target)
@@ -137,22 +138,22 @@ func waitForObjAvailable(d *schema.ResourceData, target string, pending []string
 	stateConf := &resource.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
-		Refresh:        newServerObjRefresh(d, meta, attribute),
+		Refresh:        newServerObjRefresh(ctx, d, meta, attribute),
 		Timeout:        60 * time.Minute,
 		Delay:          10 * time.Second,
 		MinTimeout:     3 * time.Second,
 		NotFoundChecks: 60,
 	}
 
-	return stateConf.WaitForState()
+	return stateConf.WaitForStateContext(ctx)
 }
 
-func newServerObjRefresh(d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc {
+func newServerObjRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Creating Object Storage")
 
-		obj, err := client.ObjectStorage.Get(context.Background(), d.Id())
+		obj, err := client.ObjectStorage.Get(ctx, d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving Object Store %s : %s", d.Id(), err)
 		}

@@ -8,15 +8,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccVultrObjectStorage_Basic(t *testing.T) {
+func TestAccVultrObjectStorageBasic(t *testing.T) {
 	t.Parallel()
 
 	rLabel := acctest.RandomWithPrefix("tf-s3")
 	name := "vultr_object_storage.test"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrObjectStorageBase(rLabel),
@@ -28,7 +28,7 @@ func TestAccVultrObjectStorage_Basic(t *testing.T) {
 	})
 }
 
-func TestAccVultrObjectStorage_UpdateLabel(t *testing.T) {
+func TestAccVultrObjectStorageUpdateLabel(t *testing.T) {
 	t.Parallel()
 
 	rLabel := acctest.RandomWithPrefix("tf-s3")
@@ -36,8 +36,8 @@ func TestAccVultrObjectStorage_UpdateLabel(t *testing.T) {
 	name := "vultr_object_storage.test"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrObjectStorageBase(rLabel),
