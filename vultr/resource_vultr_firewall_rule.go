@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v2"
@@ -14,11 +15,11 @@ import (
 
 func resourceVultrFirewallRule() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrFirewallRuleCreate,
-		Read:   resourceVultrFirewallRuleRead,
-		Delete: resourceVultrFirewallRuleDelete,
+		CreateContext: resourceVultrFirewallRuleCreate,
+		ReadContext:   resourceVultrFirewallRuleRead,
+		DeleteContext: resourceVultrFirewallRuleDelete,
 		Importer: &schema.ResourceImporter{
-			State: resourceVultrFirewallRuleImport,
+			StateContext: resourceVultrFirewallRuleImport,
 		},
 		Schema: map[string]*schema.Schema{
 			"firewall_group_id": {
@@ -72,7 +73,7 @@ func resourceVultrFirewallRule() *schema.Resource {
 	}
 }
 
-func resourceVultrFirewallRuleCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrFirewallRuleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Creating new firewall rule")
@@ -80,7 +81,7 @@ func resourceVultrFirewallRuleCreate(d *schema.ResourceData, meta interface{}) e
 	protocol := d.Get("protocol").(string)
 
 	if protocol != strings.ToLower(protocol) {
-		return fmt.Errorf("%q is required to be all lowercase", protocol)
+		return diag.Errorf("%q is required to be all lowercase", protocol)
 	}
 
 	fwRule := &govultr.FirewallRuleReq{
@@ -95,23 +96,23 @@ func resourceVultrFirewallRuleCreate(d *schema.ResourceData, meta interface{}) e
 
 	firewallGroupID := d.Get("firewall_group_id").(string)
 
-	rule, err := client.FirewallRule.Create(context.Background(), firewallGroupID, fwRule)
+	rule, err := client.FirewallRule.Create(ctx, firewallGroupID, fwRule)
 	if err != nil {
-		return fmt.Errorf("error creating firewall rule : %v", err)
+		return diag.Errorf("error creating firewall rule : %v", err)
 	}
 
 	d.SetId(strconv.Itoa(rule.ID))
 
-	return resourceVultrFirewallRuleRead(d, meta)
+	return resourceVultrFirewallRuleRead(ctx, d, meta)
 }
 
-func resourceVultrFirewallRuleRead(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrFirewallRuleRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	ruleID, _ := strconv.Atoi(d.Id())
-	fw, err := client.FirewallRule.Get(context.Background(), d.Get("firewall_group_id").(string), ruleID)
+	fw, err := client.FirewallRule.Get(ctx, d.Get("firewall_group_id").(string), ruleID)
 	if err != nil {
-		return fmt.Errorf("error getting firewall rule %s: %v", d.Get("firewall_group_id").(string), err)
+		return diag.Errorf("error getting firewall rule %s: %v", d.Get("firewall_group_id").(string), err)
 	}
 
 	d.Set("ip_type", fw.Type)
@@ -125,22 +126,22 @@ func resourceVultrFirewallRuleRead(d *schema.ResourceData, meta interface{}) err
 	return nil
 }
 
-func resourceVultrFirewallRuleDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrFirewallRuleDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	id, err := strconv.Atoi(d.Id())
 	if err != nil {
-		return fmt.Errorf("error converting firewall rule ID")
+		return diag.Errorf("error converting firewall rule ID")
 	}
 
 	log.Printf("[INFO] Delete firewall rule : %s", d.Id())
-	if err := client.FirewallRule.Delete(context.Background(), d.Get("firewall_group_id").(string), id); err != nil {
-		return fmt.Errorf("error destroying firewall rule %s: %v", d.Id(), err)
+	if err := client.FirewallRule.Delete(ctx, d.Get("firewall_group_id").(string), id); err != nil {
+		return diag.Errorf("error destroying firewall rule %s: %v", d.Id(), err)
 	}
 	return nil
 }
 
-func resourceVultrFirewallRuleImport(d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceVultrFirewallRuleImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 	client := meta.(*Client).govultrClient()
 
 	importID := d.Id()
@@ -152,7 +153,7 @@ func resourceVultrFirewallRuleImport(d *schema.ResourceData, meta interface{}) (
 	fwGroup, ruleID := importID[:commaIdx], importID[commaIdx+1:]
 
 	rule, _ := strconv.Atoi(ruleID)
-	fw, err := client.FirewallRule.Get(context.Background(), fwGroup, rule)
+	fw, err := client.FirewallRule.Get(ctx, fwGroup, rule)
 	if err != nil {
 		return nil, fmt.Errorf("firewall Rule %s not found for firewall group %s", ruleID, fwGroup)
 	}
