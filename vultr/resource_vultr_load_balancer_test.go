@@ -15,9 +15,9 @@ func TestAccResourceVultrLoadBalancer(t *testing.T) {
 
 	name := "vultr_load_balancer.foo"
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrLoadBalancerDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrLoadBalancerDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrLoadBalancerBase(rLabel),
@@ -37,9 +37,9 @@ func TestAccResourceVultrLoadBalancerUpdateHealth(t *testing.T) {
 
 	name := "vultr_load_balancer.foo"
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrLoadBalancerDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrLoadBalancerDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrLoadBalancerBase(rLabel),
@@ -59,7 +59,7 @@ func TestAccResourceVultrLoadBalancerUpdateHealth(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrLoadBalancerConfig_updateHealth(rLabel),
+				Config: testAccVultrLoadBalancerConfigUpdateHealth(rLabel),
 				Check: resource.ComposeAggregateTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "label", rLabel),
 					resource.TestCheckResourceAttrSet(name, "region"),
@@ -111,7 +111,7 @@ func testAccVultrLoadBalancerBase(label string) string {
 		}`, label)
 }
 
-func testAccVultrLoadBalancerConfig_updateHealth(label string) string {
+func testAccVultrLoadBalancerConfigUpdateHealth(label string) string {
 	return fmt.Sprintf(`
 		resource "vultr_load_balancer" "foo" {
 			region   = "ewr"

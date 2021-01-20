@@ -6,21 +6,21 @@ import (
 	"log"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v2"
 )
 
 func resourceVultrLoadBalancer() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrLoadBalancerCreate,
-		Read:   resourceVultrLoadBalancerRead,
-		Update: resourceVultrLoadBalancerUpdate,
-		Delete: resourceVultrLoadBalancerDelete,
+		CreateContext: resourceVultrLoadBalancerCreate,
+		ReadContext:   resourceVultrLoadBalancerRead,
+		UpdateContext: resourceVultrLoadBalancerUpdate,
+		DeleteContext: resourceVultrLoadBalancerDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"region": {
@@ -182,7 +182,7 @@ func resourceVultrLoadBalancer() *schema.Resource {
 	}
 }
 
-func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	var healthCheck *govultr.HealthCheck
@@ -237,27 +237,27 @@ func resourceVultrLoadBalancerCreate(d *schema.ResourceData, meta interface{}) e
 		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
 	}
 
-	lb, err := client.LoadBalancer.Create(context.Background(), req)
+	lb, err := client.LoadBalancer.Create(ctx, req)
 	if err != nil {
-		return fmt.Errorf("error creating load balancer: %v", err)
+		return diag.Errorf("error creating load balancer: %v", err)
 	}
 	d.SetId(lb.ID)
 
-	_, err = waitForLBAvailable(d, "active", []string{"pending", "installing"}, "status", meta)
+	_, err = waitForLBAvailable(ctx, d, "active", []string{"pending", "installing"}, "status", meta)
 	if err != nil {
-		return fmt.Errorf(
+		return diag.Errorf(
 			"error while waiting for load balancer %v to be completed: %v", lb.ID, err)
 	}
 
 	log.Printf("[INFO] load balancer ID: %v", lb.ID)
 
-	return resourceVultrLoadBalancerRead(d, meta)
+	return resourceVultrLoadBalancerRead(ctx, d, meta)
 }
 
-func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	lb, err := client.LoadBalancer.Get(context.Background(), d.Id())
+	lb, err := client.LoadBalancer.Get(ctx, d.Id())
 	if err != nil {
 		log.Printf("[WARN] Vultr load balancer (%v) not found", d.Id())
 		d.SetId("")
@@ -277,7 +277,7 @@ func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) err
 	}
 
 	if err := d.Set("forwarding_rules", rulesList); err != nil {
-		return fmt.Errorf("error setting `forwarding_rules`: %v", err)
+		return diag.Errorf("error setting `forwarding_rules`: %v", err)
 	}
 
 	var hc []map[string]interface{}
@@ -293,7 +293,7 @@ func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) err
 	hc = append(hc, hcInfo)
 
 	if err := d.Set("health_check", hc); err != nil {
-		return fmt.Errorf("error setting `health_check`: %v", err)
+		return diag.Errorf("error setting `health_check`: %v", err)
 	}
 
 	d.Set("has_ssl", lb.SSLInfo)
@@ -302,7 +302,6 @@ func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) err
 	d.Set("balancing_algorithm", lb.GenericInfo.BalancingAlgorithm)
 	d.Set("proxy_protocol", lb.GenericInfo.ProxyProtocol)
 	d.Set("cookie_name", lb.GenericInfo.StickySessions.CookieName)
-	d.Set("date_created", lb.DateCreated)
 	d.Set("label", lb.Label)
 	d.Set("status", lb.Status)
 	d.Set("ipv4", lb.IPV4)
@@ -311,7 +310,7 @@ func resourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) err
 	return nil
 }
 
-func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	req := &govultr.LoadBalancerReq{
@@ -376,26 +375,26 @@ func resourceVultrLoadBalancerUpdate(d *schema.ResourceData, meta interface{}) e
 		req.StickySessions = stickySessions
 	}
 
-	if err := client.LoadBalancer.Update(context.Background(), d.Id(), req); err != nil {
-		return fmt.Errorf("error updating load balancer generic info (%v): %v", d.Id(), err)
+	if err := client.LoadBalancer.Update(ctx, d.Id(), req); err != nil {
+		return diag.Errorf("error updating load balancer generic info (%v): %v", d.Id(), err)
 	}
 
-	return resourceVultrLoadBalancerRead(d, meta)
+	return resourceVultrLoadBalancerRead(ctx, d, meta)
 }
 
-func resourceVultrLoadBalancerDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrLoadBalancerDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting load balancer: %v", d.Id())
 
-	if err := client.LoadBalancer.Delete(context.Background(), d.Id()); err != nil {
-		return fmt.Errorf("error deleting load balancer %v : %v", d.Id(), err)
+	if err := client.LoadBalancer.Delete(ctx, d.Id()); err != nil {
+		return diag.Errorf("error deleting load balancer %v : %v", d.Id(), err)
 	}
 
 	return nil
 }
 
-func waitForLBAvailable(d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+func waitForLBAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
 	log.Printf(
 		"[INFO] Waiting for load balancer (%s) to have %s of %s",
 		d.Id(), attribute, target)
@@ -403,23 +402,23 @@ func waitForLBAvailable(d *schema.ResourceData, target string, pending []string,
 	stateConf := &resource.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
-		Refresh:        newLBStateRefresh(d, meta, attribute),
+		Refresh:        newLBStateRefresh(ctx, d, meta, attribute),
 		Timeout:        60 * time.Minute,
 		Delay:          10 * time.Second,
 		MinTimeout:     5 * time.Second,
 		NotFoundChecks: 60,
 	}
 
-	return stateConf.WaitForState()
+	return stateConf.WaitForStateContext(ctx)
 }
 
-func newLBStateRefresh(d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc {
+func newLBStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 
 		log.Printf("[INFO] Creating load balancer")
 
-		lb, err := client.LoadBalancer.Get(context.Background(), d.Id())
+		lb, err := client.LoadBalancer.Get(ctx, d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving lb %s ", d.Id())
 		}
@@ -427,9 +426,9 @@ func newLBStateRefresh(d *schema.ResourceData, meta interface{}, attr string) re
 		if attr == "status" {
 			log.Printf("[INFO] The load balancer Status is %v", lb.Status)
 			return lb, lb.Status, nil
-		} else {
-			return nil, "", nil
 		}
+
+		return nil, "", nil
 	}
 }
 
