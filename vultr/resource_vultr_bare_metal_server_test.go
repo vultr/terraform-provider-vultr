@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrBareMetalServer_basic(t *testing.T) {
+func TestAccVultrBareMetalServerBasic(t *testing.T) {
 	t.Parallel()
 	rInt := acctest.RandInt()
 	rName := acctest.RandomWithPrefix("tf-bms-rs")
@@ -22,7 +22,7 @@ func TestAccVultrBareMetalServer_basic(t *testing.T) {
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
+		ProviderFactories: testAccProviderFactories,
 		CheckDestroy: testAccCheckVultrBareMetalServerDestroy,
 		Steps: []resource.TestStep{
 			{
