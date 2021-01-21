@@ -8,9 +8,9 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
-func dataSourceVultrDnsDomain() *schema.Resource {
+func dataSourceVultrDNSDomain() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrDnsDomainRead,
+		Read: dataSourceVultrDNSDomainRead,
 		Schema: map[string]*schema.Schema{
 			"domain": {
 				Type:         schema.TypeString,
@@ -26,7 +26,7 @@ func dataSourceVultrDnsDomain() *schema.Resource {
 	}
 }
 
-func dataSourceVultrDnsDomainRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrDNSDomainRead(d *schema.ResourceData, meta interface{}) error {
 	client := meta.(*Client).govultrClient()
 
 	domain, err := client.Domain.Get(context.Background(), d.Get("domain").(string))

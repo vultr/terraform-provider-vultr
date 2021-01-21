@@ -4,6 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
+// Provider ...
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
@@ -32,7 +33,7 @@ func Provider() *schema.Provider {
 			"vultr_bare_metal_plan":   dataSourceVultrBareMetalPlan(),
 			"vultr_bare_metal_server": dataSourceVultrBareMetalServer(),
 			"vultr_block_storage":     dataSourceVultrBlockStorage(),
-			"vultr_dns_domain":        dataSourceVultrDnsDomain(),
+			"vultr_dns_domain":        dataSourceVultrDNSDomain(),
 			"vultr_firewall_group":    dataSourceVultrFirewallGroup(),
 			"vultr_iso_private":       dataSourceVultrIsoPrivate(),
 			"vultr_iso_public":        dataSourceVultrIsoPublic(),

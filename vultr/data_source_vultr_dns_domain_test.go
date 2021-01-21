@@ -16,7 +16,7 @@ func TestAccVultrDnsDomainDataBase(t *testing.T) {
 		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrDnsDomainConfig(domain),
+				Config: testAccVultrDNSDomainConfig(domain),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(name, "id"),
 					resource.TestCheckResourceAttr(name, "domain", domain),
@@ -27,7 +27,7 @@ func TestAccVultrDnsDomainDataBase(t *testing.T) {
 	})
 }
 
-func testAccVultrDnsDomainConfig(domain string) string {
+func testAccVultrDNSDomainConfig(domain string) string {
 	return fmt.Sprintf(`
 			data "vultr_dns_domain" "my-site" {
 				domain = "${vultr_dns_domain.my-site.id}"

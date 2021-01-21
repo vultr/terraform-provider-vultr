@@ -162,8 +162,7 @@ func newServerObjRefresh(ctx context.Context, d *schema.ResourceData, meta inter
 		if attr == "status" {
 			log.Printf("[INFO] The Object Storage Status is %s", obj.Status)
 			return obj, obj.Status, nil
-		} else {
-			return nil, "", nil
 		}
+		return nil, "", nil
 	}
 }
