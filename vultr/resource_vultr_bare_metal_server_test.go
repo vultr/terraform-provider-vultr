@@ -21,9 +21,9 @@ func TestAccVultrBareMetalServerBasic(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
+		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
-		CheckDestroy: testAccCheckVultrBareMetalServerDestroy,
+		CheckDestroy:      testAccCheckVultrBareMetalServerDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrBareMetalServerConfigBasic(rInt, rSSH, rName),

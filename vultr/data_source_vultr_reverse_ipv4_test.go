@@ -8,15 +8,15 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccDataSourceVultrReverseIPV4_basic(t *testing.T) {
+func TestAccDataSourceVultrReverseIPV4Basic(t *testing.T) {
 	t.Parallel()
 
 	name := "data.vultr_reverse_ipv4.test"
 	serverLabel := acctest.RandomWithPrefix("tf-ds-vps-reverse-ipv4")
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccDataSourceVultrReverseIPV4(serverLabel),

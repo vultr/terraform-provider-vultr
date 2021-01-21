@@ -13,12 +13,12 @@ func TestAccVultrFirewallGroup(t *testing.T) {
 	rDesc := acctest.RandomWithPrefix("tf-fwg-ds")
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrFirewallGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrFirewallGroupDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrFirewallGroup_read(rDesc),
+				Config: testAccVultrFirewallGroupRead(rDesc),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("data.vultr_firewall_group.fwg", "description", rDesc),
 					resource.TestCheckResourceAttrSet("data.vultr_firewall_group.fwg", "date_created"),
@@ -33,7 +33,7 @@ func TestAccVultrFirewallGroup(t *testing.T) {
 	})
 }
 
-func testAccVultrFirewallGroup_read(description string) string {
+func testAccVultrFirewallGroupRead(description string) string {
 	return fmt.Sprintf(`
 		resource "vultr_firewall_group" "fwg" {
 			description = "%s"

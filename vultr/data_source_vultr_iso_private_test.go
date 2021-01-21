@@ -14,12 +14,12 @@ func TestAccVultrIsoPrivate(t *testing.T) {
 	fileName := "alpine-virt-3.9.2-x86_64.iso"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrIsoScriptDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrIsoScriptDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrIsoPrivate_read(url),
+				Config: testAccVultrIsoPrivateRead(url),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(name, "id"),
 					resource.TestCheckResourceAttrSet(name, "size"),
@@ -34,7 +34,7 @@ func TestAccVultrIsoPrivate(t *testing.T) {
 	})
 }
 
-func testAccVultrIsoPrivate_read(description string) string {
+func testAccVultrIsoPrivateRead(description string) string {
 	return fmt.Sprintf(`
 		resource "vultr_iso_private" "alpine" {
 			url = "%s"

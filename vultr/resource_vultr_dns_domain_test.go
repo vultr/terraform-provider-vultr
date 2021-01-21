@@ -16,9 +16,9 @@ func TestAccVultrDNSDomainBasic(t *testing.T) {
 	rString := acctest.RandString(6) + ".com"
 	name := "vultr_dns_domain.my-site"
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
+		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
-		CheckDestroy: testAccCheckVultrDNSDomainDestroy,
+		CheckDestroy:      testAccCheckVultrDNSDomainDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrDNSDomainBase(rString),
@@ -46,9 +46,9 @@ func TestAccVultrDNSDomainNewDomainForce(t *testing.T) {
 	name := "vultr_dns_domain.my-site"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
+		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
-		CheckDestroy: testAccCheckVultrDNSDomainDestroy,
+		CheckDestroy:      testAccCheckVultrDNSDomainDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrDNSDomainBase(rString),

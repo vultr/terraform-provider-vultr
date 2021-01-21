@@ -15,9 +15,9 @@ func TestAccDataSourceVultrSnapshot(t *testing.T) {
 	name := "data.vultr_snapshot.my_snapshot"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrSnapshotDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrSnapshotDestroy,
 		Steps: []resource.TestStep{
 
 			{

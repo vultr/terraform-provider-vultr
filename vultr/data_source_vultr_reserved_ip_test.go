@@ -12,14 +12,14 @@ func TestAccDataSourceVultrReservedIP(t *testing.T) {
 	rLabel := acctest.RandomWithPrefix("tf-rip-ds")
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrReservedIP_read(rLabel),
+				Config: testAccVultrReservedIPRead(rLabel),
 			},
 			{
-				Config: testAccVultrReservedIP_read(rLabel),
+				Config: testAccVultrReservedIPRead(rLabel),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.foo", "id"),
 					resource.TestCheckResourceAttrSet("data.vultr_reserved_ip.foo", "subnet"),
@@ -32,7 +32,7 @@ func TestAccDataSourceVultrReservedIP(t *testing.T) {
 	})
 }
 
-func testAccVultrReservedIP_read(label string) string {
+func testAccVultrReservedIPRead(label string) string {
 	return fmt.Sprintf(`
 		resource "vultr_reserved_ip" "bar" {
 		label = "%s"

@@ -8,12 +8,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccVultrDnsDomain_dataBase(t *testing.T) {
+func TestAccVultrDnsDomainDataBase(t *testing.T) {
 	domain := fmt.Sprintf("%s.com", acctest.RandString(6))
 	name := "data.vultr_dns_domain.my-site"
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrDnsDomainConfig(domain),

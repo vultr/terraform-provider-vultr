@@ -8,18 +8,18 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccVultrUser_dataBase(t *testing.T) {
+func TestAccVultrUserDataBase(t *testing.T) {
 
 	rEmail := fmt.Sprintf("terraform-%s@vultr.com", acctest.RandString(4))
 	name := "data.vultr_user.admin"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrUsersDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrUsersDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrUserConfig_base(rEmail),
+				Config: testAccVultrUserConfigBase(rEmail),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "email", rEmail),
 					resource.TestCheckResourceAttr(name, "name", "Terraform AccTests"),
@@ -43,7 +43,7 @@ func TestAccVultrUser_dataBase(t *testing.T) {
 	})
 }
 
-func testAccVultrUserConfig_base(email string) string {
+func testAccVultrUserConfigBase(email string) string {
 	return fmt.Sprintf(`
 		resource "vultr_user" "admin" {
 			name = "Terraform AccTests"

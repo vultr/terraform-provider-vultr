@@ -9,8 +9,8 @@ import (
 
 func TestAccVultrBareMetalPlan(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckVultrBareMetalPlan("vbm-4c-32gb"),

@@ -14,12 +14,12 @@ func TestAccVultrStartupScript(t *testing.T) {
 	name := "data.vultr_startup_script.my_script"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrStartupScriptDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrStartupScriptDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckVultrStartupScriptConfig_base(rName),
+				Config: testAccCheckVultrStartupScriptConfigBase(rName),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "name", rName),
 					resource.TestCheckResourceAttr(name, "type", "pxe"),
@@ -32,7 +32,7 @@ func TestAccVultrStartupScript(t *testing.T) {
 	})
 }
 
-func testAccCheckVultrStartupScriptConfig_base(name string) string {
+func testAccCheckVultrStartupScriptConfigBase(name string) string {
 	return fmt.Sprintf(`
 		resource "vultr_startup_script" "foo" {
 			name = "%s"

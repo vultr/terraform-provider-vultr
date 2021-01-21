@@ -23,7 +23,7 @@ func dataSourceVultrSnapshot() *schema.Resource {
 				Computed: true,
 			},
 			"size": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Computed: true,
 			},
 			"status": {
