@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
 func TestAccResourceVultrBlockStorage(t *testing.T) {
@@ -16,9 +16,9 @@ func TestAccResourceVultrBlockStorage(t *testing.T) {
 	rLabelUpdate := acctest.RandomWithPrefix("tf-test-update")
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrBlockStorageDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrBlockStorageDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrBlockStorageConfig(rLabel, rServerLabel),
@@ -33,7 +33,7 @@ func TestAccResourceVultrBlockStorage(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrBlockStorageConfig_attach(rLabel, rServerLabel),
+				Config: testAccVultrBlockStorageConfigAttach(rLabel, rServerLabel),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrBlockStorageExists("vultr_block_storage.foo"),
 					resource.TestCheckResourceAttr("vultr_block_storage.foo", "label", rLabel),
@@ -46,7 +46,7 @@ func TestAccResourceVultrBlockStorage(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrBlockStorageConfig_updateLabel(rLabelUpdate, rServerLabel),
+				Config: testAccVultrBlockStorageConfigUpdateLabel(rLabelUpdate, rServerLabel),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrBlockStorageExists("vultr_block_storage.foo"),
 					resource.TestCheckResourceAttr("vultr_block_storage.foo", "label", rLabelUpdate),
@@ -58,7 +58,7 @@ func TestAccResourceVultrBlockStorage(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrBlockStorageConfig_resize(rLabelUpdate, rServerLabel),
+				Config: testAccVultrBlockStorageConfigResize(rLabelUpdate, rServerLabel),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrBlockStorageExists("vultr_block_storage.foo"),
 					//resource.TestCheckResourceAttr("vultr_block_storage.foo", "label", rLabelUpdate),
@@ -71,7 +71,7 @@ func TestAccResourceVultrBlockStorage(t *testing.T) {
 			},
 			{
 				// test detach by unsetting the attached_to_instance
-				Config: testAccVultrBlockStorageConfig_detach(rLabelUpdate, rServerLabel),
+				Config: testAccVultrBlockStorageConfigDetach(rLabelUpdate, rServerLabel),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrBlockStorageExists("vultr_block_storage.foo"),
 					//resource.TestCheckResourceAttr("vultr_block_storage.foo", "label", rLabelUpdate),
@@ -142,7 +142,7 @@ func testAccVultrBlockStorageConfig(label, serverLabel string) string {
   `, label, serverLabel)
 }
 
-func testAccVultrBlockStorageConfig_attach(label, serverLabel string) string {
+func testAccVultrBlockStorageConfigAttach(label, serverLabel string) string {
 	return fmt.Sprintf(`
 	resource "vultr_block_storage" "foo" {
 		region   = "ewr"
@@ -160,7 +160,7 @@ func testAccVultrBlockStorageConfig_attach(label, serverLabel string) string {
   `, label, serverLabel)
 }
 
-func testAccVultrBlockStorageConfig_updateLabel(label, serverLabel string) string {
+func testAccVultrBlockStorageConfigUpdateLabel(label, serverLabel string) string {
 	return fmt.Sprintf(`
 	resource "vultr_block_storage" "foo" {
 		region   = "ewr"
@@ -178,7 +178,7 @@ func testAccVultrBlockStorageConfig_updateLabel(label, serverLabel string) strin
   `, label, serverLabel)
 }
 
-func testAccVultrBlockStorageConfig_resize(label, serverLabel string) string {
+func testAccVultrBlockStorageConfigResize(label, serverLabel string) string {
 	return fmt.Sprintf(`
 	resource "vultr_block_storage" "foo" {
 		region   = "ewr"
@@ -195,7 +195,7 @@ func testAccVultrBlockStorageConfig_resize(label, serverLabel string) string {
   `, label, serverLabel)
 }
 
-func testAccVultrBlockStorageConfig_detach(label, serverLabel string) string {
+func testAccVultrBlockStorageConfigDetach(label, serverLabel string) string {
 	return fmt.Sprintf(`
 	resource "vultr_block_storage" "foo" {
 		region   = "ewr"

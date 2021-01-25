@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
@@ -72,6 +72,11 @@ func dataSourceVultrLoadBalancer() *schema.Resource {
 			"ipv6": {
 				Type:     schema.TypeString,
 				Computed: true,
+			},
+			"proxy_protocol": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
 			},
 		},
 	}

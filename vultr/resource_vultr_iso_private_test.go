@@ -5,23 +5,23 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrIso_base(t *testing.T) {
+func TestAccVultrIsoBase(t *testing.T) {
 	t.Parallel()
 	url := "http://dl-cdn.alpinelinux.org/alpine/v3.9/releases/x86_64/alpine-virt-3.9.3-x86_64.iso"
-	updateUrl := "http://dl-cdn.alpinelinux.org/alpine/v3.9/releases/x86_64/alpine-virt-3.9.4-x86_64.iso"
+	updateURL := "http://dl-cdn.alpinelinux.org/alpine/v3.9/releases/x86_64/alpine-virt-3.9.4-x86_64.iso"
 	name := "vultr_iso_private.alpine"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrIsoScriptDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrIsoScriptDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrIso_base(url),
+				Config: testAccVultrIsoBase(url),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(name, "id"),
 					resource.TestCheckResourceAttrSet(name, "size"),
@@ -31,7 +31,7 @@ func TestAccVultrIso_base(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrIso_base(updateUrl),
+				Config: testAccVultrIsoBase(updateURL),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(name, "id"),
 					resource.TestCheckResourceAttrSet(name, "size"),
@@ -59,7 +59,7 @@ func testAccCheckVultrIsoScriptDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccVultrIso_base(url string) string {
+func testAccVultrIsoBase(url string) string {
 	return fmt.Sprintf(`resource "vultr_iso_private" "alpine" {
 		url = "%s"
 		}`, url)

@@ -3,27 +3,28 @@ package vultr
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 	"regexp"
 	"testing"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrDnsRecord_basic(t *testing.T) {
+func TestAccVultrDNSRecordBasic(t *testing.T) {
 
 	rString := acctest.RandString(6) + ".com"
 	rSub := acctest.RandString(4) + rString
 	name := "vultr_dns_record.a-record"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrDnsDomainDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrDNSDomainDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrDnsDomain_base(rString) + testAccVultrDnsRecord_base(rSub),
+				Config: testAccVultrDNSDomainBase(rString) + testAccVultrDNSRecordBase(rSub),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrDomainRecordExists,
 					resource.TestCheckResourceAttr(name, "name", rSub),
@@ -37,17 +38,17 @@ func TestAccVultrDnsRecord_basic(t *testing.T) {
 	})
 }
 
-func TestAccVultrDnsRecord_importBasic(t *testing.T) {
+func TestAccVultrDNSRecordImportBasic(t *testing.T) {
 	resourceName := "vultr_dns_record.example"
 	rString := acctest.RandString(6) + ".com"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrDnsDomainDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrDNSDomainDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrDnsRecord_import(rString),
+				Config: testAccVultrDNSRecordImport(rString),
 			},
 			{
 				ResourceName:      resourceName,
@@ -86,7 +87,7 @@ func testAccCheckVultrDomainRecordExists(s *terraform.State) error {
 	return nil
 }
 
-func testAccVultrDnsRecord_base(name string) string {
+func testAccVultrDNSRecordBase(name string) string {
 	time.Sleep(1 * time.Second)
 	return fmt.Sprintf(`
 		resource "vultr_dns_record" "a-record" {
@@ -98,7 +99,7 @@ func testAccVultrDnsRecord_base(name string) string {
 		}`, name)
 }
 
-func testAccVultrDnsRecord_import(domainName string) string {
+func testAccVultrDNSRecordImport(domainName string) string {
 	time.Sleep(1 * time.Second)
 	return fmt.Sprintf(`
 		resource "vultr_dns_domain" "my-site" {

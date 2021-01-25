@@ -5,18 +5,18 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrUser_base(t *testing.T) {
+func TestAccVultrUserBase(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrUsersDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrUsersDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccResourceVultrUser_create(),
+				Config: testAccResourceVultrUserCreate(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(
 						"vultr_user.admin", "email", "terraform-acceptance@vultr.com"),
@@ -53,7 +53,7 @@ func TestAccVultrUser_base(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccResourceVultrUser_update(),
+				Config: testAccResourceVultrUserUpdate(),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(
 						"vultr_user.admin", "email", "terraform-acceptance@vultr.com"),
@@ -107,7 +107,7 @@ func testAccCheckVultrUsersDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccResourceVultrUser_create() string {
+func testAccResourceVultrUserCreate() string {
 	return `resource "vultr_user" "admin" {
 name = "Terraform AccTests"
 email = "terraform-acceptance@vultr.com"
@@ -130,7 +130,7 @@ api_enabled = true
 }`
 }
 
-func testAccResourceVultrUser_update() string {
+func testAccResourceVultrUserUpdate() string {
 	return `resource "vultr_user" "admin" {
 name = "Terraform Update Name"
 email = "terraform-acceptance@vultr.com"

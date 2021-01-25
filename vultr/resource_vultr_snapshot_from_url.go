@@ -2,20 +2,20 @@ package vultr
 
 import (
 	"context"
-	"fmt"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/vultr/govultr/v2"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func resourceVultrSnapshotFromURL() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrSnapshotFromURLCreate,
-		Read:   resourceVultrSnapshotRead,
-		Delete: resourceVultrSnapshotDelete,
+		CreateContext: resourceVultrSnapshotFromURLCreate,
+		ReadContext:   resourceVultrSnapshotRead,
+		DeleteContext: resourceVultrSnapshotDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -33,7 +33,7 @@ func resourceVultrSnapshotFromURL() *schema.Resource {
 				Computed: true,
 			},
 			"size": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Computed: true,
 			},
 			"status": {
@@ -41,31 +41,31 @@ func resourceVultrSnapshotFromURL() *schema.Resource {
 				Computed: true,
 			},
 			"os_id": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Computed: true,
 			},
 			"app_id": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Computed: true,
 			},
 		},
 	}
 }
 
-func resourceVultrSnapshotFromURLCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrSnapshotFromURLCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	snapReq := &govultr.SnapshotURLReq{
 		URL: d.Get("url").(string),
 	}
 
-	snapshot, err := client.Snapshot.CreateFromURL(context.Background(), snapReq)
+	snapshot, err := client.Snapshot.CreateFromURL(ctx, snapReq)
 	if err != nil {
-		return fmt.Errorf("error creating snapshot: %v", err)
+		return diag.Errorf("error creating snapshot: %v", err)
 	}
 
 	d.SetId(snapshot.ID)
 	log.Printf("[INFO] Snapshot ID: %s", d.Id())
 
-	return resourceVultrSnapshotRead(d, meta)
+	return resourceVultrSnapshotRead(ctx, d, meta)
 }

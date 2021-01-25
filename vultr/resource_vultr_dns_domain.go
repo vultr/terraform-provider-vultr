@@ -2,22 +2,22 @@ package vultr
 
 import (
 	"context"
-	"fmt"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v2"
 )
 
-func resourceVultrDnsDomain() *schema.Resource {
+func resourceVultrDNSDomain() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrDnsDomainCreate,
-		Read:   resourceVultrDnsDomainRead,
-		Update: resourceVultrDnsDomainUpdate,
-		Delete: resourceVultrDnsDomainDelete,
+		CreateContext: resourceVultrDNSDomainCreate,
+		ReadContext:   resourceVultrDNSDomainRead,
+		UpdateContext: resourceVultrDNSDomainUpdate,
+		DeleteContext: resourceVultrDNSDomainDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
 			"domain": {
@@ -46,7 +46,7 @@ func resourceVultrDnsDomain() *schema.Resource {
 	}
 }
 
-func resourceVultrDnsDomainCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrDNSDomainCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	domainReq := &govultr.DomainReq{
@@ -60,22 +60,22 @@ func resourceVultrDnsDomainCreate(d *schema.ResourceData, meta interface{}) erro
 
 	log.Print("[INFO] Creating domain")
 
-	domain, err := client.Domain.Create(context.Background(), domainReq)
+	domain, err := client.Domain.Create(ctx, domainReq)
 	if err != nil {
-		return fmt.Errorf("error while creating domain : %s", err)
+		return diag.Errorf("error while creating domain : %s", err)
 	}
 
 	d.SetId(domain.Domain)
 
-	return resourceVultrDnsDomainRead(d, meta)
+	return resourceVultrDNSDomainRead(ctx, d, meta)
 }
 
-func resourceVultrDnsDomainRead(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrDNSDomainRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	domain, err := client.Domain.Get(context.Background(), d.Id())
+	domain, err := client.Domain.Get(ctx, d.Id())
 	if err != nil {
-		return fmt.Errorf("error getting domains : %v", err)
+		return diag.Errorf("error getting domains : %v", err)
 	}
 
 	d.Set("domain", domain.Domain)
@@ -84,23 +84,23 @@ func resourceVultrDnsDomainRead(d *schema.ResourceData, meta interface{}) error 
 	return nil
 }
 
-func resourceVultrDnsDomainUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrDNSDomainUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Updated domain (%s)", d.Id())
-	if err := client.Domain.Update(context.Background(), d.Id(), d.Get("dns_sec").(string)); err != nil {
-		return fmt.Errorf("error updating domain %s: %v", d.Id(), err)
+	if err := client.Domain.Update(ctx, d.Id(), d.Get("dns_sec").(string)); err != nil {
+		return diag.Errorf("error updating domain %s: %v", d.Id(), err)
 	}
 
-	return resourceVultrDnsDomainRead(d, meta)
+	return resourceVultrDNSDomainRead(ctx, d, meta)
 }
 
-func resourceVultrDnsDomainDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrDNSDomainDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting domain (%s)", d.Id())
-	if err := client.Domain.Delete(context.Background(), d.Id()); err != nil {
-		return fmt.Errorf("error destroying domain %s: %v", d.Id(), err)
+	if err := client.Domain.Delete(ctx, d.Id()); err != nil {
+		return diag.Errorf("error destroying domain %s: %v", d.Id(), err)
 
 	}
 

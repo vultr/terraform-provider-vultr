@@ -5,23 +5,23 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrFirewallGroup_basic(t *testing.T) {
+func TestAccVultrFirewallGroupBasic(t *testing.T) {
 
 	rString := acctest.RandString(10)
 	updatedString := acctest.RandString(12)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrFirewallGroupDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrFirewallGroupDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrFirewallGroup_base(rString),
+				Config: testAccVultrFirewallGroupBase(rString),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrFirewallGroupExists("vultr_firewall_group.fwg"),
 					resource.TestCheckResourceAttr(
@@ -29,7 +29,7 @@ func TestAccVultrFirewallGroup_basic(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrFirewallGroup_update(updatedString),
+				Config: testAccVultrFirewallGroupUpdate(updatedString),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrFirewallGroupExists("vultr_firewall_group.fwg"),
 					resource.TestCheckResourceAttr(
@@ -84,14 +84,14 @@ func testAccCheckVultrFirewallGroupExists(n string) resource.TestCheckFunc {
 	}
 }
 
-func testAccVultrFirewallGroup_base(description string) string {
+func testAccVultrFirewallGroupBase(description string) string {
 	return fmt.Sprintf(`
 		resource "vultr_firewall_group" "fwg" {
 			description = "%s"
 		}`, description)
 }
 
-func testAccVultrFirewallGroup_update(description string) string {
+func testAccVultrFirewallGroupUpdate(description string) string {
 	return fmt.Sprintf(`
 	resource "vultr_firewall_group" "fwg" {
 		description = "%s"

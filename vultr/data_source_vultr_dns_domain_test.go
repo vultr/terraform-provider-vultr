@@ -4,19 +4,19 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccVultrDnsDomain_dataBase(t *testing.T) {
+func TestAccVultrDnsDomainDataBase(t *testing.T) {
 	domain := fmt.Sprintf("%s.com", acctest.RandString(6))
 	name := "data.vultr_dns_domain.my-site"
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrDnsDomainConfig(domain),
+				Config: testAccVultrDNSDomainConfig(domain),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet(name, "id"),
 					resource.TestCheckResourceAttr(name, "domain", domain),
@@ -27,7 +27,7 @@ func TestAccVultrDnsDomain_dataBase(t *testing.T) {
 	})
 }
 
-func testAccVultrDnsDomainConfig(domain string) string {
+func testAccVultrDNSDomainConfig(domain string) string {
 	return fmt.Sprintf(`
 			data "vultr_dns_domain" "my-site" {
 				domain = "${vultr_dns_domain.my-site.id}"

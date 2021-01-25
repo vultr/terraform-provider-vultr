@@ -5,21 +5,21 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrNetwork_noCidrBlock(t *testing.T) {
+func TestAccVultrNetworkNoCidrBlock(t *testing.T) {
 	rDesc := acctest.RandomWithPrefix("tf-net-rs-nocdir")
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrNetworkDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrNetworkDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrNetworkConfig_noCidrBlock(rDesc),
+				Config: testAccVultrNetworkConfigNoCidrBlock(rDesc),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrNetworkExists("vultr_private_network.foo"),
 					resource.TestCheckResourceAttr("vultr_private_network.foo", "description", rDesc),
@@ -31,16 +31,16 @@ func TestAccVultrNetwork_noCidrBlock(t *testing.T) {
 	})
 }
 
-func TestAccVultrNetwork_withCidrBlock(t *testing.T) {
+func TestAccVultrNetworkWithCidrBlock(t *testing.T) {
 	rDesc := acctest.RandomWithPrefix("tf-net-rs-cidr")
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrNetworkDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrNetworkDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrNetworkConfig_withCidrBlock(rDesc),
+				Config: testAccVultrNetworkConfigWithCidrBlock(rDesc),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrNetworkExists("vultr_private_network.foo"),
 					resource.TestCheckResourceAttr("vultr_private_network.foo", "description", rDesc),
@@ -92,7 +92,7 @@ func testAccCheckVultrNetworkExists(n string) resource.TestCheckFunc {
 	}
 }
 
-func testAccVultrNetworkConfig_noCidrBlock(rDesc string) string {
+func testAccVultrNetworkConfigNoCidrBlock(rDesc string) string {
 	return fmt.Sprintf(`
 		resource "vultr_private_network" "foo" {
 			region   = "atl"
@@ -101,7 +101,7 @@ func testAccVultrNetworkConfig_noCidrBlock(rDesc string) string {
 	`, rDesc)
 }
 
-func testAccVultrNetworkConfig_withCidrBlock(rDesc string) string {
+func testAccVultrNetworkConfigWithCidrBlock(rDesc string) string {
 	return fmt.Sprintf(`
 		resource "vultr_private_network" "foo" {
 			region   = "atl"

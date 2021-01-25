@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
 func TestAccVultrInstance(t *testing.T) {
@@ -13,9 +13,9 @@ func TestAccVultrInstance(t *testing.T) {
 	rLabel := acctest.RandomWithPrefix("tf-test-ds")
 	name := "data.vultr_instance.instance"
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrInstanceDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrInstanceDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckVultrInstance(rLabel),

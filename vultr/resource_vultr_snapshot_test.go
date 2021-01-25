@@ -5,20 +5,20 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrSnapshot_basic(t *testing.T) {
+func TestAccVultrSnapshotBasic(t *testing.T) {
 	t.Parallel()
 	rInt := acctest.RandInt()
 	desc := fmt.Sprintf("%d - created by Terraform test", rInt)
 	rServerLabel := acctest.RandomWithPrefix("tf-vps-snap")
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrSnapshotDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrSnapshotDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrSnapshotConfigBasic(rServerLabel, desc),

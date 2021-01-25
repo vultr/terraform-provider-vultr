@@ -1,27 +1,35 @@
 package vultr
 
 import (
+	"context"
 	"os"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-var testAccProviders map[string]terraform.ResourceProvider
+var testAccProviders map[string]*schema.Provider
 var testAccProvider *schema.Provider
+var testAccProviderFactories map[string]func() (*schema.Provider, error)
 
 func init() {
-	testAccProvider = Provider().(*schema.Provider)
+	testAccProvider = Provider()
 	config := terraform.NewResourceConfigRaw(map[string]interface{}{"rate_limit": 2000, "retry_limit": 4})
-	testAccProvider.Configure(config)
-	testAccProviders = map[string]terraform.ResourceProvider{
+	testAccProvider.Configure(context.Background(), config)
+	testAccProviders = map[string]*schema.Provider{
 		"vultr": testAccProvider,
+	}
+
+	testAccProviderFactories = map[string]func() (*schema.Provider, error){
+		"vultr": func() (*schema.Provider, error) {
+			return testAccProvider, nil
+		},
 	}
 }
 
 func TestProvider(t *testing.T) {
-	if err := Provider().(*schema.Provider).InternalValidate(); err != nil {
+	if err := Provider().InternalValidate(); err != nil {
 		t.Fatalf("err: %s", err)
 	}
 }

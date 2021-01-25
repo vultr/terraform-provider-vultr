@@ -2,18 +2,18 @@ package vultr
 
 import (
 	"context"
-	"fmt"
 	"log"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func resourceVultrInstanceIPV4() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrInstanceIPV4Create,
-		Read:   resourceVultrInstanceIPV4Read,
-		Delete: resourceVultrInstanceIPV4Delete,
+		CreateContext: resourceVultrInstanceIPV4Create,
+		ReadContext:   resourceVultrInstanceIPV4Read,
+		DeleteContext: resourceVultrInstanceIPV4Delete,
 
 		Schema: map[string]*schema.Schema{
 			"instance_id": {
@@ -47,25 +47,25 @@ func resourceVultrInstanceIPV4() *schema.Resource {
 	}
 }
 
-func resourceVultrInstanceIPV4Create(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrInstanceIPV4Create(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	instanceID := d.Get("instance_id").(string)
 
 	log.Printf("[INFO] Creating IPv4")
 
-	ip, err := client.Instance.CreateIPv4(context.Background(), instanceID, govultr.BoolToBoolPtr(d.Get("reboot").(bool)))
+	ip, err := client.Instance.CreateIPv4(ctx, instanceID, govultr.BoolToBoolPtr(d.Get("reboot").(bool)))
 	if err != nil {
-		return fmt.Errorf("error creating IPv4: %v", err)
+		return diag.Errorf("error creating IPv4: %v", err)
 	}
 
 	d.SetId(ip.IP)
 	d.Set("instance_id", instanceID)
 
-	return resourceVultrInstanceIPV4Read(d, meta)
+	return resourceVultrInstanceIPV4Read(ctx, d, meta)
 }
 
-func resourceVultrInstanceIPV4Read(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrInstanceIPV4Read(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	instanceID := d.Get("instance_id").(string)
@@ -74,9 +74,9 @@ func resourceVultrInstanceIPV4Read(d *schema.ResourceData, meta interface{}) err
 	options := &govultr.ListOptions{}
 
 	for {
-		ips, meta, err := client.Instance.ListIPv4(context.Background(), instanceID, options)
+		ips, meta, err := client.Instance.ListIPv4(ctx, instanceID, options)
 		if err != nil {
-			return fmt.Errorf("error getting IPv4s: %v", err)
+			return diag.Errorf("error getting IPv4s: %v", err)
 		}
 
 		for i := range ips {
@@ -108,14 +108,14 @@ func resourceVultrInstanceIPV4Read(d *schema.ResourceData, meta interface{}) err
 	return nil
 }
 
-func resourceVultrInstanceIPV4Delete(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrInstanceIPV4Delete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	instanceID := d.Get("instance_id").(string)
 
 	log.Printf("[INFO] Deleting IPv4: %s", d.Id())
-	if err := client.Instance.DeleteIPv4(context.Background(), instanceID, d.Id()); err != nil {
-		return fmt.Errorf("error Deleting IPv4 (%s): %v", d.Id(), err)
+	if err := client.Instance.DeleteIPv4(ctx, instanceID, d.Id()); err != nil {
+		return diag.Errorf("error Deleting IPv4 (%s): %v", d.Id(), err)
 	}
 
 	return nil

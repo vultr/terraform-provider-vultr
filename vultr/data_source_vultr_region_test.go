@@ -5,13 +5,13 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
 func TestAccVultrRegion(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccCheckVultrRegion("mia"),
@@ -23,7 +23,7 @@ func TestAccVultrRegion(t *testing.T) {
 				),
 			},
 			{
-				Config:      testAccCheckVultrRegion_tooManyResults("US"),
+				Config:      testAccCheckVultrRegionTooManyResults("US"),
 				ExpectError: regexp.MustCompile(`your search returned too many results. Please refine your search to be more specific`),
 			},
 		},
@@ -40,7 +40,7 @@ func testAccCheckVultrRegion(name string) string {
 		}`, name)
 }
 
-func testAccCheckVultrRegion_tooManyResults(country string) string {
+func testAccCheckVultrRegionTooManyResults(country string) string {
 	return fmt.Sprintf(`
 		data "vultr_region" "miami" {
 			filter {

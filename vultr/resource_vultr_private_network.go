@@ -2,23 +2,23 @@ package vultr
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"strings"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v2"
 )
 
 func resourceVultrPrivateNetwork() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrNetworkCreate,
-		Read:   resourceVultrNetworkRead,
-		Update: resourceVultrNetworkUpdate,
-		Delete: resourceVultrNetworkDelete,
+		CreateContext: resourceVultrNetworkCreate,
+		ReadContext:   resourceVultrNetworkRead,
+		UpdateContext: resourceVultrNetworkUpdate,
+		DeleteContext: resourceVultrNetworkDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -53,7 +53,7 @@ func resourceVultrPrivateNetwork() *schema.Resource {
 	}
 }
 
-func resourceVultrNetworkCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrNetworkCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	networkReq := &govultr.NetworkReq{
@@ -63,28 +63,28 @@ func resourceVultrNetworkCreate(d *schema.ResourceData, meta interface{}) error 
 		V4SubnetMask: d.Get("v4_subnet_mask").(int),
 	}
 
-	network, err := client.Network.Create(context.Background(), networkReq)
+	network, err := client.Network.Create(ctx, networkReq)
 	if err != nil {
-		return fmt.Errorf("error creating network: %v", err)
+		return diag.Errorf("error creating network: %v", err)
 	}
 
 	d.SetId(network.NetworkID)
 	log.Printf("[INFO] Network ID: %s", d.Id())
 
-	return resourceVultrNetworkRead(d, meta)
+	return resourceVultrNetworkRead(ctx, d, meta)
 }
 
-func resourceVultrNetworkRead(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrNetworkRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	network, err := client.Network.Get(context.Background(), d.Id())
+	network, err := client.Network.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid private network ID") {
 			log.Printf("[WARN] Vultr Private Network (%s) not found", d.Id())
 			d.SetId("")
 			return nil
 		}
-		return fmt.Errorf("error getting private network: %v", err)
+		return diag.Errorf("error getting private network: %v", err)
 	}
 
 	d.Set("region", network.Region)
@@ -96,22 +96,22 @@ func resourceVultrNetworkRead(d *schema.ResourceData, meta interface{}) error {
 	return nil
 }
 
-func resourceVultrNetworkUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrNetworkUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	if err := client.Network.Update(context.Background(), d.Id(), d.Get("description").(string)); err != nil {
-		return fmt.Errorf("error update private network: %v", err)
+	if err := client.Network.Update(ctx, d.Id(), d.Get("description").(string)); err != nil {
+		return diag.Errorf("error update private network: %v", err)
 	}
 
-	return resourceVultrNetworkRead(d, meta)
+	return resourceVultrNetworkRead(ctx, d, meta)
 }
 
-func resourceVultrNetworkDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrNetworkDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting Network: %s", d.Id())
-	if err := client.Network.Delete(context.Background(), d.Id()); err != nil {
-		return fmt.Errorf("error destroying private network (%s): %v", d.Id(), err)
+	if err := client.Network.Delete(ctx, d.Id()); err != nil {
+		return diag.Errorf("error destroying private network (%s): %v", d.Id(), err)
 	}
 
 	return nil

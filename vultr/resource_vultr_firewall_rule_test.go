@@ -7,22 +7,21 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 	"github.com/vultr/govultr/v2"
-
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
 )
 
-func TestAccVultrFirewallRule_basic(t *testing.T) {
+func TestAccVultrFirewallRuleBasic(t *testing.T) {
 
 	rString := acctest.RandString(13)
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrFirewallRule_base(rString),
+				Config: testAccVultrFirewallRuleBase(rString),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrFirewallGroupExists("vultr_firewall_group.fwg"),
 					resource.TestCheckResourceAttrSet("vultr_firewall_rule.tcp", "firewall_group_id"),
@@ -34,15 +33,15 @@ func TestAccVultrFirewallRule_basic(t *testing.T) {
 	})
 }
 
-func TestAccVultrFirewallRule_icmp(t *testing.T) {
+func TestAccVultrFirewallRuleIcmp(t *testing.T) {
 
 	rString := acctest.RandString(13)
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrFirewallRule_icmp(rString),
+				Config: testAccVultrFirewallRuleIcmp(rString),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrFirewallGroupExists("vultr_firewall_group.fwg"),
 					resource.TestCheckResourceAttrSet("vultr_firewall_rule.tcp", "firewall_group_id"),
@@ -53,15 +52,15 @@ func TestAccVultrFirewallRule_icmp(t *testing.T) {
 	})
 }
 
-func TestAccVultrFirewallRule_update(t *testing.T) {
+func TestAccVultrFirewallRuleUpdate(t *testing.T) {
 	rString := acctest.RandString(13)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrFirewallRule_base(rString),
+				Config: testAccVultrFirewallRuleBase(rString),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("vultr_firewall_rule.tcp", "firewall_group_id"),
 					resource.TestCheckResourceAttr("vultr_firewall_rule.tcp", "protocol", "tcp"),
@@ -70,7 +69,7 @@ func TestAccVultrFirewallRule_update(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrFirewallRule_update(rString),
+				Config: testAccVultrFirewallRuleUpdate(rString),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttrSet("vultr_firewall_rule.tcp", "firewall_group_id"),
 					resource.TestCheckResourceAttr("vultr_firewall_rule.tcp", "protocol", "udp"),
@@ -82,16 +81,16 @@ func TestAccVultrFirewallRule_update(t *testing.T) {
 	})
 }
 
-func TestAccVultrFirewallRule_importBasic(t *testing.T) {
+func TestAccVultrFirewallRuleImportBasic(t *testing.T) {
 
 	rString := acctest.RandString(13)
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrFirewallRule_base(rString),
+				Config: testAccVultrFirewallRuleBase(rString),
 			},
 			{
 				ResourceName:      "vultr_firewall_rule.tcp",
@@ -110,9 +109,9 @@ func testAccCheckVultrFirewallRuleDestroy(s *terraform.State) error {
 		if rs.Type != "vultr_firewall_rule" {
 			continue
 		}
-		groupId := rs.Primary.Attributes["firewall_group_id"]
+		groupID := rs.Primary.Attributes["firewall_group_id"]
 
-		group, err := client.FirewallGroup.Get(context.Background(), groupId)
+		group, err := client.FirewallGroup.Get(context.Background(), groupID)
 		if err != nil {
 			return fmt.Errorf("error getting firewall group %s", err)
 		}
@@ -142,7 +141,7 @@ func testAccCheckVultrFirewallRuleDestroy(s *terraform.State) error {
 	return nil
 }
 
-func testAccVultrFirewallRule_base(desc string) string {
+func testAccVultrFirewallRuleBase(desc string) string {
 	return fmt.Sprintf(`
 		resource "vultr_firewall_group" "fwg" {
 			description = "%s"
@@ -158,7 +157,7 @@ func testAccVultrFirewallRule_base(desc string) string {
 		}`, desc)
 }
 
-func testAccVultrFirewallRule_icmp(desc string) string {
+func testAccVultrFirewallRuleIcmp(desc string) string {
 	return fmt.Sprintf(`
 		resource "vultr_firewall_group" "fwg" {
 			description = "%s"
@@ -173,7 +172,7 @@ func testAccVultrFirewallRule_icmp(desc string) string {
 		}`, desc)
 }
 
-func testAccVultrFirewallRule_update(desc string) string {
+func testAccVultrFirewallRuleUpdate(desc string) string {
 	return fmt.Sprintf(`
 		resource "vultr_firewall_group" "fwg" {
 			description = "%s"

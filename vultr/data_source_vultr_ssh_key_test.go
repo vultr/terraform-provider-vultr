@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
 func TestAccVultrSSHKey(t *testing.T) {
@@ -18,12 +18,12 @@ func TestAccVultrSSHKey(t *testing.T) {
 	}
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrSSHKeyDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrSSHKeyDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckVultrSSHKeyConfig_basic(rName, rSSH),
+				Config: testAccCheckVultrSSHKeyConfigBasic(rName, rSSH),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "name", rName),
 					resource.TestCheckResourceAttrSet(name, "ssh_key"),
@@ -34,7 +34,7 @@ func TestAccVultrSSHKey(t *testing.T) {
 	})
 }
 
-func testAccCheckVultrSSHKeyConfig_basic(name, ssh string) string {
+func testAccCheckVultrSSHKeyConfigBasic(name, ssh string) string {
 	return fmt.Sprintf(`
 		resource "vultr_ssh_key" "foo" {
 			name = "%s"

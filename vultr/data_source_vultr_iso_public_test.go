@@ -5,16 +5,16 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
 func TestAccVultrIsoPublic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
-		PreCheck:  func() { testAccPreCheck(t) },
-		Providers: testAccProviders,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrIsoPublic_read("7 x86_64 Minimal"),
+				Config: testAccVultrIsoPublicRead("7 x86_64 Minimal"),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(
 						"data.vultr_iso_public.cent", "description", "7 x86_64 Minimal"),
@@ -25,14 +25,14 @@ func TestAccVultrIsoPublic(t *testing.T) {
 				),
 			},
 			{
-				Config:      testAccVultrIsoPublic_tooMany("Debian 9"),
+				Config:      testAccVultrIsoPublicTooMany("Debian 9"),
 				ExpectError: regexp.MustCompile(`errors during refresh: your search returned too many results. Please refine your search to be more specific`),
 			},
 		},
 	})
 }
 
-func testAccVultrIsoPublic_read(description string) string {
+func testAccVultrIsoPublicRead(description string) string {
 	return fmt.Sprintf(`
 		data "vultr_iso_public" "cent" {
 			filter {
@@ -42,7 +42,7 @@ func testAccVultrIsoPublic_read(description string) string {
 		}`, description)
 }
 
-func testAccVultrIsoPublic_tooMany(name string) string {
+func testAccVultrIsoPublicTooMany(name string) string {
 	return fmt.Sprintf(`
 		data "vultr_iso_public" "cent" {
 			filter {

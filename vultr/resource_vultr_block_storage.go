@@ -2,22 +2,22 @@ package vultr
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func resourceVultrBlockStorage() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceVultrBlockStorageCreate,
-		Read:   resourceVultrBlockStorageRead,
-		Update: resourceVultrBlockStorageUpdate,
-		Delete: resourceVultrBlockStorageDelete,
+		CreateContext: resourceVultrBlockStorageCreate,
+		ReadContext:   resourceVultrBlockStorageRead,
+		UpdateContext: resourceVultrBlockStorageUpdate,
+		DeleteContext: resourceVultrBlockStorageDelete,
 		Importer: &schema.ResourceImporter{
-			State: schema.ImportStatePassthrough,
+			StateContext: schema.ImportStatePassthroughContext,
 		},
 
 		Schema: map[string]*schema.Schema{
@@ -60,7 +60,7 @@ func resourceVultrBlockStorage() *schema.Resource {
 	}
 }
 
-func resourceVultrBlockStorageCreate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrBlockStorageCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	bsReq := &govultr.BlockStorageCreate{
@@ -69,9 +69,9 @@ func resourceVultrBlockStorageCreate(d *schema.ResourceData, meta interface{}) e
 		Label:  d.Get("label").(string),
 	}
 
-	bs, err := client.BlockStorage.Create(context.Background(), bsReq)
+	bs, err := client.BlockStorage.Create(ctx, bsReq)
 	if err != nil {
-		return fmt.Errorf("error creating block storage: %v", err)
+		return diag.Errorf("error creating block storage: %v", err)
 	}
 
 	d.SetId(bs.ID)
@@ -83,9 +83,9 @@ func resourceVultrBlockStorageCreate(d *schema.ResourceData, meta interface{}) e
 		// Wait for the BS state to become active for 30 seconds
 		bsReady := false
 		for i := 0; i <= 30; i++ {
-			bState, err := client.BlockStorage.Get(context.Background(), bs.ID)
+			bState, err := client.BlockStorage.Get(ctx, bs.ID)
 			if err != nil {
-				return fmt.Errorf("error attaching: %s", err.Error())
+				return diag.Errorf("error attaching: %s", err.Error())
 			}
 			if bState.Status == "active" {
 				bsReady = true
@@ -95,7 +95,7 @@ func resourceVultrBlockStorageCreate(d *schema.ResourceData, meta interface{}) e
 		}
 
 		if !bsReady {
-			return fmt.Errorf("block storage was not in ready state after 30 seconds")
+			return diag.Errorf("block storage was not in ready state after 30 seconds")
 		}
 
 		attachReq := &govultr.BlockStorageAttach{
@@ -103,20 +103,20 @@ func resourceVultrBlockStorageCreate(d *schema.ResourceData, meta interface{}) e
 			Live:       govultr.BoolToBoolPtr(d.Get("live").(bool)),
 		}
 
-		if err := client.BlockStorage.Attach(context.Background(), d.Id(), attachReq); err != nil {
-			return fmt.Errorf("error attaching block storage (%s): %v", d.Id(), err)
+		if err := client.BlockStorage.Attach(ctx, d.Id(), attachReq); err != nil {
+			return diag.Errorf("error attaching block storage (%s): %v", d.Id(), err)
 		}
 	}
 
-	return resourceVultrBlockStorageRead(d, meta)
+	return resourceVultrBlockStorageRead(ctx, d, meta)
 }
 
-func resourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	bs, err := client.BlockStorage.Get(context.Background(), d.Id())
+	bs, err := client.BlockStorage.Get(ctx, d.Id())
 	if err != nil {
-		return fmt.Errorf("error getting block storage: %v", err)
+		return diag.Errorf("error getting block storage: %v", err)
 	}
 
 	d.Set("live", d.Get("live").(bool))
@@ -131,7 +131,7 @@ func resourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) err
 	return nil
 }
 
-func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrBlockStorageUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	blockReq := &govultr.BlockStorageUpdate{}
@@ -143,8 +143,8 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 		blockReq.SizeGB = d.Get("size_gb").(int)
 	}
 
-	if err := client.BlockStorage.Update(context.Background(), d.Id(), blockReq); err != nil {
-		return fmt.Errorf("error getting block storage: %v", err)
+	if err := client.BlockStorage.Update(ctx, d.Id(), blockReq); err != nil {
+		return diag.Errorf("error getting block storage: %v", err)
 	}
 
 	if d.HasChange("attached_to_instance") {
@@ -152,18 +152,18 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 
 		if old.(string) != "" {
 			// The following check is necessary so we do not erroneously detach after a formerly attached server has been tainted and/or destroyed.
-			bs, err := client.BlockStorage.Get(context.Background(), d.Id())
+			bs, err := client.BlockStorage.Get(ctx, d.Id())
 			if err != nil {
-				return fmt.Errorf("error getting block storage: %v", err)
+				return diag.Errorf("error getting block storage: %v", err)
 			}
 
 			if bs.AttachedToInstance != "" {
 				log.Printf(`[INFO] Detaching block storage (%s)`, d.Id())
 
 				blockReq := &govultr.BlockStorageDetach{Live: govultr.BoolToBoolPtr(d.Get("live").(bool))}
-				err := client.BlockStorage.Detach(context.Background(), d.Id(), blockReq)
+				err := client.BlockStorage.Detach(ctx, d.Id(), blockReq)
 				if err != nil {
-					return fmt.Errorf("error detaching block storage (%s): %v", d.Id(), err)
+					return diag.Errorf("error detaching block storage (%s): %v", d.Id(), err)
 				}
 			}
 		}
@@ -174,21 +174,21 @@ func resourceVultrBlockStorageUpdate(d *schema.ResourceData, meta interface{}) e
 				InstanceID: newVal.(string),
 				Live:       govultr.BoolToBoolPtr(d.Get("live").(bool)),
 			}
-			if err := client.BlockStorage.Attach(context.Background(), d.Id(), blockReq); err != nil {
-				return fmt.Errorf("error attaching block storage (%s): %v", d.Id(), err)
+			if err := client.BlockStorage.Attach(ctx, d.Id(), blockReq); err != nil {
+				return diag.Errorf("error attaching block storage (%s): %v", d.Id(), err)
 			}
 		}
 	}
 
-	return resourceVultrBlockStorageRead(d, meta)
+	return resourceVultrBlockStorageRead(ctx, d, meta)
 }
 
-func resourceVultrBlockStorageDelete(d *schema.ResourceData, meta interface{}) error {
+func resourceVultrBlockStorageDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting block storage: %s", d.Id())
-	if err := client.BlockStorage.Delete(context.Background(), d.Id()); err != nil {
-		return fmt.Errorf("error deleting block storage (%s): %v", d.Id(), err)
+	if err := client.BlockStorage.Delete(ctx, d.Id()); err != nil {
+		return diag.Errorf("error deleting block storage (%s): %v", d.Id(), err)
 	}
 
 	return nil

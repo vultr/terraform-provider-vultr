@@ -5,20 +5,20 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/helper/acctest"
-	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrReservedIP_IPv4(t *testing.T) {
+func TestAccVultrReservedIPIPv4(t *testing.T) {
 	rServerLabel := acctest.RandomWithPrefix("tf-vps-rip4")
 	rLabel := acctest.RandomWithPrefix("tf-rip4-rs")
 	ipType := "v4"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrReservedIPDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrReservedIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrReservedIPConfig(rServerLabel, rLabel, ipType),
@@ -32,7 +32,7 @@ func TestAccVultrReservedIP_IPv4(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrReservedIPConfig_attach(rServerLabel, rLabel, ipType),
+				Config: testAccVultrReservedIPConfigAttach(rServerLabel, rLabel, ipType),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrReservedIPExists("vultr_reserved_ip.foo"),
 					resource.TestCheckResourceAttr("vultr_reserved_ip.foo", "label", rLabel),
@@ -59,7 +59,7 @@ func TestAccVultrReservedIP_IPv4(t *testing.T) {
 	})
 }
 
-func TestAccVultrReservedIP_IPv6(t *testing.T) {
+func TestAccVultrReservedIPIPv6(t *testing.T) {
 	rServerLabel := acctest.RandomWithPrefix("tf-vps-rip6")
 	rLabel := acctest.RandomWithPrefix("tf-rip6-rs")
 	ipType := "v6"
@@ -81,7 +81,7 @@ func TestAccVultrReservedIP_IPv6(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrReservedIPConfig_attach(rServerLabel, rLabel, ipType),
+				Config: testAccVultrReservedIPConfigAttach(rServerLabel, rLabel, ipType),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrReservedIPExists("vultr_reserved_ip.foo"),
 					resource.TestCheckResourceAttr("vultr_reserved_ip.foo", "label", rLabel),
@@ -163,7 +163,7 @@ func testAccVultrReservedIPConfig(rServerLabel, label, ipType string) string {
    }`, rServerLabel, label, ipType)
 }
 
-func testAccVultrReservedIPConfig_attach(rServerLabel, label, ipType string) string {
+func testAccVultrReservedIPConfigAttach(rServerLabel, label, ipType string) string {
 	return fmt.Sprintf(`
 	resource "vultr_instance" "ip" {
        label = "%s"

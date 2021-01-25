@@ -1,11 +1,11 @@
 package vultr
 
 import (
-	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/terraform"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-func Provider() terraform.ResourceProvider {
+// Provider ...
+func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
 			"api_key": {
@@ -33,7 +33,7 @@ func Provider() terraform.ResourceProvider {
 			"vultr_bare_metal_plan":   dataSourceVultrBareMetalPlan(),
 			"vultr_bare_metal_server": dataSourceVultrBareMetalServer(),
 			"vultr_block_storage":     dataSourceVultrBlockStorage(),
-			"vultr_dns_domain":        dataSourceVultrDnsDomain(),
+			"vultr_dns_domain":        dataSourceVultrDNSDomain(),
 			"vultr_firewall_group":    dataSourceVultrFirewallGroup(),
 			"vultr_iso_private":       dataSourceVultrIsoPrivate(),
 			"vultr_iso_public":        dataSourceVultrIsoPublic(),
@@ -57,8 +57,8 @@ func Provider() terraform.ResourceProvider {
 		ResourcesMap: map[string]*schema.Resource{
 			"vultr_bare_metal_server": resourceVultrBareMetalServer(),
 			"vultr_block_storage":     resourceVultrBlockStorage(),
-			"vultr_dns_domain":        resourceVultrDnsDomain(),
-			"vultr_dns_record":        resourceVultrDnsRecord(),
+			"vultr_dns_domain":        resourceVultrDNSDomain(),
+			"vultr_dns_record":        resourceVultrDNSRecord(),
 			"vultr_firewall_group":    resourceVultrFirewallGroup(),
 			"vultr_firewall_rule":     resourceVultrFirewallRule(),
 			"vultr_iso_private":       resourceVultrIsoPrivate(),
