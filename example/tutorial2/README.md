@@ -1,7 +1,7 @@
 # Vultr VPS as bastion host
 
 This example launches a single Vultr VPS to be used as bastion host. 
-Features of this tutorial
+Features of this tutorial are as follows,
   + the startup script creates a non-root user id, foobar, to be 
     configured later as admin user (hint: add it to sudo list)
 
