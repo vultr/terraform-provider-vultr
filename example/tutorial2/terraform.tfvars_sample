@@ -1,0 +1,4 @@
+vultr_api_key = "YOURAPIKEYSTRINGTOCONFIGURERIGHTHERE"
+region = "dfw"
+public_key_file = "/home/foobar/vultr.pub"
+startup_script  = "/home/foobar/initialupdate.sh"
