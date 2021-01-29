@@ -1,6 +1,6 @@
 # Changes from V1 to V2
 
-The v2 Vultr Terraform plugin is backed by our new [V2 API](https://www.vultr.com/api/v2/) and introduces a several key changes. 
+The v2 Vultr Terraform plugin is backed by our new [V2 API](https://www.vultr.com/api/) and introduces a several key changes. 
 
 #### 1.  All resource IDs are now uuids and references to the previous ID format are not utilized. This affects the following resources:
 - Instances
