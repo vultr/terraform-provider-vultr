@@ -1,3 +1,7 @@
+## 2.1.3 (January 29, 2021)
+Dependency:
+- updated terraform-plugin-sdk to v1.8.0 -> v2.4.0  [111](https://github.com/vultr/terraform-provider-vultr/pull/111)
+
 ## 2.1.2 (January 05, 2021)
 Dependency:
 - updated GoVultr to v2.3.1 (fixes #102 #105) [106](https://github.com/vultr/terraform-provider-vultr/pull/106)
