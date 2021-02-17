@@ -1,13 +1,21 @@
+terraform {
+  required_providers {
+    vultr = {
+      source = "vultr/vultr"
+      version = "2.1.3"
+    }
+  }
+}
+
 provider "vultr" {
   # In your .bashrc you need to set
   # export VULTR_API_KEY="Your Vultr API Key"
 }
 
 resource "vultr_instance" "my_instance" {
-  plan                   = "${var.one_cpu_one_gb_ram}"
-  region                 = "${var.vultr_seattle}"
-  app_id                 = "${var.docker_centos}"
-  os_id                  = "${var.os_type}"
+  plan                   = var.one_cpu_one_gb_ram
+  region                 = var.vultr_seattle
+  app_id                 = var.docker_centos
   label                  = "terraform example"
   enable_ipv6            = true
   backups                = "enabled"
@@ -15,7 +23,7 @@ resource "vultr_instance" "my_instance" {
   activation_email       = false
   ddos_protection        = true
   tag                    = "tag"
-  firewall_group_id      = "${vultr_firewall_group.fwg.id}}"
+  firewall_group_id      = vultr_firewall_group.fwg.id
 }
 
 resource "vultr_firewall_group" "fwg" {
@@ -23,23 +31,25 @@ resource "vultr_firewall_group" "fwg" {
 }
 
 resource "vultr_firewall_rule" "tcp" {
-  firewall_group_id = "${vultr_firewall_group.fwg.id}"
+  firewall_group_id = vultr_firewall_group.fwg.id
   protocol          = "udp"
-  network           = "${vultr_instance.my_instance.main_ip}/32"
-  from_port         = "8080"
+  subnet            = vultr_instance.my_instance.main_ip
+  subnet_size       = 32
+  port              = "8080"
+  ip_type           = "v4"
 }
 
 resource "vultr_dns_domain" "my_domain" {
   domain    = "tf-domain.com"
-  ip = "${vultr_instance.my_instance.main_ip}"
+  ip        = vultr_instance.my_instance.main_ip
 }
 
 resource "vultr_dns_record" "a-record" {
-  data   = "${vultr_instance.my_instance.main_ip}"
-  domain = "${vultr_dns_domain.my_domain.id}"
+  data   = vultr_instance.my_instance.main_ip
+  domain = vultr_dns_domain.my_domain.id
   name   = "www"
   type   = "A"
-  ttl    = "3600"
+  ttl    = 3600
 }
 
 resource "vultr_load_balancer" "lb" {
