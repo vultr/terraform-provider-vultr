@@ -34,13 +34,15 @@ resource "vultr_firewall_group" "fwg" {
 resource "vultr_firewall_rule" "tcp" {
   firewall_group_id = "${vultr_firewall_group.fwg.id}"
   protocol          = "udp"
-  network           = "${vultr_instance.my_instance.main_ip}/32"
+  subnet            = "${vultr_instance.my_instance.main_ip}"
+  subnet_size       = 32
   port              = "8080"
+  ip_type           = "v4"
 }
 
 resource "vultr_dns_domain" "my_domain" {
   domain    = "tf-domain.com"
-  ip = "${vultr_instance.my_instance.main_ip}"
+  ip        = "${vultr_instance.my_instance.main_ip}"
 }
 
 resource "vultr_dns_record" "a-record" {
