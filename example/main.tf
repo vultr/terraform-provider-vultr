@@ -16,7 +16,6 @@ resource "vultr_instance" "my_instance" {
   plan                   = "${var.one_cpu_one_gb_ram}"
   region                 = "${var.vultr_seattle}"
   app_id                 = "${var.docker_centos}"
-  os_id                  = "${var.os_type}"
   label                  = "terraform example"
   enable_ipv6            = true
   backups                = "enabled"
