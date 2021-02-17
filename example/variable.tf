@@ -1,11 +1,6 @@
 variable "vultr_seattle" {
   description = "Vultr Seattle Region"
-  default = "4"
-}
-
-variable "os_type" {
-  description = "Application"  
-  default = 186
+  default = "sea"
 }
 
 variable "docker_centos" {
@@ -15,5 +10,5 @@ variable "docker_centos" {
 
 variable "one_cpu_one_gb_ram" {
   description = "1024 MB RAM,25 GB SSD,1.00 TB BW"
-  default = 201
+  default = "vc2-1c-1gb"
 }

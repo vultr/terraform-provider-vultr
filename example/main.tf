@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    vultr = {
+      source = "vultr/vultr"
+      version = "2.1.3"
+    }
+  }
+}
+
 provider "vultr" {
   # In your .bashrc you need to set
   # export VULTR_API_KEY="Your Vultr API Key"
@@ -15,7 +24,7 @@ resource "vultr_instance" "my_instance" {
   activation_email       = false
   ddos_protection        = true
   tag                    = "tag"
-  firewall_group_id      = "${vultr_firewall_group.fwg.id}}"
+  firewall_group_id      = "${vultr_firewall_group.fwg.id}"
 }
 
 resource "vultr_firewall_group" "fwg" {
@@ -26,7 +35,7 @@ resource "vultr_firewall_rule" "tcp" {
   firewall_group_id = "${vultr_firewall_group.fwg.id}"
   protocol          = "udp"
   network           = "${vultr_instance.my_instance.main_ip}/32"
-  from_port         = "8080"
+  port              = "8080"
 }
 
 resource "vultr_dns_domain" "my_domain" {
@@ -39,7 +48,7 @@ resource "vultr_dns_record" "a-record" {
   domain = "${vultr_dns_domain.my_domain.id}"
   name   = "www"
   type   = "A"
-  ttl    = "3600"
+  ttl    = 3600
 }
 
 resource "vultr_load_balancer" "lb" {

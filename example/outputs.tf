@@ -1,5 +1,5 @@
 output "ip" {
-  value = "${vultr_server.my_server.main_ip}"
+  value = "${vultr_instance.my_server.main_ip}"
 }
 
 output "fwg_id" {
