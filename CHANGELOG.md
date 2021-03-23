@@ -1,3 +1,7 @@
+## 2.1.4 (March 23, 2021)
+Bug Fix:
+- Fix issue with vultr_instance.reserved_ip_id and vultr_reserved_ip.attached_id conflicting [122](https://github.com/vultr/terraform-provider-vultr/pull/122)
+
 ## 2.1.3 (January 29, 2021)
 Dependency:
 - updated terraform-plugin-sdk to v1.8.0 -> v2.4.0  [111](https://github.com/vultr/terraform-provider-vultr/pull/111)
