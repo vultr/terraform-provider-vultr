@@ -1,6 +1,6 @@
 module github.com/vultr/terraform-provider-vultr
 
-go 1.14
+go 1.16
 
 require (
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.4.0
