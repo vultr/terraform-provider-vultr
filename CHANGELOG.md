@@ -1,3 +1,7 @@
+## 2.2.0 (March 30, 2021)
+Feature:
+- Updated to Go 1.16 to support `darwin_arm64` [125](https://github.com/vultr/terraform-provider-vultr/pull/125)
+
 ## 2.1.4 (March 23, 2021)
 Bug Fix:
 - Fix issue with vultr_instance.reserved_ip_id and vultr_reserved_ip.attached_id conflicting [122](https://github.com/vultr/terraform-provider-vultr/pull/122)
