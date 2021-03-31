@@ -78,6 +78,15 @@ func dataSourceVultrLoadBalancer() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"firewall_rules": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeMap},
+			},
+			"private_network": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -139,6 +148,7 @@ func dataSourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) e
 	d.Set("label", lbList[0].Label)
 	d.Set("ipv4", lbList[0].IPV4)
 	d.Set("ipv6", lbList[0].IPV6)
+	d.Set("private_network", lbList[0].GenericInfo.PrivateNetwork)
 
 	var rulesList []map[string]interface{}
 	for _, rules := range lbList[0].ForwardingRules {
@@ -168,6 +178,21 @@ func dataSourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) e
 
 	if err := d.Set("health_check", hcInfo); err != nil {
 		return fmt.Errorf("error setting `health_check`: %#v", err)
+	}
+
+	var fwrRules []map[string]interface{}
+	for _, rules := range lbList[0].FirewallRules {
+		rule := map[string]interface{}{
+			"id":      rules.ID,
+			"ip_type": rules.IPType,
+			"port":    strconv.Itoa(rules.Port),
+			"source":  rules.Source,
+		}
+		fwrRules = append(fwrRules, rule)
+	}
+
+	if err := d.Set("firewall_rules", fwrRules); err != nil {
+		return fmt.Errorf("error setting `firewall_rules`: %#v", err)
 	}
 
 	return nil

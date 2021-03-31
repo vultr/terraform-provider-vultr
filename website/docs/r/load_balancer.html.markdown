@@ -53,6 +53,7 @@ The follow arguments are supported:
 * `attached_instances` - (Optional) Array of instances that are currently attached to the load balancer.
 * `health_check` - (Optional) A block that defines the way load balancers should check for health. The configuration of a `health_check` is listed below.
 * `ssl` - (Optional) A block that supplies your ssl configuration to be used with HTTPS. The configuration of a `ssl` is listed below.
+* `private_network` (optional )- A private network ID that the load balancer should be attached to.
 
 `health_check` supports the following
 
@@ -77,6 +78,11 @@ The follow arguments are supported:
 * `certificate` - (Required) The SSL Certificate.
 * `chain` - (Optional) The SSL certificate chain.
 
+`firewall_rules` supports the following
+* `frontend_port` - (Required) Port on load balancer side.
+* `ip_type` - (Required) The type of ip this rule is - may be either v4 or v6.
+* `source` - (Required) IP address with subnet that is allowed through the firewall. You may also pass in `cloudflare` which will allow only CloudFlares IP range.
+
 ## Attributes Reference
 
 The following attributes are exported:
@@ -94,3 +100,5 @@ The following attributes are exported:
 * `ipv6` - IPv6 address for your load balancer.
 * `health_check` - Defines the way load balancers should check for health. 
 * `forwarding_rules` - Defines the forwarding rules for a load balancer.
+* `firewall_rules` - Defines the firewall rules for a load balancer.
+* `private_network` - Defines the private network the load balancer is attached to.

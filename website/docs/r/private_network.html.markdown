@@ -6,7 +6,7 @@ description: |-
   Provides a Vultr private network resource. This can be used to create, read, and delete private networks on your Vultr account.
 ---
 
-# vultr_network
+# vultr_private_network
 
 Provides a Vultr private network resource. This can be used to create, read, and delete private networks on your Vultr account.
 
@@ -24,7 +24,7 @@ resource "vultr_private_network" "my_network" {
 Create a new private network with a specified CIDR block:
 
 ```hcl
-resource "vultr_network" "my_network" {
+resource "vultr_private_network" "my_network" {
 	description = "my private network"
 	region = "ewr"
 	v4_subnet  = "10.0.0.0"
