@@ -433,7 +433,7 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 			}
 		} else {
 			if err := client.Instance.AttachISO(ctx, d.Id(), newISOId.(string)); err != nil {
-				return diag.Errorf("error detaching iso from instance %s : %v", d.Id(), err)
+				return diag.Errorf("error attaching iso to instance %s : %v", d.Id(), err)
 			}
 		}
 	}
