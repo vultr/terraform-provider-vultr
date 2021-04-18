@@ -218,7 +218,7 @@ func newIsoStateRefresh(ctx context.Context,
 func waitForIsoDetached(ctx context.Context, instanceID string, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
 	log.Printf(
 		"[INFO] Waiting for ISO to detach from %s",
-		instanceID, attribute)
+		instanceID)
 
 	stateConf := &resource.StateChangeConf{
 		Pending:        pending,
