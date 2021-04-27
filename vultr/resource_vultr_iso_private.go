@@ -115,20 +115,18 @@ func resourceVultrIsoDelete(ctx context.Context, d *schema.ResourceData, meta in
 			Status int    `json:"status"`
 		}
 
-		errR := strings.NewReader(err.Error())
-		jsonErr := json.NewDecoder(errR).Decode(&attachedErr)
-		if jsonErr != nil {
-			return diag.Errorf("error destroying ISO %s : %v: %v", d.Id(), err, jsonErr)
+		if unmarshalError := json.Unmarshal([]byte(err.Error()), &attachedErr); unmarshalError != nil {
+			return diag.Errorf("error deleting ISO %s: parsing error %v in deleting ISO %s : %v", d.Id(), err.Error(), unmarshalError)
 		}
 
 		if !strings.Contains(attachedErr.Error, "is still attached to") {
-			return diag.Errorf("error destroying ISO %s : %v: %v", d.Id(), err)
+			return diag.Errorf("error deleting ISO %s: delete ISO error not related to attachment: delete error %+v", d.Id(), attachedErr)
 		}
 
 		parts := strings.Split(attachedErr.Error, " ")
 		ip := parts[len(parts)-1]
 		if parsedIP := net.ParseIP(ip); parsedIP == nil {
-			return diag.Errorf("error destroying ISO %s : failed to parse IP to which ISO is attached", d.Id())
+			return diag.Errorf("error deleting ISO %s : failed to parse IP to which ISO is attached: %s", d.Id(), ip)
 		}
 
 		for {
@@ -136,21 +134,21 @@ func resourceVultrIsoDelete(ctx context.Context, d *schema.ResourceData, meta in
 			var options govultr.ListOptions
 			instances, meta, err := client.Instance.List(ctx, &options)
 			if err != nil {
-				return diag.Errorf("error destroying ISO %s : failed to list instances for detaching ISO", d.Id(), err)
+				return diag.Errorf("error deleting ISO %s : failed to list instances for detaching ISO", d.Id(), err)
 			}
 
 			// check for the instance with this IP, return on failure or discovery
 			for _, instance := range instances {
 				if instance.MainIP == ip {
 					if err := client.Instance.DetachISO(ctx, instance.ID); err != nil {
-						return diag.Errorf("error destroying ISO %s : failed to detach from instances %s : %s", d.Id(), instance.ID, err)
+						return diag.Errorf("error deleting ISO %s : failed to detach from instances %s : %s", d.Id(), instance.ID, err)
 					}
 					_, err := waitForIsoDetached(ctx, instance.ID, "ready", []string{"isomounted"}, "status", meta)
 					if err != nil {
-						return diag.Errorf("error while waiting for ISO %s to detach from instance %s: %s", d.Id(), instance.ID, err)
+						return diag.Errorf("error deleting ISO %s: failed to wait for ISO to detach from instance %s: %s", d.Id(), instance.ID, err)
 					}
 					if err = client.ISO.Delete(ctx, d.Id()); err != nil {
-						return diag.Errorf("failed to delete detached ISO %s: %s", d.Id(), err)
+						return diag.Errorf("error deleting ISO %s: failed to delete ISO: %s", d.Id(), err)
 					}
 				}
 				options.Cursor = meta.Links.Next
