@@ -129,9 +129,9 @@ func resourceVultrIsoDelete(ctx context.Context, d *schema.ResourceData, meta in
 			return diag.Errorf("error deleting ISO %s : failed to parse IP to which ISO is attached: %s", d.Id(), ip)
 		}
 
+		// default is 100 instances
+		var options govultr.ListOptions
 		for {
-			// default is 100 instances
-			var options govultr.ListOptions
 			instances, meta, err := client.Instance.List(ctx, &options)
 			if err != nil {
 				return diag.Errorf("error deleting ISO %s : failed to list instances for detaching ISO", d.Id(), err)
@@ -151,13 +151,13 @@ func resourceVultrIsoDelete(ctx context.Context, d *schema.ResourceData, meta in
 						return diag.Errorf("error deleting ISO %s: failed to delete ISO: %s", d.Id(), err)
 					}
 				}
-				options.Cursor = meta.Links.Next
 			}
 
 			// no more instances to check
-			if options.Cursor == "" {
+			if meta.Links.Next == "" {
 				break
 			}
+			options.Cursor = meta.Links.Next
 		}
 		return diag.Errorf("failed to identify instance associated with IP %s for deleting ISO %s", ip, d.Id())
 	}
