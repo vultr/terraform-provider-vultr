@@ -131,37 +131,16 @@ func resourceVultrIsoDelete(ctx context.Context, d *schema.ResourceData, meta in
 			return diag.Errorf("error destroying ISO %s : failed to parse IP to which ISO is attached", d.Id())
 		}
 
-		m := govultr.ListOptions{
-			PerPage: 50,
-		}
-		insts, imeta, err := client.Instance.List(ctx, &m)
-		if err != nil {
-			return diag.Errorf("error destroying ISO %s : failed to list instances for detaching ISO", d.Id(), err)
-		}
-
-		// check for the instance with this IP, return on failure or discovery
-		for _, instance := range insts {
-			if instance.MainIP == ip {
-				if err := client.Instance.DetachISO(ctx, instance.ID); err != nil {
-					return diag.Errorf("error destroying ISO %s : failed to detach from instances %s : %s", d.Id(), instance.ID, err)
-				}
-				_, err := waitForIsoDetached(ctx, instance.ID, "ready", []string{"isomounted"}, "status", meta)
-				if err != nil {
-					return diag.Errorf("error while waiting for ISO %s to detach from instance %s: %s", d.Id(), instance.ID, err)
-				}
-				return resourceVultrIsoDelete(ctx, d, meta) // warning: possible infinite recursion
-			}
-		}
-
-		// in case it wasn't in the first batch
-		for imeta.Links.Next != "" {
-			m.Cursor = imeta.Links.Next
-			insts, _, err = client.Instance.List(ctx, &m)
+		for {
+			// default is 100 instances
+			var options govultr.ListOptions
+			instances, meta, err := client.Instance.List(ctx, &options)
 			if err != nil {
-				return diag.Errorf("error destroying ISO %s : failed to obtain list of instances using cursor %s", d.Id(), m.Cursor)
+				return diag.Errorf("error destroying ISO %s : failed to list instances for detaching ISO", d.Id(), err)
 			}
 
-			for _, instance := range insts {
+			// check for the instance with this IP, return on failure or discovery
+			for _, instance := range instances {
 				if instance.MainIP == ip {
 					if err := client.Instance.DetachISO(ctx, instance.ID); err != nil {
 						return diag.Errorf("error destroying ISO %s : failed to detach from instances %s : %s", d.Id(), instance.ID, err)
@@ -170,10 +149,19 @@ func resourceVultrIsoDelete(ctx context.Context, d *schema.ResourceData, meta in
 					if err != nil {
 						return diag.Errorf("error while waiting for ISO %s to detach from instance %s: %s", d.Id(), instance.ID, err)
 					}
-					return resourceVultrIsoDelete(ctx, d, meta) // warning: possible infinite recursion
+					if err = client.ISO.Delete(ctx, d.Id()); err != nil {
+						return diag.Errorf("failed to delete detached ISO %s: %s", d.Id(), err)
+					}
 				}
+				options.Cursor = meta.Links.Next
+			}
+
+			// no more instances to check
+			if options.Cursor == "" {
+				break
 			}
 		}
+		return diag.Errorf("failed to identify instance associated with IP %s for deleting ISO %s", ip, d.Id())
 	}
 
 	return nil
