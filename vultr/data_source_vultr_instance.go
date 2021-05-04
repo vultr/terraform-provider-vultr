@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
@@ -123,6 +124,10 @@ func dataSourceVultrInstance() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Computed: true,
 			},
+			"backups_schedule": {
+				Type:     schema.TypeMap,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -200,6 +205,22 @@ func dataSourceVultrInstanceRead(d *schema.ResourceData, meta interface{}) error
 	d.Set("v6_main_ip", serverList[0].V6MainIP)
 	d.Set("v6_network_size", serverList[0].V6NetworkSize)
 	d.Set("features", serverList[0].Features)
+
+	schedule, err := client.Instance.GetBackupSchedule(context.Background(), serverList[0].ID)
+	if err != nil {
+		return fmt.Errorf("error getting backup schedule: %v", err)
+	}
+	d.Set("backups", backupStatus(schedule.Enabled))
+
+	bsInfo := map[string]interface{}{
+		"type": schedule.Type,
+		"hour": strconv.Itoa(schedule.Hour),
+		"dom":  strconv.Itoa(schedule.Dom),
+		"dow":  strconv.Itoa(schedule.Dow),
+	}
+	if err := d.Set("backups_schedule", bsInfo); err != nil {
+		return fmt.Errorf("error setting `backups_schedule`: %#v", err)
+	}
 
 	return nil
 }

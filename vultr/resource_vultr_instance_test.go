@@ -197,7 +197,6 @@ func testAccVultrInstanceBase(name string) string {
 			label = "%s"
 			hostname = "testing-the-hostname"
 			enable_ipv6 = true
-			backups = true
 			activation_email = false
 			ddos_protection = true
 			tag = "even better tag"
@@ -213,7 +212,6 @@ func testAccVultrInstanceBaseUpdateFirewall(name string) string {
 			label = "%s"
 			hostname = "testing-the-hostname"
 			enable_ipv6 = true
-			backups = true
 			activation_email = false
 			ddos_protection = true
 			tag = "even better tag"
@@ -247,7 +245,6 @@ func testAccVultrInstanceBaseUpdateNetworkIDs(name string) string {
 		label = "%s"
 		hostname = "testing-the-hostname"
 		enable_ipv6 = true
-		backups = "enabled"
 		activation_email = false
 		ddos_protection = true
 		tag = "even better tag"
@@ -265,7 +262,6 @@ func testAccVultrInstanceBaseUpdatedRegion(name string) string {
 			label = "%s"
 			hostname = "testing-the-hostname"
 			enable_ipv6 = true
-			backups = true
 			activation_email = false
 			ddos_protection = true
 			tag = "even better tag"
