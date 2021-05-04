@@ -63,6 +63,14 @@ The following arguments are supported:
 * `tag` - (Optional) The tag to assign to the server.
 * `label` - (Optional) A label for the server.
 * `reserved_ip_id` - (Optional) ID of the floating IP to use as the main IP of this server.
+* `backups_schedule` - (Optional) A block that defines the way backups should be scheduled. While this is an optional field if `backups` are `enabled` this field is mandatory. The configuration of a `backups_schedule` is listed below.
+
+`backups_schedule` supports the following:
+
+* `type` - Type of backup schedule Possible values are `daily`, `weekly`, `monthly`, `daily_alt_event`, or `daily_alt_odd`.
+* `hour` - (Optional) Hour of day to run in UTC.
+* `dow` - (Optional) Day of week to run. `1 = Sunday`, `2 = Monday`, `3 = Tuesday`, `4 = Wednesday`, `5 = Thursday`, `6 = Friday`, `7 = Saturday`
+* `dom` - (Optional) Day of month to run. Use values between 1 and 28.
 
 ## Attributes Reference
 
@@ -107,6 +115,8 @@ The following attributes are exported:
 * `tag` - The tag assigned to the server.
 * `label` - A label for the server.
 * `features` - Array of which features are enabled.
+* `backups_schedule` - (Optional) A block that defines the way backups should be scheduled.
+
 
 ## Import
 
