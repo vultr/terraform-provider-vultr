@@ -108,7 +108,7 @@ The following attributes are exported:
 * `user_data` - Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
 * `backups` - Whether automatic backups are enabled for this server.
 * `enable_ipv6` - Whether the server has IPv6 networking activated.
-* `enable_private_network` - Whether the server has private networking support enabled.
+* `enable_private_network` - (Deprecated) Whether the server has private networking support enabled.
 * `activation_email` - Whether an activation email was sent when the server was ready.
 * `ddos_protection` - Whether DDOS protection is enabled on the server.
 * `hostname` - The hostname assigned to the server.

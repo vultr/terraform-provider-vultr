@@ -45,3 +45,4 @@ The following attributes are exported:
 * `monthly_cost` - The price per month of the plan in USD.
 * `type` - The type of plan it is.
 * `locations` - A list of DCIDs (used as `region` in Terraform) where the plan can be deployed.
+* `disk_count` - The number of disks that this plan offers.

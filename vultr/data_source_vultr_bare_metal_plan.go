@@ -53,6 +53,10 @@ func dataSourceVultrBareMetalPlan() *schema.Resource {
 					Type: schema.TypeString,
 				},
 			},
+			"disk_count": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -113,6 +117,7 @@ func dataSourceVultrBareMetalPlanRead(d *schema.ResourceData, meta interface{}) 
 	d.Set("bandwidth", planList[0].Bandwidth)
 	d.Set("monthly_cost", planList[0].MonthlyCost)
 	d.Set("type", planList[0].Type)
+	d.Set("disk_count", planList[0].DiskCount)
 
 	if err := d.Set("locations", planList[0].Locations); err != nil {
 		return fmt.Errorf("error setting `locations`: %#v", err)

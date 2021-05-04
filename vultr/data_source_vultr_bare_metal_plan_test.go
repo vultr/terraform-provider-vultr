@@ -22,6 +22,7 @@ func TestAccVultrBareMetalPlan(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_plan.my_bm_plan", "disk"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_plan.my_bm_plan", "bandwidth"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_plan.my_bm_plan", "type"),
+					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_plan.my_bm_plan", "disk_count"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_plan.my_bm_plan", "monthly_cost"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_plan.my_bm_plan", "locations.#"),
 				),
