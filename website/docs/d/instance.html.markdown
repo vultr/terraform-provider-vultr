@@ -63,3 +63,4 @@ The following attributes are exported:
 * `app_id` - The server's application ID.
 * `firewall_group_id` - The ID of the firewall group applied to this server.
 * `features` - Array of which features are enabled.
+* `backups_schedule` - The current configuration for backups 

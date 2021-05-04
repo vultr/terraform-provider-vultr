@@ -34,6 +34,11 @@ func TestAccVultrInstanceBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region", "sea"),
 					resource.TestCheckResourceAttr(name, "tag", "even better tag"),
+					resource.TestCheckResourceAttr(name, "backups", "enabled"),
+					resource.TestCheckResourceAttr(name, "backups_schedule.#", "1"),
+					resource.TestCheckResourceAttr(name, "backups_schedule.0.type", "weekly"),
+					resource.TestCheckResourceAttr(name, "backups_schedule.0.dow", "4"),
+					resource.TestCheckResourceAttr(name, "backups_schedule.0.hour", "11"),
 				),
 			},
 		},
@@ -200,6 +205,12 @@ func testAccVultrInstanceBase(name string) string {
 			activation_email = false
 			ddos_protection = true
 			tag = "even better tag"
+			backups = "enabled"
+			backups_schedule{
+				type = "weekly"
+				dow = 4
+				hour = 11
+			}
 		} `, name)
 }
 
