@@ -116,7 +116,7 @@ func resourceVultrIsoDelete(ctx context.Context, d *schema.ResourceData, meta in
 		}
 
 		if unmarshalError := json.Unmarshal([]byte(err.Error()), &attachedErr); unmarshalError != nil {
-			return diag.Errorf("error deleting ISO %s: parsing error %v in deleting ISO %s : %v", d.Id(), err.Error(), unmarshalError)
+			return diag.Errorf("error deleting ISO %s: parsing error %s in deleting ISO : %v", d.Id(), err.Error(), unmarshalError)
 		}
 
 		if !strings.Contains(attachedErr.Error, "is still attached to") {
@@ -134,14 +134,14 @@ func resourceVultrIsoDelete(ctx context.Context, d *schema.ResourceData, meta in
 		for {
 			instances, responseMeta, err := client.Instance.List(ctx, &options)
 			if err != nil {
-				return diag.Errorf("error deleting ISO %s : failed to list instances for detaching ISO", d.Id(), err)
+				return diag.Errorf("error deleting ISO %s : failed to list instances for detaching ISO: %v", d.Id(), err)
 			}
 
 			// check for the instance with this IP, return on failure or discovery
 			for _, instance := range instances {
 				if instance.MainIP == ip {
 					if err := client.Instance.DetachISO(ctx, instance.ID); err != nil {
-						return diag.Errorf("error deleting ISO %s : failed to detach from instances %s : %s", d.Id(), instance.ID, err)
+						return diag.Errorf("error deleting ISO %s : failed to detach from instances %s : %v", d.Id(), instance.ID, err)
 					}
 					_, err := waitForIsoDetached(ctx, instance.ID, "ready", []string{"isomounted"}, "status", meta)
 					if err != nil {
