@@ -11,6 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v2"
 )
 
@@ -86,11 +87,6 @@ func resourceVultrInstance() *schema.Resource {
 				ForceNew: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
-			"backups": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Default:  "disabled",
-			},
 			"snapshot_id": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -133,6 +129,42 @@ func resourceVultrInstance() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 				Optional: true,
+			},
+			"backups": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				Default:      "disabled",
+				ValidateFunc: validation.StringInSlice([]string{"enabled", "disabled"}, false),
+			},
+			"backups_schedule": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"type": {
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"daily", "weekly", "monthly", "daily_alt_even", "daily_alt_odd"}, false),
+						},
+						"hour": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"dow": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+						"dom": {
+							Type:     schema.TypeInt,
+							Optional: true,
+							Computed: true,
+						},
+					},
+				},
 			},
 			// Computed
 			"os": {
@@ -223,6 +255,12 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 	appID, appOK := d.GetOk("app_id")
 	isoID, isoOK := d.GetOk("iso_id")
 	snapID, snapOK := d.GetOk("snapshot_id")
+	backups := d.Get("backups").(string)
+	backupSchedule, backupsOk := d.GetOk("backups_schedule")
+
+	if backups == "enabled" && !backupsOk {
+		return diag.Errorf("Backups are set to enabled please provide a backup_schedule")
+	}
 
 	osOptions := map[string]bool{"app_id": appOK, "iso_id": isoOK, "snapshot_id": snapOK}
 	osOption, err := optionCheck(osOptions)
@@ -236,7 +274,7 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		EnableIPv6:           govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
 		EnablePrivateNetwork: govultr.BoolToBoolPtr(d.Get("enable_private_network").(bool)),
 		Label:                d.Get("label").(string),
-		Backups:              d.Get("backups").(string),
+		Backups:              backups,
 		UserData:             base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string))),
 		ActivationEmail:      govultr.BoolToBoolPtr(d.Get("activation_email").(bool)),
 		DDOSProtection:       govultr.BoolToBoolPtr(d.Get("ddos_protection").(bool)),
@@ -298,6 +336,13 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 	}
 
+	if backups == "enabled" && backupsOk {
+		backupReq := generateBackupSchedule(backupSchedule)
+		if err := client.Instance.SetBackupSchedule(context.Background(), instance.ID, backupReq); err != nil {
+			return diag.Errorf("error setting backup schedule: %v", err)
+		}
+	}
+
 	return resourceVultrInstanceRead(ctx, d, meta)
 }
 
@@ -338,6 +383,26 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 	d.Set("os_id", instance.OsID)
 	d.Set("app_id", instance.AppID)
 	d.Set("features", instance.Features)
+
+	backup, err := client.Instance.GetBackupSchedule(ctx, d.Id())
+	if err != nil {
+		return diag.Errorf("error getting backup schedule: %v", err)
+	}
+
+	d.Set("backups", backupStatus(backup.Enabled))
+
+	var bs []map[string]interface{}
+	backupScheduleInfo := map[string]interface{}{
+		"type": backup.Type,
+		"hour": backup.Hour,
+		"dom":  backup.Dom,
+		"dow":  backup.Dow,
+	}
+	bs = append(bs, backupScheduleInfo)
+
+	if err := d.Set("backups_schedule", bs); err != nil {
+		return diag.Errorf("error setting `backups_schedule`: %v", err)
+	}
 
 	return nil
 }
@@ -433,8 +498,15 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 			}
 		} else {
 			if err := client.Instance.AttachISO(ctx, d.Id(), newISOId.(string)); err != nil {
-				return diag.Errorf("error detaching iso from instance %s : %v", d.Id(), err)
+				return diag.Errorf("error attaching iso to instance %s : %v", d.Id(), err)
 			}
+		}
+	}
+
+	if d.HasChange("backups_schedule") {
+		schedule := generateBackupSchedule(d.Get("backups_schedule"))
+		if err := client.Instance.SetBackupSchedule(ctx, d.Id(), schedule); err != nil {
+			return diag.Errorf("error setting backup for %s : %v", d.Id(), err)
 		}
 	}
 
@@ -522,5 +594,25 @@ func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta int
 		} else {
 			return nil, "", nil
 		}
+	}
+}
+
+func generateBackupSchedule(backup interface{}) *govultr.BackupScheduleReq {
+	k := backup.([]interface{})
+
+	config := k[0].(map[string]interface{})
+	return &govultr.BackupScheduleReq{
+		Type: config["type"].(string),
+		Hour: config["hour"].(int),
+		Dom:  config["dom"].(int),
+		Dow:  config["dow"].(int),
+	}
+}
+
+func backupStatus(status *bool) string {
+	if *status {
+		return "enabled"
+	} else {
+		return "disabled"
 	}
 }
