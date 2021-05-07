@@ -30,6 +30,7 @@ func TestAccResourceVultrBlockStorage(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "date_created"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "cost"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "status"),
+					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "mount_id"),
 				),
 			},
 			{
@@ -42,6 +43,7 @@ func TestAccResourceVultrBlockStorage(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "date_created"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "cost"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "status"),
+					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "mount_id"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "attached_to_instance"),
 				),
 			},
@@ -55,6 +57,7 @@ func TestAccResourceVultrBlockStorage(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "date_created"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "cost"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "status"),
+					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "mount_id"),
 				),
 			},
 			{
@@ -67,6 +70,7 @@ func TestAccResourceVultrBlockStorage(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "date_created"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "cost"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "status"),
+					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "mount_id"),
 				),
 			},
 			{
@@ -80,6 +84,7 @@ func TestAccResourceVultrBlockStorage(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "date_created"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "cost"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "status"),
+					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "mount_id"),
 				),
 			},
 		},
