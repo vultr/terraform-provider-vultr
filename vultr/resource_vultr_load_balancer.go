@@ -324,7 +324,7 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	var fwrList []map[string]interface{}
 	for _, rules := range lb.FirewallRules {
 		rule := map[string]interface{}{
-			"id":      rules.ID,
+			"id":      rules.RuleID,
 			"source":  rules.Source,
 			"ip_type": rules.IPType,
 			"port":    rules.Port,
