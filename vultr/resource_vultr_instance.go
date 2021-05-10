@@ -625,9 +625,9 @@ func generateBackupSchedule(backup interface{}) *govultr.BackupScheduleReq {
 	config := k[0].(map[string]interface{})
 	return &govultr.BackupScheduleReq{
 		Type: config["type"].(string),
-		Hour: config["hour"].(int),
+		Hour: govultr.IntToIntPtr(config["hour"].(int)),
 		Dom:  config["dom"].(int),
-		Dow:  config["dow"].(int),
+		Dow:  govultr.IntToIntPtr(config["dow"].(int)),
 	}
 }
 
