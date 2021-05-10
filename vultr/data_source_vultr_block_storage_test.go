@@ -24,6 +24,7 @@ func TestAccDataSourceVultrBlockStorage(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "size_gb"),
 					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "region"),
 					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "label"),
+					resource.TestCheckResourceAttrSet("data.vultr_block_storage.block", "mount_id"),
 				),
 			},
 		},

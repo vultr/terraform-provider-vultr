@@ -45,3 +45,4 @@ The following attributes are exported:
 * `region` - The region ID of the block storage subscription.
 * `attached_to_instance` - The ID of the VPS the block storage subscription is attached to.
 * `date_created` - The date the block storage subscription was added to your Vultr account.
+* `mount_id` - An ID associated with the instance, when mounted the ID can be found in /dev/disk/by-id prefixed with virtio.

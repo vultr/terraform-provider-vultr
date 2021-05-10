@@ -66,9 +66,10 @@ func resourceVultrInstance() *schema.Resource {
 				Default:  false,
 			},
 			"enable_private_network": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
+				Type:       schema.TypeBool,
+				Optional:   true,
+				Default:    false,
+				Deprecated: "In the next release of this provider we will be removing `enable_private_network` due to issues that may cause drift and having to maintain private network ip state. Please switch to using private_network_ids to manage your private network fields.",
 			},
 			"private_network_ids": {
 				Type:     schema.TypeList,
@@ -138,7 +139,6 @@ func resourceVultrInstance() *schema.Resource {
 			},
 			"backups_schedule": {
 				Type:     schema.TypeList,
-				Computed: true,
 				Optional: true,
 				MaxItems: 1,
 				Elem: &schema.Resource{
@@ -256,10 +256,12 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 	isoID, isoOK := d.GetOk("iso_id")
 	snapID, snapOK := d.GetOk("snapshot_id")
 	backups := d.Get("backups").(string)
-	backupSchedule, backupsOk := d.GetOk("backups_schedule")
+	backupSchedule, backupsScheduleOk := d.GetOk("backups_schedule")
 
-	if backups == "enabled" && !backupsOk {
-		return diag.Errorf("Backups are set to enabled please provide a backup_schedule")
+	if backups == "enabled" && !backupsScheduleOk {
+		return diag.Errorf("Backups are set to enabled please provide a backups_schedule")
+	} else if backups == "disabled" && backupsScheduleOk {
+		return diag.Errorf("Backups are set to disabled please remove backups_schedule")
 	}
 
 	osOptions := map[string]bool{"app_id": appOK, "iso_id": isoOK, "snapshot_id": snapOK}
@@ -336,7 +338,7 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 	}
 
-	if backups == "enabled" && backupsOk {
+	if backups == "enabled" {
 		backupReq := generateBackupSchedule(backupSchedule)
 		if err := client.Instance.SetBackupSchedule(context.Background(), instance.ID, backupReq); err != nil {
 			return diag.Errorf("error setting backup schedule: %v", err)
@@ -391,18 +393,29 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 
 	d.Set("backups", backupStatus(backup.Enabled))
 
-	var bs []map[string]interface{}
-	backupScheduleInfo := map[string]interface{}{
-		"type": backup.Type,
-		"hour": backup.Hour,
-		"dom":  backup.Dom,
-		"dow":  backup.Dow,
-	}
-	bs = append(bs, backupScheduleInfo)
+	if backupStatus(backup.Enabled) != "disabled" {
+		var bs []map[string]interface{}
+		backupScheduleInfo := map[string]interface{}{
+			"type": backup.Type,
+			"hour": backup.Hour,
+			"dom":  backup.Dom,
+			"dow":  backup.Dow,
+		}
+		bs = append(bs, backupScheduleInfo)
 
-	if err := d.Set("backups_schedule", bs); err != nil {
-		return diag.Errorf("error setting `backups_schedule`: %v", err)
+		if err := d.Set("backups_schedule", bs); err != nil {
+			return diag.Errorf("error setting `backups_schedule`: %v", err)
+		}
+	} else {
+		d.Set("backups_schedule", nil)
 	}
+
+	pn, err := getPrivateNetworks(client, d.Id())
+	if err != nil {
+		return diag.Errorf(err.Error())
+	}
+
+	d.Set("private_network_ids", pn)
 
 	return nil
 }
@@ -436,11 +449,18 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		req.EnablePrivateNetwork = govultr.BoolToBoolPtr(newVal.(bool))
 	}
 
+	bs, bsOK := d.GetOk("backups_schedule")
+	_, newBackupValue := d.GetChange("backups")
 	if d.HasChange("backups") {
 		log.Printf("[INFO] Updating Backups")
-		_, newVal := d.GetChange("backups")
-		backups := newVal.(string)
+		backups := newBackupValue.(string)
 		req.Backups = backups
+
+		if backups == "disabled" && bsOK {
+			return diag.Errorf("Backups are being set to disabled please remove backups_schedule")
+		} else if backups == "enabled" && !bsOK {
+			return diag.Errorf("Backups are being set to enabled please add backups_schedule")
+		}
 	}
 
 	if d.HasChange("private_network_ids") {
@@ -503,8 +523,14 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
-	if d.HasChange("backups_schedule") {
-		schedule := generateBackupSchedule(d.Get("backups_schedule"))
+	if newBackupValue.(string) == "enabled" && !bsOK {
+		return diag.Errorf("Backups are being set to enabled please add backups_schedule")
+	}
+
+	// If we are disabling backups we don't do anything.
+	// On the read that gets called we will nil out backups_schedule.
+	if newBackupValue.(string) != "disabled" && d.HasChange("backups_schedule") {
+		schedule := generateBackupSchedule(bs)
 		if err := client.Instance.SetBackupSchedule(ctx, d.Id(), schedule); err != nil {
 			return diag.Errorf("error setting backup for %s : %v", d.Id(), err)
 		}
@@ -603,9 +629,9 @@ func generateBackupSchedule(backup interface{}) *govultr.BackupScheduleReq {
 	config := k[0].(map[string]interface{})
 	return &govultr.BackupScheduleReq{
 		Type: config["type"].(string),
-		Hour: config["hour"].(int),
+		Hour: govultr.IntToIntPtr(config["hour"].(int)),
 		Dom:  config["dom"].(int),
-		Dow:  config["dow"].(int),
+		Dow:  govultr.IntToIntPtr(config["dow"].(int)),
 	}
 }
 

@@ -43,6 +43,10 @@ func dataSourceVultrPlan() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
+			"disk_count": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -100,6 +104,7 @@ func dataSourceVultrPlanRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("disk", planList[0].Disk)
 	d.Set("bandwidth", planList[0].Bandwidth)
 	d.Set("monthly_cost", planList[0].MonthlyCost)
+	d.Set("disk_count", planList[0].DiskCount)
 	d.Set("type", planList[0].Type)
 	if err := d.Set("locations", planList[0].Locations); err != nil {
 		return fmt.Errorf("error setting `available_locations`: %#v", err)

@@ -42,6 +42,10 @@ func dataSourceVultrBlockStorage() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"mount_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -99,5 +103,6 @@ func dataSourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) e
 	d.Set("region", blockList[0].Region)
 	d.Set("attached_to_instance", blockList[0].AttachedToInstance)
 	d.Set("label", blockList[0].Label)
+	d.Set("mount_id", blockList[0].MountID)
 	return nil
 }

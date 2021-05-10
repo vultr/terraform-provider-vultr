@@ -16,7 +16,7 @@ import (
 )
 
 const (
-	version     = "2.3.1"
+	version     = "2.5.1"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 500 * time.Millisecond
@@ -130,8 +130,7 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 
 	buf := new(bytes.Buffer)
 	if body != nil {
-		err = json.NewEncoder(buf).Encode(body)
-		if err != nil {
+		if err = json.NewEncoder(buf).Encode(body); err != nil {
 			return nil, err
 		}
 	}
@@ -234,7 +233,17 @@ func (c *Client) vultrErrorHandler(resp *http.Response, err error, numTries int)
 	return nil, fmt.Errorf("gave up after %d attempts, last error: %#v", c.client.RetryMax+1, strings.TrimSpace(string(buf)))
 }
 
+// BoolToBoolPtr helper function that returns a pointer from your bool value
 func BoolToBoolPtr(value bool) *bool {
-	b := value
-	return &b
+	return &value
+}
+
+// StringToStringPtr helper function that returns a pointer from your string value
+func StringToStringPtr(value string) *string {
+	return &value
+}
+
+// IntToIntPtr helper function that returns a pointer from your string value
+func IntToIntPtr(value int) *int {
+	return &value
 }

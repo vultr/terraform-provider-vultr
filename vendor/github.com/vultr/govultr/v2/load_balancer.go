@@ -11,6 +11,7 @@ import (
 const lbPath = "/v2/load-balancers"
 
 // LoadBalancerService is the interface to interact with the server endpoints on the Vultr API
+// Link : https://www.vultr.com/api/#tag/load-balancer
 type LoadBalancerService interface {
 	Create(ctx context.Context, createReq *LoadBalancerReq) (*LoadBalancer, error)
 	Get(ctx context.Context, ID string) (*LoadBalancer, error)
@@ -21,6 +22,8 @@ type LoadBalancerService interface {
 	GetForwardingRule(ctx context.Context, ID string, ruleID string) (*ForwardingRule, error)
 	DeleteForwardingRule(ctx context.Context, ID string, RuleID string) error
 	ListForwardingRules(ctx context.Context, ID string, options *ListOptions) ([]ForwardingRule, *Meta, error)
+	ListFirewallRules(ctx context.Context, ID string, options *ListOptions) ([]LBFirewallRule, *Meta, error)
+	GetFirewallRule(ctx context.Context, ID string, ruleID string) (*LBFirewallRule, error)
 }
 
 // LoadBalancerHandler handles interaction with the server methods for the Vultr API
@@ -42,6 +45,7 @@ type LoadBalancer struct {
 	GenericInfo     *GenericInfo     `json:"generic_info,omitempty"`
 	SSLInfo         *bool            `json:"has_ssl,omitempty"`
 	ForwardingRules []ForwardingRule `json:"forwarding_rules,omitempty"`
+	FirewallRules   []LBFirewallRule `json:"firewall_rules,omitempty"`
 }
 
 // LoadBalancerReq gives options for creating or updating a load balancer
@@ -56,6 +60,8 @@ type LoadBalancerReq struct {
 	SSLRedirect        *bool            `json:"ssl_redirect,omitempty"`
 	ProxyProtocol      *bool            `json:"proxy_protocol,omitempty"`
 	BalancingAlgorithm string           `json:"balancing_algorithm,omitempty"`
+	FirewallRules      []LBFirewallRule `json:"firewall_rules"`
+	PrivateNetwork     *string          `json:"private_network,omitempty"`
 }
 
 // InstanceList represents instances that are attached to your load balancer
@@ -80,6 +86,7 @@ type GenericInfo struct {
 	SSLRedirect        *bool           `json:"ssl_redirect,omitempty"`
 	StickySessions     *StickySessions `json:"sticky_sessions,omitempty"`
 	ProxyProtocol      *bool           `json:"proxy_protocol,omitempty"`
+	PrivateNetwork     string          `json:"private_network,omitempty"`
 }
 
 // StickySessions represents cookie for your load balancer
@@ -99,6 +106,14 @@ type ForwardingRule struct {
 	FrontendPort     int    `json:"frontend_port,omitempty"`
 	BackendProtocol  string `json:"backend_protocol,omitempty"`
 	BackendPort      int    `json:"backend_port,omitempty"`
+}
+
+// LBFirewallRule represent a single firewall rule
+type LBFirewallRule struct {
+	RuleID string `json:"id,omitempty"`
+	Port   int    `json:"port,omitempty"`
+	IPType string `json:"ip_type,omitempty"`
+	Source string `json:"source,omitempty"`
 }
 
 // SSL represents valid SSL config
@@ -124,6 +139,15 @@ type lbRulesBase struct {
 
 type lbRuleBase struct {
 	ForwardingRule *ForwardingRule `json:"forwarding_rule"`
+}
+
+type lbFWRulesBase struct {
+	FirewallRules []LBFirewallRule `json:"firewall_rules"`
+	Meta          *Meta            `json:"meta"`
+}
+
+type lbFWRuleBase struct {
+	FirewallRule *LBFirewallRule `json:"firewall_rule"`
 }
 
 // Create a load balancer
@@ -266,4 +290,43 @@ func (l *LoadBalancerHandler) DeleteForwardingRule(ctx context.Context, ID strin
 	}
 
 	return l.client.DoWithContext(ctx, req, nil)
+}
+
+// GetFirewallRule will get a firewall rule from your load balancer subscription.
+func (l *LoadBalancerHandler) GetFirewallRule(ctx context.Context, ID string, ruleID string) (*LBFirewallRule, error) {
+	uri := fmt.Sprintf("%s/%s/firewall-rules/%s", lbPath, ID, ruleID)
+	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	fwRule := new(lbFWRuleBase)
+	if err = l.client.DoWithContext(ctx, req, fwRule); err != nil {
+		return nil, err
+	}
+
+	return fwRule.FirewallRule, nil
+}
+
+// ListFirewallRules lists all firewall rules for a load balancer subscription
+func (l *LoadBalancerHandler) ListFirewallRules(ctx context.Context, ID string, options *ListOptions) ([]LBFirewallRule, *Meta, error) {
+	uri := fmt.Sprintf("%s/%s/firewall-rules", lbPath, ID)
+	req, err := l.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	newValues, err := query.Values(options)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req.URL.RawQuery = newValues.Encode()
+
+	fwRules := new(lbFWRulesBase)
+	if err = l.client.DoWithContext(ctx, req, &fwRules); err != nil {
+		return nil, nil, err
+	}
+
+	return fwRules.FirewallRules, fwRules.Meta, nil
 }
