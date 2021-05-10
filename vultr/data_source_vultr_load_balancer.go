@@ -183,7 +183,7 @@ func dataSourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) e
 	var fwrRules []map[string]interface{}
 	for _, rules := range lbList[0].FirewallRules {
 		rule := map[string]interface{}{
-			"id":      rules.ID,
+			"id":      rules.RuleID,
 			"ip_type": rules.IPType,
 			"port":    strconv.Itoa(rules.Port),
 			"source":  rules.Source,

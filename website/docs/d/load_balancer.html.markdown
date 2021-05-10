@@ -51,7 +51,7 @@ The following attributes are exported:
 * `ipv6` - IPv6 address for your load balancer.
 * `health_check` - Defines the way load balancers should check for health. The configuration of a `health_check` is listed below.
 * `forwarding_rules` - Defines the forwarding rules for a load balancer. The configuration of a `forwarding_rules` is listened below.
-* `source` - (Required) IP address with subnet that is allowed through the firewall. You may also pass in `cloudflare` which will allow only CloudFlares IP range.
+* `private_network` - Defines the private network the load balancer is attached to.
 
 `health_check` supports the following
 
@@ -73,4 +73,4 @@ The following attributes are exported:
 `firewall_rules` supports the following
 * `frontend_port` - (Required) Port on load balancer side.
 * `ip_type` - (Required) The type of ip this rule is - may be either v4 or v6.
-* `source` - (Required) IP address with subnet that is allow through the firewall. You may also pass in `cloudflare` which will allow only CloudFlares IP range.
+* `source` - (Required) IP address with subnet that is allowed through the firewall. You may also pass in `cloudflare` which will allow only CloudFlares IP range.

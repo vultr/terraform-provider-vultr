@@ -257,7 +257,7 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 
 	var fwrMap []govultr.LBFirewallRule
 	if firewallRules, firewallRulesOk := d.GetOk("firewall_rules"); firewallRulesOk {
-		fwrMap = generateForwardingRules(firewallRules)
+		fwrMap = generateFirewallRules(firewallRules)
 
 	} else {
 		fwrMap = nil
@@ -526,7 +526,7 @@ func generateRules(rules interface{}) *govultr.ForwardingRules {
 	return fwMap
 }
 
-func generateForwardingRules(rules interface{}) []govultr.LBFirewallRule {
+func generateFirewallRules(rules interface{}) []govultr.LBFirewallRule {
 	var fwrMap []govultr.LBFirewallRule
 	for _, rule := range rules.(*schema.Set).List() {
 		r := rule.(map[string]interface{})
