@@ -222,5 +222,12 @@ func dataSourceVultrInstanceRead(d *schema.ResourceData, meta interface{}) error
 		return fmt.Errorf("error setting `backups_schedule`: %#v", err)
 	}
 
+	pn, err := getPrivateNetworks(client, d.Id())
+	if err != nil {
+		return fmt.Errorf(err.Error())
+	}
+
+	d.Set("private_network_ids", pn)
+
 	return nil
 }

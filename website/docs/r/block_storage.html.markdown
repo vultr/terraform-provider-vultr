@@ -46,6 +46,7 @@ The following attributes are exported:
 * `date_created` - The date this block storage was created.
 * `status` - Current status of your block storage.
 * `live` - Flag which will determine if a volume should be attached with a restart or not.
+* `mount_id` - An ID associated with the instance, when mounted the ID can be found in /dev/disk/by-id prefixed with virtio.
 
 ## Import
 

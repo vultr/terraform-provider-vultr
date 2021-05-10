@@ -19,6 +19,7 @@ func TestAccVultrPlan(t *testing.T) {
 					resource.TestCheckResourceAttr("data.vultr_plan.plan1gb", "ram", "1024"),
 					resource.TestCheckResourceAttr("data.vultr_plan.plan1gb", "disk", "25"),
 					resource.TestCheckResourceAttr("data.vultr_plan.plan1gb", "bandwidth", "1024"),
+					resource.TestCheckResourceAttr("data.vultr_plan.plan1gb", "disk_count", "1"),
 					resource.TestCheckResourceAttrSet("data.vultr_plan.plan1gb", "monthly_cost"),
 					resource.TestCheckResourceAttrSet("data.vultr_plan.plan1gb", "locations.#"),
 				),

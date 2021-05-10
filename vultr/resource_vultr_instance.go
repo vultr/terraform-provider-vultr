@@ -66,9 +66,10 @@ func resourceVultrInstance() *schema.Resource {
 				Default:  false,
 			},
 			"enable_private_network": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
+				Type:       schema.TypeBool,
+				Optional:   true,
+				Default:    false,
+				Deprecated: "In the next release of this provider we will be removing `enable_private_network` due to issues that may cause drift and having to maintain private network ip state. Please switch to using private_network_ids to manage your private network fields.",
 			},
 			"private_network_ids": {
 				Type:     schema.TypeList,
@@ -408,6 +409,13 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 	} else {
 		d.Set("backups_schedule", nil)
 	}
+
+	pn, err := getPrivateNetworks(client, d.Id())
+	if err != nil {
+		return diag.Errorf(err.Error())
+	}
+
+	d.Set("private_network_ids", pn)
 
 	return nil
 }
