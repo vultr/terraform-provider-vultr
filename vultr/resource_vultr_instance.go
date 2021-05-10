@@ -523,6 +523,10 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
+	if newBackupValue.(string) == "enabled" && !bsOK {
+		return diag.Errorf("Backups are being set to enabled please add backups_schedule")
+	}
+
 	// If we are disabling backups we don't do anything.
 	// On the read that gets called we will nil out backups_schedule.
 	if newBackupValue.(string) != "disabled" && d.HasChange("backups_schedule") {
