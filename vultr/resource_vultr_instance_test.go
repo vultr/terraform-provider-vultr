@@ -237,13 +237,13 @@ func testAccVultrInstanceBaseUpdateFirewall(name string) string {
 
 func testAccVultrInstanceBaseUpdateNetworkIDs(name string) string {
 	return fmt.Sprintf(`
-		resource "vultr_network" "foo" {
+		resource "vultr_private_network" "foo" {
 			region   = "sea"
 			description = "foo"
 			cidr_block  = "10.0.0.0/24"
 		}
 
-	resource "vultr_network" "bar" {
+	resource "vultr_private_network" "bar" {
 			region   = "sea"
 			description = "bar"
 			cidr_block  = "10.0.0.0/24"
@@ -259,7 +259,7 @@ func testAccVultrInstanceBaseUpdateNetworkIDs(name string) string {
 		activation_email = false
 		ddos_protection = true
 		tag = "even better tag"
-		network_ids = ["${vultr_network.foo.id}","${vultr_network.bar.id}"]
+		network_ids = ["${vultr_private_network.foo.id}","${vultr_private_network.bar.id}"]
 	}
 	`, name)
 }
