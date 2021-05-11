@@ -1,4 +1,17 @@
 ## 2.2.0 (March 30, 2021)
+IMPROVEMENTS:
+- resource/vultr_instances: allow the configuration of `backups_schedule` [134](https://github.com/vultr/terraform-provider-vultr/pull/134) [136](https://github.com/vultr/terraform-provider-vultr/pull/136)
+- resource/vultr_load_balancers: add support for new LB features `private_network` and `firewall_rules` [137](https://github.com/vultr/terraform-provider-vultr/pull/137)
+- resource/vultr_iso: support detaching during deletion  [131](https://github.com/vultr/terraform-provider-vultr/pull/131) Thanks @johnrichardrinehart
+- resource/vultr_instances: `private_network_ids` are now tracked in statefile  [135](https://github.com/vultr/terraform-provider-vultr/pull/135)
+- resource/vultr_block_storage: new field added `mount_id`  [135](https://github.com/vultr/terraform-provider-vultr/pull/135)
+- resource/vultr_plans: new field added `disk_count`  [135](https://github.com/vultr/terraform-provider-vultr/pull/135)
+
+Dependency:
+- updated terraform-plugin-sdk to v2.4.0 -> v2.6.0  [134](https://github.com/vultr/terraform-provider-vultr/pull/134)
+- updated govultr to v2.3.1 -> v2.5.1  [135](https://github.com/vultr/terraform-provider-vultr/pull/135)
+
+## 2.2.0 (March 30, 2021)
 Feature:
 - Updated to Go 1.16 to support `darwin_arm64` [125](https://github.com/vultr/terraform-provider-vultr/pull/125)
 
