@@ -415,19 +415,20 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 	if d.HasChange("firewall_rules") {
 		_, newFWR := d.GetChange("firewall_rules")
 
-		var rules []govultr.LBFirewallRule
-		for _, val := range newFWR.(*schema.Set).List() {
-			t := val.(map[string]interface{})
+		fwList := newFWR.(*schema.Set).List()
+		req.FirewallRules = []govultr.LBFirewallRule{}
 
-			rule := govultr.LBFirewallRule{
-				Port:   t["port"].(int),
-				Source: t["source"].(string),
-				IPType: t["ip_type"].(string),
+		if len(fwList) != 0 {
+			for _, val := range newFWR.(*schema.Set).List() {
+				t := val.(map[string]interface{})
+				rule := govultr.LBFirewallRule{
+					Port:   t["port"].(int),
+					Source: t["source"].(string),
+					IPType: t["ip_type"].(string),
+				}
+				req.FirewallRules = append(req.FirewallRules, rule)
 			}
-			rules = append(rules, rule)
-
 		}
-		req.FirewallRules = rules
 	}
 
 	if d.HasChange("attached_instances") {
