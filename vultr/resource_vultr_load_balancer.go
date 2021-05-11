@@ -39,6 +39,10 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				Computed:     true,
 				ValidateFunc: validation.StringInSlice([]string{"leastconn", "roundrobin"}, false),
 			},
+			"private_network": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"ssl_redirect": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -157,6 +161,33 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				},
 			},
 
+			"firewall_rules": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"port": {
+							Type:         schema.TypeInt,
+							Required:     true,
+							ValidateFunc: validation.IntBetween(1, 65535),
+						},
+						"ip_type": {
+							Type:         schema.TypeString,
+							Required:     true,
+							ValidateFunc: validation.StringInSlice([]string{"v4", "v6"}, false),
+						},
+						"source": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"id": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+					},
+				},
+			},
+
 			"has_ssl": {
 				Type:     schema.TypeBool,
 				Computed: true,
@@ -224,6 +255,14 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		stickySessions = nil
 	}
 
+	var fwrMap []govultr.LBFirewallRule
+	if firewallRules, firewallRulesOk := d.GetOk("firewall_rules"); firewallRulesOk {
+		fwrMap = generateFirewallRules(firewallRules)
+
+	} else {
+		fwrMap = nil
+	}
+
 	req := &govultr.LoadBalancerReq{
 		Region:             d.Get("region").(string),
 		Label:              d.Get("label").(string),
@@ -235,6 +274,8 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		SSLRedirect:        govultr.BoolToBoolPtr(d.Get("ssl_redirect").(bool)),
 		ProxyProtocol:      govultr.BoolToBoolPtr(d.Get("proxy_protocol").(bool)),
 		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
+		PrivateNetwork:     govultr.StringToStringPtr(d.Get("private_network").(string)),
+		FirewallRules:      fwrMap,
 	}
 
 	lb, err := client.LoadBalancer.Create(ctx, req)
@@ -280,6 +321,21 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 		return diag.Errorf("error setting `forwarding_rules`: %v", err)
 	}
 
+	var fwrList []map[string]interface{}
+	for _, rules := range lb.FirewallRules {
+		rule := map[string]interface{}{
+			"id":      rules.RuleID,
+			"source":  rules.Source,
+			"ip_type": rules.IPType,
+			"port":    rules.Port,
+		}
+		fwrList = append(fwrList, rule)
+	}
+
+	if err := d.Set("firewall_rules", fwrList); err != nil {
+		return diag.Errorf("error setting `firewall_rules`: %v", err)
+	}
+
 	var hc []map[string]interface{}
 	hcInfo := map[string]interface{}{
 		"protocol":            lb.HealthCheck.Protocol,
@@ -302,6 +358,7 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	d.Set("balancing_algorithm", lb.GenericInfo.BalancingAlgorithm)
 	d.Set("proxy_protocol", lb.GenericInfo.ProxyProtocol)
 	d.Set("cookie_name", lb.GenericInfo.StickySessions.CookieName)
+	d.Set("private_network", lb.GenericInfo.PrivateNetwork)
 	d.Set("label", lb.Label)
 	d.Set("status", lb.Status)
 	d.Set("ipv4", lb.IPV4)
@@ -355,6 +412,25 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 		req.ForwardingRules = rules
 	}
 
+	if d.HasChange("firewall_rules") {
+		_, newFWR := d.GetChange("firewall_rules")
+
+		fwList := newFWR.(*schema.Set).List()
+		req.FirewallRules = []govultr.LBFirewallRule{}
+
+		if len(fwList) != 0 {
+			for _, val := range newFWR.(*schema.Set).List() {
+				t := val.(map[string]interface{})
+				rule := govultr.LBFirewallRule{
+					Port:   t["port"].(int),
+					Source: t["source"].(string),
+					IPType: t["ip_type"].(string),
+				}
+				req.FirewallRules = append(req.FirewallRules, rule)
+			}
+		}
+	}
+
 	if d.HasChange("attached_instances") {
 		_, newInstances := d.GetChange("attached_instances")
 		log.Println(newInstances)
@@ -373,6 +449,10 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 
 		stickySessions.CookieName = cookieName.(string)
 		req.StickySessions = stickySessions
+	}
+
+	if d.HasChange("private_network") {
+		req.PrivateNetwork = govultr.StringToStringPtr(d.Get("private_network").(string))
 	}
 
 	if err := client.LoadBalancer.Update(ctx, d.Id(), req); err != nil {
@@ -445,6 +525,20 @@ func generateRules(rules interface{}) *govultr.ForwardingRules {
 		fwMap.ForwardRuleList = append(fwMap.ForwardRuleList, t)
 	}
 	return fwMap
+}
+
+func generateFirewallRules(rules interface{}) []govultr.LBFirewallRule {
+	var fwrMap []govultr.LBFirewallRule
+	for _, rule := range rules.(*schema.Set).List() {
+		r := rule.(map[string]interface{})
+		t := govultr.LBFirewallRule{
+			Port:   r["port"].(int),
+			Source: r["source"].(string),
+			IPType: r["ip_type"].(string),
+		}
+		fwrMap = append(fwrMap, t)
+	}
+	return fwrMap
 }
 
 func generateHealthCheck(health interface{}) *govultr.HealthCheck {

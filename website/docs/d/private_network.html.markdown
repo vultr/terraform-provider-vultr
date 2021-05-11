@@ -6,7 +6,7 @@ description: |-
   Get information about a Vultr private network.
 ---
 
-# vultr_network
+# vultr_private_network
 
 Get information about a Vultr private network.
 

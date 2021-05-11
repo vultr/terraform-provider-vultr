@@ -6,7 +6,7 @@ description: |-
   Provides a Vultr private network resource. This can be used to create, read, and delete private networks on your Vultr account.
 ---
 
-# vultr_network
+# vultr_private_network
 
 Provides a Vultr private network resource. This can be used to create, read, and delete private networks on your Vultr account.
 

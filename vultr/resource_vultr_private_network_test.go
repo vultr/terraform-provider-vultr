@@ -54,7 +54,7 @@ func TestAccVultrNetworkWithCidrBlock(t *testing.T) {
 
 func testAccCheckVultrNetworkDestroy(s *terraform.State) error {
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != "vultr_network" {
+		if rs.Type != "vultr_private_network" {
 			continue
 		}
 
