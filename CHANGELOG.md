@@ -1,4 +1,4 @@
-## 2.2.0 (March 30, 2021)
+## 2.3.0 (May 11, 2021)
 IMPROVEMENTS:
 - resource/vultr_instances: allow the configuration of `backups_schedule` [134](https://github.com/vultr/terraform-provider-vultr/pull/134) [136](https://github.com/vultr/terraform-provider-vultr/pull/136)
 - resource/vultr_load_balancers: add support for new LB features `private_network` and `firewall_rules` [137](https://github.com/vultr/terraform-provider-vultr/pull/137)
