@@ -1,3 +1,8 @@
+## 2.3.1 (June 2, 2021)
+Bug Fix:
+- resource/bare_metal: fix type issue on `v6_network_size` [140](https://github.com/vultr/terraform-provider-vultr/pull/140)
+- resource/bare_metal: fix missing `mac_address` definition in scheme [140](https://github.com/vultr/terraform-provider-vultr/pull/140)
+
 ## 2.3.0 (May 11, 2021)
 IMPROVEMENTS:
 - resource/vultr_instances: allow the configuration of `backups_schedule` [134](https://github.com/vultr/terraform-provider-vultr/pull/134) [136](https://github.com/vultr/terraform-provider-vultr/pull/136)
