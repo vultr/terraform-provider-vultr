@@ -153,7 +153,11 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Computed: true,
 			},
 			"v6_network_size": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
+			"mac_address": {
+				Type:     schema.TypeInt,
 				Computed: true,
 			},
 		},
