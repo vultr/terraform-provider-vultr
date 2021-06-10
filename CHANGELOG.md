@@ -1,3 +1,7 @@
+## 2.3.2 (June 10, 2021)
+Enhancement:
+- resource/instance: allow plan changes to do in-place upgrades [142](https://github.com/vultr/terraform-provider-vultr/pull/142)
+
 ## 2.3.1 (June 2, 2021)
 Bug Fix:
 - resource/bare_metal: fix type issue on `v6_network_size` [140](https://github.com/vultr/terraform-provider-vultr/pull/140)
