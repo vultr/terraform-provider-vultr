@@ -1,4 +1,4 @@
-## 2.3.1 (June 10, 2021)
+## 2.3.2 (June 10, 2021)
 Enhancement:
 - resource/instance: allow plan changes to do in-place upgrades [142](https://github.com/vultr/terraform-provider-vultr/pull/142)
 
