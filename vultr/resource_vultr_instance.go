@@ -33,9 +33,9 @@ func resourceVultrInstance() *schema.Resource {
 				ForceNew: true,
 			},
 			"plan": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: validation.NoZeroValues,
 			},
 			"iso_id": {
 				Type:     schema.TypeString,
