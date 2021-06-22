@@ -536,6 +536,15 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
+	// There is a delay between the API data returning the newly updated plan change
+	// This will wait until the plan has been updated before going to the read call
+	if d.HasChange("plan") {
+		oldP, newP := d.GetChange("plan")
+		if _, err := waitForUpgrade(ctx, d, newP.(string), []string{oldP.(string)}, "plan", meta); err != nil {
+			return diag.Errorf("error while waiting for instance %s to have updated plan : %s", d.Id(), err)
+		}
+	}
+
 	return resourceVultrInstanceRead(ctx, d, meta)
 }
 
@@ -564,7 +573,7 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 
 func optionCheck(options map[string]bool) (string, error) {
 
-	result := []string{}
+	var result []string
 	for k, v := range options {
 		if v == true {
 			result = append(result, k)
@@ -620,6 +629,38 @@ func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta int
 		} else {
 			return nil, "", nil
 		}
+	}
+}
+
+func waitForUpgrade(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+	log.Printf(
+		"[INFO] Waiting for instance (%s) to have %s of %s",
+		d.Id(), attribute, target)
+
+	stateConf := &resource.StateChangeConf{
+		Pending:        pending,
+		Target:         []string{target},
+		Refresh:        newInstancePlanRefresh(ctx, d, meta, attribute),
+		Timeout:        60 * time.Minute,
+		Delay:          10 * time.Second,
+		MinTimeout:     3 * time.Second,
+		NotFoundChecks: 60,
+	}
+
+	return stateConf.WaitForStateContext(ctx)
+}
+
+func newInstancePlanRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc {
+	client := meta.(*Client).govultrClient()
+	return func() (interface{}, string, error) {
+		log.Printf("[INFO] Upgrading instance")
+		instance, err := client.Instance.Get(ctx, d.Id())
+		if err != nil {
+			return nil, "", fmt.Errorf("error retrieving instance %s : %s", d.Id(), err)
+		}
+
+		log.Printf("[INFO] The instances plan is %s", instance.Plan)
+		return instance, instance.Plan, nil
 	}
 }
 
