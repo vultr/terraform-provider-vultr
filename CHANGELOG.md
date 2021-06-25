@@ -1,3 +1,7 @@
+## 2.3.3 (June 25, 2021)
+Enhancement:
+- resource/instance: adding wait if a plan is being upgrade [144](https://github.com/vultr/terraform-provider-vultr/pull/144)
+
 ## 2.3.2 (June 10, 2021)
 Enhancement:
 - resource/instance: allow plan changes to do in-place upgrades [142](https://github.com/vultr/terraform-provider-vultr/pull/142)
