@@ -28,7 +28,7 @@ Create a new bare metal server with options:
 resource "vultr_bare_metal_server" "my_server" {
 	plan = "vbm-4c-32gb"
 	region = "ewr"
-	os_id = 270"
+	os_id = 270
 	label = "my-server-label"
 	tag = "my-server-tag"
 	hostname = "my-server-hostname"
