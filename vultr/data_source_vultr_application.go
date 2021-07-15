@@ -27,6 +27,18 @@ func dataSourceVultrApplication() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"type": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"vendor": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"image_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -81,5 +93,8 @@ func dataSourceVultrApplicationRead(d *schema.ResourceData, meta interface{}) er
 	d.Set("deploy_name", appList[0].DeployName)
 	d.Set("name", appList[0].Name)
 	d.Set("short_name", appList[0].ShortName)
+	d.Set("vendor", appList[0].Vendor)
+	d.Set("image_id", appList[0].ImageID)
+	d.Set("type", appList[0].Type)
 	return nil
 }
