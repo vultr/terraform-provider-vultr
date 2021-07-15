@@ -46,6 +46,7 @@ The following arguments are supported:
 * `plan` - (Required) The ID of the plan that you want the server to subscribe to.
 * `os_id` - (Optional) The ID of the operating system to be installed on the server.
 * `app_id` - (Optional) The ID of the Vultr application to be installed on the server.
+* `image_id` - (Optional) The ID of the Vultr marketplace application to be installed on the server.
 * `snapshot_id` - (Optional) The ID of the Vultr snapshot that the server will restore for the initial installation. 
 * `script_id` - (Optional) The ID of the startup script you want added to the server.
 * `ssh_key_ids` - (Optional) A list of SSH key IDs to apply to the server on install (only valid for Linux/FreeBSD).
@@ -79,6 +80,7 @@ The following attributes are exported:
 * `plan` - The ID of the plan that server is subscribed to.
 * `os_id` - The ID of the operating system installed on the server.
 * `app_id` - The ID of the Vultr application installed on the server.
+* `app_id` - The ID of the Vultr marketplace application installed on the server.
 * `snapshot_id` - The ID of the Vultr snapshot that the server was restored from.
 * `script_id` - The ID of the startup script that was added to the server.
 * `ssh_key_ids` - A list of SSH key IDs applied to the server on install.
