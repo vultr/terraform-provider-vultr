@@ -48,6 +48,12 @@ func resourceVultrInstance() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"image_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+				ForceNew: true,
+			},
 			"os_id": {
 				Type:     schema.TypeInt,
 				Computed: true,
@@ -250,9 +256,10 @@ func resourceVultrInstance() *schema.Resource {
 }
 
 func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	// Four unique options to image your server
+	// five unique options to image your server
 	osID := d.Get("os_id")
 	appID, appOK := d.GetOk("app_id")
+	imageID, imageOK := d.GetOk("image_id")
 	isoID, isoOK := d.GetOk("iso_id")
 	snapID, snapOK := d.GetOk("snapshot_id")
 	backups := d.Get("backups").(string)
@@ -264,7 +271,7 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("Backups are set to disabled please remove backups_schedule")
 	}
 
-	osOptions := map[string]bool{"app_id": appOK, "iso_id": isoOK, "snapshot_id": snapOK}
+	osOptions := map[string]bool{"app_id": appOK, "iso_id": isoOK, "snapshot_id": snapOK, "image_id": imageOK}
 	osOption, err := optionCheck(osOptions)
 	if err != nil {
 		return diag.FromErr(err)
@@ -301,6 +308,8 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		req.OsID = osID.(int)
 	case "app_id":
 		req.AppID = appID.(int)
+	case "image_id":
+		req.ImageID = imageID.(string)
 	case "iso_id":
 		req.ISOID = isoID.(string)
 	case "snapshot_id":
