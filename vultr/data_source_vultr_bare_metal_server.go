@@ -90,6 +90,10 @@ func dataSourceVultrBareMetalServer() *schema.Resource {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
+			"image_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"features": {
 				Type:     schema.TypeList,
 				Computed: true,
@@ -163,6 +167,7 @@ func dataSourceVultrBareMetalServerRead(d *schema.ResourceData, meta interface{}
 	d.Set("mac_address", serverList[0].MacAddress)
 	d.Set("os_id", serverList[0].OsID)
 	d.Set("app_id", serverList[0].AppID)
+	d.Set("image_id", serverList[0].ImageID)
 	d.Set("v6_network", serverList[0].V6Network)
 	d.Set("v6_main_ip", serverList[0].V6MainIP)
 	d.Set("v6_network_size", serverList[0].V6NetworkSize)

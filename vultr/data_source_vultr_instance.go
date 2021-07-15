@@ -115,6 +115,10 @@ func dataSourceVultrInstance() *schema.Resource {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
+			"image_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"firewall_group_id": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -200,6 +204,7 @@ func dataSourceVultrInstanceRead(d *schema.ResourceData, meta interface{}) error
 	d.Set("tag", serverList[0].Tag)
 	d.Set("os_id", serverList[0].OsID)
 	d.Set("app_id", serverList[0].AppID)
+	d.Set("image_id", serverList[0].ImageID)
 	d.Set("firewall_group_id", serverList[0].FirewallGroupID)
 	d.Set("v6_network", serverList[0].V6Network)
 	d.Set("v6_main_ip", serverList[0].V6MainIP)
