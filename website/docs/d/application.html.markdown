@@ -41,3 +41,6 @@ The following attributes are exported:
 * `name` - The name of the application.
 * `deploy_name` - The deploy name of the application.
 * `short_name` - The short name of the application.
+* `vendor` - The vendor who authored the application.
+* `type` - This defines if an application is `one-click` or `marketplace` .
+* `image_id` - The Marketplace ID for this application.

@@ -56,3 +56,4 @@ The following attributes are exported:
 * `tag` - The server's tag.
 * `os_id` - The server's operating system ID.
 * `app_id` - The server's application ID.
+* `image_id` - The Marketplace ID for this application.

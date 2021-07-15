@@ -61,6 +61,7 @@ The following attributes are exported:
 * `tag` - The server's tag.
 * `os_id` - The server's operating system ID.
 * `app_id` - The server's application ID.
+* `image_id` - The Marketplace ID for this application.
 * `firewall_group_id` - The ID of the firewall group applied to this server.
 * `features` - Array of which features are enabled.
 * `backups_schedule` - The current configuration for backups 
