@@ -29,7 +29,7 @@ resource "vultr_reserved_ip" "my_reserved_ip" {
 	label = "my-reserved-ip"
 	region = "sea"
 	ip_type = "v4"
-	attached_id = "b9cc6fad-70b1-40ee-ab6a-4d622858962f"
+	instance_id = "b9cc6fad-70b1-40ee-ab6a-4d622858962f"
 }
 ```
 
