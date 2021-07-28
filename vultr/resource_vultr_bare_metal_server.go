@@ -97,6 +97,12 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Computed: true,
 				Optional: true,
 			},
+			"image_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+				ForceNew: true,
+				Optional: true,
+			},
 			"reserved_ipv4": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -167,9 +173,10 @@ func resourceVultrBareMetalServer() *schema.Resource {
 func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	appID, appOK := d.GetOk("app_id")
 	osID, osOK := d.GetOk("os_id")
+	imageID, imageOK := d.GetOk("image_id")
 	snapshotID, snapshotOK := d.GetOk("snapshot_id")
 
-	osOptions := map[string]bool{"os_id": osOK, "app_id": appOK, "snapshot_id": snapshotOK}
+	osOptions := map[string]bool{"os_id": osOK, "app_id": appOK, "snapshot_id": snapshotOK, "image_id": imageOK}
 	osOption, err := bareMetalServerOSCheck(osOptions)
 	if err != nil {
 		return diag.FromErr(err)
@@ -200,6 +207,8 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 		req.SnapshotID = snapshotID.(string)
 	case "os_id":
 		req.OsID = osID.(int)
+	case "image_id":
+		req.ImageID = imageID.(string)
 	}
 
 	client := meta.(*Client).govultrClient()
@@ -250,6 +259,7 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 	d.Set("mac_address", bms.MacAddress)
 	d.Set("os_id", bms.OsID)
 	d.Set("app_id", bms.AppID)
+	d.Set("image_id", bms.ImageID)
 	d.Set("v6_network", bms.V6Network)
 	d.Set("v6_main_ip", bms.V6MainIP)
 	d.Set("v6_network_size", bms.V6NetworkSize)

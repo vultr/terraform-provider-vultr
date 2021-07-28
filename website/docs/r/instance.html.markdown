@@ -48,6 +48,7 @@ The following arguments are supported:
 * `os_id` - (Optional) The ID of the operating system to be installed on the server.
 * `iso_id` - (Optional) The ID of the ISO file to be installed on the server.
 * `app_id` - (Optional) The ID of the Vultr application to be installed on the server.
+* `image_id` - (Optional) The ID of the Vultr marketplace application to be installed on the server.
 * `snapshot_id` - (Optional) The ID of the Vultr snapshot that the server will restore for the initial installation. 
 * `script_id` - (Optional) The ID of the startup script you want added to the server.
 * `firewall_group_id` - (Optional) The ID of the firewall group to assign to the server.
@@ -100,6 +101,7 @@ The following attributes are exported:
 * `os_id` - The ID of the operating system installed on the server.
 * `iso_id` - The ID of the ISO file installed on the server.
 * `app_id` - The ID of the Vultr application installed on the server.
+* `image_id` - The ID of the Vultr marketplace application installed on the server.
 * `snapshot_id` - The ID of the Vultr snapshot that the server was restored from.
 * `script_id` - The ID of the startup script that was added to the server.
 * `firewall_group_id` - The ID of the firewall group assigned to the server.

@@ -23,6 +23,12 @@ func TestAccVultrApplication(t *testing.T) {
 						"data.vultr_application.docker", "short_name", "docker"),
 					resource.TestCheckResourceAttr(
 						"data.vultr_application.docker", "id", "17"),
+					resource.TestCheckResourceAttr(
+						"data.vultr_application.docker", "type", "one-click"),
+					resource.TestCheckResourceAttr(
+						"data.vultr_application.docker", "vendor", "vultr"),
+					resource.TestCheckResourceAttr(
+						"data.vultr_application.docker", "image_id", ""),
 				),
 			},
 		},

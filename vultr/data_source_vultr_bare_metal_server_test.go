@@ -32,6 +32,7 @@ func TestAccDataSourceVultrBareMetalServer(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "tag"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "os_id"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "app_id"),
+					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "image_id"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "v6_network"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "v6_main_ip"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "v6_network_size"),
