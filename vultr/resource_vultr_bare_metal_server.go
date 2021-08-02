@@ -61,7 +61,6 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				ForceNew: true,
-				Default:  false,
 			},
 			"ssh_key_ids": {
 				Type:     schema.TypeList,
@@ -79,7 +78,6 @@ func resourceVultrBareMetalServer() *schema.Resource {
 			"activation_email": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default:  true,
 			},
 			"hostname": {
 				Type:     schema.TypeString,
