@@ -1,3 +1,19 @@
+## 2.4.0 (August 02, 2021)
+Enhancement:
+- resource/instance: add marketplace support with `image_id` [150](https://github.com/vultr/terraform-provider-vultr/pull/150)
+- resource/bare_metal: add marketplace support with `image_id` [150](https://github.com/vultr/terraform-provider-vultr/pull/150)
+- datasource/applications: adds marketplace support [150](https://github.com/vultr/terraform-provider-vultr/pull/150)
+- Add openBSD to builds [155](https://github.com/vultr/terraform-provider-vultr/pull/155)
+
+Bug Fix:
+- resource/bare_metal: fix importer [157](https://github.com/vultr/terraform-provider-vultr/pull/157)
+- Doc updates [152](https://github.com/vultr/terraform-provider-vultr/pull/152) [146](https://github.com/vultr/terraform-provider-vultr/pull/146) [147](https://github.com/vultr/terraform-provider-vultr/pull/147)
+
+Dependency:
+- updated terraform-plugin-sdk to v2.6.0 -> v2.7.0  [149](https://github.com/vultr/terraform-provider-vultr/pull/149)
+- updated govultr to v2.5.1 -> v2.7.1  [150](https://github.com/vultr/terraform-provider-vultr/pull/150)
+
+
 ## 2.3.3 (June 25, 2021)
 Enhancement:
 - resource/instance: adding wait if a plan is being upgrade [144](https://github.com/vultr/terraform-provider-vultr/pull/144)
