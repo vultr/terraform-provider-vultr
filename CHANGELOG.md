@@ -1,3 +1,7 @@
+## 2.4.1 (August 13, 2021)
+Enhancement:
+- resource/instance: increased default timeout for create/update from 20 to 60 minutes [160](https://github.com/vultr/terraform-provider-vultr/pull/160)
+
 ## 2.4.0 (August 02, 2021)
 Enhancement:
 - resource/instance: add marketplace support with `image_id` [150](https://github.com/vultr/terraform-provider-vultr/pull/150)
