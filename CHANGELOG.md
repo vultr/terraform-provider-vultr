@@ -1,3 +1,7 @@
+## 2.4.2 (September 15, 2021)
+Bug Fix:
+- resource/load_balancer: added missing `region` and `ssl_redirect` values from being set [163](https://github.com/vultr/terraform-provider-vultr/pull/163)
+
 ## 2.4.1 (August 13, 2021)
 Enhancement:
 - resource/instance: increased default timeout for create/update from 20 to 60 minutes [160](https://github.com/vultr/terraform-provider-vultr/pull/160)
