@@ -102,3 +102,11 @@ The following attributes are exported:
 * `forwarding_rules` - Defines the forwarding rules for a load balancer.
 * `firewall_rules` - Defines the firewall rules for a load balancer.
 * `private_network` - Defines the private network the load balancer is attached to.
+
+## Import
+
+Load Balancers can be imported using the load balancer `ID`, e.g.
+
+```
+terraform import vultr_load_balancer.lb b6a859c5-b299-49dd-8888-b1abbc517d08
+```
