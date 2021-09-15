@@ -364,7 +364,7 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	d.Set("ipv4", lb.IPV4)
 	d.Set("ipv6", lb.IPV6)
 	d.Set("region", lb.Region)
-	d.Set("ssl_redirect", lb.SSLInfo)
+	d.Set("ssl_redirect", lb.GenericInfo.SSLRedirect)
 
 	return nil
 }
