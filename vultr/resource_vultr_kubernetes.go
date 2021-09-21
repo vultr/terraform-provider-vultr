@@ -6,12 +6,10 @@ import (
 	"log"
 	"time"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
-
-	"github.com/vultr/govultr/v2"
-
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/vultr/govultr/v2"
 )
 
 func resourceVultrKubernetes() *schema.Resource {
@@ -43,62 +41,9 @@ func resourceVultrKubernetes() *schema.Resource {
 				Type:     schema.TypeList,
 				Required: true,
 				MinItems: 1,
+				MaxItems: 1,
 				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"label": {
-							Type:     schema.TypeString,
-							Required: true,
-						},
-						"plan": {
-							Type:     schema.TypeString,
-							Required: true,
-						},
-						"node_quantity": {
-							Type:     schema.TypeInt,
-							Required: true,
-						},
-						//computed fields
-						"id": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"date_created": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"date_updated": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"status": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						//"nodes": {
-						//	Type:     schema.TypeSet,
-						//	Computed: true,
-						//	Elem: &schema.Resource{
-						//		Schema: map[string]*schema.Schema{
-						//			"id": {
-						//				Type:     schema.TypeString,
-						//				Computed: true,
-						//			},
-						//			"date_created": {
-						//				Type:     schema.TypeString,
-						//				Computed: true,
-						//			},
-						//			"label": {
-						//				Type:     schema.TypeString,
-						//				Computed: true,
-						//			},
-						//			"status": {
-						//				Type:     schema.TypeString,
-						//				Computed: true,
-						//			},
-						//		},
-						//	},
-						//},
-					},
+					Schema: nodePoolSchema(),
 				},
 			},
 
@@ -183,19 +128,19 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 				"id":           v.ID,
 				"status":       v.Status,
 				"date_created": v.DateCreated,
-				//"label":        v.Label,
+				"label":        v.Label,
 			}
 			instances = append(instances, n)
 		}
 
 		pool := map[string]interface{}{
-			"id":           pools.ID,
-			"date_created": pools.DateCreated,
-			"date_updated": pools.DateUpdated,
-			"status":       pools.Status,
-			"plan":         pools.PlanID,
-			//"label":         pools.Label,
-			//"nodes":         instances,
+			"id":            pools.ID,
+			"date_created":  pools.DateCreated,
+			"date_updated":  pools.DateUpdated,
+			"status":        pools.Status,
+			"plan":          pools.PlanID,
+			"label":         pools.Label,
+			"nodes":         instances,
 			"node_quantity": pools.Count,
 		}
 
@@ -217,7 +162,34 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 }
 
 func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	_ = meta.(*Client).govultrClient()
+	client := meta.(*Client).govultrClient()
+
+	req := &govultr.ClusterReqUpdate{}
+
+	if d.HasChange("label") {
+		req.Label = d.Get("label").(string)
+	}
+
+	if err := client.Kubernetes.UpdateCluster(ctx, d.Id(), req); err != nil {
+		return diag.Errorf("error updating vke cluster (%v): %v", d.Id(), err)
+	}
+
+	if d.HasChange("node_pools") {
+
+		_, np := d.GetChange("node_pools")
+
+		pool := np.([]interface{})
+		nq := pool[0].(map[string]interface{})
+
+		//todo add in wait if we are adding nodes to a node pool
+
+		npReq := &govultr.NodePoolReqUpdate{
+			NodeQuantity: nq["node_quantity"].(int),
+		}
+		if _, err := client.Kubernetes.UpdateNodePool(ctx, d.Id(), nq["id"].(string), npReq); err != nil {
+			return diag.Errorf("error updating vke cluster (%v) nodepool (%v): %v", d.Id(), nq["id"].(string), err)
+		}
+	}
 
 	return resourceVultrKubernetesRead(ctx, d, meta)
 }
