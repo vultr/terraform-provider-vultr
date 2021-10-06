@@ -1,9 +1,12 @@
 package vultr
 
-import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+import (
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+)
 
-func nodePoolSchema() map[string]*schema.Schema {
-	return map[string]*schema.Schema{
+func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
+	s := map[string]*schema.Schema{
 		"label": {
 			Type:     schema.TypeString,
 			Required: true,
@@ -13,8 +16,9 @@ func nodePoolSchema() map[string]*schema.Schema {
 			Required: true,
 		},
 		"node_quantity": {
-			Type:     schema.TypeInt,
-			Required: true,
+			Type:         schema.TypeInt,
+			ValidateFunc: validation.IntAtLeast(1),
+			Required:     true,
 		},
 		//computed fields
 		"id": {
@@ -33,29 +37,40 @@ func nodePoolSchema() map[string]*schema.Schema {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
-		"nodes": {
-			Type:     schema.TypeList,
-			Computed: true,
-			Elem: &schema.Resource{
-				Schema: map[string]*schema.Schema{
-					"id": {
-						Type:     schema.TypeString,
-						Computed: true,
-					},
-					"date_created": {
-						Type:     schema.TypeString,
-						Computed: true,
-					},
-					"label": {
-						Type:     schema.TypeString,
-						Computed: true,
-					},
-					"status": {
-						Type:     schema.TypeString,
-						Computed: true,
-					},
-				},
-			},
-		},
+		//"nodes": {
+		//	Type:     schema.TypeList,
+		//	Computed: true,
+		//	Elem: &schema.Resource{
+		//		Schema: map[string]*schema.Schema{
+		//			"id": {
+		//				Type:     schema.TypeString,
+		//				Computed: true,
+		//			},
+		//			"date_created": {
+		//				Type:     schema.TypeString,
+		//				Computed: true,
+		//			},
+		//			"label": {
+		//				Type:     schema.TypeString,
+		//				Computed: true,
+		//			},
+		//			"status": {
+		//				Type:     schema.TypeString,
+		//				Computed: true,
+		//			},
+		//		},
+		//	},
+		//},
 	}
+
+	if isNodePool {
+		s["cluster_id"] = &schema.Schema{
+			Type:         schema.TypeString,
+			Required:     true,
+			ValidateFunc: validation.NoZeroValues,
+			ForceNew:     true,
+		}
+	}
+
+	return s
 }

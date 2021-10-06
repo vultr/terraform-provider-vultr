@@ -38,12 +38,12 @@ func resourceVultrKubernetes() *schema.Resource {
 			},
 
 			"node_pools": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Required: true,
 				MinItems: 1,
 				MaxItems: 1,
 				Elem: &schema.Resource{
-					Schema: nodePoolSchema(),
+					Schema: nodePoolSchema(false),
 				},
 			},
 
@@ -119,36 +119,20 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 		return nil
 	}
 
-	var nodePools []map[string]interface{}
-	for _, pools := range vke.NodePools {
-
-		var instances []map[string]interface{}
-		for _, v := range pools.Nodes {
-			n := map[string]interface{}{
-				"id":           v.ID,
-				"status":       v.Status,
-				"date_created": v.DateCreated,
-				"label":        v.Label,
+	//todo Change this to look for tags once that API update goes out
+	found := false
+	for _, v := range vke.NodePools {
+		if "single" == v.Label {
+			if err := d.Set("node_pools", flattenNodePool(&v)); err != nil {
+				return diag.Errorf("error setting `node_pool`: %v", err)
 			}
-			instances = append(instances, n)
+			found = true
+			break
 		}
-
-		pool := map[string]interface{}{
-			"id":            pools.ID,
-			"date_created":  pools.DateCreated,
-			"date_updated":  pools.DateUpdated,
-			"status":        pools.Status,
-			"plan":          pools.PlanID,
-			"label":         pools.Label,
-			"nodes":         instances,
-			"node_quantity": pools.Count,
-		}
-
-		nodePools = append(nodePools, pool)
 	}
 
-	if err := d.Set("node_pools", nodePools); err != nil {
-		return diag.Errorf("error setting `node_pools`: %v", err)
+	if !found {
+		return diag.Errorf("no default node_pool found : %v", err)
 	}
 
 	d.Set("date_created", vke.DateCreated)
@@ -176,18 +160,16 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 
 	if d.HasChange("node_pools") {
 
-		_, np := d.GetChange("node_pools")
+		oldNP, newNP := d.GetChange("node_pools")
 
-		pool := np.([]interface{})
-		nq := pool[0].(map[string]interface{})
+		o := oldNP.(*schema.Set).List()[0].(map[string]interface{})
+		n := newNP.(*schema.Set).List()[0].(map[string]interface{})
 
-		//todo add in wait if we are adding nodes to a node pool
-
-		npReq := &govultr.NodePoolReqUpdate{
-			NodeQuantity: nq["node_quantity"].(int),
-		}
-		if _, err := client.Kubernetes.UpdateNodePool(ctx, d.Id(), nq["id"].(string), npReq); err != nil {
-			return diag.Errorf("error updating vke cluster (%v) nodepool (%v): %v", d.Id(), nq["id"].(string), err)
+		if o["node_quantity"] != n["node_quantity"] {
+			req := &govultr.NodePoolReqUpdate{NodeQuantity: n["node_quantity"].(int)}
+			if _, err := client.Kubernetes.UpdateNodePool(ctx, d.Id(), o["id"].(string), req); err != nil {
+				return diag.Errorf("error deleting VKE node pool %v : %v", o["id"], err)
+			}
 		}
 	}
 
@@ -207,7 +189,7 @@ func resourceVultrKubernetesDelete(ctx context.Context, d *schema.ResourceData, 
 
 func generateNodePool(pools interface{}) []govultr.NodePoolReq {
 	var npr []govultr.NodePoolReq
-	pool := pools.([]interface{})
+	pool := pools.(*schema.Set).List()
 	for _, p := range pool {
 		r := p.(map[string]interface{})
 
@@ -258,4 +240,22 @@ func newVKEStateRefresh(ctx context.Context, d *schema.ResourceData, meta interf
 
 		return nil, "", nil
 	}
+}
+
+func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
+	var nodePools []map[string]interface{}
+
+	pool := map[string]interface{}{
+		"label":         np.Label,
+		"plan":          np.Plan,
+		"node_quantity": np.NodeQuantity,
+		"id":            np.ID,
+		"date_created":  np.DateCreated,
+		"date_updated":  np.DateUpdated,
+		"status":        np.Status,
+	}
+
+	nodePools = append(nodePools, pool)
+
+	return nodePools
 }
