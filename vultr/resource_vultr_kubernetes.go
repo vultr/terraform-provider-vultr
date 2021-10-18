@@ -247,6 +247,17 @@ func newVKEStateRefresh(ctx context.Context, d *schema.ResourceData, meta interf
 func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 	var nodePools []map[string]interface{}
 
+	//var instances []map[string]interface{}
+	//for _, v := range np.Nodes {
+	//	n := map[string]interface{}{
+	//		"id": v.ID,
+	//		"status":       v.Status,
+	//		"date_created": v.DateCreated,
+	//		"label":        v.Label,
+	//	}
+	//	instances = append(instances, n)
+	//}
+
 	pool := map[string]interface{}{
 		"label":         np.Label,
 		"plan":          np.Plan,
@@ -256,6 +267,7 @@ func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 		"date_updated":  np.DateUpdated,
 		"status":        np.Status,
 		"tag":           np.Tag,
+		//"nodes":         instances,
 	}
 
 	nodePools = append(nodePools, pool)
