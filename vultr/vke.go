@@ -70,6 +70,16 @@ func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 			ValidateFunc: validation.NoZeroValues,
 			ForceNew:     true,
 		}
+		s["tag"] = &schema.Schema{
+			Type:     schema.TypeString,
+			Optional: true,
+			Computed: true,
+		}
+	} else {
+		s["tag"] = &schema.Schema{
+			Type:     schema.TypeString,
+			Computed: true,
+		}
 	}
 
 	return s

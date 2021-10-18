@@ -27,6 +27,7 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 		NodeQuantity: d.Get("node_quantity").(int),
 		Label:        d.Get("label").(string),
 		Plan:         d.Get("plan").(string),
+		Tag:          d.Get("tag").(string),
 	}
 
 	nodePool, err := client.Kubernetes.CreateNodePool(ctx, clusterID, req)
@@ -53,6 +54,7 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 	d.Set("status", nodePool.Status)
 	d.Set("label", nodePool.Label)
 	d.Set("plan", nodePool.Plan)
+	d.Set("tag", nodePool.Tag)
 	d.Set("node_quantity", nodePool.NodeQuantity)
 	d.Set("date_created", nodePool.DateCreated)
 	d.Set("date_updated", nodePool.DateUpdated)
@@ -78,7 +80,7 @@ func resourceVultrKubernetesNodePoolsUpdate(ctx context.Context, d *schema.Resou
 func resourceVultrKubernetesNodePoolsDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	if err := client.Kubernetes.DeleteNodePool(ctx, "vkeid", d.Id()); err != nil {
+	if err := client.Kubernetes.DeleteNodePool(ctx, d.Get("cluster_id").(string), d.Id()); err != nil {
 		return diag.Errorf("error deleting VKE nodepool %v : %v", d.Id(), err)
 	}
 

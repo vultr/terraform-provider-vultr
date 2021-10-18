@@ -12,6 +12,8 @@ import (
 	"github.com/vultr/govultr/v2"
 )
 
+var tfVKEDefault = "tf-vke-default"
+
 func resourceVultrKubernetes() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVultrKubernetesCreate,
@@ -119,10 +121,9 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 		return nil
 	}
 
-	//todo Change this to look for tags once that API update goes out
 	found := false
 	for _, v := range vke.NodePools {
-		if "single" == v.Label {
+		if tfVKEDefault == v.Tag {
 			if err := d.Set("node_pools", flattenNodePool(&v)); err != nil {
 				return diag.Errorf("error setting `node_pool`: %v", err)
 			}
@@ -197,6 +198,7 @@ func generateNodePool(pools interface{}) []govultr.NodePoolReq {
 			NodeQuantity: r["node_quantity"].(int),
 			Label:        r["label"].(string),
 			Plan:         r["plan"].(string),
+			Tag:          tfVKEDefault,
 		}
 
 		npr = append(npr, t)
@@ -253,6 +255,7 @@ func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 		"date_created":  np.DateCreated,
 		"date_updated":  np.DateUpdated,
 		"status":        np.Status,
+		"tag":           np.Tag,
 	}
 
 	nodePools = append(nodePools, pool)
