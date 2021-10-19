@@ -43,13 +43,13 @@ resource "vultr_instance" "my_instance" {
 
 The following arguments are supported:
 
-* `region` - (Required) The ID of the region that the instance is to be created in.
-* `plan` - (Required) The ID of the plan that you want the instance to subscribe to.
-* `os_id` - (Optional) The ID of the operating system to be installed on the server.
-* `iso_id` - (Optional) The ID of the ISO file to be installed on the server.
-* `app_id` - (Optional) The ID of the Vultr application to be installed on the server.
-* `image_id` - (Optional) The ID of the Vultr marketplace application to be installed on the server.
-* `snapshot_id` - (Optional) The ID of the Vultr snapshot that the server will restore for the initial installation. 
+* `region` - (Required) The ID of the region that the instance is to be created in. [See List Regions](https://www.vultr.com/api/#operation/list-regions)
+* `plan` - (Required) The ID of the plan that you want the instance to subscribe to. [See List Plans](https://www.vultr.com/api/#tag/plans)
+* `os_id` - (Optional) The ID of the operating system to be installed on the server. [See List OS](https://www.vultr.com/api/#operation/list-os)
+* `iso_id` - (Optional) The ID of the ISO file to be installed on the server. [See List ISO](https://www.vultr.com/api/#operation/list-isos)
+* `app_id` - (Optional) The ID of the Vultr application to be installed on the server. [See List Applications](https://www.vultr.com/api/#operation/list-applications)
+* `image_id` - (Optional) The ID of the Vultr marketplace application to be installed on the server. [See List Applications](https://www.vultr.com/api/#operation/list-applications) Note marketplace applications are denoted by type: `marketplace` and you must use the `image_id` not the id.
+* `snapshot_id` - (Optional) The ID of the Vultr snapshot that the server will restore for the initial installation. [See List Snapshots](https://www.vultr.com/api/#operation/list-snapshots) 
 * `script_id` - (Optional) The ID of the startup script you want added to the server.
 * `firewall_group_id` - (Optional) The ID of the firewall group to assign to the server.
 * `private_network_ids` - (Optional) A list of private network IDs to be attached to the server.
