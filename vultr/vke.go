@@ -37,30 +37,30 @@ func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
-		//"nodes": {
-		//	Type:     schema.TypeList,
-		//	Computed: true,
-		//	Elem: &schema.Resource{
-		//		Schema: map[string]*schema.Schema{
-		//			"id": {
-		//				Type:     schema.TypeString,
-		//				Computed: true,
-		//			},
-		//			"date_created": {
-		//				Type:     schema.TypeString,
-		//				Computed: true,
-		//			},
-		//			"label": {
-		//				Type:     schema.TypeString,
-		//				Computed: true,
-		//			},
-		//			"status": {
-		//				Type:     schema.TypeString,
-		//				Computed: true,
-		//			},
-		//		},
-		//	},
-		//},
+		"nodes": {
+			Type:     schema.TypeList,
+			Computed: true,
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"id": {
+						Type:     schema.TypeString,
+						Computed: true,
+					},
+					"date_created": {
+						Type:     schema.TypeString,
+						Computed: true,
+					},
+					"label": {
+						Type:     schema.TypeString,
+						Computed: true,
+					},
+					"status": {
+						Type:     schema.TypeString,
+						Computed: true,
+					},
+				},
+			},
+		},
 	}
 
 	if isNodePool {

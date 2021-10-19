@@ -40,7 +40,7 @@ func resourceVultrKubernetes() *schema.Resource {
 			},
 
 			"node_pools": {
-				Type:     schema.TypeSet,
+				Type:     schema.TypeList,
 				Required: true,
 				MinItems: 1,
 				MaxItems: 1,
@@ -163,8 +163,8 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 
 		oldNP, newNP := d.GetChange("node_pools")
 
-		o := oldNP.(*schema.Set).List()[0].(map[string]interface{})
-		n := newNP.(*schema.Set).List()[0].(map[string]interface{})
+		o := oldNP.([]interface{})[0].(map[string]interface{})
+		n := newNP.([]interface{})[0].(map[string]interface{})
 
 		if o["node_quantity"] != n["node_quantity"] {
 			req := &govultr.NodePoolReqUpdate{NodeQuantity: n["node_quantity"].(int)}
@@ -208,7 +208,7 @@ func generateNodePool(pools interface{}) []govultr.NodePoolReq {
 
 func waitForVKEAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
 	log.Printf(
-		"[INFO] Waiting for kuebrnetes cluster (%s) to have %s of %s",
+		"[INFO] Waiting for kubernetes cluster (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
 	stateConf := &resource.StateChangeConf{
@@ -247,16 +247,16 @@ func newVKEStateRefresh(ctx context.Context, d *schema.ResourceData, meta interf
 func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 	var nodePools []map[string]interface{}
 
-	//var instances []map[string]interface{}
-	//for _, v := range np.Nodes {
-	//	n := map[string]interface{}{
-	//		"id": v.ID,
-	//		"status":       v.Status,
-	//		"date_created": v.DateCreated,
-	//		"label":        v.Label,
-	//	}
-	//	instances = append(instances, n)
-	//}
+	var instances []map[string]interface{}
+	for _, v := range np.Nodes {
+		n := map[string]interface{}{
+			"id":           v.ID,
+			"status":       v.Status,
+			"date_created": v.DateCreated,
+			"label":        v.Label,
+		}
+		instances = append(instances, n)
+	}
 
 	pool := map[string]interface{}{
 		"label":         np.Label,
@@ -267,7 +267,7 @@ func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 		"date_updated":  np.DateUpdated,
 		"status":        np.Status,
 		"tag":           np.Tag,
-		//"nodes":         instances,
+		"nodes":         instances,
 	}
 
 	nodePools = append(nodePools, pool)

@@ -2,8 +2,12 @@ package vultr
 
 import (
 	"context"
+	"fmt"
+	"log"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
@@ -38,6 +42,12 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 	d.SetId(nodePool.ID)
 	d.Set("cluster_id", clusterID)
 
+	//block until status is ready
+	if _, err = waitForNodePoolAvailable(ctx, d, "active", []string{"pending"}, "status", meta); err != nil {
+		return diag.Errorf(
+			"error while waiting for node pool %v to be completed: %v", d.Id(), err)
+	}
+
 	return resourceVultrKubernetesNodePoolsRead(ctx, d, meta)
 }
 
@@ -58,6 +68,19 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 	d.Set("node_quantity", nodePool.NodeQuantity)
 	d.Set("date_created", nodePool.DateCreated)
 	d.Set("date_updated", nodePool.DateUpdated)
+
+	var instances []map[string]interface{}
+	for _, v := range nodePool.Nodes {
+		n := map[string]interface{}{
+			"id":           v.ID,
+			"status":       v.Status,
+			"date_created": v.DateCreated,
+			"label":        v.Label,
+		}
+		instances = append(instances, n)
+	}
+
+	d.Set("nodes", instances)
 
 	return nil
 }
@@ -85,4 +108,42 @@ func resourceVultrKubernetesNodePoolsDelete(ctx context.Context, d *schema.Resou
 	}
 
 	return nil
+}
+
+func waitForNodePoolAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+	log.Printf(
+		"[INFO] Waiting for node pool (%s) to have %s of %s",
+		d.Id(), attribute, target)
+
+	stateConf := &resource.StateChangeConf{
+		Pending:        pending,
+		Target:         []string{target},
+		Refresh:        newNodePoolStateRefresh(ctx, d, meta, attribute),
+		Timeout:        60 * time.Minute,
+		Delay:          10 * time.Second,
+		MinTimeout:     5 * time.Second,
+		NotFoundChecks: 60,
+	}
+
+	return stateConf.WaitForStateContext(ctx)
+}
+
+func newNodePoolStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc {
+	client := meta.(*Client).govultrClient()
+	return func() (interface{}, string, error) {
+
+		log.Printf("[INFO] Creating node pool")
+
+		np, err := client.Kubernetes.GetNodePool(ctx, d.Get("cluster_id").(string), d.Id())
+		if err != nil {
+			return nil, "", fmt.Errorf("error retrieving node pool %s ", d.Id())
+		}
+
+		if attr == "status" {
+			log.Printf("[INFO] The node pool status is %v", np.Status)
+			return np, np.Status, nil
+		}
+
+		return nil, "", nil
+	}
 }
