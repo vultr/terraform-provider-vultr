@@ -88,13 +88,11 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 func resourceVultrKubernetesNodePoolsUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	if change, ok := d.GetOk("node_quantity"); ok {
-		clusterID := d.Get("cluster_id").(string)
+	clusterID := d.Get("cluster_id").(string)
 
-		req := &govultr.NodePoolReqUpdate{NodeQuantity: change.(int)}
-		if _, err := client.Kubernetes.UpdateNodePool(ctx, clusterID, d.Id(), req); err != nil {
-			return diag.Errorf("error deleting VKE node pool %v : %v", d.Id(), err)
-		}
+	req := &govultr.NodePoolReqUpdate{NodeQuantity: d.Get("node_quantity").(int), Tag: d.Get("tag").(string)}
+	if _, err := client.Kubernetes.UpdateNodePool(ctx, clusterID, d.Id(), req); err != nil {
+		return diag.Errorf("error deleting VKE node pool %v : %v", d.Id(), err)
 	}
 
 	return resourceVultrKubernetesNodePoolsRead(ctx, d, meta)

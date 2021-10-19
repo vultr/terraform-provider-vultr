@@ -190,7 +190,7 @@ func resourceVultrKubernetesDelete(ctx context.Context, d *schema.ResourceData, 
 
 func generateNodePool(pools interface{}) []govultr.NodePoolReq {
 	var npr []govultr.NodePoolReq
-	pool := pools.(*schema.Set).List()
+	pool := pools.([]interface{})
 	for _, p := range pool {
 		r := p.(map[string]interface{})
 
