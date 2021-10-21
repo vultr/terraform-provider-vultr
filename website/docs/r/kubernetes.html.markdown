@@ -58,6 +58,7 @@ The following attributes are exported:
 * `endpoint` - Domain for your Kubernetes clusters control plane.
 * `ip` - IP address of VKE cluster control plane.
 * `date_created` - Date of VKE cluster creation.
+* `kube_config` - Kubeconfig for this VKE cluster.
 * `node_pools` - Contains the default node pool that was deployed.
 
 `node_pools`

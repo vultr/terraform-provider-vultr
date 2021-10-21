@@ -74,6 +74,10 @@ func resourceVultrKubernetes() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"kube_config": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -142,6 +146,13 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 	d.Set("ip", vke.IP)
 	d.Set("endpoint", vke.Endpoint)
 	d.Set("status", vke.Status)
+
+	config, err := client.Kubernetes.GetKubeConfig(ctx, d.Id())
+	if err != nil {
+		return diag.Errorf("could not get kubeconfig : %v", err)
+	}
+
+	d.Set("kube_config", config.KubeConfig)
 
 	return nil
 }
