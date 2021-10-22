@@ -29,6 +29,7 @@ resource "vultr_kubernetes_node_pools" "np-1" {
 
 The follow arguments are supported:
 
+* `cluster_id` - (Required) The VKE cluster ID you want to attach this nodepool to.
 * `node_quantity` - (Required) The number of nodes in this node pool.
 * `plan` - (Required) The plan to be used in this node pool. [See Plans List](https://www.vultr.com/api/#operation/list-plans) Note the minimum plan requirements must have at least 1 core and 2 gbs of memory.
 * `label` - (Required) The label to be used as a prefix for nodes in this node pool.
@@ -39,7 +40,8 @@ The follow arguments are supported:
 ## Attributes Reference
 
 The following attributes are exported:
-* `id` - The VKE cluster ID.
+* `id` - The Nodepool ID.
+* `cluster_id` - The VKE cluster ID.
 * `date_created` - Date of node pool creation.
 * `date_updated` - Date of node pool updates.
 * `label` - Label of node pool.
