@@ -1,7 +1,7 @@
 ## 2.5.0 (October 22, 2021)
 Enhancement:
-- resource/vultr_kubernetes: New resource that allows for deployment of VKE clusters [163](https://github.com/vultr/terraform-provider-vultr/pull/163)
-- resource/vultr_kubernetes_node_pools: New resource that allows for deployment of node pools to existing VKE Cluster[163](https://github.com/vultr/terraform-provider-vultr/pull/163)
+- resource/vultr_kubernetes: New resource that allows for deployment of VKE clusters [165](https://github.com/vultr/terraform-provider-vultr/pull/165)
+- resource/vultr_kubernetes_node_pools: New resource that allows for deployment of node pools to existing VKE Cluster[165](https://github.com/vultr/terraform-provider-vultr/pull/165)
 
 
 ## 2.4.2 (September 15, 2021)
