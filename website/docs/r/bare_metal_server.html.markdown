@@ -42,12 +42,12 @@ resource "vultr_bare_metal_server" "my_server" {
 
 The following arguments are supported:
 
-* `region` - (Required) The ID of the region that the server is to be created in.
-* `plan` - (Required) The ID of the plan that you want the server to subscribe to.
-* `os_id` - (Optional) The ID of the operating system to be installed on the server.
-* `app_id` - (Optional) The ID of the Vultr application to be installed on the server.
-* `image_id` - (Optional) The ID of the Vultr marketplace application to be installed on the server.
-* `snapshot_id` - (Optional) The ID of the Vultr snapshot that the server will restore for the initial installation. 
+* `region` - (Required) The ID of the region that the server is to be created in. [See List Regions](https://www.vultr.com/api/#operation/list-regions)
+* `plan` - (Required) The ID of the plan that you want the server to subscribe to. [See List Plans](https://www.vultr.com/api/#tag/plans)
+* `os_id` - (Optional) The ID of the operating system to be installed on the server. [See List OS](https://www.vultr.com/api/#operation/list-os)
+* `app_id` - (Optional) The ID of the Vultr application to be installed on the server. [See List Applications](https://www.vultr.com/api/#operation/list-applications)
+* `image_id` - (Optional) The ID of the Vultr marketplace application to be installed on the server. [See List Applications](https://www.vultr.com/api/#operation/list-applications) Note marketplace applications are denoted by type: `marketplace` and you must use the `image_id` not the id.
+* `snapshot_id` - (Optional) The ID of the Vultr snapshot that the server will restore for the initial installation. [See List Snapshots](https://www.vultr.com/api/#operation/list-snapshots)
 * `script_id` - (Optional) The ID of the startup script you want added to the server.
 * `ssh_key_ids` - (Optional) A list of SSH key IDs to apply to the server on install (only valid for Linux/FreeBSD).
 * `user_data` - (Optional) Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
