@@ -1,3 +1,9 @@
+## 2.5.0 (October 22, 2021)
+Enhancement:
+- resource/vultr_kubernetes: New resource that allows for deployment of VKE clusters [165](https://github.com/vultr/terraform-provider-vultr/pull/165)
+- resource/vultr_kubernetes_node_pools: New resource that allows for deployment of node pools to existing VKE Cluster[165](https://github.com/vultr/terraform-provider-vultr/pull/165)
+
+
 ## 2.4.2 (September 15, 2021)
 Bug Fix:
 - resource/load_balancer: added missing `region` and `ssl_redirect` values from being set [163](https://github.com/vultr/terraform-provider-vultr/pull/163)
