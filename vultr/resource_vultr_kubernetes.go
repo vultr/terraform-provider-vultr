@@ -125,6 +125,7 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 		return nil
 	}
 
+	// Look for the node pool with the tag `tf-vke-default`
 	found := false
 	for _, v := range vke.NodePools {
 		if tfVKEDefault == v.Tag {

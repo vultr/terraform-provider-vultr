@@ -10,6 +10,8 @@ description: |-
 
 Get information about a Vultr Kubernetes Engine (VKE) Cluster.
 
+**Note** The node pool deployed with this resource adds its own `tag` which is then used as an identifier for Terraform to see which node pool is part of this resource. 
+
 ## Example Usage
 
 Create a new VKE cluster:

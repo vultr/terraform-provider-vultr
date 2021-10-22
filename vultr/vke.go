@@ -76,6 +76,8 @@ func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 			Computed: true,
 		}
 	} else {
+		// Make tags unmodifiable for the vultr_kubernetes resource
+		// This lets us know which node pool was part of the vultr_kubernetes resource
 		s["tag"] = &schema.Schema{
 			Type:     schema.TypeString,
 			Computed: true,
