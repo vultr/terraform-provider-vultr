@@ -22,7 +22,7 @@ resource "vultr_instance" "my_instance" {
     os_id = 167
 }
 resource "vultr_snapshot" "my_snapshot" {
-    vps_id       = "${vultr_instance.my_instance.id}"
+    instance_id       = "${vultr_instance.my_instance.id}"
     description  = "my instances snapshot"
 }
 ```
@@ -31,7 +31,7 @@ resource "vultr_snapshot" "my_snapshot" {
 
 The following arguments are supported:
 
-* `vps_id` - (Required) ID of a given instance that you want to create a snapshot from.
+* `instance_id` - (Required) ID of a given instance that you want to create a snapshot from.
 * `description` - (Optional) The description for the given snapshot.
 
 ## Attributes Reference
