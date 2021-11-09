@@ -75,8 +75,9 @@ func resourceVultrKubernetes() *schema.Resource {
 				Computed: true,
 			},
 			"kube_config": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Description: "Base64 encoded KubeConfig",
+				Type:        schema.TypeString,
+				Computed:    true,
 			},
 		},
 	}
