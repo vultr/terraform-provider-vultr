@@ -25,11 +25,11 @@ func dataSourceVultrAccount() *schema.Resource {
 				Computed: true,
 			},
 			"balance": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeFloat,
 				Computed: true,
 			},
 			"pending_charges": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeFloat,
 				Computed: true,
 			},
 			"last_payment_date": {
@@ -37,7 +37,7 @@ func dataSourceVultrAccount() *schema.Resource {
 				Computed: true,
 			},
 			"last_payment_amount": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeFloat,
 				Computed: true,
 			},
 		},
