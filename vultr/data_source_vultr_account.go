@@ -3,6 +3,7 @@ package vultr
 import (
 	"context"
 	"fmt"
+	"math"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -56,10 +57,10 @@ func dataSourceVultrAccountRead(d *schema.ResourceData, meta interface{}) error 
 	d.SetId("account")
 	d.Set("name", account.Name)
 	d.Set("email", account.Email)
-	d.Set("balance", account.Balance)
-	d.Set("pending_charges", account.PendingCharges)
+	d.Set("balance", math.Round(float64(account.Balance)*100)/100)
+	d.Set("pending_charges", math.Round(float64(account.PendingCharges)*100)/100)
 	d.Set("last_payment_date", account.LastPaymentDate)
-	d.Set("last_payment_amount", account.LastPaymentAmount)
+	d.Set("last_payment_amount", math.Round(float64(account.LastPaymentAmount)*100)/100)
 	if err := d.Set("acl", account.ACL); err != nil {
 		return fmt.Errorf("error setting `acls`: %#v", err)
 	}
