@@ -22,6 +22,10 @@ func dataSourceVultrDNSDomain() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"dns_sec": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -37,5 +41,6 @@ func dataSourceVultrDNSDomainRead(d *schema.ResourceData, meta interface{}) erro
 	d.SetId(domain.Domain)
 	d.Set("domain", domain.Domain)
 	d.Set("date_created", domain.DateCreated)
+	d.Set("dns_sec", domain.DNSSec)
 	return nil
 }

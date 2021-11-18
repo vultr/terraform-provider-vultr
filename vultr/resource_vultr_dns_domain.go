@@ -80,6 +80,7 @@ func resourceVultrDNSDomainRead(ctx context.Context, d *schema.ResourceData, met
 
 	d.Set("domain", domain.Domain)
 	d.Set("date_created", domain.DateCreated)
+	d.Set("dns_sec", domain.DNSSec)
 
 	return nil
 }

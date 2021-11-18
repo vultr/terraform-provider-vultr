@@ -132,6 +132,10 @@ func dataSourceVultrInstance() *schema.Resource {
 				Type:     schema.TypeMap,
 				Computed: true,
 			},
+			"hostname": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -210,6 +214,7 @@ func dataSourceVultrInstanceRead(d *schema.ResourceData, meta interface{}) error
 	d.Set("v6_main_ip", serverList[0].V6MainIP)
 	d.Set("v6_network_size", serverList[0].V6NetworkSize)
 	d.Set("features", serverList[0].Features)
+	d.Set("hostname", serverList[0].Hostname)
 
 	schedule, err := client.Instance.GetBackupSchedule(context.Background(), serverList[0].ID)
 	if err != nil {

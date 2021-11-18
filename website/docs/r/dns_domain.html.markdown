@@ -26,7 +26,8 @@ resource "vultr_dns_domain" "my_domain" {
 The following arguments are supported:
 
 * `domain` - (Required) Name of domain.
-* `ip` - (Optional) instance IP you want associated to domain. If omitted this will create a domain with no records.
+* `ip` - (Optional) Instance IP you want associated to domain. If omitted this will create a domain with no records.
+* `dns_sec` - (Optional)  The Domain's DNSSEC status. Valid options are `enabled` or `disabled`. Note `disabled` is default
 
 ## Attributes Reference
 
@@ -35,6 +36,7 @@ The following attributes are exported:
 * `id` - The ID is the name of the domain.
 * `domain` -  Name of domain.
 * `date_created` - The date the domain was added to your account.
+* `dns_sec` -  The Domain's DNSSEC status
 
 ## Import
 
