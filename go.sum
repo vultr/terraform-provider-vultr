@@ -304,6 +304,8 @@ github.com/vmihailenco/msgpack/v4 v4.3.12/go.mod h1:gborTTJjAo/GWTqqRjrLCn9pgNN+
 github.com/vmihailenco/tagparser v0.1.1/go.mod h1:OeAg3pn3UbLjkWt+rN9oFYB6u/cQgqMEUPoW2WPyhdI=
 github.com/vultr/govultr/v2 v2.9.2 h1:Hq3LVrlNjtbkIadxos0gQuMZ35ytvTpbBeEuT/CUPBk=
 github.com/vultr/govultr/v2 v2.9.2/go.mod h1:JjUljQdSZx+MELCAJvZ/JH32bJotmflnsyS0NOjb8Jg=
+github.com/vultr/govultr/v2 v2.11.0 h1:cvxH1mC/VTs2oRx3njhIhpypg2EBE70rlxAKKtRU/Zg=
+github.com/vultr/govultr/v2 v2.11.0/go.mod h1:JjUljQdSZx+MELCAJvZ/JH32bJotmflnsyS0NOjb8Jg=
 github.com/xanzy/ssh-agent v0.3.0 h1:wUMzuKtKilRgBAD1sUb8gOwwRr2FGoBVumcjoOACClI=
 github.com/xanzy/ssh-agent v0.3.0/go.mod h1:3s9xbODqPuuhK9JV1R321M/FlMZSBvE5aY6eAcqrDh0=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=

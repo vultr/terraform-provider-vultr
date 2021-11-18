@@ -398,6 +398,7 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 	d.Set("os_id", instance.OsID)
 	d.Set("app_id", instance.AppID)
 	d.Set("features", instance.Features)
+	d.Set("hostname", instance.Hostname)
 
 	backup, err := client.Instance.GetBackupSchedule(ctx, d.Id())
 	if err != nil {
@@ -517,7 +518,7 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 
 	}
 
-	if err := client.Instance.Update(ctx, d.Id(), req); err != nil {
+	if _, err := client.Instance.Update(ctx, d.Id(), req); err != nil {
 		return diag.Errorf("error updating instance %s : %s", d.Id(), err.Error())
 	}
 
@@ -572,7 +573,7 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string))
 		}
 
-		if err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
+		if _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
 			return diag.Errorf("error detaching private networks prior to deleting instance %s : %v", d.Id(), err)
 		}
 	}

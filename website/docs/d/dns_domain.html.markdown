@@ -32,3 +32,4 @@ The following attributes are exported:
 
 * `domain` - Name of domain.
 * `date_created` - The date the DNS domain was added to your Vultr account.
+* `dns_sec` -  The Domain's DNSSEC status

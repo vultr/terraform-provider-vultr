@@ -65,3 +65,4 @@ The following attributes are exported:
 * `firewall_group_id` - The ID of the firewall group applied to this server.
 * `features` - Array of which features are enabled.
 * `backups_schedule` - The current configuration for backups 
+* `hostname` - The hostname assigned to the server.
