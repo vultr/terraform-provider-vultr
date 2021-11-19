@@ -550,6 +550,23 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
+	// Changing the hostname can only be done via a reinstall
+	// Since this is a full reinstall we also put in the status waits so TF doesn't continue processing until the instance is fully up
+	if d.HasChange("hostname") {
+		req := &govultr.ReinstallReq{Hostname: d.Get("hostname").(string)}
+		if _, err := client.Instance.Reinstall(ctx, d.Id(), req); err != nil {
+			return diag.Errorf("error changing hostname for %s : %v", d.Id(), err)
+		}
+
+		if _, err := waitForServerAvailable(ctx, d, "active", []string{"pending", "installing"}, "status", meta); err != nil {
+			return diag.Errorf("error while waiting for Server %s to be completed: %s", d.Id(), err)
+		}
+
+		if _, err := waitForServerAvailable(ctx, d, "running", []string{"stopped"}, "power_status", meta); err != nil {
+			return diag.Errorf("error while waiting for Server %s to be in a active state : %s", d.Id(), err)
+		}
+	}
+
 	// There is a delay between the API data returning the newly updated plan change
 	// This will wait until the plan has been updated before going to the read call
 	if d.HasChange("plan") {
