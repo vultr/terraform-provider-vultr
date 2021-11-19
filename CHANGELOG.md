@@ -1,3 +1,19 @@
+## 2.6.0 (November 19, 2021)
+Enhancement:
+- resource/bare_metal: Add timeout options [175](https://github.com/vultr/terraform-provider-vultr/pull/175)
+
+Bug Fix:
+- datasource/account : Fix type mismatch for billing fields [174](https://github.com/vultr/terraform-provider-vultr/pull/174)
+- resource/instance : Fix invalid error message change [178](https://github.com/vultr/terraform-provider-vultr/pull/178)
+- resource/instance : Fix issue where changing hostname didn't trigger hostname change [180](https://github.com/vultr/terraform-provider-vultr/pull/180)
+
+Documentation
+- resource/snapshots : fix typo [167](https://github.com/vultr/terraform-provider-vultr/pull/167) 
+- resources/vultr_kubernetes : Add description that kubeconfigs are base64 encoded [169](https://github.com/vultr/terraform-provider-vultr/pull/169)
+
+Dependency:
+- updated govultr to v2.9.2 -> v2.10.0  [179](https://github.com/vultr/terraform-provider-vultr/pull/179)
+
 ## 2.5.0 (October 22, 2021)
 Enhancement:
 - resource/vultr_kubernetes: New resource that allows for deployment of VKE clusters [165](https://github.com/vultr/terraform-provider-vultr/pull/165)
