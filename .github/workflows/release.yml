@@ -73,14 +73,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   release:
     runs-on: ubuntu-latest
-    needs: goreleaser
+    needs: ["goreleaser", "create-tag"]
     name: Release Notification
     steps:
-      - name: Get the version
-        id: get_version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
       - run: |
-          echo "{\"text\":\"Terraform : Release https://github.com/vultr/terraform-provider-vultr/releases/tag/${{ steps.get_version.outputs.VERSION }} \"}" > mattermost.json
+          echo "{\"text\":\"Terraform : Release https://github.com/${{ github.repository }}/releases/tag/${{ needs.create-tag.outputs.new_tag }} \"}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
