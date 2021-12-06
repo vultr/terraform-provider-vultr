@@ -1,3 +1,7 @@
+## 2.7.0 (December 6, 2021)
+Dependencies:
+- Bump govultr to v2.12.0, adjust monthly charges to float [182](https://github.com/vultr/terraform-provider-vultr/pull/182)
+
 ## 2.6.0 (November 19, 2021)
 Enhancement:
 - resource/bare_metal: Add timeout options [175](https://github.com/vultr/terraform-provider-vultr/pull/175)
