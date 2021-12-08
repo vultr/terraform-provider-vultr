@@ -68,13 +68,33 @@ func filterLoop(f []filter, m map[string]interface{}) bool {
 	return true
 }
 
-func valuesLoop(values []string, i interface{}) bool {
-	for _, v := range values {
-		if v == i {
-			return true
+func valuesLoop(values []string, actual interface{}) bool {
+	switch actual.(type) {
+	case []interface{}:
+		// It's an array of strings, so something like: location
+		var found bool
+		for _, i := range values {
+			found = false
+			for _, j := range actual.([]interface{}) {
+				if i == j {
+					found = true
+					break
+				}
+			}
+			if !found {
+				return false
+			}
 		}
+		return true
+	default:
+		// It's a string, so something like: ram, type, vcpu_count
+		for _, i := range values {
+			if actual == i {
+				return true
+			}
+		}
+		return false
 	}
-	return false
 }
 
 func dataSourceFiltersSchema() *schema.Schema {
