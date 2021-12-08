@@ -1,3 +1,7 @@
+## 2.8.0 (December 08, 2021)
+Enhancement:
+- Implement datasource filtering on string lists [188](https://github.com/vultr/terraform-provider-vultr/pull/188) Thanks @kaorihinata
+
 ## 2.7.0 (December 6, 2021)
 Dependencies:
 - Bump govultr to v2.12.0, adjust monthly charges to float [182](https://github.com/vultr/terraform-provider-vultr/pull/182)
