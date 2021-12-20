@@ -69,7 +69,6 @@ func resourceVultrInstance() *schema.Resource {
 			"enable_ipv6": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default:  false,
 			},
 			"enable_private_network": {
 				Type:       schema.TypeBool,
@@ -109,7 +108,6 @@ func resourceVultrInstance() *schema.Resource {
 			"activation_email": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				Default:  true,
 			},
 			"ddos_protection": {
 				Type:     schema.TypeBool,
