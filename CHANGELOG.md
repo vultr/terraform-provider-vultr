@@ -1,3 +1,7 @@
+## 2.8.1 (December 20, 2021)
+Bug Fix:
+- resource/instance: fix importer [192](https://github.com/vultr/terraform-provider-vultr/pull/192) Thanks @vincentbernat
+
 ## 2.8.0 (December 08, 2021)
 Enhancement:
 - Implement datasource filtering on string lists [188](https://github.com/vultr/terraform-provider-vultr/pull/188) Thanks @kaorihinata
