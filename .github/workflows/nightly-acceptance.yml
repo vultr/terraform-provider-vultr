@@ -1,0 +1,31 @@
+name: Nightly Acceptance
+on:
+  schedule:
+    - cron: '0 5 * * *' # UTC
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-go@v2
+        with:
+          go-version: '^1.17.0'
+      - run: go test -v ./vultr
+        env:
+          TF_ACC: ${{ secrets.TF_ACC }}
+          VULTR_API_KEY: ${{ secrets.VULTR_API_KEY }}
+  
+  notify:
+    name: MatterMost Notifcation
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - run: |
+          echo "{\"text\":\"Terraform Nightly Acceptance Job Status: ${{ needs.build.result }} \"}" > mattermost.json
+      - uses: mattermost/action-mattermost-notify@master
+        env:
+          MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
+          MATTERMOST_USERNAME: ${{ secrets.MATTERMOST_USERNAME}}
+          MATTERMOST_ICON: ${{ secrets.MATTERMOST_ICON }}
