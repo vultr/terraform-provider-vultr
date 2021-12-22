@@ -12,7 +12,7 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: '^1.17.0'
-      - run: go test -v ./vultr
+      - run: go test -v ./vultr -timeout 60m
         env:
           TF_ACC: ${{ secrets.TF_ACC }}
           VULTR_API_KEY: ${{ secrets.VULTR_API_KEY }}
