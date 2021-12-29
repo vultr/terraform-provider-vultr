@@ -39,7 +39,6 @@ func TestAccVultrInstance(t *testing.T) {
 					resource.TestCheckResourceAttrSet(name, "tag"),
 					resource.TestCheckResourceAttrSet(name, "os_id"),
 					resource.TestCheckResourceAttrSet(name, "app_id"),
-					resource.TestCheckResourceAttrSet(name, "image_id"),
 					resource.TestCheckResourceAttrSet(name, "v6_main_ip"),
 					resource.TestCheckResourceAttrSet(name, "v6_network"),
 					resource.TestCheckResourceAttrSet(name, "v6_network_size"),

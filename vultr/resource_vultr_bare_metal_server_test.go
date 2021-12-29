@@ -40,17 +40,11 @@ func TestAccVultrBareMetalServerBasic(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "netmask_v4"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "gateway_v4"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "plan"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "v6_networks.#"),
+					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "v6_network"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "label"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "tag"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "os_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "app_id"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "script_id"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "enable_ipv6"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "ssh_key_ids.#"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "user_data"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "activation_email"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "hostname"),
 				),
 			},
 			{
@@ -64,23 +58,15 @@ func TestAccVultrBareMetalServerBasic(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "main_ip"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "cpu_count"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "region"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "default_password"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "date_created"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "status"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "netmask_v4"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "gateway_v4"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "plan"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "v6_networks.#"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "label"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "tag"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "os_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "app_id"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "script_id"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "enable_ipv6"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "ssh_key_ids.#"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "user_data"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "activation_email"),
-					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "hostname"),
 				),
 			},
 		},
@@ -137,7 +123,7 @@ func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string
 	return testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + fmt.Sprintf(`
 		resource "vultr_bare_metal_server" "foo" {
 			region = "ewr"
-			os_id = 270
+			os_id = 159
 			plan = "vbm-4c-32gb"
 			enable_ipv6 = true
 			activation_email = false
@@ -155,16 +141,15 @@ func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) strin
 	return testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + fmt.Sprintf(`
 		resource "vultr_bare_metal_server" "foo" {
 			region = "ewr"
-			os_id = 270
+			os_id = 159
 			plan = "vbm-4c-32gb"
-			enable_ipv6 = true
 			activation_email = false
 			ssh_key_ids = ["${vultr_ssh_key.foo.id}"]
 			script_id = "${vultr_startup_script.foo.id}"
 			user_data = "my user data"
 			tag = "%s-update"
 			label = "%s-update"
-			hostnam = "%s"
+			hostname = "%s"
 		}
 	`, rName, rName, rName)
 }

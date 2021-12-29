@@ -9,6 +9,7 @@ import (
 )
 
 func TestAccResourceVultrKubernetes(t *testing.T) {
+	skipCI(t)
 	rLabel := acctest.RandomWithPrefix("tf-vke-rs-")
 
 	name := "vultr_kubernetes.foo"
@@ -33,6 +34,7 @@ func TestAccResourceVultrKubernetes(t *testing.T) {
 }
 
 func TestAccResourceVultrKubernetesUpdate(t *testing.T) {
+	skipCI(t)
 	rLabel := acctest.RandomWithPrefix("tf-vke-rs-")
 
 	name := "vultr_kubernetes.foo"

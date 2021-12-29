@@ -23,7 +23,7 @@ jobs:
     needs: build
     steps:
       - run: |
-          echo "{\"text\":\"Terraform Nightly Acceptance Job Status: ${{ needs.build.result }} \"}" > mattermost.json
+          echo "{\"text\":\"Terraform Nightly Acceptance Job Status: ${{ needs.build.result }}\n https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
