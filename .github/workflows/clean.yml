@@ -1,0 +1,17 @@
+name: Clean Resources
+
+on:
+  schedule:
+    - cron: '00 23 * * *'
+
+jobs:
+  cleaner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+
+      - name: Clean orphaned resources
+        env:
+          VULTR_API_KEY: ${{ secrets.VULTR_API_KEY }}
+        run: |
+          ./scripts/clean.sh

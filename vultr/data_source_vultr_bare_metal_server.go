@@ -75,7 +75,7 @@ func dataSourceVultrBareMetalServer() *schema.Resource {
 				Computed: true,
 			},
 			"mac_address": {
-				Type:     schema.TypeString,
+				Type:     schema.TypeInt,
 				Computed: true,
 			},
 			"tag": {

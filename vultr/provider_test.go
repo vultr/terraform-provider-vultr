@@ -39,3 +39,9 @@ func testAccPreCheck(t *testing.T) {
 		t.Fatal("VULTR_API_KEY must be set for acceptance tests")
 	}
 }
+
+func skipCI(t *testing.T) {
+	if os.Getenv("CI") != "" {
+		t.Skip("Skipping testing in CI environment")
+	}
+}

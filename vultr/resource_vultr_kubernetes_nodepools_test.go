@@ -9,6 +9,7 @@ import (
 )
 
 func TestAccResourceVultrKubernetesNodePools(t *testing.T) {
+	skipCI(t)
 	rLabel := acctest.RandomWithPrefix("tf-vke-rs")
 	rNP := acctest.RandomWithPrefix("tf-vke-np")
 
@@ -32,6 +33,7 @@ func TestAccResourceVultrKubernetesNodePools(t *testing.T) {
 }
 
 func TestAccResourceVultrKubernetesNodePoolsUpdate(t *testing.T) {
+	skipCI(t)
 	rLabel := acctest.RandomWithPrefix("tf-vke-rs")
 	rNP := acctest.RandomWithPrefix("tf-vke-np")
 

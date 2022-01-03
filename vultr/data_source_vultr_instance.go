@@ -136,6 +136,11 @@ func dataSourceVultrInstance() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"private_network_ids": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 		},
 	}
 }
