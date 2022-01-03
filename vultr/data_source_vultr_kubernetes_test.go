@@ -9,6 +9,8 @@ import (
 )
 
 func TestAccVultrKubernetes(t *testing.T) {
+	skipCI(t)
+
 	rLabel := acctest.RandomWithPrefix("tf-test-k8")
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },

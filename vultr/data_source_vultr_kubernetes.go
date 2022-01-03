@@ -2,8 +2,8 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
@@ -11,7 +11,7 @@ import (
 
 func dataSourceVultrKubernetes() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrKubernetesRead,
+		ReadContext: dataSourceVultrKubernetesRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"id": {
@@ -57,7 +57,9 @@ func dataSourceVultrKubernetes() *schema.Resource {
 			"node_pools": {
 				Type:     schema.TypeList,
 				Computed: true,
-				Elem:     &schema.Schema{Type: schema.TypeMap},
+				Elem: &schema.Resource{
+					Schema: nodePoolSchema(false),
+				},
 			},
 			"kube_config": {
 				Type:     schema.TypeString,
@@ -67,28 +69,28 @@ func dataSourceVultrKubernetes() *schema.Resource {
 	}
 }
 
-func dataSourceVultrKubernetesRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
 	var k8List []govultr.Cluster
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 	for {
-		k8s, meta, err := client.Kubernetes.ListClusters(context.Background(), options)
+		k8s, meta, err := client.Kubernetes.ListClusters(ctx, options)
 		if err != nil {
-			return fmt.Errorf("error getting kubernetes")
+			return diag.Errorf("error getting kubernetes")
 		}
 
 		for _, k8 := range k8s {
 			sm, err := structToMap(k8)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -105,16 +107,16 @@ func dataSourceVultrKubernetesRead(d *schema.ResourceData, meta interface{}) err
 	}
 
 	if len(k8List) > 1 {
-		return errors.New("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(k8List) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
-	kubeConfig, err := client.Kubernetes.GetKubeConfig(context.Background(), k8List[0].ID)
+	kubeConfig, err := client.Kubernetes.GetKubeConfig(ctx, k8List[0].ID)
 	if err != nil {
-		return errors.New("error getting kubeconfig")
+		return diag.Errorf("error getting kubeconfig")
 	}
 
 	d.SetId(k8List[0].ID)
@@ -127,8 +129,46 @@ func dataSourceVultrKubernetesRead(d *schema.ResourceData, meta interface{}) err
 	d.Set("version", k8List[0].Version)
 	d.Set("region", k8List[0].Region)
 	d.Set("status", k8List[0].Status)
-	d.Set("node_pools", k8List[0].NodePools)
-	d.Set("kube_config", kubeConfig)
+	d.Set("kube_config", kubeConfig.KubeConfig)
+
+	if err := d.Set("node_pools", flattenNodePools(k8List[0].NodePools)); err != nil {
+		return diag.FromErr(err)
+	}
 
 	return nil
+}
+
+func flattenNodePools(np []govultr.NodePool) []map[string]interface{} {
+	var nodePools []map[string]interface{}
+
+	for _, n := range np {
+
+		var instances []map[string]interface{}
+
+		for _, v := range n.Nodes {
+			a := map[string]interface{}{
+				"id":           v.ID,
+				"status":       v.Status,
+				"date_created": v.DateCreated,
+				"label":        v.Label,
+			}
+			instances = append(instances, a)
+		}
+
+		pool := map[string]interface{}{
+			"label":         n.Label,
+			"plan":          n.Plan,
+			"node_quantity": n.NodeQuantity,
+			"id":            n.ID,
+			"date_created":  n.DateCreated,
+			"date_updated":  n.DateUpdated,
+			"status":        n.Status,
+			"tag":           n.Tag,
+			"nodes":         instances,
+		}
+
+		nodePools = append(nodePools, pool)
+	}
+
+	return nodePools
 }
