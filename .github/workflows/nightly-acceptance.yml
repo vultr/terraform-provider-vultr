@@ -12,18 +12,15 @@ jobs:
       - uses: actions/setup-go@v2
         with:
           go-version: '^1.17.0'
+
       - run: go test -v ./vultr -timeout 60m
+        id: test
         env:
           TF_ACC: ${{ secrets.TF_ACC }}
           VULTR_API_KEY: ${{ secrets.VULTR_API_KEY }}
-  
-  notify:
-    name: MatterMost Notifcation
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
+
       - run: |
-          echo "{\"text\":\"Terraform Nightly Acceptance Job Status: ${{ needs.build.result }}\n https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}" > mattermost.json
+          echo "{\"text\":\"Terraform Nightly Acceptance Job Status: ${{ steps.test.outcome }}\n https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
