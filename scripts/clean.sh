@@ -4,10 +4,10 @@
 
 # Filter Requirements
 # -------------------
-# tf
+# tf-
+# Terraform
 
-apt-get -y install curl
-apt-get -y install jq
+sudo apt-get -y install curl jq
 
 #####################
 ### RegEx Filters ###
