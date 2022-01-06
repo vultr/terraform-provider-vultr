@@ -2,16 +2,15 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrBackup() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrBackupRead,
+		ReadContext: dataSourceVultrBackupRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"backups": {
@@ -23,34 +22,34 @@ func dataSourceVultrBackup() *schema.Resource {
 	}
 }
 
-func dataSourceVultrBackupRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrBackupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	backupList := []govultr.Backup{}
+	var backupList []map[string]interface{}
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 
 	for {
-		backups, meta, err := client.Backup.List(context.Background(), options)
+		backups, meta, err := client.Backup.List(ctx, options)
 		if err != nil {
-			return fmt.Errorf("Error getting backups: %v", err)
+			return diag.Errorf("error getting backups: %v", err)
 		}
 
 		for _, b := range backups {
-			// we need convert the a struct INTO a map so we can easily manipulate the data here
+			// We need convert the struct into a map. This allows us to easily manipulate the data here.
 			sm, err := structToMap(b)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
-				backupList = append(backupList, b)
+				backupList = append(backupList, sm)
 			}
 		}
 
@@ -62,19 +61,14 @@ func dataSourceVultrBackupRead(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 
-	if len(backupList) > 1 {
-		return errors.New("your search returned too many results. Please refine your search to be more specific")
-	}
-
 	if len(backupList) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
-	d.SetId(backupList[0].ID)
-	d.Set("description", backupList[0].Description)
-	d.Set("date_created", backupList[0].DateCreated)
-	d.Set("size", backupList[0].Size)
-	d.Set("status", backupList[0].Status)
+	d.SetId(backupList[0]["description"].(string))
+	if err := d.Set("backups", backupList); err != nil {
+		return diag.Errorf("error setting `backups`: %#v", err)
+	}
 
 	return nil
 }
