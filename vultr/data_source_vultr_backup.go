@@ -36,7 +36,7 @@ func dataSourceVultrBackupRead(ctx context.Context, d *schema.ResourceData, meta
 	options := &govultr.ListOptions{}
 
 	for {
-		backups, meta, err := client.Backup.List(context.Background(), options)
+		backups, meta, err := client.Backup.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting backups: %v", err)
 		}
