@@ -16,12 +16,17 @@ jobs:
       - run: go test -v ./vultr -timeout 120m
         id: test
         env:
+          CI: ${{ secrets.CI }}
           TF_ACC: ${{ secrets.TF_ACC }}
           VULTR_API_KEY: ${{ secrets.VULTR_API_KEY }}
 
-      - run: |
+      - name: Mattermost Message
+        if: always()
+        run: |
           echo "{\"text\":\"Terraform Nightly Acceptance Job Status: ${{ steps.test.outcome }}\n https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }} \"}" > mattermost.json
+        
       - uses: mattermost/action-mattermost-notify@master
+        if: always()
         env:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_USERNAME: ${{ secrets.MATTERMOST_USERNAME}}
