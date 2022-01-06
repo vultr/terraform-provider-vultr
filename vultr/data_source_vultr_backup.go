@@ -42,7 +42,7 @@ func dataSourceVultrBackupRead(ctx context.Context, d *schema.ResourceData, meta
 		}
 
 		for _, b := range backups {
-			// we need convert the struct INTO a map. This allows us to easily manipulate the data here.
+			// We need convert the struct into a map. This allows us to easily manipulate the data here.
 			sm, err := structToMap(b)
 			if err != nil {
 				return diag.FromErr(err)
