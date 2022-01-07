@@ -122,7 +122,7 @@ func testAccCheckVultrBareMetalServerExists(n string) resource.TestCheckFunc {
 func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string {
 	return testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + fmt.Sprintf(`
 		resource "vultr_bare_metal_server" "foo" {
-			region = "ewr"
+			region = "ams"
 			os_id = 159
 			plan = "vbm-4c-32gb"
 			enable_ipv6 = true
@@ -140,7 +140,7 @@ func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string
 func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) string {
 	return testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + fmt.Sprintf(`
 		resource "vultr_bare_metal_server" "foo" {
-			region = "ewr"
+			region = "ams"
 			os_id = 159
 			plan = "vbm-4c-32gb"
 			activation_email = false
