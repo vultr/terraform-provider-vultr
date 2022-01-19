@@ -2,16 +2,15 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrBareMetalServer() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrBareMetalServerRead,
+		ReadContext: dataSourceVultrBareMetalServerRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"os": {
@@ -103,13 +102,13 @@ func dataSourceVultrBareMetalServer() *schema.Resource {
 	}
 }
 
-func dataSourceVultrBareMetalServerRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
 	serverList := []govultr.BareMetalServer{}
@@ -119,7 +118,7 @@ func dataSourceVultrBareMetalServerRead(d *schema.ResourceData, meta interface{}
 	for {
 		servers, meta, err := client.BareMetalServer.List(context.Background(), options)
 		if err != nil {
-			return fmt.Errorf("error getting bare metal servers: %v", err)
+			return diag.Errorf("error getting bare metal servers: %v", err)
 		}
 
 		for _, s := range servers {
@@ -127,7 +126,7 @@ func dataSourceVultrBareMetalServerRead(d *schema.ResourceData, meta interface{}
 			sm, err := structToMap(s)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -143,11 +142,11 @@ func dataSourceVultrBareMetalServerRead(d *schema.ResourceData, meta interface{}
 		}
 	}
 	if len(serverList) > 1 {
-		return errors.New("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(serverList) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	d.SetId(serverList[0].ID)

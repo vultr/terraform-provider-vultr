@@ -2,16 +2,15 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrBareMetalPlan() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrBareMetalPlanRead,
+		ReadContext: dataSourceVultrBareMetalPlanRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"cpu_count": {
@@ -61,13 +60,13 @@ func dataSourceVultrBareMetalPlan() *schema.Resource {
 	}
 }
 
-func dataSourceVultrBareMetalPlanRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrBareMetalPlanRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
 	var planList []govultr.BareMetalPlan
@@ -77,7 +76,7 @@ func dataSourceVultrBareMetalPlanRead(d *schema.ResourceData, meta interface{}) 
 		plans, meta, err := client.Plan.ListBareMetal(context.Background(), options)
 
 		if err != nil {
-			return fmt.Errorf("Error getting bare metal plans: %v", err)
+			return diag.Errorf("Error getting bare metal plans: %v", err)
 		}
 
 		for _, a := range plans {
@@ -85,7 +84,7 @@ func dataSourceVultrBareMetalPlanRead(d *schema.ResourceData, meta interface{}) 
 			sm, err := structToMap(a)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -101,11 +100,11 @@ func dataSourceVultrBareMetalPlanRead(d *schema.ResourceData, meta interface{}) 
 		}
 	}
 	if len(planList) > 1 {
-		return errors.New("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(planList) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	d.SetId(planList[0].ID)
@@ -120,7 +119,7 @@ func dataSourceVultrBareMetalPlanRead(d *schema.ResourceData, meta interface{}) 
 	d.Set("disk_count", planList[0].DiskCount)
 
 	if err := d.Set("locations", planList[0].Locations); err != nil {
-		return fmt.Errorf("error setting `locations`: %#v", err)
+		return diag.Errorf("error setting `locations`: %#v", err)
 	}
 
 	return nil

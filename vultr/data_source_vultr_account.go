@@ -2,15 +2,15 @@ package vultr
 
 import (
 	"context"
-	"fmt"
 	"math"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
 func dataSourceVultrAccount() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrAccountRead,
+		ReadContext: dataSourceVultrAccountRead,
 		Schema: map[string]*schema.Schema{
 			"name": {
 				Type:     schema.TypeString,
@@ -45,13 +45,13 @@ func dataSourceVultrAccount() *schema.Resource {
 	}
 }
 
-func dataSourceVultrAccountRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrAccountRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	account, err := client.Account.Get(context.Background())
 
 	if err != nil {
-		return fmt.Errorf("error getting account info: %v", err)
+		return diag.Errorf("error getting account info: %v", err)
 	}
 
 	d.SetId("account")
@@ -62,7 +62,7 @@ func dataSourceVultrAccountRead(d *schema.ResourceData, meta interface{}) error 
 	d.Set("last_payment_date", account.LastPaymentDate)
 	d.Set("last_payment_amount", math.Round(float64(account.LastPaymentAmount)*100)/100)
 	if err := d.Set("acl", account.ACL); err != nil {
-		return fmt.Errorf("error setting `acls`: %#v", err)
+		return diag.Errorf("error setting `acls`: %#v", err)
 	}
 	return nil
 }

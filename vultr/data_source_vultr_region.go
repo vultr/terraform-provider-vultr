@@ -2,16 +2,15 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrRegion() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrRegionRead,
+		ReadContext: dataSourceVultrRegionRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"country": {
@@ -35,13 +34,13 @@ func dataSourceVultrRegion() *schema.Resource {
 	}
 }
 
-func dataSourceVultrRegionRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrRegionRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
 	regionList := []govultr.Region{}
@@ -50,7 +49,7 @@ func dataSourceVultrRegionRead(d *schema.ResourceData, meta interface{}) error {
 	for {
 		regions, meta, err := client.Region.List(context.Background(), options)
 		if err != nil {
-			return fmt.Errorf("Error getting regions: %v", err)
+			return diag.Errorf("Error getting regions: %v", err)
 		}
 
 		for _, a := range regions {
@@ -58,7 +57,7 @@ func dataSourceVultrRegionRead(d *schema.ResourceData, meta interface{}) error {
 			sm, err := structToMap(a)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -75,11 +74,11 @@ func dataSourceVultrRegionRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if len(regionList) > 1 {
-		return errors.New("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(regionList) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	d.SetId(regionList[0].ID)

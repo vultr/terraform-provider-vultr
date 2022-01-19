@@ -2,17 +2,16 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrLoadBalancer() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrLoadBalancerRead,
+		ReadContext: dataSourceVultrLoadBalancerRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"date_created": {
@@ -91,13 +90,13 @@ func dataSourceVultrLoadBalancer() *schema.Resource {
 	}
 }
 
-func dataSourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 	var lbList []govultr.LoadBalancer
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
@@ -105,14 +104,14 @@ func dataSourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) e
 	for {
 		lbs, meta, err := client.LoadBalancer.List(context.Background(), options)
 		if err != nil {
-			return fmt.Errorf("error getting load balancer: %v", err)
+			return diag.Errorf("error getting load balancer: %v", err)
 		}
 
 		for _, b := range lbs {
 			sm, err := structToMap(b)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -128,11 +127,11 @@ func dataSourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) e
 		}
 	}
 	if len(lbList) > 1 {
-		return errors.New("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(lbList) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	d.SetId(lbList[0].ID)
@@ -163,7 +162,7 @@ func dataSourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) e
 	}
 
 	if err := d.Set("forwarding_rules", rulesList); err != nil {
-		return fmt.Errorf("error setting `forwarding_rules`: %#v", err)
+		return diag.Errorf("error setting `forwarding_rules`: %#v", err)
 	}
 
 	hcInfo := map[string]interface{}{
@@ -177,7 +176,7 @@ func dataSourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) e
 	}
 
 	if err := d.Set("health_check", hcInfo); err != nil {
-		return fmt.Errorf("error setting `health_check`: %#v", err)
+		return diag.Errorf("error setting `health_check`: %#v", err)
 	}
 
 	var fwrRules []map[string]interface{}
@@ -192,7 +191,7 @@ func dataSourceVultrLoadBalancerRead(d *schema.ResourceData, meta interface{}) e
 	}
 
 	if err := d.Set("firewall_rules", fwrRules); err != nil {
-		return fmt.Errorf("error setting `firewall_rules`: %#v", err)
+		return diag.Errorf("error setting `firewall_rules`: %#v", err)
 	}
 
 	return nil

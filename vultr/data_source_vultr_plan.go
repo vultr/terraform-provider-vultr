@@ -2,16 +2,15 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrPlan() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrPlanRead,
+		ReadContext: dataSourceVultrPlanRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"vcpu_count": {
@@ -51,12 +50,12 @@ func dataSourceVultrPlan() *schema.Resource {
 	}
 }
 
-func dataSourceVultrPlanRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrPlanRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
 	planList := []govultr.Plan{}
@@ -66,7 +65,7 @@ func dataSourceVultrPlanRead(d *schema.ResourceData, meta interface{}) error {
 	for {
 		plans, meta, err := client.Plan.List(context.Background(), "", options)
 		if err != nil {
-			return fmt.Errorf("Error getting plans: %v", err)
+			return diag.Errorf("Error getting plans: %v", err)
 		}
 
 		for _, a := range plans {
@@ -74,7 +73,7 @@ func dataSourceVultrPlanRead(d *schema.ResourceData, meta interface{}) error {
 			sm, err := structToMap(a)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -91,11 +90,11 @@ func dataSourceVultrPlanRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if len(planList) > 1 {
-		return errors.New("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(planList) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	d.SetId(planList[0].ID)
@@ -107,7 +106,7 @@ func dataSourceVultrPlanRead(d *schema.ResourceData, meta interface{}) error {
 	d.Set("disk_count", planList[0].DiskCount)
 	d.Set("type", planList[0].Type)
 	if err := d.Set("locations", planList[0].Locations); err != nil {
-		return fmt.Errorf("error setting `available_locations`: %#v", err)
+		return diag.Errorf("error setting `available_locations`: %#v", err)
 	}
 	return nil
 }

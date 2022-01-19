@@ -2,16 +2,15 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrIsoPrivate() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrIsoPrivateRead,
+		ReadContext: dataSourceVultrIsoPrivateRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"date_created": {
@@ -42,12 +41,12 @@ func dataSourceVultrIsoPrivate() *schema.Resource {
 	}
 }
 
-func dataSourceVultrIsoPrivateRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrIsoPrivateRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOK := d.GetOk("filter")
 	if !filtersOK {
-		return fmt.Errorf("issue with filter: %v", filtersOK)
+		return diag.Errorf("issue with filter: %v", filtersOK)
 	}
 
 	var isoList []govultr.ISO
@@ -57,14 +56,14 @@ func dataSourceVultrIsoPrivateRead(d *schema.ResourceData, meta interface{}) err
 	for {
 		iso, meta, err := client.ISO.List(context.Background(), options)
 		if err != nil {
-			return fmt.Errorf("error getting isos: %v", err)
+			return diag.Errorf("error getting isos: %v", err)
 		}
 
 		for _, i := range iso {
 			sm, err := structToMap(i)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -80,11 +79,11 @@ func dataSourceVultrIsoPrivateRead(d *schema.ResourceData, meta interface{}) err
 		}
 	}
 	if len(isoList) > 1 {
-		return errors.New("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(isoList) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	d.SetId(isoList[0].ID)

@@ -2,16 +2,15 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrFirewallGroup() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrFirewallGroupRead,
+		ReadContext: dataSourceVultrFirewallGroupRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"description": {
@@ -42,14 +41,14 @@ func dataSourceVultrFirewallGroup() *schema.Resource {
 	}
 }
 
-func dataSourceVultrFirewallGroupRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrFirewallGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
 	firewallGroupList := []govultr.FirewallGroup{}
@@ -59,14 +58,14 @@ func dataSourceVultrFirewallGroupRead(d *schema.ResourceData, meta interface{}) 
 	for {
 		firewallGroup, meta, err := client.FirewallGroup.List(context.Background(), options)
 		if err != nil {
-			return fmt.Errorf("error getting firewall group: %v", err)
+			return diag.Errorf("error getting firewall group: %v", err)
 		}
 
 		for _, fw := range firewallGroup {
 			sm, err := structToMap(fw)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -83,11 +82,11 @@ func dataSourceVultrFirewallGroupRead(d *schema.ResourceData, meta interface{}) 
 	}
 
 	if len(firewallGroupList) > 1 {
-		return errors.New("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(firewallGroupList) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	d.SetId(firewallGroupList[0].ID)

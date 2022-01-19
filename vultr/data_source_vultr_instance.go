@@ -2,17 +2,16 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrInstance() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrInstanceRead,
+		ReadContext: dataSourceVultrInstanceRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"os": {
@@ -145,13 +144,13 @@ func dataSourceVultrInstance() *schema.Resource {
 	}
 }
 
-func dataSourceVultrInstanceRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
 	var serverList []govultr.Instance
@@ -160,7 +159,7 @@ func dataSourceVultrInstanceRead(d *schema.ResourceData, meta interface{}) error
 	for {
 		servers, meta, err := client.Instance.List(context.Background(), options)
 		if err != nil {
-			return fmt.Errorf("error getting servers: %v", err)
+			return diag.Errorf("error getting servers: %v", err)
 		}
 
 		for _, s := range servers {
@@ -168,7 +167,7 @@ func dataSourceVultrInstanceRead(d *schema.ResourceData, meta interface{}) error
 			sm, err := structToMap(s)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -185,11 +184,11 @@ func dataSourceVultrInstanceRead(d *schema.ResourceData, meta interface{}) error
 	}
 
 	if len(serverList) > 1 {
-		return errors.New("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(serverList) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	d.SetId(serverList[0].ID)
@@ -223,7 +222,7 @@ func dataSourceVultrInstanceRead(d *schema.ResourceData, meta interface{}) error
 
 	schedule, err := client.Instance.GetBackupSchedule(context.Background(), serverList[0].ID)
 	if err != nil {
-		return fmt.Errorf("error getting backup schedule: %v", err)
+		return diag.Errorf("error getting backup schedule: %v", err)
 	}
 	d.Set("backups", backupStatus(schedule.Enabled))
 
@@ -234,12 +233,12 @@ func dataSourceVultrInstanceRead(d *schema.ResourceData, meta interface{}) error
 		"dow":  strconv.Itoa(schedule.Dow),
 	}
 	if err := d.Set("backups_schedule", bsInfo); err != nil {
-		return fmt.Errorf("error setting `backups_schedule`: %#v", err)
+		return diag.Errorf("error setting `backups_schedule`: %#v", err)
 	}
 
 	pn, err := getPrivateNetworks(client, d.Id())
 	if err != nil {
-		return fmt.Errorf(err.Error())
+		return diag.Errorf(err.Error())
 	}
 
 	d.Set("private_network_ids", pn)

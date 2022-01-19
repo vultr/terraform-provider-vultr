@@ -2,17 +2,16 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrOS() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrOSRead,
+		ReadContext: dataSourceVultrOSRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"name": {
@@ -31,12 +30,12 @@ func dataSourceVultrOS() *schema.Resource {
 	}
 }
 
-func dataSourceVultrOSRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrOSRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
 	osList := []govultr.OS{}
@@ -45,14 +44,14 @@ func dataSourceVultrOSRead(d *schema.ResourceData, meta interface{}) error {
 	for {
 		os, meta, err := client.OS.List(context.Background(), options)
 		if err != nil {
-			return fmt.Errorf("error getting os list: %v", err)
+			return diag.Errorf("error getting os list: %v", err)
 		}
 
 		for _, o := range os {
 			sm, err := structToMap(o)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -69,11 +68,11 @@ func dataSourceVultrOSRead(d *schema.ResourceData, meta interface{}) error {
 	}
 
 	if len(osList) > 1 {
-		return errors.New("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(osList) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	d.SetId(strconv.Itoa(osList[0].ID))

@@ -2,16 +2,15 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrPrivateNetwork() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrPrivateNetworkRead,
+		ReadContext: dataSourceVultrPrivateNetworkRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"region": {
@@ -38,13 +37,13 @@ func dataSourceVultrPrivateNetwork() *schema.Resource {
 	}
 }
 
-func dataSourceVultrPrivateNetworkRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrPrivateNetworkRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
 	var networkList []govultr.Network
@@ -54,7 +53,7 @@ func dataSourceVultrPrivateNetworkRead(d *schema.ResourceData, meta interface{})
 	for {
 		networks, meta, err := client.Network.List(context.Background(), options)
 		if err != nil {
-			return fmt.Errorf("error getting networks: %v", err)
+			return diag.Errorf("error getting networks: %v", err)
 		}
 
 		for _, n := range networks {
@@ -62,7 +61,7 @@ func dataSourceVultrPrivateNetworkRead(d *schema.ResourceData, meta interface{})
 			sm, err := structToMap(n)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -79,11 +78,11 @@ func dataSourceVultrPrivateNetworkRead(d *schema.ResourceData, meta interface{})
 	}
 
 	if len(networkList) > 1 {
-		return errors.New("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(networkList) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	d.SetId(networkList[0].NetworkID)
