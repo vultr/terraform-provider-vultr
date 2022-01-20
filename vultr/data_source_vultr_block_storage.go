@@ -2,16 +2,15 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrBlockStorage() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrBlockStorageRead,
+		ReadContext: dataSourceVultrBlockStorageRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"date_created": {
@@ -50,29 +49,29 @@ func dataSourceVultrBlockStorage() *schema.Resource {
 	}
 }
 
-func dataSourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
 	var blockList []govultr.BlockStorage
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 	for {
-		block, meta, err := client.BlockStorage.List(context.Background(), options)
+		block, meta, err := client.BlockStorage.List(ctx, options)
 		if err != nil {
-			return fmt.Errorf("error getting block storages: %v", err)
+			return diag.Errorf("error getting block storages: %v", err)
 		}
 
 		for _, b := range block {
 			sm, err := structToMap(b)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -88,11 +87,11 @@ func dataSourceVultrBlockStorageRead(d *schema.ResourceData, meta interface{}) e
 		}
 	}
 	if len(blockList) > 1 {
-		return errors.New("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(blockList) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	d.SetId(blockList[0].ID)

@@ -2,15 +2,15 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrReverseIPV4() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrReverseIPV4Read,
+		ReadContext: dataSourceVultrReverseIPV4Read,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"instance_id": {
@@ -37,11 +37,11 @@ func dataSourceVultrReverseIPV4() *schema.Resource {
 	}
 }
 
-func dataSourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrReverseIPV4Read(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	filters, filtersOk := d.GetOk("filter")
 
 	if !filtersOk {
-		return fmt.Errorf("error getting filter: %v", filtersOk)
+		return diag.Errorf("error getting filter: %v", filtersOk)
 	}
 
 	var instanceIDs []string
@@ -71,9 +71,9 @@ func dataSourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) er
 	options := &govultr.ListOptions{}
 	if len(instanceIDs) == 0 {
 		for {
-			servers, meta, err := client.Instance.List(context.Background(), options)
+			servers, meta, err := client.Instance.List(ctx, options)
 			if err != nil {
-				return fmt.Errorf("error getting servers: %v", err)
+				return diag.Errorf("error getting servers: %v", err)
 			}
 
 			for _, server := range servers {
@@ -94,20 +94,20 @@ func dataSourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) er
 	resultInstanceID := ""
 
 	for _, instanceID := range instanceIDs {
-		ipv4s, _, err := client.Instance.ListIPv4(context.Background(), instanceID, nil)
+		ipv4s, _, err := client.Instance.ListIPv4(ctx, instanceID, nil)
 		if err != nil {
-			return fmt.Errorf("error getting IPv4s: %v", err)
+			return diag.Errorf("error getting IPv4s: %v", err)
 		}
 
 		for _, ipv4 := range ipv4s {
 			m, err := structToMap(ipv4)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(filter, m) {
 				if result != nil {
-					return fmt.Errorf("your search returned too many results - please refine your search to be more specific")
+					return diag.Errorf("your search returned too many results - please refine your search to be more specific")
 				}
 
 				result = &ipv4
@@ -117,7 +117,7 @@ func dataSourceVultrReverseIPV4Read(d *schema.ResourceData, meta interface{}) er
 	}
 
 	if result == nil {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	d.SetId(result.IP)

@@ -2,17 +2,16 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
 	"strconv"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrApplication() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrApplicationRead,
+		ReadContext: dataSourceVultrApplicationRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"deploy_name": {
@@ -43,13 +42,13 @@ func dataSourceVultrApplication() *schema.Resource {
 	}
 }
 
-func dataSourceVultrApplicationRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrApplicationRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
 	appList := []govultr.Application{}
@@ -57,9 +56,9 @@ func dataSourceVultrApplicationRead(d *schema.ResourceData, meta interface{}) er
 	options := &govultr.ListOptions{}
 
 	for {
-		apps, meta, err := client.Application.List(context.Background(), options)
+		apps, meta, err := client.Application.List(ctx, options)
 		if err != nil {
-			return fmt.Errorf("error getting applications: %v", err)
+			return diag.Errorf("error getting applications: %v", err)
 		}
 
 		for _, a := range apps {
@@ -67,7 +66,7 @@ func dataSourceVultrApplicationRead(d *schema.ResourceData, meta interface{}) er
 			sm, err := structToMap(a)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -83,11 +82,11 @@ func dataSourceVultrApplicationRead(d *schema.ResourceData, meta interface{}) er
 		}
 	}
 	if len(appList) > 1 {
-		return fmt.Errorf("your search returned too many results : %d. Please refine your search to be more specific", len(appList))
+		return diag.Errorf("your search returned too many results : %d. Please refine your search to be more specific", len(appList))
 	}
 
 	if len(appList) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 	d.SetId(strconv.Itoa(appList[0].ID))
 	d.Set("deploy_name", appList[0].DeployName)

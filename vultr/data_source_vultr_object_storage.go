@@ -2,14 +2,15 @@ package vultr
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrObjectStorage() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrObjectStorageRead,
+		ReadContext: dataSourceVultrObjectStorageRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"date_created": {
@@ -54,12 +55,12 @@ func dataSourceVultrObjectStorage() *schema.Resource {
 	}
 }
 
-func dataSourceVultrObjectStorageRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrObjectStorageRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOK := d.GetOk("filter")
 	if !filtersOK {
-		return fmt.Errorf("issue with filter: %v", filtersOK)
+		return diag.Errorf("issue with filter: %v", filtersOK)
 	}
 
 	objStoreList := []govultr.ObjectStorage{}
@@ -67,9 +68,9 @@ func dataSourceVultrObjectStorageRead(d *schema.ResourceData, meta interface{}) 
 	options := &govultr.ListOptions{}
 
 	for {
-		objectStorages, meta, err := client.ObjectStorage.List(context.Background(), options)
+		objectStorages, meta, err := client.ObjectStorage.List(ctx, options)
 		if err != nil {
-			return fmt.Errorf("error getting object storage list: %v", filtersOK)
+			return diag.Errorf("error getting object storage list: %v", filtersOK)
 		}
 
 		for _, n := range objectStorages {
@@ -77,7 +78,7 @@ func dataSourceVultrObjectStorageRead(d *schema.ResourceData, meta interface{}) 
 			sm, err := structToMap(n)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -93,11 +94,11 @@ func dataSourceVultrObjectStorageRead(d *schema.ResourceData, meta interface{}) 
 		}
 	}
 	if len(objStoreList) > 1 {
-		return fmt.Errorf("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(objStoreList) < 1 {
-		return fmt.Errorf("no results were found")
+		return diag.Errorf("no results were found")
 	}
 	d.SetId(objStoreList[0].ID)
 	d.Set("date_created", objStoreList[0].DateCreated)

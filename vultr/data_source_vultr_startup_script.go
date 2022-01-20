@@ -2,15 +2,15 @@ package vultr
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrStartupScript() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrStartupScriptRead,
+		ReadContext: dataSourceVultrStartupScriptRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"name": {
@@ -37,14 +37,14 @@ func dataSourceVultrStartupScript() *schema.Resource {
 	}
 }
 
-func dataSourceVultrStartupScriptRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrStartupScriptRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
 	var scriptList []govultr.StartupScript
@@ -52,17 +52,17 @@ func dataSourceVultrStartupScriptRead(d *schema.ResourceData, meta interface{}) 
 	options := &govultr.ListOptions{}
 
 	for {
-		scripts, meta, err := client.StartupScript.List(context.Background(), options)
+		scripts, meta, err := client.StartupScript.List(ctx, options)
 
 		if err != nil {
-			return fmt.Errorf("error getting startup scripts: %v", err)
+			return diag.Errorf("error getting startup scripts: %v", err)
 		}
 
 		for _, script := range scripts {
 			sm, err := structToMap(script)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -77,17 +77,17 @@ func dataSourceVultrStartupScriptRead(d *schema.ResourceData, meta interface{}) 
 		}
 	}
 	if len(scriptList) > 1 {
-		return fmt.Errorf("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(scriptList) < 1 {
-		return fmt.Errorf("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	// The script field is not returned in the list call but only in the get.
-	script, err := client.StartupScript.Get(context.Background(), scriptList[0].ID)
+	script, err := client.StartupScript.Get(ctx, scriptList[0].ID)
 	if err != nil {
-		return fmt.Errorf("error retrieving script : %s", scriptList[0])
+		return diag.Errorf("error retrieving script : %s", scriptList[0])
 	}
 
 	d.SetId(script.ID)

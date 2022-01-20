@@ -2,15 +2,15 @@ package vultr
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrSSHKey() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrSSHKeyRead,
+		ReadContext: dataSourceVultrSSHKeyRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"name": {
@@ -29,14 +29,14 @@ func dataSourceVultrSSHKey() *schema.Resource {
 	}
 }
 
-func dataSourceVultrSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrSSHKeyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
 	sshKeyList := []govultr.SSHKey{}
@@ -44,16 +44,16 @@ func dataSourceVultrSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
 	options := &govultr.ListOptions{}
 
 	for {
-		sshKeys, meta, err := client.SSHKey.List(context.Background(), options)
+		sshKeys, meta, err := client.SSHKey.List(ctx, options)
 		if err != nil {
-			return fmt.Errorf("error getting SSH keys: %v", err)
+			return diag.Errorf("error getting SSH keys: %v", err)
 		}
 
 		for _, ssh := range sshKeys {
 			sm, err := structToMap(ssh)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -69,11 +69,11 @@ func dataSourceVultrSSHKeyRead(d *schema.ResourceData, meta interface{}) error {
 		}
 	}
 	if len(sshKeyList) > 1 {
-		return fmt.Errorf("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(sshKeyList) < 1 {
-		return fmt.Errorf("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	d.SetId(sshKeyList[0].ID)

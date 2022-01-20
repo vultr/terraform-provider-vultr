@@ -2,16 +2,15 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrReservedIP() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrReservedIPRead,
+		ReadContext: dataSourceVultrReservedIPRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"region": {
@@ -42,12 +41,12 @@ func dataSourceVultrReservedIP() *schema.Resource {
 	}
 }
 
-func dataSourceVultrReservedIPRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrReservedIPRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
 	ipList := []govultr.ReservedIP{}
@@ -55,15 +54,15 @@ func dataSourceVultrReservedIPRead(d *schema.ResourceData, meta interface{}) err
 	options := &govultr.ListOptions{}
 
 	for {
-		ips, meta, err := client.ReservedIP.List(context.Background(), options)
+		ips, meta, err := client.ReservedIP.List(ctx, options)
 		if err != nil {
-			return fmt.Errorf("error getting list of reserved ips: %v", err)
+			return diag.Errorf("error getting list of reserved ips: %v", err)
 		}
 
 		for _, i := range ips {
 			sm, err := structToMap(i)
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -80,11 +79,11 @@ func dataSourceVultrReservedIPRead(d *schema.ResourceData, meta interface{}) err
 	}
 
 	if len(ipList) > 1 {
-		return errors.New("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(ipList) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	d.SetId(ipList[0].ID)

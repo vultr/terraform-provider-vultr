@@ -2,16 +2,15 @@ package vultr
 
 import (
 	"context"
-	"errors"
-	"fmt"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v2"
 )
 
 func dataSourceVultrSnapshot() *schema.Resource {
 	return &schema.Resource{
-		Read: dataSourceVultrSnapshotRead,
+		ReadContext: dataSourceVultrSnapshotRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"date_created": {
@@ -42,14 +41,14 @@ func dataSourceVultrSnapshot() *schema.Resource {
 	}
 }
 
-func dataSourceVultrSnapshotRead(d *schema.ResourceData, meta interface{}) error {
+func dataSourceVultrSnapshotRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
 
 	if !filtersOk {
-		return fmt.Errorf("issue with filter: %v", filtersOk)
+		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
 	var snapshotList []govultr.Snapshot
@@ -57,16 +56,16 @@ func dataSourceVultrSnapshotRead(d *schema.ResourceData, meta interface{}) error
 	options := &govultr.ListOptions{}
 
 	for {
-		snapshots, meta, err := client.Snapshot.List(context.Background(), options)
+		snapshots, meta, err := client.Snapshot.List(ctx, options)
 		if err != nil {
-			return fmt.Errorf("error getting snapshots: %v", err)
+			return diag.Errorf("error getting snapshots: %v", err)
 		}
 
 		for _, ssh := range snapshots {
 			sm, err := structToMap(ssh)
 
 			if err != nil {
-				return err
+				return diag.FromErr(err)
 			}
 
 			if filterLoop(f, sm) {
@@ -82,11 +81,11 @@ func dataSourceVultrSnapshotRead(d *schema.ResourceData, meta interface{}) error
 	}
 
 	if len(snapshotList) > 1 {
-		return errors.New("your search returned too many results. Please refine your search to be more specific")
+		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
 	if len(snapshotList) < 1 {
-		return errors.New("no results were found")
+		return diag.Errorf("no results were found")
 	}
 
 	d.SetId(snapshotList[0].ID)
