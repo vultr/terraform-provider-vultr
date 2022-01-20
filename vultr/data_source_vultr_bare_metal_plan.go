@@ -73,7 +73,7 @@ func dataSourceVultrBareMetalPlanRead(ctx context.Context, d *schema.ResourceDat
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 	for {
-		plans, meta, err := client.Plan.ListBareMetal(context.Background(), options)
+		plans, meta, err := client.Plan.ListBareMetal(ctx, options)
 
 		if err != nil {
 			return diag.Errorf("Error getting bare metal plans: %v", err)

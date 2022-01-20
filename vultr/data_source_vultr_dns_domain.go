@@ -33,7 +33,7 @@ func dataSourceVultrDNSDomain() *schema.Resource {
 func dataSourceVultrDNSDomainRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	domain, err := client.Domain.Get(context.Background(), d.Get("domain").(string))
+	domain, err := client.Domain.Get(ctx, d.Get("domain").(string))
 	if err != nil {
 		return diag.Errorf("error getting dns domains: %v", err)
 	}

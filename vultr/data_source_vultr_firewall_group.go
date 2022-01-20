@@ -56,7 +56,7 @@ func dataSourceVultrFirewallGroupRead(ctx context.Context, d *schema.ResourceDat
 	options := &govultr.ListOptions{}
 
 	for {
-		firewallGroup, meta, err := client.FirewallGroup.List(context.Background(), options)
+		firewallGroup, meta, err := client.FirewallGroup.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting firewall group: %v", err)
 		}

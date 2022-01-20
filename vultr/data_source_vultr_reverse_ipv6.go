@@ -63,7 +63,7 @@ func dataSourceVultrReverseIPV6Read(ctx context.Context, d *schema.ResourceData,
 	options := &govultr.ListOptions{}
 	if len(instanceIDs) == 0 {
 		for {
-			servers, meta, err := client.Instance.List(context.Background(), options)
+			servers, meta, err := client.Instance.List(ctx, options)
 			if err != nil {
 				return diag.Errorf("Error getting servers: %v", err)
 			}
@@ -88,7 +88,7 @@ func dataSourceVultrReverseIPV6Read(ctx context.Context, d *schema.ResourceData,
 	resultInstanceID := ""
 
 	for _, instanceID := range instanceIDs {
-		reverseIPV6s, err := client.Instance.ListReverseIPv6(context.Background(), instanceID)
+		reverseIPV6s, err := client.Instance.ListReverseIPv6(ctx, instanceID)
 		if err != nil {
 			return diag.Errorf("error getting reverse IPv6s: %v", err)
 		}

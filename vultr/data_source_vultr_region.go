@@ -47,7 +47,7 @@ func dataSourceVultrRegionRead(ctx context.Context, d *schema.ResourceData, meta
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 	for {
-		regions, meta, err := client.Region.List(context.Background(), options)
+		regions, meta, err := client.Region.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("Error getting regions: %v", err)
 		}

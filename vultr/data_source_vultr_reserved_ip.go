@@ -54,7 +54,7 @@ func dataSourceVultrReservedIPRead(ctx context.Context, d *schema.ResourceData, 
 	options := &govultr.ListOptions{}
 
 	for {
-		ips, meta, err := client.ReservedIP.List(context.Background(), options)
+		ips, meta, err := client.ReservedIP.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting list of reserved ips: %v", err)
 		}

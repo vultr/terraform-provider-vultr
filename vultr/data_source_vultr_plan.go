@@ -63,7 +63,7 @@ func dataSourceVultrPlanRead(ctx context.Context, d *schema.ResourceData, meta i
 	options := &govultr.ListOptions{}
 
 	for {
-		plans, meta, err := client.Plan.List(context.Background(), "", options)
+		plans, meta, err := client.Plan.List(ctx, "", options)
 		if err != nil {
 			return diag.Errorf("Error getting plans: %v", err)
 		}

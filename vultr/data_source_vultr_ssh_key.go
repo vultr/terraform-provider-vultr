@@ -44,7 +44,7 @@ func dataSourceVultrSSHKeyRead(ctx context.Context, d *schema.ResourceData, meta
 	options := &govultr.ListOptions{}
 
 	for {
-		sshKeys, meta, err := client.SSHKey.List(context.Background(), options)
+		sshKeys, meta, err := client.SSHKey.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting SSH keys: %v", err)
 		}

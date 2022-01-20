@@ -157,7 +157,7 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 	for {
-		servers, meta, err := client.Instance.List(context.Background(), options)
+		servers, meta, err := client.Instance.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting servers: %v", err)
 		}
@@ -220,7 +220,7 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	d.Set("features", serverList[0].Features)
 	d.Set("hostname", serverList[0].Hostname)
 
-	schedule, err := client.Instance.GetBackupSchedule(context.Background(), serverList[0].ID)
+	schedule, err := client.Instance.GetBackupSchedule(ctx, serverList[0].ID)
 	if err != nil {
 		return diag.Errorf("error getting backup schedule: %v", err)
 	}

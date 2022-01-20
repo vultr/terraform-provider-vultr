@@ -56,7 +56,7 @@ func dataSourceVultrSnapshotRead(ctx context.Context, d *schema.ResourceData, me
 	options := &govultr.ListOptions{}
 
 	for {
-		snapshots, meta, err := client.Snapshot.List(context.Background(), options)
+		snapshots, meta, err := client.Snapshot.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting snapshots: %v", err)
 		}
