@@ -1,3 +1,14 @@
+## 2.9.0 (January 21, 2021)
+Enhancement:
+- datasource/kubernetes: New datasource for VKE [198](https://github.com/vultr/terraform-provider-vultr/pull/198)
+- Updated all datasources deprecations read -> readContext [204](https://github.com/vultr/terraform-provider-vultr/pull/204)
+- 
+Bug Fix:
+- datasource/backups : fix scheme mismatch [201](https://github.com/vultr/terraform-provider-vultr/pull/201)
+
+Dependency:
+- updated govultr to v2.12.0 -> v2.14.0  [206](https://github.com/vultr/terraform-provider-vultr/pull/206)
+
 ## 2.8.1 (December 20, 2021)
 Bug Fix:
 - resource/instance: fix importer [192](https://github.com/vultr/terraform-provider-vultr/pull/192) Thanks @vincentbernat
