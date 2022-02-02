@@ -1,4 +1,8 @@
-## 2.9.0 (January 21, 2021)
+## 2.9.1 (February 2, 2022)
+Dependency:
+- updated govultr to v2.14.0 -> v2.14.1  [210](https://github.com/vultr/terraform-provider-vultr/pull/210)
+
+## 2.9.0 (January 21, 2022)
 Enhancement:
 - datasource/kubernetes: New datasource for VKE [198](https://github.com/vultr/terraform-provider-vultr/pull/198)
 - Updated all datasources deprecations read -> readContext [204](https://github.com/vultr/terraform-provider-vultr/pull/204)
