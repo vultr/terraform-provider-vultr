@@ -14,14 +14,14 @@ func TestAccVultrIsoPublic(t *testing.T) {
 		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrIsoPublicRead("7 x86_64 Minimal"),
+				Config: testAccVultrIsoPublicRead("10.11 x64"),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(
-						"data.vultr_iso_public.cent", "description", "7 x86_64 Minimal"),
+						"data.vultr_iso_public.deb", "description", "10.11 x64"),
 					resource.TestCheckResourceAttr(
-						"data.vultr_iso_public.cent", "name", "CentOS 7"),
-					resource.TestCheckResourceAttrSet("data.vultr_iso_public.cent", "id"),
-					resource.TestCheckResourceAttrSet("data.vultr_iso_public.cent", "md5sum"),
+						"data.vultr_iso_public.deb", "name", "Debian Buster"),
+					resource.TestCheckResourceAttrSet("data.vultr_iso_public.deb", "id"),
+					resource.TestCheckResourceAttrSet("data.vultr_iso_public.deb", "md5sum"),
 				),
 			},
 			{
@@ -34,7 +34,7 @@ func TestAccVultrIsoPublic(t *testing.T) {
 
 func testAccVultrIsoPublicRead(description string) string {
 	return fmt.Sprintf(`
-		data "vultr_iso_public" "cent" {
+		data "vultr_iso_public" "deb" {
 			filter {
 				name = "description"
 				values = ["%s"]
@@ -44,7 +44,7 @@ func testAccVultrIsoPublicRead(description string) string {
 
 func testAccVultrIsoPublicTooMany(name string) string {
 	return fmt.Sprintf(`
-		data "vultr_iso_public" "cent" {
+		data "vultr_iso_public" "deb" {
 			filter {
 				name = "name"
 				values = ["%s"]
