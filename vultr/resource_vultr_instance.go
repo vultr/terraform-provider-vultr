@@ -170,6 +170,11 @@ func resourceVultrInstance() *schema.Resource {
 					},
 				},
 			},
+			"block_storage_ids": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 			// Computed
 			"os": {
 				Type:     schema.TypeString,
@@ -356,6 +361,15 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
+	if blockStorageIDs, blockStorageIDsOk := d.GetOk("block_storage_ids"); blockStorageIDsOk {
+		for _, v := range blockStorageIDs.([]interface{}) {
+			req := &govultr.BlockStorageAttach{InstanceID: d.Id(), Live: govultr.BoolToBoolPtr(true)}
+			if err := client.BlockStorage.Attach(ctx, v.(string), req); err != nil {
+				return diag.Errorf("error attaching block storage id : %s", v.(string))
+			}
+		}
+	}
+
 	return resourceVultrInstanceRead(ctx, d, meta)
 }
 
@@ -513,7 +527,6 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		for _, v := range diff(newIDs, oldIDs) {
 			req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, v)
 		}
-
 	}
 
 	if _, err := client.Instance.Update(ctx, d.Id(), req); err != nil {
@@ -574,6 +587,53 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
+	if d.HasChange("block_storage_ids") {
+		log.Printf("[INFO] Updating private_network_ids")
+		oldBlock, newBlock := d.GetChange("block_storage_ids")
+
+		var oldIDs []string
+		for _, v := range oldBlock.([]interface{}) {
+			oldIDs = append(oldIDs, v.(string))
+		}
+
+		var newIDs []string
+		for _, v := range newBlock.([]interface{}) {
+			newIDs = append(newIDs, v.(string))
+		}
+
+		diff := func(in, out []string) []string {
+			var diff []string
+
+			b := map[string]string{}
+			for i := range in {
+				b[in[i]] = ""
+			}
+
+			for i := range out {
+				if _, ok := b[out[i]]; !ok {
+					diff = append(diff, out[i])
+				}
+			}
+
+			return diff
+		}
+
+		for _, v := range diff(oldIDs, newIDs) {
+			req := &govultr.BlockStorageAttach{InstanceID: d.Id(), Live: govultr.BoolToBoolPtr(true)}
+			if err := client.BlockStorage.Attach(ctx, v, req); err != nil {
+				return diag.Errorf("error attaching block storage id : %s", v)
+			}
+
+		}
+
+		for _, v := range diff(newIDs, oldIDs) {
+			req := &govultr.BlockStorageDetach{Live: govultr.BoolToBoolPtr(true)}
+			if err := client.BlockStorage.Detach(ctx, v, req); err != nil {
+				return diag.Errorf("error detaching block storage id : %s", v)
+			}
+		}
+	}
+
 	return resourceVultrInstanceRead(ctx, d, meta)
 }
 
@@ -590,6 +650,15 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 
 		if _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
 			return diag.Errorf("error detaching private networks prior to deleting instance %s : %v", d.Id(), err)
+		}
+	}
+
+	if blockIDs, blockOK := d.GetOk("block_storage_ids"); blockOK {
+		for _, v := range blockIDs.([]interface{}) {
+			req := &govultr.BlockStorageDetach{Live: govultr.BoolToBoolPtr(true)}
+			if err := client.BlockStorage.Detach(ctx, v.(string), req); err != nil {
+				return diag.Errorf("error detaching block storage id '%s' prior to deleting instance '%s'", v.(string), d.Id())
+			}
 		}
 	}
 

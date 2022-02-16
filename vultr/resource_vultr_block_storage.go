@@ -2,8 +2,11 @@ package vultr
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -33,6 +36,7 @@ func resourceVultrBlockStorage() *schema.Resource {
 			"attached_to_instance": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"label": {
 				Type:     schema.TypeString,
@@ -81,7 +85,11 @@ func resourceVultrBlockStorageCreate(ctx context.Context, d *schema.ResourceData
 	d.SetId(bs.ID)
 	log.Printf("[INFO] Block Storage ID: %s", d.Id())
 
-	if instanceID, ok := d.GetOkExists("attached_to_instance"); ok {
+	if _, err = waitForBlockAvailable(ctx, d, "active", []string{"pending"}, "status", meta); err != nil {
+		return diag.Errorf("error while waiting for block %s to be completed: %s", d.Id(), err)
+	}
+
+	if instanceID, ok := d.GetOk("attached_to_instance"); ok {
 		log.Printf("[INFO] Attaching block storage (%s)", d.Id())
 
 		// Wait for the BS state to become active for 30 seconds
@@ -197,4 +205,41 @@ func resourceVultrBlockStorageDelete(ctx context.Context, d *schema.ResourceData
 	}
 
 	return nil
+}
+
+func waitForBlockAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+	log.Printf(
+		"[INFO] Waiting for Server (%s) to have %s of %s",
+		d.Id(), attribute, target)
+
+	stateConf := &resource.StateChangeConf{
+		Pending:        pending,
+		Target:         []string{target},
+		Refresh:        newBlockStateRefresh(ctx, d, meta, attribute),
+		Timeout:        60 * time.Minute,
+		Delay:          10 * time.Second,
+		MinTimeout:     3 * time.Second,
+		NotFoundChecks: 60,
+	}
+
+	return stateConf.WaitForStateContext(ctx)
+}
+
+func newBlockStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc {
+	client := meta.(*Client).govultrClient()
+	return func() (interface{}, string, error) {
+
+		log.Printf("[INFO] Creating Block")
+		block, err := client.BlockStorage.Get(ctx, d.Id())
+		if err != nil {
+			return nil, "", fmt.Errorf("error retrieving block %s : %s", d.Id(), err)
+		}
+
+		if attr == "status" {
+			log.Printf("[INFO] The Block Status is %s", block.Status)
+			return block, block.Status, nil
+		} else {
+			return nil, "", nil
+		}
+	}
 }
