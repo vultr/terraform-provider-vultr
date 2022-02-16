@@ -25,7 +25,7 @@ func TestAccVultrIsoPublic(t *testing.T) {
 				),
 			},
 			{
-				Config:      testAccVultrIsoPublicTooMany("Debian 9"),
+				Config:      testAccVultrIsoPublicTooMany("Debian Buster"),
 				ExpectError: regexp.MustCompile(`Error: your search returned too many results. Please refine your search to be more specific`),
 			},
 		},
