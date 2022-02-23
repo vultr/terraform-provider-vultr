@@ -4,7 +4,7 @@ Terraform Provider for Vultr
 - Vultr Website: https://www.vultr.com
 - Terraform Website: https://www.terraform.io
 
-<img src="https://cdn.rawgit.com/hashicorp/terraform-website/master/content/source/assets/images/logo-terraform-main.svg" width="600px">
+<img src="https://raw.githubusercontent.com/hashicorp/terraform-website/master/public/img/logo-hashicorp.svg" width="600px">
 
 Requirements
 ------------
