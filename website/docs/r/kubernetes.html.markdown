@@ -10,7 +10,7 @@ description: |-
 
 Get information about a Vultr Kubernetes Engine (VKE) Cluster.
 
-**Note** The node pool deployed with this resource adds its own `tag` which is then used as an identifier for Terraform to see which node pool is part of this resource. 
+~> The node pool deployed with this resource adds its own `tag` which is then used as an identifier for Terraform to see which node pool is part of this resource. This resource only supports a single node pool. To deploy additional worker nodes you must use `vultr_kubernetes_node_pools`.
 
 ## Example Usage
 

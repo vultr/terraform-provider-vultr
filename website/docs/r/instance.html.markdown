@@ -18,7 +18,7 @@ Create a new instance:
 resource "vultr_instance" "my_instance" {
 	plan = "vc2-1c-1gb"
 	region = "sea"
-	os_id = "167"
+	os_id = 167
 }
 ```
 
@@ -28,7 +28,7 @@ Create a new instance with options:
 resource "vultr_instance" "my_instance" {
 	plan = "vc2-1c-1gb"
 	region = "sea"
-	os_id = "167"
+	os_id = 167
 	label = "my-instance-label"
 	tag = "my-instance-tag"
 	hostname = "my-instance-hostname"
