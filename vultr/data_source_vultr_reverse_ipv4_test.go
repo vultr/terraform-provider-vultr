@@ -35,7 +35,7 @@ func testAccDataSourceVultrReverseIPV4(serverLabel string) string {
 	return fmt.Sprintf(`
 		variable "hostname" {
 			description = "hostname"
-			default     = "vultr.com"
+			default     = "vultrusercontent.com"
 		}
 
 		resource "vultr_instance" "foo" {
