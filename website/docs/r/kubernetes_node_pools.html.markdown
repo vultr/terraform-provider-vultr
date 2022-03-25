@@ -19,8 +19,8 @@ resource "vultr_kubernetes_node_pools" "np-1" {
     cluster_id = vultr_kubernetes.k8.id
     node_quantity = 1
     plan = "vc2-2c-4gb"
-    label = "my label"
-    tag = "my tag"
+    label = "my-label"
+    tag = "my-tag"
 }
 
 ```
