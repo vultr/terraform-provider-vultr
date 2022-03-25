@@ -1,3 +1,14 @@
+## 2.10.0 (March 25, 2022)
+Dependency:
+- updated Go v1.16 -> v1.17  [221](https://github.com/vultr/terraform-provider-vultr/pull/221)
+- updated terraform-plugin-sdk from 2.10.1 to 2.12.0 [218](https://github.com/vultr/terraform-provider-vultr/pull/218)
+- updated govultr from 2.14.1 to 2.14.2 [219](https://github.com/vultr/terraform-provider-vultr/pull/219)
+
+Enhancement:
+- vultr_resource_block : add waits for active status [222](https://github.com/vultr/terraform-provider-vultr/pull/222)
+
+
+
 ## 2.9.1 (February 2, 2022)
 Dependency:
 - updated govultr to v2.14.0 -> v2.14.1  [210](https://github.com/vultr/terraform-provider-vultr/pull/210)
