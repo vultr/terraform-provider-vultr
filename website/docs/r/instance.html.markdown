@@ -41,6 +41,8 @@ resource "vultr_instance" "my_instance" {
 
 ## Argument Reference
 
+~> Updating `hostname` after initial deployment will trigger a reinstall of the instance. This will wipe all data on your instance but IPs will remain. https://www.vultr.com/api/#operation/reinstall-instance
+
 The following arguments are supported:
 
 * `region` - (Required) The ID of the region that the instance is to be created in. [See List Regions](https://www.vultr.com/api/#operation/list-regions)
