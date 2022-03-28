@@ -115,9 +115,10 @@ func resourceVultrInstance() *schema.Resource {
 				Default:  false,
 			},
 			"hostname": {
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
+				Type:        schema.TypeString,
+				Computed:    true,
+				Optional:    true,
+				Description: "Changing the hostname after initial deployment will trigger a reinstall",
 			},
 			"tag": {
 				Type:     schema.TypeString,
