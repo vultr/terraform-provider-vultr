@@ -41,7 +41,8 @@ resource "vultr_instance" "my_instance" {
 
 ## Argument Reference
 
-~> Updating `hostname` after initial deployment will trigger a reinstall of the instance. This will wipe all data on your instance but IPs will remain. https://www.vultr.com/api/#operation/reinstall-instance
+
+~> Updating the hostname will cause a `force new`. This behavior is in place to prevent accidental [reinstalls](https://www.vultr.com/api/#operation/reinstall-instance). Issuing an update to the hostname on UI or API issues a reinstall of the OS.
 
 The following arguments are supported:
 
