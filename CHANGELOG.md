@@ -1,4 +1,4 @@
-## 2.11.1 (March 30, 2022)
+## 2.10.1 (March 30, 2022)
 Enhancement:
 - vultr_resource_instance : Updating hostname will result in a forcenew change [226](https://github.com/vultr/terraform-provider-vultr/pull/226)
 
