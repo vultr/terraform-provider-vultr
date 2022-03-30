@@ -116,9 +116,10 @@ func resourceVultrInstance() *schema.Resource {
 			},
 			"hostname": {
 				Type:        schema.TypeString,
+				ForceNew:    true,
 				Computed:    true,
 				Optional:    true,
-				Description: "Changing the hostname after initial deployment will trigger a reinstall",
+				Description: "The hostname of the instance. Updating the hostname will cause a force new. This behavior is in place to prevent accidental reinstalls. Issuing an update to the hostname on UI or API issues a reinstall of the OS.",
 			},
 			"tag": {
 				Type:     schema.TypeString,
@@ -546,23 +547,6 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		schedule := generateBackupSchedule(bs)
 		if err := client.Instance.SetBackupSchedule(ctx, d.Id(), schedule); err != nil {
 			return diag.Errorf("error setting backup for %s : %v", d.Id(), err)
-		}
-	}
-
-	// Changing the hostname can only be done via a reinstall
-	// Since this is a full reinstall we also put in the status waits so TF doesn't continue processing until the instance is fully up
-	if d.HasChange("hostname") {
-		req := &govultr.ReinstallReq{Hostname: d.Get("hostname").(string)}
-		if _, err := client.Instance.Reinstall(ctx, d.Id(), req); err != nil {
-			return diag.Errorf("error changing hostname for %s : %v", d.Id(), err)
-		}
-
-		if _, err := waitForServerAvailable(ctx, d, "active", []string{"pending", "installing"}, "status", meta); err != nil {
-			return diag.Errorf("error while waiting for Server %s to be completed: %s", d.Id(), err)
-		}
-
-		if _, err := waitForServerAvailable(ctx, d, "running", []string{"stopped"}, "power_status", meta); err != nil {
-			return diag.Errorf("error while waiting for Server %s to be in a active state : %s", d.Id(), err)
 		}
 	}
 
