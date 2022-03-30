@@ -1,3 +1,7 @@
+## 2.10.1 (March 30, 2022)
+Enhancement:
+- vultr_resource_instance : Updating hostname will result in a forcenew change [226](https://github.com/vultr/terraform-provider-vultr/pull/226)
+
 ## 2.10.0 (March 25, 2022)
 Dependency:
 - updated Go v1.16 -> v1.17  [221](https://github.com/vultr/terraform-provider-vultr/pull/221)
@@ -6,8 +10,6 @@ Dependency:
 
 Enhancement:
 - vultr_resource_block : add waits for active status [222](https://github.com/vultr/terraform-provider-vultr/pull/222)
-
-
 
 ## 2.9.1 (February 2, 2022)
 Dependency:
