@@ -21,9 +21,6 @@ func getVPCs(client *govultr.Client, instanceID string) ([]string, error) {
 		}
 
 		for _, v := range vpcInfo {
-			log.Printf("OUT vpc ID: %s\n", v.ID)
-			log.Printf("OUT vpc MAC: %s\n", v.MacAddress)
-			log.Printf("OUT vpc ip: %s\n", v.IPAddress)
 			vpcs = append(vpcs, v.ID)
 		}
 
