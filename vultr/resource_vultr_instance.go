@@ -70,13 +70,9 @@ func resourceVultrInstance() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
-			"enable_private_network": {
-				Type:       schema.TypeBool,
 			"private_network_ids": {
 				Type:       schema.TypeList,
 				Optional:   true,
-				Default:    false,
-				Deprecated: "In the next release of this provider we will be removing `enable_private_network` due to issues that may cause drift and having to maintain private network ip state. Please switch to using private_network_ids to manage your private network fields.",
 				Elem:       &schema.Schema{Type: schema.TypeString},
 				Default:    nil,
 				Deprecated: "private_network_ids has been deprecated and should no longer be used. Instead, use vpc_ids",
@@ -289,20 +285,19 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 	client := meta.(*Client).govultrClient()
 
 	req := &govultr.InstanceCreateReq{
-		EnableIPv6:           govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
-		EnablePrivateNetwork: govultr.BoolToBoolPtr(d.Get("enable_private_network").(bool)),
-		Label:                d.Get("label").(string),
-		Backups:              backups,
-		UserData:             base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string))),
-		ActivationEmail:      govultr.BoolToBoolPtr(d.Get("activation_email").(bool)),
-		DDOSProtection:       govultr.BoolToBoolPtr(d.Get("ddos_protection").(bool)),
-		Hostname:             d.Get("hostname").(string),
-		Tag:                  d.Get("tag").(string),
-		FirewallGroupID:      d.Get("firewall_group_id").(string),
-		ScriptID:             d.Get("script_id").(string),
-		ReservedIPv4:         d.Get("reserved_ip_id").(string),
-		Region:               d.Get("region").(string),
-		Plan:                 d.Get("plan").(string),
+		EnableIPv6:      govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
+		Label:           d.Get("label").(string),
+		Backups:         backups,
+		UserData:        base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string))),
+		ActivationEmail: govultr.BoolToBoolPtr(d.Get("activation_email").(bool)),
+		DDOSProtection:  govultr.BoolToBoolPtr(d.Get("ddos_protection").(bool)),
+		Hostname:        d.Get("hostname").(string),
+		Tag:             d.Get("tag").(string),
+		FirewallGroupID: d.Get("firewall_group_id").(string),
+		ScriptID:        d.Get("script_id").(string),
+		ReservedIPv4:    d.Get("reserved_ip_id").(string),
+		Region:          d.Get("region").(string),
+		Plan:            d.Get("plan").(string),
 	}
 
 	// If no osOptions where selected and osID has a real value then set the osOptions to osID
@@ -460,12 +455,6 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		_, newVal := d.GetChange("ddos_protection")
 		ddos := newVal.(bool)
 		req.DDOSProtection = &ddos
-	}
-
-	if d.HasChange("enable_private_network") {
-		log.Printf("[INFO] Updating private networking")
-		_, newVal := d.GetChange("enable_private_network")
-		req.EnablePrivateNetwork = govultr.BoolToBoolPtr(newVal.(bool))
 	}
 
 	bs, bsOK := d.GetOk("backups_schedule")
