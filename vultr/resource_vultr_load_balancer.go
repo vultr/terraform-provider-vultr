@@ -40,7 +40,11 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"leastconn", "roundrobin"}, false),
 			},
 			"private_network": {
+				Type:       schema.TypeString,
+				Optional:   true,
 				Deprecated: "private_network is deprecated and should no longer be used. Instead, use vpc",
+			},
+			"vpc": {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
@@ -275,8 +279,19 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		SSLRedirect:        govultr.BoolToBoolPtr(d.Get("ssl_redirect").(bool)),
 		ProxyProtocol:      govultr.BoolToBoolPtr(d.Get("proxy_protocol").(bool)),
 		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
-		PrivateNetwork:     govultr.StringToStringPtr(d.Get("private_network").(string)),
 		FirewallRules:      fwrMap,
+	}
+
+	if d.Get("private_network") != "" && d.Get("vpc") != "" {
+		return diag.Errorf("private_network and vpc cannot be used together. Use only vpc instead.")
+	}
+
+	if d.Get("private_network") != "" {
+		req.VPC = govultr.StringToStringPtr(d.Get("private_network").(string))
+	}
+
+	if d.Get("vpc") != "" {
+		req.VPC = govultr.StringToStringPtr(d.Get("vpc").(string))
 	}
 
 	lb, err := client.LoadBalancer.Create(ctx, req)
@@ -354,18 +369,27 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	d.Set("has_ssl", lb.SSLInfo)
-
 	d.Set("attached_instances", lb.Instances)
 	d.Set("balancing_algorithm", lb.GenericInfo.BalancingAlgorithm)
 	d.Set("proxy_protocol", lb.GenericInfo.ProxyProtocol)
 	d.Set("cookie_name", lb.GenericInfo.StickySessions.CookieName)
-	d.Set("private_network", lb.GenericInfo.PrivateNetwork)
 	d.Set("label", lb.Label)
 	d.Set("status", lb.Status)
 	d.Set("ipv4", lb.IPV4)
 	d.Set("ipv6", lb.IPV6)
 	d.Set("region", lb.Region)
 	d.Set("ssl_redirect", lb.GenericInfo.SSLRedirect)
+
+	// Manipulate the read state so that only one of these two values is
+	// returned based on which is passed in. Needed since both private_network
+	// and vpc are set to the same value after creation
+	if d.Get("private_network") == "" && d.Get("vpc") != "" {
+		d.Set("private_network", "")
+		d.Set("vpc", lb.GenericInfo.VPC)
+	} else if d.Get("private_network") != "" && d.Get("vpc") == "" {
+		d.Set("private_network", lb.GenericInfo.VPC)
+		d.Set("vpc", "")
+	}
 
 	return nil
 }
@@ -454,8 +478,16 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 		req.StickySessions = stickySessions
 	}
 
+	if d.Get("private_network") != "" && d.Get("vpc") != "" {
+		return diag.Errorf("private_network and vpc cannot be used together. Use only vpc instead.")
+	}
+
 	if d.HasChange("private_network") {
-		req.PrivateNetwork = govultr.StringToStringPtr(d.Get("private_network").(string))
+		req.VPC = govultr.StringToStringPtr(d.Get("private_network").(string))
+	}
+
+	if d.HasChange("vpc") {
+		req.VPC = govultr.StringToStringPtr(d.Get("vpc").(string))
 	}
 
 	if err := client.LoadBalancer.Update(ctx, d.Id(), req); err != nil {

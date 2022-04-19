@@ -77,7 +77,7 @@ func resourceVultrInstance() *schema.Resource {
 				Default:    nil,
 				Deprecated: "private_network_ids has been deprecated and should no longer be used. Instead, use vpc_ids",
 			},
-			"private_network_ids": {
+			"vpc_ids": {
 				Type:     schema.TypeList,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -322,9 +322,19 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("error occurred while getting your intended os type")
 	}
 
+	if len(d.Get("private_network_ids").([]interface{})) != 0 && len(d.Get("vpc_ids").([]interface{})) != 0 {
+		return diag.Errorf("private_network_ids cannot be used along with vpc_ids. Use only vpc_ids instead.")
+	}
+
 	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
 		for _, v := range networkIDs.([]interface{}) {
-			req.AttachPrivateNetwork = append(req.AttachPrivateNetwork, v.(string))
+			req.AttachVPC = append(req.AttachVPC, v.(string))
+		}
+	}
+
+	if vpcIDs, vpcOK := d.GetOk("vpc_ids"); vpcOK {
+		for _, v := range vpcIDs.([]interface{}) {
+			req.AttachVPC = append(req.AttachVPC, v.(string))
 		}
 	}
 
@@ -424,12 +434,30 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		d.Set("backups_schedule", nil)
 	}
 
-	pn, err := getPrivateNetworks(client, d.Id())
+	// Manipulate the read state so that, depending on which value was passed,
+	// only one of these values is populated when a VPC or PN is defined for
+	// the instance
+	var _, pn_update = d.GetOk("private_network_ids")
+	var _, vpc_update = d.GetOk("vpc_ids")
+
+	vpcs, err := getVPCs(client, d.Id())
 	if err != nil {
 		return diag.Errorf(err.Error())
 	}
 
-	d.Set("private_network_ids", pn)
+	if pn_update {
+
+		d.Set("private_network_ids", vpcs)
+		d.Set("vpc_ids", nil)
+	}
+
+	// Since VPC is last, if an instance read invloves both vpc_ids &
+	// private_network_ids, only the vpc_ids will be preserved
+	if vpc_update {
+
+		d.Set("vpc_ids", vpcs)
+		d.Set("private_network_ids", nil)
+	}
 
 	return nil
 }
@@ -471,6 +499,10 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
+	if len(d.Get("private_network_ids").([]interface{})) != 0 && len(d.Get("vpc_ids").([]interface{})) != 0 {
+		return diag.Errorf("private_network_ids cannot be used along with vpc_ids. Use only vpc_ids instead.")
+	}
+
 	if d.HasChange("private_network_ids") {
 		log.Printf("[INFO] Updating private_network_ids")
 		oldNetwork, newNetwork := d.GetChange("private_network_ids")
@@ -510,6 +542,46 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 			req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, v)
 		}
 
+	}
+
+	if d.HasChange("vpc_ids") {
+		log.Printf("[INFO] Updating vpc_ids")
+		oldVPC, newVPC := d.GetChange("vpc_ids")
+
+		var oldIDs []string
+		for _, v := range oldVPC.([]interface{}) {
+			oldIDs = append(oldIDs, v.(string))
+		}
+
+		var newIDs []string
+		for _, v := range newVPC.([]interface{}) {
+			newIDs = append(newIDs, v.(string))
+		}
+
+		diff := func(in, out []string) []string {
+			var diff []string
+
+			b := map[string]string{}
+			for i := range in {
+				b[in[i]] = ""
+			}
+
+			for i := range out {
+				if _, ok := b[out[i]]; !ok {
+					diff = append(diff, out[i])
+				}
+			}
+
+			return diff
+		}
+
+		for _, v := range diff(oldIDs, newIDs) {
+			req.AttachVPC = append(req.AttachVPC, v)
+		}
+
+		for _, v := range diff(newIDs, oldIDs) {
+			req.DetachVPC = append(req.DetachVPC, v)
+		}
 	}
 
 	if _, err := client.Instance.Update(ctx, d.Id(), req); err != nil {
@@ -569,6 +641,17 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 
 		if _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
 			return diag.Errorf("error detaching private networks prior to deleting instance %s : %v", d.Id(), err)
+		}
+	}
+
+	if vpcIDs, vpcOK := d.GetOk("vpc_ids"); vpcOK {
+		detach := &govultr.InstanceUpdateReq{}
+		for _, v := range vpcIDs.([]interface{}) {
+			detach.DetachVPC = append(detach.DetachVPC, v.(string))
+		}
+
+		if _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
+			return diag.Errorf("error detaching VPCs prior to deleting instance %s : %v", d.Id(), err)
 		}
 	}
 
