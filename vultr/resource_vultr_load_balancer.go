@@ -40,6 +40,7 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"leastconn", "roundrobin"}, false),
 			},
 			"private_network": {
+				Deprecated: "private_network is deprecated and should no longer be used. Instead, use vpc",
 				Type:     schema.TypeString,
 				Optional: true,
 			},

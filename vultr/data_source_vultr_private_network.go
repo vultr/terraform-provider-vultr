@@ -34,6 +34,7 @@ func dataSourceVultrPrivateNetwork() *schema.Resource {
 				Computed: true,
 			},
 		},
+		DeprecationMessage: "Private Networks are deprecated and will not be supported in the future. Use VPCs instead.",
 	}
 }
 

@@ -72,9 +72,14 @@ func resourceVultrInstance() *schema.Resource {
 			},
 			"enable_private_network": {
 				Type:       schema.TypeBool,
+			"private_network_ids": {
+				Type:       schema.TypeList,
 				Optional:   true,
 				Default:    false,
 				Deprecated: "In the next release of this provider we will be removing `enable_private_network` due to issues that may cause drift and having to maintain private network ip state. Please switch to using private_network_ids to manage your private network fields.",
+				Elem:       &schema.Schema{Type: schema.TypeString},
+				Default:    nil,
+				Deprecated: "private_network_ids has been deprecated and should no longer be used. Instead, use vpc_ids",
 			},
 			"private_network_ids": {
 				Type:     schema.TypeList,
