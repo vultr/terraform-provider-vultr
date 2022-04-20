@@ -6,6 +6,8 @@ import (
 	"log"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -35,6 +37,7 @@ func resourceVultrBlockStorage() *schema.Resource {
 			"attached_to_instance": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"label": {
 				Type:     schema.TypeString,
