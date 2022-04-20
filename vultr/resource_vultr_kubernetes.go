@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -121,9 +122,15 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 
 	vke, err := client.Kubernetes.GetCluster(ctx, d.Id())
 	if err != nil {
-		log.Printf("[WARN] Kubernetes Cluster (%v) not found", d.Id())
-		d.SetId("")
-		return nil
+		if strings.Contains(err.Error(), "Unauthorized") {
+			return diag.Errorf("API authorization error: %v", err)
+		}
+		if strings.Contains(err.Error(), "Object does not exist") {
+			log.Printf("[WARN] Kubernetes Cluster (%v) not found", d.Id())
+			d.SetId("")
+			return nil
+		}
+		return diag.Errorf("error getting cluster (%s): %v", d.Id(), err)
 	}
 
 	// Look for the node pool with the tag `tf-vke-default`
