@@ -71,14 +71,14 @@ func resourceVultrInstance() *schema.Resource {
 				Optional: true,
 			},
 			"private_network_ids": {
-				Type:       schema.TypeList,
+				Type:       schema.TypeSet,
 				Optional:   true,
 				Elem:       &schema.Schema{Type: schema.TypeString},
 				Default:    nil,
 				Deprecated: "private_network_ids has been deprecated and should no longer be used. Instead, use vpc_ids",
 			},
 			"vpc_ids": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Default:  nil,
@@ -322,18 +322,18 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("error occurred while getting your intended os type")
 	}
 
-	if len(d.Get("private_network_ids").([]interface{})) != 0 && len(d.Get("vpc_ids").([]interface{})) != 0 {
+	if len(d.Get("private_network_ids").(*schema.Set).List()) != 0 && len(d.Get("vpc_ids").(*schema.Set).List()) != 0 {
 		return diag.Errorf("private_network_ids cannot be used along with vpc_ids. Use only vpc_ids instead.")
 	}
 
 	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
-		for _, v := range networkIDs.([]interface{}) {
+		for _, v := range networkIDs.(*schema.Set).List() {
 			req.AttachVPC = append(req.AttachVPC, v.(string))
 		}
 	}
 
 	if vpcIDs, vpcOK := d.GetOk("vpc_ids"); vpcOK {
-		for _, v := range vpcIDs.([]interface{}) {
+		for _, v := range vpcIDs.(*schema.Set).List() {
 			req.AttachVPC = append(req.AttachVPC, v.(string))
 		}
 	}
@@ -497,7 +497,7 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
-	if len(d.Get("private_network_ids").([]interface{})) != 0 && len(d.Get("vpc_ids").([]interface{})) != 0 {
+	if len(d.Get("private_network_ids").(*schema.Set).List()) != 0 && len(d.Get("vpc_ids").(*schema.Set).List()) != 0 {
 		return diag.Errorf("private_network_ids cannot be used along with vpc_ids. Use only vpc_ids instead.")
 	}
 
@@ -506,12 +506,12 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		oldNetwork, newNetwork := d.GetChange("private_network_ids")
 
 		var oldIDs []string
-		for _, v := range oldNetwork.([]interface{}) {
+		for _, v := range oldNetwork.(*schema.Set).List() {
 			oldIDs = append(oldIDs, v.(string))
 		}
 
 		var newIDs []string
-		for _, v := range newNetwork.([]interface{}) {
+		for _, v := range newNetwork.(*schema.Set).List() {
 			newIDs = append(newIDs, v.(string))
 		}
 
@@ -547,12 +547,12 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		oldVPC, newVPC := d.GetChange("vpc_ids")
 
 		var oldIDs []string
-		for _, v := range oldVPC.([]interface{}) {
+		for _, v := range oldVPC.(*schema.Set).List() {
 			oldIDs = append(oldIDs, v.(string))
 		}
 
 		var newIDs []string
-		for _, v := range newVPC.([]interface{}) {
+		for _, v := range newVPC.(*schema.Set).List() {
 			newIDs = append(newIDs, v.(string))
 		}
 
@@ -633,7 +633,7 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 
 	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
 		detach := &govultr.InstanceUpdateReq{}
-		for _, v := range networkIDs.([]interface{}) {
+		for _, v := range networkIDs.(*schema.Set).List() {
 			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string))
 		}
 
@@ -644,7 +644,7 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 
 	if vpcIDs, vpcOK := d.GetOk("vpc_ids"); vpcOK {
 		detach := &govultr.InstanceUpdateReq{}
-		for _, v := range vpcIDs.([]interface{}) {
+		for _, v := range vpcIDs.(*schema.Set).List() {
 			detach.DetachVPC = append(detach.DetachVPC, v.(string))
 		}
 
