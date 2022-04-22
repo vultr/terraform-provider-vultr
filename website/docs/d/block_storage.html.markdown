@@ -46,3 +46,4 @@ The following attributes are exported:
 * `attached_to_instance` - The ID of the VPS the block storage subscription is attached to.
 * `date_created` - The date the block storage subscription was added to your Vultr account.
 * `mount_id` - An ID associated with the instance, when mounted the ID can be found in /dev/disk/by-id prefixed with virtio.
+* `block_type` - The type of block storage volume.
