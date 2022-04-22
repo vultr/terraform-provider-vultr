@@ -23,6 +23,8 @@ resource "vultr_block_storage" "my_blockstorage" {
 
 ## Argument Reference
 
+~> Updating `block_type` will cause a `force new`.
+
 The following arguments are supported:
 
 * `size_gb` - (Required) The size of the given block storage.
