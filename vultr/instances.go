@@ -7,21 +7,21 @@ import (
 	"github.com/vultr/govultr/v2"
 )
 
-func getPrivateNetworks(client *govultr.Client, instanceID string) ([]string, error) {
+func getVPCs(client *govultr.Client, instanceID string) ([]string, error) {
 	options := &govultr.ListOptions{}
-	var pn []string
+	var vpcs []string
 	for {
-		networks, meta, err := client.Instance.ListPrivateNetworks(context.Background(), instanceID, options)
+		vpcInfo, meta, err := client.Instance.ListVPCInfo(context.Background(), instanceID, options)
 		if err != nil {
-			return nil, fmt.Errorf("error getting list of attached private networks : %v", err)
+			return nil, fmt.Errorf("error getting list of attached VPCs: %v", err)
 		}
 
-		if len(networks) == 0 {
+		if len(vpcInfo) == 0 {
 			break
 		}
 
-		for _, v := range networks {
-			pn = append(pn, v.NetworkID)
+		for _, v := range vpcInfo {
+			vpcs = append(vpcs, v.ID)
 		}
 
 		if meta.Links.Next == "" {
@@ -29,5 +29,5 @@ func getPrivateNetworks(client *govultr.Client, instanceID string) ([]string, er
 		}
 		options.Cursor = meta.Links.Next
 	}
-	return pn, nil
+	return vpcs, nil
 }

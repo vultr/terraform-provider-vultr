@@ -70,17 +70,18 @@ func resourceVultrInstance() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
-			"enable_private_network": {
-				Type:       schema.TypeBool,
-				Optional:   true,
-				Default:    false,
-				Deprecated: "In the next release of this provider we will be removing `enable_private_network` due to issues that may cause drift and having to maintain private network ip state. Please switch to using private_network_ids to manage your private network fields.",
-			},
 			"private_network_ids": {
-				Type:     schema.TypeList,
+				Type:       schema.TypeSet,
+				Optional:   true,
+				Computed:   true,
+				Elem:       &schema.Schema{Type: schema.TypeString},
+				Deprecated: "private_network_ids has been deprecated and should no longer be used. Instead, use vpc_ids",
+			},
+			"vpc_ids": {
+				Type:     schema.TypeSet,
 				Optional: true,
+				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
-				Default:  nil,
 			},
 			"label": {
 				Type:     schema.TypeString,
@@ -284,20 +285,19 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 	client := meta.(*Client).govultrClient()
 
 	req := &govultr.InstanceCreateReq{
-		EnableIPv6:           govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
-		EnablePrivateNetwork: govultr.BoolToBoolPtr(d.Get("enable_private_network").(bool)),
-		Label:                d.Get("label").(string),
-		Backups:              backups,
-		UserData:             base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string))),
-		ActivationEmail:      govultr.BoolToBoolPtr(d.Get("activation_email").(bool)),
-		DDOSProtection:       govultr.BoolToBoolPtr(d.Get("ddos_protection").(bool)),
-		Hostname:             d.Get("hostname").(string),
-		Tag:                  d.Get("tag").(string),
-		FirewallGroupID:      d.Get("firewall_group_id").(string),
-		ScriptID:             d.Get("script_id").(string),
-		ReservedIPv4:         d.Get("reserved_ip_id").(string),
-		Region:               d.Get("region").(string),
-		Plan:                 d.Get("plan").(string),
+		EnableIPv6:      govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
+		Label:           d.Get("label").(string),
+		Backups:         backups,
+		UserData:        base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string))),
+		ActivationEmail: govultr.BoolToBoolPtr(d.Get("activation_email").(bool)),
+		DDOSProtection:  govultr.BoolToBoolPtr(d.Get("ddos_protection").(bool)),
+		Hostname:        d.Get("hostname").(string),
+		Tag:             d.Get("tag").(string),
+		FirewallGroupID: d.Get("firewall_group_id").(string),
+		ScriptID:        d.Get("script_id").(string),
+		ReservedIPv4:    d.Get("reserved_ip_id").(string),
+		Region:          d.Get("region").(string),
+		Plan:            d.Get("plan").(string),
 	}
 
 	// If no osOptions where selected and osID has a real value then set the osOptions to osID
@@ -322,9 +322,19 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("error occurred while getting your intended os type")
 	}
 
+	if len(d.Get("private_network_ids").(*schema.Set).List()) != 0 && len(d.Get("vpc_ids").(*schema.Set).List()) != 0 {
+		return diag.Errorf("private_network_ids cannot be used along with vpc_ids. Use only vpc_ids instead.")
+	}
+
 	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
-		for _, v := range networkIDs.([]interface{}) {
-			req.AttachPrivateNetwork = append(req.AttachPrivateNetwork, v.(string))
+		for _, v := range networkIDs.(*schema.Set).List() {
+			req.AttachVPC = append(req.AttachVPC, v.(string))
+		}
+	}
+
+	if vpcIDs, vpcOK := d.GetOk("vpc_ids"); vpcOK {
+		for _, v := range vpcIDs.(*schema.Set).List() {
+			req.AttachVPC = append(req.AttachVPC, v.(string))
 		}
 	}
 
@@ -424,12 +434,25 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		d.Set("backups_schedule", nil)
 	}
 
-	pn, err := getPrivateNetworks(client, d.Id())
+	vpcs, err := getVPCs(client, d.Id())
 	if err != nil {
 		return diag.Errorf(err.Error())
 	}
 
-	d.Set("private_network_ids", pn)
+	// Manipulate the read state so that, depending on which value was passed,
+	// only one of these values is populated when a VPC or PN is defined for
+	// the instance
+	if _, pnUpdate := d.GetOk("private_network_ids"); pnUpdate {
+		d.Set("private_network_ids", vpcs)
+		d.Set("vpc_ids", nil)
+	}
+
+	// Since VPC is last, if an instance read invloves both vpc_ids &
+	// private_network_ids, only the vpc_ids will be preserved
+	if _, vpcUpdate := d.GetOk("vpc_ids"); vpcUpdate {
+		d.Set("vpc_ids", vpcs)
+		d.Set("private_network_ids", nil)
+	}
 
 	return nil
 }
@@ -457,12 +480,6 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		req.DDOSProtection = &ddos
 	}
 
-	if d.HasChange("enable_private_network") {
-		log.Printf("[INFO] Updating private networking")
-		_, newVal := d.GetChange("enable_private_network")
-		req.EnablePrivateNetwork = govultr.BoolToBoolPtr(newVal.(bool))
-	}
-
 	bs, bsOK := d.GetOk("backups_schedule")
 	_, newBackupValue := d.GetChange("backups")
 	if d.HasChange("backups") {
@@ -477,17 +494,21 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
+	if len(d.Get("private_network_ids").(*schema.Set).List()) != 0 && len(d.Get("vpc_ids").(*schema.Set).List()) != 0 {
+		return diag.Errorf("private_network_ids cannot be used along with vpc_ids. Use only vpc_ids instead.")
+	}
+
 	if d.HasChange("private_network_ids") {
 		log.Printf("[INFO] Updating private_network_ids")
 		oldNetwork, newNetwork := d.GetChange("private_network_ids")
 
 		var oldIDs []string
-		for _, v := range oldNetwork.([]interface{}) {
+		for _, v := range oldNetwork.(*schema.Set).List() {
 			oldIDs = append(oldIDs, v.(string))
 		}
 
 		var newIDs []string
-		for _, v := range newNetwork.([]interface{}) {
+		for _, v := range newNetwork.(*schema.Set).List() {
 			newIDs = append(newIDs, v.(string))
 		}
 
@@ -516,6 +537,46 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 			req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, v)
 		}
 
+	}
+
+	if d.HasChange("vpc_ids") {
+		log.Printf("[INFO] Updating vpc_ids")
+		oldVPC, newVPC := d.GetChange("vpc_ids")
+
+		var oldIDs []string
+		for _, v := range oldVPC.(*schema.Set).List() {
+			oldIDs = append(oldIDs, v.(string))
+		}
+
+		var newIDs []string
+		for _, v := range newVPC.(*schema.Set).List() {
+			newIDs = append(newIDs, v.(string))
+		}
+
+		diff := func(in, out []string) []string {
+			var diff []string
+
+			b := map[string]string{}
+			for i := range in {
+				b[in[i]] = ""
+			}
+
+			for i := range out {
+				if _, ok := b[out[i]]; !ok {
+					diff = append(diff, out[i])
+				}
+			}
+
+			return diff
+		}
+
+		for _, v := range diff(oldIDs, newIDs) {
+			req.AttachVPC = append(req.AttachVPC, v)
+		}
+
+		for _, v := range diff(newIDs, oldIDs) {
+			req.DetachVPC = append(req.DetachVPC, v)
+		}
 	}
 
 	if _, err := client.Instance.Update(ctx, d.Id(), req); err != nil {
@@ -569,12 +630,23 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 
 	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
 		detach := &govultr.InstanceUpdateReq{}
-		for _, v := range networkIDs.([]interface{}) {
+		for _, v := range networkIDs.(*schema.Set).List() {
 			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string))
 		}
 
 		if _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
 			return diag.Errorf("error detaching private networks prior to deleting instance %s : %v", d.Id(), err)
+		}
+	}
+
+	if vpcIDs, vpcOK := d.GetOk("vpc_ids"); vpcOK {
+		detach := &govultr.InstanceUpdateReq{}
+		for _, v := range vpcIDs.(*schema.Set).List() {
+			detach.DetachVPC = append(detach.DetachVPC, v.(string))
+		}
+
+		if _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
+			return diag.Errorf("error detaching VPCs prior to deleting instance %s : %v", d.Id(), err)
 		}
 	}
 

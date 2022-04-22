@@ -53,6 +53,7 @@ func Provider() *schema.Provider {
 			"vultr_ssh_key":           dataSourceVultrSSHKey(),
 			"vultr_startup_script":    dataSourceVultrStartupScript(),
 			"vultr_user":              dataSourceVultrUser(),
+			"vultr_vpc":               dataSourceVultrVPC(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -78,6 +79,7 @@ func Provider() *schema.Provider {
 			"vultr_ssh_key":               resourceVultrSSHKey(),
 			"vultr_startup_script":        resourceVultrStartupScript(),
 			"vultr_user":                  resourceVultrUsers(),
+			"vultr_vpc":                   resourceVultrVPC(),
 		},
 
 		ConfigureFunc: providerConfigure,

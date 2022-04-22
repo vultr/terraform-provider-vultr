@@ -55,12 +55,12 @@ The following arguments are supported:
 * `snapshot_id` - (Optional) The ID of the Vultr snapshot that the server will restore for the initial installation. [See List Snapshots](https://www.vultr.com/api/#operation/list-snapshots) 
 * `script_id` - (Optional) The ID of the startup script you want added to the server.
 * `firewall_group_id` - (Optional) The ID of the firewall group to assign to the server.
-* `private_network_ids` - (Optional) A list of private network IDs to be attached to the server.
+* `private_network_ids` - (Optional) (Deprecated: use `vpc_ids` instead) A list of private network IDs to be attached to the server.
+* `vpc_ids` - (Optional) A list of VPC IDs to be attached to the server.
 * `ssh_key_ids` - (Optional) A list of SSH key IDs to apply to the server on install (only valid for Linux/FreeBSD).
 * `user_data` - (Optional) Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
 * `backups` - (Optional) Whether automatic backups will be enabled for this server (these have an extra charge associated with them). Values can be enabled or disabled.
 * `enable_ipv6` - (Optional) Whether the server has IPv6 networking activated.
-* `enable_private_network` - (Optional) Whether the server has private networking support enabled.
 * `activation_email` - (Optional) Whether an activation email will be sent when the server is ready.
 * `ddos_protection` - (Optional) Whether DDOS protection will be enabled on the server (there is an additional charge for this).
 * `hostname` - (Optional) The hostname to assign to the server.
@@ -108,12 +108,12 @@ The following attributes are exported:
 * `snapshot_id` - The ID of the Vultr snapshot that the server was restored from.
 * `script_id` - The ID of the startup script that was added to the server.
 * `firewall_group_id` - The ID of the firewall group assigned to the server.
-* `private_network_ids` - A list of private network IDs attached to the server.
+* `private_network_ids` - (Deprecated: Use `vpc_ids` instead) A list of private network IDs attached to the server.
+* `vpc_ids` - A list of VPC IDs attached to the server.
 * `ssh_key_ids` - A list of SSH key IDs applied to the server on install.
 * `user_data` - Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
 * `backups` - Whether automatic backups are enabled for this server.
 * `enable_ipv6` - Whether the server has IPv6 networking activated.
-* `enable_private_network` - (Deprecated) Whether the server has private networking support enabled.
 * `activation_email` - Whether an activation email was sent when the server was ready.
 * `ddos_protection` - Whether DDOS protection is enabled on the server.
 * `hostname` - The hostname assigned to the server.

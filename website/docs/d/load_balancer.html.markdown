@@ -51,7 +51,8 @@ The following attributes are exported:
 * `ipv6` - IPv6 address for your load balancer.
 * `health_check` - Defines the way load balancers should check for health. The configuration of a `health_check` is listed below.
 * `forwarding_rules` - Defines the forwarding rules for a load balancer. The configuration of a `forwarding_rules` is listened below.
-* `private_network` - Defines the private network the load balancer is attached to.
+* `private_network` - (Deprecated: use `vpc` instead) Defines the private network the load balancer is attached to.
+* `vpc` - Defines the VPCthe load balancer is attached to.
 
 `health_check` supports the following
 
