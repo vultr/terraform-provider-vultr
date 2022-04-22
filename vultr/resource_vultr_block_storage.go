@@ -68,6 +68,7 @@ func resourceVultrBlockStorage() *schema.Resource {
 				Optional:     true,
 				Computed:     true,
 				ValidateFunc: validation.StringInSlice([]string{"storage_opt", "high_perf"}, false),
+				ForceNew:     true,
 			},
 		},
 	}
