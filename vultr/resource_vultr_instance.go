@@ -73,15 +73,15 @@ func resourceVultrInstance() *schema.Resource {
 			"private_network_ids": {
 				Type:       schema.TypeSet,
 				Optional:   true,
+				Computed:   true,
 				Elem:       &schema.Schema{Type: schema.TypeString},
-				Default:    nil,
 				Deprecated: "private_network_ids has been deprecated and should no longer be used. Instead, use vpc_ids",
 			},
 			"vpc_ids": {
 				Type:     schema.TypeSet,
 				Optional: true,
+				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
-				Default:  nil,
 			},
 			"label": {
 				Type:     schema.TypeString,
