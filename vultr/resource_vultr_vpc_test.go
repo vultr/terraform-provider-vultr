@@ -10,18 +10,18 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrVPCNoCidrBlock(t *testing.T) {
+func TestAccVultrVPC(t *testing.T) {
 	rDesc := acctest.RandomWithPrefix("tf-vpc-rs-nocdir")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckVultrNetworkDestroy,
+		CheckDestroy:      testAccCheckVultrVPCDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrVPCConfigNoCidrBlock(rDesc),
+				Config: testAccVultrVPCConfigBase(rDesc),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckVultrNetworkExists("vultr_vpc.foo"),
+					testAccCheckVultrVPCExists("vultr_vpc.foo"),
 					resource.TestCheckResourceAttr("vultr_vpc.foo", "description", rDesc),
 					resource.TestCheckResourceAttrSet("vultr_vpc.foo", "date_created"),
 					resource.TestCheckResourceAttrSet("vultr_vpc.foo", "v4_subnet"),
@@ -31,18 +31,18 @@ func TestAccVultrVPCNoCidrBlock(t *testing.T) {
 	})
 }
 
-func TestAccVultrVPCWithCidrBlock(t *testing.T) {
-	rDesc := acctest.RandomWithPrefix("tf-vpc-rs-cidr")
+func TestAccVultrVPCWithSubnet(t *testing.T) {
+	rDesc := acctest.RandomWithPrefix("tf-vpc-rs-subnet")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckVultrNetworkDestroy,
+		CheckDestroy:      testAccCheckVultrVPCDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrVPCConfigWithCidrBlock(rDesc),
+				Config: testAccVultrVPCConfigWithSubnet(rDesc),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckVultrNetworkExists("vultr_vpc.foo"),
+					testAccCheckVultrVPCExists("vultr_vpc.foo"),
 					resource.TestCheckResourceAttr("vultr_vpc.foo", "description", rDesc),
 					resource.TestCheckResourceAttr("vultr_vpc.foo", "v4_subnet", "10.0.0.0"),
 					resource.TestCheckResourceAttrSet("vultr_vpc.foo", "date_created"),
@@ -92,7 +92,7 @@ func testAccCheckVultrVPCExists(n string) resource.TestCheckFunc {
 	}
 }
 
-func testAccVultrVPCConfigNoCidrBlock(rDesc string) string {
+func testAccVultrVPCConfigBase(rDesc string) string {
 	return fmt.Sprintf(`
 		resource "vultr_vpc" "foo" {
 			region   = "atl"
@@ -101,7 +101,7 @@ func testAccVultrVPCConfigNoCidrBlock(rDesc string) string {
 	`, rDesc)
 }
 
-func testAccVultrVPCConfigWithCidrBlock(rDesc string) string {
+func testAccVultrVPCConfigWithSubnet(rDesc string) string {
 	return fmt.Sprintf(`
 		resource "vultr_vpc" "foo" {
 			region   = "atl"

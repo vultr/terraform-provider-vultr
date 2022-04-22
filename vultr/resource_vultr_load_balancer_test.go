@@ -79,6 +79,29 @@ func TestAccResourceVultrLoadBalancerUpdateHealth(t *testing.T) {
 	})
 }
 
+func TestAccResourceVultrLoadBalancerUpdateVPC(t *testing.T) {
+	rLabel := acctest.RandomWithPrefix("tf-lb-rs")
+
+	name := "vultr_load_balancer.foo"
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrLoadBalancerDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccVultrLoadBalancerConfigUpdateVPC(rLabel),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(name, "label", rLabel),
+					resource.TestCheckResourceAttrSet(name, "region"),
+					resource.TestCheckResourceAttrSet(name, "status"),
+					resource.TestCheckResourceAttrSet(name, "ipv4"),
+					resource.TestCheckResourceAttrSet(name, "vpc"),
+				),
+			},
+		},
+	})
+}
+
 func testAccCheckVultrLoadBalancerDestroy(s *terraform.State) error {
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "vultr_load_balancer" {
@@ -133,5 +156,27 @@ func testAccVultrLoadBalancerConfigUpdateHealth(label string) string {
 				check_interval = 3
 				healthy_threshold =4
 			}
+		}`, label)
+}
+
+func testAccVultrLoadBalancerConfigUpdateVPC(label string) string {
+	return fmt.Sprintf(`
+		resource "vultr_vpc" "bar" {
+			region   = "mel"
+			description = "bar"
+		}
+
+		resource "vultr_load_balancer" "foo" {
+			region   = "mel"
+			label       = "%s"
+
+			forwarding_rules {
+				frontend_protocol = "http"
+				frontend_port     = 80
+				backend_protocol  = "http"
+				backend_port      = 80
+			}
+			vpc = vultr_vpc.bar.id
+
 		}`, label)
 }
