@@ -25,12 +25,13 @@ func TestAccResourceVultrBlockStorage(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrBlockStorageExists("vultr_block_storage.foo"),
 					resource.TestCheckResourceAttr("vultr_block_storage.foo", "label", rLabel),
-					resource.TestCheckResourceAttr("vultr_block_storage.foo", "size_gb", "10"),
+					resource.TestCheckResourceAttr("vultr_block_storage.foo", "size_gb", "40"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "region"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "date_created"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "cost"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "status"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "mount_id"),
+					resource.TestCheckResourceAttr("vultr_block_storage.foo", "block_type", "storage_opt"),
 				),
 			},
 			{
@@ -38,7 +39,7 @@ func TestAccResourceVultrBlockStorage(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrBlockStorageExists("vultr_block_storage.foo"),
 					resource.TestCheckResourceAttr("vultr_block_storage.foo", "label", rLabel),
-					resource.TestCheckResourceAttr("vultr_block_storage.foo", "size_gb", "10"),
+					resource.TestCheckResourceAttr("vultr_block_storage.foo", "size_gb", "40"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "region"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "date_created"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "cost"),
@@ -52,7 +53,7 @@ func TestAccResourceVultrBlockStorage(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrBlockStorageExists("vultr_block_storage.foo"),
 					resource.TestCheckResourceAttr("vultr_block_storage.foo", "label", rLabelUpdate),
-					resource.TestCheckResourceAttr("vultr_block_storage.foo", "size_gb", "10"),
+					resource.TestCheckResourceAttr("vultr_block_storage.foo", "size_gb", "40"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "region"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "date_created"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "cost"),
@@ -65,7 +66,7 @@ func TestAccResourceVultrBlockStorage(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrBlockStorageExists("vultr_block_storage.foo"),
 					//resource.TestCheckResourceAttr("vultr_block_storage.foo", "label", rLabelUpdate),
-					resource.TestCheckResourceAttr("vultr_block_storage.foo", "size_gb", "15"),
+					resource.TestCheckResourceAttr("vultr_block_storage.foo", "size_gb", "45"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "region"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "date_created"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "cost"),
@@ -79,7 +80,7 @@ func TestAccResourceVultrBlockStorage(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrBlockStorageExists("vultr_block_storage.foo"),
 					//resource.TestCheckResourceAttr("vultr_block_storage.foo", "label", rLabelUpdate),
-					resource.TestCheckResourceAttr("vultr_block_storage.foo", "size_gb", "15"),
+					resource.TestCheckResourceAttr("vultr_block_storage.foo", "size_gb", "45"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "region"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "date_created"),
 					resource.TestCheckResourceAttrSet("vultr_block_storage.foo", "cost"),
@@ -134,8 +135,9 @@ func testAccVultrBlockStorageConfig(label, serverLabel string) string {
 	return fmt.Sprintf(`
 	resource "vultr_block_storage" "foo" {
 		region  = "ewr"
-		size_gb     = 10
+		size_gb     = 40
 		label       = "%s"
+		block_type = "storage_opt"
 	  }
 
 	    resource "vultr_instance" "ip" {
@@ -151,7 +153,7 @@ func testAccVultrBlockStorageConfigAttach(label, serverLabel string) string {
 	return fmt.Sprintf(`
 	resource "vultr_block_storage" "foo" {
 		region   = "ewr"
-		size_gb     = 10
+		size_gb     = 40
 		label       = "%s"
 		attached_to_instance = "${vultr_instance.ip.id}"
 	  }
@@ -169,7 +171,7 @@ func testAccVultrBlockStorageConfigUpdateLabel(label, serverLabel string) string
 	return fmt.Sprintf(`
 	resource "vultr_block_storage" "foo" {
 		region   = "ewr"
-		size_gb     = 10
+		size_gb     = 40
 		label       = "%s"
 		attached_to_instance = "${vultr_instance.ip.id}"
 	  }
@@ -187,7 +189,7 @@ func testAccVultrBlockStorageConfigResize(label, serverLabel string) string {
 	return fmt.Sprintf(`
 	resource "vultr_block_storage" "foo" {
 		region   = "ewr"
-		size_gb     = 15
+		size_gb     = 45
 		label       = "%s"
 		attached_to_instance = "${vultr_instance.ip.id}"
 	  }
@@ -204,7 +206,7 @@ func testAccVultrBlockStorageConfigDetach(label, serverLabel string) string {
 	return fmt.Sprintf(`
 	resource "vultr_block_storage" "foo" {
 		region   = "ewr"
-		size_gb     = 15
+		size_gb     = 45
 		label       = "%s"
 	  }
 

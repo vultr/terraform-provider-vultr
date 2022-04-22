@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v2"
 )
 
@@ -62,6 +63,13 @@ func resourceVultrBlockStorage() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"block_type": {
+				Type:         schema.TypeString,
+				Optional:     true,
+				Computed:     true,
+				ValidateFunc: validation.StringInSlice([]string{"storage_opt", "high_perf"}, false),
+				ForceNew:     true,
+			},
 		},
 	}
 }
@@ -70,9 +78,10 @@ func resourceVultrBlockStorageCreate(ctx context.Context, d *schema.ResourceData
 	client := meta.(*Client).govultrClient()
 
 	bsReq := &govultr.BlockStorageCreate{
-		Region: d.Get("region").(string),
-		SizeGB: d.Get("size_gb").(int),
-		Label:  d.Get("label").(string),
+		Region:    d.Get("region").(string),
+		SizeGB:    d.Get("size_gb").(int),
+		Label:     d.Get("label").(string),
+		BlockType: d.Get("block_type").(string),
 	}
 
 	bs, err := client.BlockStorage.Create(ctx, bsReq)
@@ -138,6 +147,7 @@ func resourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData, 
 	d.Set("attached_to_instance", bs.AttachedToInstance)
 	d.Set("label", bs.Label)
 	d.Set("mount_id", bs.MountID)
+	d.Set("block_type", bs.BlockType)
 
 	return nil
 }
