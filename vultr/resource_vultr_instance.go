@@ -434,25 +434,22 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		d.Set("backups_schedule", nil)
 	}
 
-	// Manipulate the read state so that, depending on which value was passed,
-	// only one of these values is populated when a VPC or PN is defined for
-	// the instance
-	var _, pnUpdate = d.GetOk("private_network_ids")
-	var _, vpcUpdate = d.GetOk("vpc_ids")
-
 	vpcs, err := getVPCs(client, d.Id())
 	if err != nil {
 		return diag.Errorf(err.Error())
 	}
 
-	if pnUpdate {
+	// Manipulate the read state so that, depending on which value was passed,
+	// only one of these values is populated when a VPC or PN is defined for
+	// the instance
+	if _, pnUpdate := d.GetOk("private_network_ids"); pnUpdate {
 		d.Set("private_network_ids", vpcs)
 		d.Set("vpc_ids", nil)
 	}
 
 	// Since VPC is last, if an instance read invloves both vpc_ids &
 	// private_network_ids, only the vpc_ids will be preserved
-	if vpcUpdate {
+	if _, vpcUpdate := d.GetOk("vpc_ids"); vpcUpdate {
 		d.Set("vpc_ids", vpcs)
 		d.Set("private_network_ids", nil)
 	}
