@@ -125,7 +125,7 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 		if strings.Contains(err.Error(), "Unauthorized") {
 			return diag.Errorf("API authorization error: %v", err)
 		}
-		if strings.Contains(err.Error(), "Object does not exist") {
+		if strings.Contains(err.Error(), "Invalid resource ID") {
 			log.Printf("[WARN] Kubernetes Cluster (%v) not found", d.Id())
 			d.SetId("")
 			return nil

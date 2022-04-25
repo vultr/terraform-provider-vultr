@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -58,6 +59,14 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 
 	nodePool, err := client.Kubernetes.GetNodePool(ctx, clusterID, d.Id())
 	if err != nil {
+		if strings.Contains(err.Error(), "Unauthorized") {
+			return diag.Errorf("API authorization error: %v", err)
+		}
+		if strings.Contains(err.Error(), "Invalid NodePool ID") {
+			log.Printf("[WARN] Kubernetes NodePool (%v) not found", d.Id())
+			d.SetId("")
+			return nil
+		}
 		return diag.Errorf("error getting node pool: %v", err)
 	}
 
