@@ -8,9 +8,9 @@ import (
 	"github.com/vultr/govultr/v2"
 )
 
-func dataSourceVultrPrivateNetwork() *schema.Resource {
+func dataSourceVultrVPC() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceVultrPrivateNetworkRead,
+		ReadContext: dataSourceVultrVPCRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"region": {
@@ -34,11 +34,10 @@ func dataSourceVultrPrivateNetwork() *schema.Resource {
 				Computed: true,
 			},
 		},
-		DeprecationMessage: "Private Networks are deprecated and will not be supported in the future. Use VPCs instead.",
 	}
 }
 
-func dataSourceVultrPrivateNetworkRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceVultrVPCRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
@@ -47,17 +46,17 @@ func dataSourceVultrPrivateNetworkRead(ctx context.Context, d *schema.ResourceDa
 		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	var networkList []govultr.Network
+	var vpcList []govultr.VPC
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 
 	for {
-		networks, meta, err := client.Network.List(ctx, options)
+		vpcs, meta, err := client.VPC.List(ctx, options)
 		if err != nil {
-			return diag.Errorf("error getting networks: %v", err)
+			return diag.Errorf("error getting VPCs: %v", err)
 		}
 
-		for _, n := range networks {
+		for _, n := range vpcs {
 			// we need convert the a struct INTO a map so we can easily manipulate the data here
 			sm, err := structToMap(n)
 
@@ -66,7 +65,7 @@ func dataSourceVultrPrivateNetworkRead(ctx context.Context, d *schema.ResourceDa
 			}
 
 			if filterLoop(f, sm) {
-				networkList = append(networkList, n)
+				vpcList = append(vpcList, n)
 			}
 		}
 
@@ -78,20 +77,20 @@ func dataSourceVultrPrivateNetworkRead(ctx context.Context, d *schema.ResourceDa
 		}
 	}
 
-	if len(networkList) > 1 {
+	if len(vpcList) > 1 {
 		return diag.Errorf("your search returned too many results. Please refine your search to be more specific")
 	}
 
-	if len(networkList) < 1 {
+	if len(vpcList) < 1 {
 		return diag.Errorf("no results were found")
 	}
 
-	d.SetId(networkList[0].NetworkID)
-	d.Set("region", networkList[0].Region)
-	d.Set("description", networkList[0].Description)
-	d.Set("date_created", networkList[0].DateCreated)
-	d.Set("v4_subnet", networkList[0].V4Subnet)
-	d.Set("v4_subnet_mask", networkList[0].V4SubnetMask)
+	d.SetId(vpcList[0].ID)
+	d.Set("region", vpcList[0].Region)
+	d.Set("description", vpcList[0].Description)
+	d.Set("date_created", vpcList[0].DateCreated)
+	d.Set("v4_subnet", vpcList[0].V4Subnet)
+	d.Set("v4_subnet_mask", vpcList[0].V4SubnetMask)
 
 	return nil
 }

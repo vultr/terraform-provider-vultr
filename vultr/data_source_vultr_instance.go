@@ -140,6 +140,11 @@ func dataSourceVultrInstance() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
+			"vpc_ids": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 		},
 	}
 }
@@ -236,12 +241,13 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("error setting `backups_schedule`: %#v", err)
 	}
 
-	pn, err := getPrivateNetworks(client, d.Id())
+	vpcs, err := getVPCs(client, d.Id())
 	if err != nil {
 		return diag.Errorf(err.Error())
 	}
 
-	d.Set("private_network_ids", pn)
+	d.Set("private_network_ids", vpcs)
+	d.Set("vpc_ids", vpcs)
 
 	return nil
 }

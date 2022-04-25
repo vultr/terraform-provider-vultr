@@ -8,6 +8,8 @@ description: |-
 
 # vultr_private_network
 
+Deprecated: Use `vultr_vpc` instead
+
 Provides a Vultr private network resource. This can be used to create, read, and delete private networks on your Vultr account.
 
 ## Example Usage
