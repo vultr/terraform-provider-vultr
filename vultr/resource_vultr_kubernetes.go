@@ -169,14 +169,13 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	req := &govultr.ClusterReqUpdate{}
-
 	if d.HasChange("label") {
+		req := &govultr.ClusterReqUpdate{}
 		req.Label = d.Get("label").(string)
-	}
 
-	if err := client.Kubernetes.UpdateCluster(ctx, d.Id(), req); err != nil {
-		return diag.Errorf("error updating vke cluster (%v): %v", d.Id(), err)
+		if err := client.Kubernetes.UpdateCluster(ctx, d.Id(), req); err != nil {
+			return diag.Errorf("error updating vke cluster (%v): %v", d.Id(), err)
+		}
 	}
 
 	if d.HasChange("node_pools") {
