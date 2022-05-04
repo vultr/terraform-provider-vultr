@@ -123,9 +123,15 @@ func resourceVultrInstance() *schema.Resource {
 				Description: "The hostname of the instance. Updating the hostname will cause a force new. This behavior is in place to prevent accidental reinstalls. Issuing an update to the hostname on UI or API issues a reinstall of the OS.",
 			},
 			"tag": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:       schema.TypeString,
+				Computed:   true,
+				Deprecated: "tag has been deprecated and should no longer be used. Instead, use tags",
+			},
+			"tags": {
+				Type:     schema.TypeSet,
 				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Default:  nil,
 			},
 			"reserved_ip_id": {
 				Type:     schema.TypeString,
@@ -322,6 +328,12 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("error occurred while getting your intended os type")
 	}
 
+	if tagsIDs, tagsOK := d.GetOk("tags"); tagsOK {
+		for _, v := range tagsIDs.(*schema.Set).List() {
+			req.Tags = append(req.Tags, v.(string))
+		}
+	}
+
 	if len(d.Get("private_network_ids").(*schema.Set).List()) != 0 && len(d.Get("vpc_ids").(*schema.Set).List()) != 0 {
 		return diag.Errorf("private_network_ids cannot be used along with vpc_ids. Use only vpc_ids instead.")
 	}
@@ -402,6 +414,7 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 	d.Set("v6_main_ip", instance.V6MainIP)
 	d.Set("v6_network_size", instance.V6NetworkSize)
 	d.Set("tag", instance.Tag)
+	d.Set("tags", instance.Tags)
 	d.Set("firewall_group_id", instance.FirewallGroupID)
 	d.Set("region", instance.Region)
 	d.Set("plan", instance.Plan)
@@ -577,6 +590,11 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		for _, v := range diff(newIDs, oldIDs) {
 			req.DetachVPC = append(req.DetachVPC, v)
 		}
+	}
+
+	if d.HasChange("tags") {
+		_, newTags := tfChangeToSlices("tags", d)
+		req.Tags = newTags
 	}
 
 	if _, err := client.Instance.Update(ctx, d.Id(), req); err != nil {

@@ -42,9 +42,16 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Default:  "",
 			},
 			"tag": {
-				Type:     schema.TypeString,
+				Type:       schema.TypeString,
+				Optional:   true,
+				Default:    "",
+				Deprecated: "tag has been deprecated and should no longer be used. Instead, use tags",
+			},
+			"tags": {
+				Type:     schema.TypeSet,
 				Optional: true,
-				Default:  "",
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Default:  nil,
 			},
 			"script_id": {
 				Type:     schema.TypeString,
@@ -203,6 +210,7 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 		Tag:             d.Get("tag").(string),
 		ReservedIPv4:    d.Get("reserved_ipv4").(string),
 	}
+
 	switch osOption {
 	case "app_id":
 		req.AppID = appID.(int)
@@ -212,6 +220,12 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 		req.OsID = osID.(int)
 	case "image_id":
 		req.ImageID = imageID.(string)
+	}
+
+	if tagsIDs, tagsOK := d.GetOk("tags"); tagsOK {
+		for _, v := range tagsIDs.(*schema.Set).List() {
+			req.Tags = append(req.Tags, v.(string))
+		}
 	}
 
 	client := meta.(*Client).govultrClient()
@@ -259,6 +273,7 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 	d.Set("plan", bms.Plan)
 	d.Set("label", bms.Label)
 	d.Set("tag", bms.Tag)
+	d.Set("tags", bms.Tags)
 	d.Set("mac_address", bms.MacAddress)
 	d.Set("os_id", bms.OsID)
 	d.Set("app_id", bms.AppID)
@@ -274,8 +289,10 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 	client := meta.(*Client).govultrClient()
 
 	req := &govultr.BareMetalUpdate{
-		Label:      d.Get("label").(string),
-		Tag:        d.Get("tag").(string),
+		Label: d.Get("label").(string),
+		Tag:   d.Get("tag").(string),
+		//Tags:       d.Get("tags").(*schema.Set).List(),
+		Tags:       []string{},
 		EnableIPv6: govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
 	}
 
@@ -293,6 +310,13 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 
 		osID := newVal.(int)
 		req.OsID = osID
+	}
+
+	if d.HasChange("tags") {
+		oldTags, newTags := tfChangeToSlices("tags", d)
+		for _, v := range diffSlice(oldTags, newTags) {
+			req.Tags = append(req.Tags, v)
+		}
 	}
 
 	if _, err := client.BareMetalServer.Update(ctx, d.Id(), req); err != nil {
