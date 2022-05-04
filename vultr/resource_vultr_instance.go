@@ -124,7 +124,7 @@ func resourceVultrInstance() *schema.Resource {
 			},
 			"tag": {
 				Type:       schema.TypeString,
-				Computed:   true,
+				Optional:   true,
 				Deprecated: "tag has been deprecated and should no longer be used. Instead, use tags",
 			},
 			"tags": {
