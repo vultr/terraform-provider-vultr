@@ -525,28 +525,11 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 			newIDs = append(newIDs, v.(string))
 		}
 
-		diff := func(in, out []string) []string {
-			var diff []string
-
-			b := map[string]string{}
-			for i := range in {
-				b[in[i]] = ""
-			}
-
-			for i := range out {
-				if _, ok := b[out[i]]; !ok {
-					diff = append(diff, out[i])
-				}
-			}
-
-			return diff
-		}
-
-		for _, v := range diff(oldIDs, newIDs) {
+		for _, v := range diffSlice(oldIDs, newIDs) {
 			req.AttachPrivateNetwork = append(req.AttachPrivateNetwork, v)
 		}
 
-		for _, v := range diff(newIDs, oldIDs) {
+		for _, v := range diffSlice(newIDs, oldIDs) {
 			req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, v)
 		}
 
@@ -566,28 +549,11 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 			newIDs = append(newIDs, v.(string))
 		}
 
-		diff := func(in, out []string) []string {
-			var diff []string
-
-			b := map[string]string{}
-			for i := range in {
-				b[in[i]] = ""
-			}
-
-			for i := range out {
-				if _, ok := b[out[i]]; !ok {
-					diff = append(diff, out[i])
-				}
-			}
-
-			return diff
-		}
-
-		for _, v := range diff(oldIDs, newIDs) {
+		for _, v := range diffSlice(oldIDs, newIDs) {
 			req.AttachVPC = append(req.AttachVPC, v)
 		}
 
-		for _, v := range diff(newIDs, oldIDs) {
+		for _, v := range diffSlice(newIDs, oldIDs) {
 			req.DetachVPC = append(req.DetachVPC, v)
 		}
 	}

@@ -18,3 +18,21 @@ func tfChangeToSlices(fieldname string, d *schema.ResourceData) ([]string, []str
 
 	return oldSlice, newSlice
 }
+
+// Compare two slices and return elements that are in x but not in y
+func diffSlice(x, y []string) []string {
+	var diff []string
+
+	b := map[string]string{}
+	for i := range x {
+		b[x[i]] = ""
+	}
+
+	for i := range y {
+		if _, ok := b[y[i]]; !ok {
+			diff = append(diff, y[i])
+		}
+	}
+
+	return diff
+}
