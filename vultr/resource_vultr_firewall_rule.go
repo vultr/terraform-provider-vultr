@@ -115,7 +115,7 @@ func resourceVultrFirewallRuleRead(ctx context.Context, d *schema.ResourceData, 
 		return diag.Errorf("error getting firewall rule %s: %v", d.Get("firewall_group_id").(string), err)
 	}
 
-	d.Set("ip_type", fw.Type)
+	d.Set("ip_type", fw.IPType)
 	d.Set("protocol", fw.Protocol)
 	d.Set("subnet", fw.Subnet)
 	d.Set("subnet_size", fw.SubnetSize)
