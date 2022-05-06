@@ -33,6 +33,9 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 		Label:        d.Get("label").(string),
 		Plan:         d.Get("plan").(string),
 		Tag:          d.Get("tag").(string),
+		AutoScaler:   govultr.BoolToBoolPtr(d.Get("auto_scaler").(bool)),
+		MinNodes:     d.Get("min_nodes").(int),
+		MaxNodes:     d.Get("max_nodes").(int),
 	}
 
 	nodePool, err := client.Kubernetes.CreateNodePool(ctx, clusterID, req)
@@ -77,6 +80,9 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 	d.Set("node_quantity", nodePool.NodeQuantity)
 	d.Set("date_created", nodePool.DateCreated)
 	d.Set("date_updated", nodePool.DateUpdated)
+	d.Set("auto_scaler", nodePool.AutoScaler)
+	d.Set("min_nodes", nodePool.MinNodes)
+	d.Set("max_nodes", nodePool.MaxNodes)
 
 	var instances []map[string]interface{}
 	for _, v := range nodePool.Nodes {
@@ -99,7 +105,14 @@ func resourceVultrKubernetesNodePoolsUpdate(ctx context.Context, d *schema.Resou
 
 	clusterID := d.Get("cluster_id").(string)
 
-	req := &govultr.NodePoolReqUpdate{NodeQuantity: d.Get("node_quantity").(int), Tag: d.Get("tag").(string)}
+	req := &govultr.NodePoolReqUpdate{
+		NodeQuantity: d.Get("node_quantity").(int),
+		Tag:          d.Get("tag").(string),
+		AutoScaler:   govultr.BoolToBoolPtr(d.Get("auto_scaler").(bool)),
+		MinNodes:     d.Get("min_nodes").(int),
+		MaxNodes:     d.Get("max_nodes").(int),
+	}
+
 	if _, err := client.Kubernetes.UpdateNodePool(ctx, clusterID, d.Id(), req); err != nil {
 		return diag.Errorf("error deleting VKE node pool %v : %v", d.Id(), err)
 	}

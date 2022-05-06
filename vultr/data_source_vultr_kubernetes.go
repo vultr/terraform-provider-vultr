@@ -163,6 +163,9 @@ func flattenNodePools(np []govultr.NodePool) []map[string]interface{} {
 			"date_updated":  n.DateUpdated,
 			"status":        n.Status,
 			"tag":           n.Tag,
+			"auto_scaler":   n.AutoScaler,
+			"min_nodes":     n.MinNodes,
+			"max_nodes":     n.MaxNodes,
 			"nodes":         instances,
 		}
 

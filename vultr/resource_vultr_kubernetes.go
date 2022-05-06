@@ -218,6 +218,9 @@ func generateNodePool(pools interface{}) []govultr.NodePoolReq {
 			Label:        r["label"].(string),
 			Plan:         r["plan"].(string),
 			Tag:          tfVKEDefault,
+			AutoScaler:   govultr.BoolToBoolPtr(r["auto_scaler"].(bool)),
+			MinNodes:     r["min_nodes"].(int),
+			MaxNodes:     r["max_nodes"].(int),
 		}
 
 		npr = append(npr, t)
