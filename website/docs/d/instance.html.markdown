@@ -59,6 +59,7 @@ The following attributes are exported:
 * `internal_ip` - The server's internal IP address.
 * `kvm` - The server's current KVM URL. This URL will change periodically. It is not advised to cache this value.
 * `tag` - The server's tag.
+* `tags` - A list of tags applied to the instance.
 * `os_id` - The server's operating system ID.
 * `app_id` - The server's application ID.
 * `image_id` - The Marketplace ID for this application.
