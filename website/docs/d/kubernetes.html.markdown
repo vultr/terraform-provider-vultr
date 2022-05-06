@@ -61,6 +61,9 @@ The following attributes are exported:
 * `status` - Status of node pool.
 * `tag` - Tag for node pool.
 * `nodes` - Array that contains information about nodes within this node pool.
+* `auto_scaler` - State of the auto scaler, true or false.
+* `min_nodes` - Mininmum number of nodes used by the auto scaler
+* `max_nodes` - Maximum number of nodes used by the auto scaler
 
 `nodes`
 

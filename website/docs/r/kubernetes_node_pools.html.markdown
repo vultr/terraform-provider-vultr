@@ -21,6 +21,9 @@ resource "vultr_kubernetes_node_pools" "np-1" {
     plan = "vc2-2c-4gb"
     label = "my-label"
     tag = "my-tag"
+	auto_scaler = true
+	min_nodes = 1
+	max_nodes = 2
 }
 
 ```
