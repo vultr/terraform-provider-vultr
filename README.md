@@ -1,6 +1,7 @@
 Terraform Provider for Vultr
 ==================
 
+- Quickstart Guide: [How to Provision a Vultr Cloud Server with Terraform and Cloud-Init](https://www.vultr.com/docs/provision-a-vultr-cloud-server-with-terraform-and-cloud-init/)
 - Vultr Website: https://www.vultr.com
 - Terraform Website: https://www.terraform.io
 
@@ -9,8 +10,8 @@ Terraform Provider for Vultr
 Requirements
 ------------
 
--	[Terraform](https://www.terraform.io/downloads.html) 0.12.x+
--	[Go](https://golang.org/doc/install) 1.11 (to build the provider plugin)
+-   [Terraform](https://www.terraform.io/downloads.html) 0.12.x+
+-   [Go](https://golang.org/doc/install) 1.11 (to build the provider plugin)
 
 Building The Provider
 ---------------------
