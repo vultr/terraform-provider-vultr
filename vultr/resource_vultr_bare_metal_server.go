@@ -312,10 +312,8 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 	}
 
 	if d.HasChange("tags") {
-		oldTags, newTags := tfChangeToSlices("tags", d)
-		for _, v := range diffSlice(oldTags, newTags) {
-			req.Tags = append(req.Tags, v)
-		}
+		_, newTags := tfChangeToSlices("tags", d)
+		req.Tags = newTags
 	}
 
 	if _, err := client.BareMetalServer.Update(ctx, d.Id(), req); err != nil {
