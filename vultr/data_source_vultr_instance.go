@@ -106,6 +106,11 @@ func dataSourceVultrInstance() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"tags": {
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Computed: true,
+			},
 			"os_id": {
 				Type:     schema.TypeInt,
 				Computed: true,
@@ -215,6 +220,7 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	d.Set("internal_ip", serverList[0].InternalIP)
 	d.Set("kvm", serverList[0].KVM)
 	d.Set("tag", serverList[0].Tag)
+	d.Set("tags", serverList[0].Tags)
 	d.Set("os_id", serverList[0].OsID)
 	d.Set("app_id", serverList[0].AppID)
 	d.Set("image_id", serverList[0].ImageID)

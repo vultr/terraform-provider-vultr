@@ -43,6 +43,7 @@ func TestAccVultrBareMetalServerBasic(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "v6_network"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "label"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "tag"),
+					resource.TestCheckResourceAttr("vultr_bare_metal_server.foo", "tags.#", "1"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "os_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "app_id"),
 				),
@@ -65,6 +66,7 @@ func TestAccVultrBareMetalServerBasic(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "plan"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "label"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "tag"),
+					resource.TestCheckResourceAttr("vultr_bare_metal_server.foo", "tags.#", "2"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "os_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "app_id"),
 				),
@@ -133,6 +135,7 @@ func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string
 			tag = "%s"
 			label = "%s"
 			hostname = "%s"
+			tags = [ "test tag" ]
 		}
 	`, rName, rName, rName)
 }
@@ -150,6 +153,7 @@ func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) strin
 			tag = "%s-update"
 			label = "%s-update"
 			hostname = "%s"
+			tags = [ "test tag", "another tag" ]
 		}
 	`, rName, rName, rName)
 }
