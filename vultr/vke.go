@@ -23,17 +23,17 @@ func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 		"auto_scaler": {
 			Type:     schema.TypeBool,
 			Optional: true,
-			Computed: true,
+			Default:  false,
 		},
 		"min_nodes": {
 			Type:     schema.TypeInt,
 			Optional: true,
-			Computed: true,
+			Default:  1,
 		},
 		"max_nodes": {
 			Type:     schema.TypeInt,
 			Optional: true,
-			Computed: true,
+			Default:  1,
 		},
 		//computed fields
 		"id": {
@@ -87,21 +87,6 @@ func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 		}
 		s["tag"] = &schema.Schema{
 			Type:     schema.TypeString,
-			Optional: true,
-			Computed: true,
-		}
-		s["auto_scaler"] = &schema.Schema{
-			Type:     schema.TypeBool,
-			Optional: true,
-			Computed: true,
-		}
-		s["min_nodes"] = &schema.Schema{
-			Type:     schema.TypeInt,
-			Optional: true,
-			Computed: true,
-		}
-		s["max_nodes"] = &schema.Schema{
-			Type:     schema.TypeInt,
 			Optional: true,
 			Computed: true,
 		}
