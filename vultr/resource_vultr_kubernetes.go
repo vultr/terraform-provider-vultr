@@ -42,8 +42,7 @@ func resourceVultrKubernetes() *schema.Resource {
 
 			"node_pools": {
 				Type:     schema.TypeList,
-				Required: true,
-				MinItems: 1,
+				Optional: true,
 				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: nodePoolSchema(false),
@@ -134,19 +133,13 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	// Look for the node pool with the tag `tf-vke-default`
-	found := false
 	for _, v := range vke.NodePools {
 		if tfVKEDefault == v.Tag {
 			if err := d.Set("node_pools", flattenNodePool(&v)); err != nil {
 				return diag.Errorf("error setting `node_pool`: %v", err)
 			}
-			found = true
 			break
 		}
-	}
-
-	if !found {
-		return diag.Errorf("no default node_pool found : %v", err)
 	}
 
 	d.Set("date_created", vke.DateCreated)
@@ -180,20 +173,48 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 
 	if d.HasChange("node_pools") {
 
-		_, newNP := d.GetChange("node_pools")
+		oldNP, newNP := d.GetChange("node_pools")
 
-		n := newNP.([]interface{})[0].(map[string]interface{})
+		if len(newNP.([]interface{})) != 0 && len(oldNP.([]interface{})) != 0 {
 
-		req := &govultr.NodePoolReqUpdate{
-			NodeQuantity: n["node_quantity"].(int),
-			AutoScaler:   govultr.BoolToBoolPtr(n["auto_scaler"].(bool)),
-			MinNodes:     n["min_nodes"].(int),
-			MaxNodes:     n["max_nodes"].(int),
-			// Not updating tag for default node pool since it's needed to lookup in terraform
-		}
+			n := newNP.([]interface{})[0].(map[string]interface{})
 
-		if _, err := client.Kubernetes.UpdateNodePool(ctx, d.Id(), n["id"].(string), req); err != nil {
-			return diag.Errorf("error updating VKE node pool %v : %v", d.Id(), err)
+			req := &govultr.NodePoolReqUpdate{
+				NodeQuantity: n["node_quantity"].(int),
+				AutoScaler:   govultr.BoolToBoolPtr(n["auto_scaler"].(bool)),
+				MinNodes:     n["min_nodes"].(int),
+				MaxNodes:     n["max_nodes"].(int),
+				// Not updating tag for default node pool since it's needed to lookup in terraform
+			}
+
+			if _, err := client.Kubernetes.UpdateNodePool(ctx, d.Id(), n["id"].(string), req); err != nil {
+				return diag.Errorf("error updating VKE node pool %v : %v", d.Id(), err)
+			}
+		} else if len(newNP.([]interface{})) == 0 && len(oldNP.([]interface{})) != 0 {
+			// if we have an old node pool state but don't have a new node pool state
+			// we can safely assume this is a node pool removal
+
+			n := oldNP.([]interface{})[0].(map[string]interface{})
+
+			if err := client.Kubernetes.DeleteNodePool(ctx, d.Id(), n["id"].(string)); err != nil {
+				return diag.Errorf("error deleting VKE node pool %v : %v", d.Id(), err)
+			}
+		} else if len(newNP.([]interface{})) != 0 && len(oldNP.([]interface{})) == 0 {
+			// if we don't have an old node pool state but have a new node pool state
+			// we can safely assume this is a new node pool creation
+
+			n := newNP.([]interface{})[0].(map[string]interface{})
+
+			req := &govultr.NodePoolReq{
+				NodeQuantity: n["node_quantity"].(int),
+				Tag:          tfVKEDefault,
+				Plan:         n["plan"].(string),
+				Label:        n["label"].(string),
+			}
+
+			if _, err := client.Kubernetes.CreateNodePool(ctx, d.Id(), req); err != nil {
+				return diag.Errorf("error creating VKE node pool %v : %v", d.Id(), err)
+			}
 		}
 	}
 
