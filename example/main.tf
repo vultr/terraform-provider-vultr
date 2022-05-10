@@ -24,6 +24,9 @@ resource "vultr_instance" "my_instance" {
   ddos_protection        = true
   tag                    = "tag"
   firewall_group_id      = vultr_firewall_group.fwg.id
+  backups_type {
+    type = "daily"
+  }
 }
 
 resource "vultr_firewall_group" "fwg" {
