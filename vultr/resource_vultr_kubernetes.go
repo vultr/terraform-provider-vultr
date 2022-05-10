@@ -193,7 +193,7 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 		}
 
 		if _, err := client.Kubernetes.UpdateNodePool(ctx, d.Id(), n["id"].(string), req); err != nil {
-			return diag.Errorf("error deleting VKE node pool %v : %v", d.Id(), err)
+			return diag.Errorf("error updating VKE node pool %v : %v", d.Id(), err)
 		}
 	}
 
