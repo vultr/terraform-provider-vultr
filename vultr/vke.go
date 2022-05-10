@@ -20,6 +20,21 @@ func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 			ValidateFunc: validation.IntAtLeast(1),
 			Required:     true,
 		},
+		"auto_scaler": {
+			Type:     schema.TypeBool,
+			Optional: true,
+			Default:  false,
+		},
+		"min_nodes": {
+			Type:     schema.TypeInt,
+			Optional: true,
+			Default:  1,
+		},
+		"max_nodes": {
+			Type:     schema.TypeInt,
+			Optional: true,
+			Default:  1,
+		},
 		//computed fields
 		"id": {
 			Type:     schema.TypeString,
@@ -75,6 +90,7 @@ func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 			Optional: true,
 			Computed: true,
 		}
+
 	} else {
 		// Make tags unmodifiable for the vultr_kubernetes resource
 		// This lets us know which node pool was part of the vultr_kubernetes resource
