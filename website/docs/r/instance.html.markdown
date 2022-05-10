@@ -34,6 +34,9 @@ resource "vultr_instance" "my_instance" {
 	hostname = "my-instance-hostname"
 	enable_ipv6 = true
 	backups = "enabled"
+	backups_schedule {
+	        type = "daily"
+	}
 	ddos_protection = true
 	activation_email = false
 }
