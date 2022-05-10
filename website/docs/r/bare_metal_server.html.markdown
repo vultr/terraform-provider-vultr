@@ -30,7 +30,7 @@ resource "vultr_bare_metal_server" "my_server" {
 	region = "ewr"
 	os_id = 270
 	label = "my-server-label"
-	tag = "my-server-tag"
+	tags = ["my-server-tag"]
 	hostname = "my-server-hostname"
 	user_data = "this is my user data"
 	enable_ipv6 = true
@@ -54,7 +54,8 @@ The following arguments are supported:
 * `enable_ipv6` - (Optional) Whether the server has IPv6 networking activated.
 * `activation_email` - (Optional) Whether an activation email will be sent when the server is ready.
 * `hostname` - (Optional) The hostname to assign to the server.
-* `tag` - (Optional) The tag to assign to the server.
+* `tag` - (Deprecated: use `tags` instead) (Optional) The tag to assign to the server.
+* `tags` - (Optional) A list of tags to apply to the servier.
 * `label` - (Optional) A label for the server.
 * `reserved_ipv4` - (Optional) IP address of the floating IP to use as the main IP of this server. 
 
@@ -88,7 +89,8 @@ The following attributes are exported:
 * `enable_ipv6` - Whether the server has IPv6 networking activated.
 * `activation_email` - Whether an activation email was sent when the server was ready.
 * `hostname` - The hostname assigned to the server.
-* `tag` - The tag assigned to the server.
+* `tag` - (Deprecated: use `tags` instead) The tag assigned to the server.
+* `tags` - A list of tags applied to the server.
 * `label` - A label for the server.
 * `mac_address` - The MAC address associated with the server.
 

@@ -81,6 +81,11 @@ func dataSourceVultrBareMetalServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"tags": {
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Computed: true,
+			},
 			"os_id": {
 				Type:     schema.TypeInt,
 				Computed: true,
@@ -163,6 +168,7 @@ func dataSourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceD
 	d.Set("plan", serverList[0].Plan)
 	d.Set("label", serverList[0].Label)
 	d.Set("tag", serverList[0].Tag)
+	d.Set("tags", serverList[0].Tags)
 	d.Set("mac_address", serverList[0].MacAddress)
 	d.Set("os_id", serverList[0].OsID)
 	d.Set("app_id", serverList[0].AppID)

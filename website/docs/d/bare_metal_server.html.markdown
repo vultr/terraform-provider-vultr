@@ -54,6 +54,7 @@ The following attributes are exported:
 * `v6_networks` - A list of the server's IPv6 networks.
 * `label` - The server's label.
 * `tag` - The server's tag.
+* `tags` - A list of tags applied to the server.
 * `os_id` - The server's operating system ID.
 * `app_id` - The server's application ID.
 * `image_id` - The Marketplace ID for this application.

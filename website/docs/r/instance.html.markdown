@@ -30,7 +30,7 @@ resource "vultr_instance" "my_instance" {
 	region = "sea"
 	os_id = 167
 	label = "my-instance-label"
-	tag = "my-instance-tag"
+	tags = ["my-instance-tag"]
 	hostname = "my-instance-hostname"
 	enable_ipv6 = true
 	backups = "enabled"
@@ -64,7 +64,8 @@ The following arguments are supported:
 * `activation_email` - (Optional) Whether an activation email will be sent when the server is ready.
 * `ddos_protection` - (Optional) Whether DDOS protection will be enabled on the server (there is an additional charge for this).
 * `hostname` - (Optional) The hostname to assign to the server.
-* `tag` - (Optional) The tag to assign to the server.
+* `tag` - (Deprecated: use `tags` instead) (Optional) The tag to assign to the server.
+* `tags` - (Optional) A list of tags to apply to the instance.
 * `label` - (Optional) A label for the server.
 * `reserved_ip_id` - (Optional) ID of the floating IP to use as the main IP of this server.
 * `backups_schedule` - (Optional) A block that defines the way backups should be scheduled. While this is an optional field if `backups` are `enabled` this field is mandatory. The configuration of a `backups_schedule` is listed below.
@@ -117,7 +118,8 @@ The following attributes are exported:
 * `activation_email` - Whether an activation email was sent when the server was ready.
 * `ddos_protection` - Whether DDOS protection is enabled on the server.
 * `hostname` - The hostname assigned to the server.
-* `tag` - The tag assigned to the server.
+* `tag` - (Deprecated: use `tags` instead) The tag assigned to the server.
+* `tags` - A list of tags to apply to the instance.
 * `label` - A label for the server.
 * `features` - Array of which features are enabled.
 * `backups_schedule` - (Optional) A block that defines the way backups should be scheduled.
