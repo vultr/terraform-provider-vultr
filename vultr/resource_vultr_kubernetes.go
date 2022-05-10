@@ -180,16 +180,20 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 
 	if d.HasChange("node_pools") {
 
-		oldNP, newNP := d.GetChange("node_pools")
+		_, newNP := d.GetChange("node_pools")
 
-		o := oldNP.([]interface{})[0].(map[string]interface{})
 		n := newNP.([]interface{})[0].(map[string]interface{})
 
-		if o["node_quantity"] != n["node_quantity"] {
-			req := &govultr.NodePoolReqUpdate{NodeQuantity: n["node_quantity"].(int)}
-			if _, err := client.Kubernetes.UpdateNodePool(ctx, d.Id(), o["id"].(string), req); err != nil {
-				return diag.Errorf("error deleting VKE node pool %v : %v", o["id"], err)
-			}
+		req := &govultr.NodePoolReqUpdate{
+			NodeQuantity: n["node_quantity"].(int),
+			AutoScaler:   govultr.BoolToBoolPtr(n["auto_scaler"].(bool)),
+			MinNodes:     n["min_nodes"].(int),
+			MaxNodes:     n["max_nodes"].(int),
+			// Not updating tag for default node pool since it's needed to lookup in terraform
+		}
+
+		if _, err := client.Kubernetes.UpdateNodePool(ctx, d.Id(), n["id"].(string), req); err != nil {
+			return diag.Errorf("error deleting VKE node pool %v : %v", d.Id(), err)
 		}
 	}
 
@@ -290,6 +294,9 @@ func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 		"status":        np.Status,
 		"tag":           np.Tag,
 		"nodes":         instances,
+		"auto_scaler":   np.AutoScaler,
+		"min_nodes":     np.MinNodes,
+		"max_nodes":     np.MaxNodes,
 	}
 
 	nodePools = append(nodePools, pool)

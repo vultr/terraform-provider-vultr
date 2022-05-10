@@ -64,6 +64,9 @@ func TestAccResourceVultrKubernetesUpdate(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "node_pools.0.node_quantity", "2"),
 					resource.TestCheckResourceAttr(name, "node_pools.0.plan", "vc2-2c-4gb"),
 					resource.TestCheckResourceAttr(name, "node_pools.0.label", "tf-test-label"),
+					resource.TestCheckResourceAttr(name, "node_pools.0.auto_scaler", "true"),
+					resource.TestCheckResourceAttr(name, "node_pools.0.min_nodes", "2"),
+					resource.TestCheckResourceAttr(name, "node_pools.0.max_nodes", "3"),
 				),
 			},
 		},
@@ -96,6 +99,9 @@ func testAccVultrKubernetesUpdate(label string) string {
 				node_quantity = 2
 				plan = "vc2-2c-4gb"
     			label = "tf-test-label"
+				auto_scaler = true
+				min_nodes = 2
+				max_nodes = 3
 			}
 		}`, label)
 }

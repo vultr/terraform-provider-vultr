@@ -26,6 +26,9 @@ resource "vultr_kubernetes" "k8" {
     node_quantity = 1
     plan = "vc2-2c-4gb"
     label = "my-label"
+	auto_scaler = true
+	min_nodes = 1
+	max_nodes = 2
   }
 } 
 ```
@@ -44,6 +47,9 @@ The follow arguments are supported:
 * `node_quantity` - (Required) The number of nodes in this node pool.
 * `plan` - (Required) The plan to be used in this node pool. [See Plans List](https://www.vultr.com/api/#operation/list-plans) Note the minimum plan requirements must have at least 1 core and 2 gbs of memory.
 * `label` - (Required) The label to be used as a prefix for nodes in this node pool.
+* `auto_scaler` - (Optional) Enable the auto scaler for the default node pool.
+* `min_nodes` - (Optional) The minimum number of nodes to use with the auto scaler.
+* `max_nodes` - (Optional) The maximum number of nodes to use with the auto scaler.
 
 
 
@@ -73,6 +79,9 @@ The following attributes are exported:
 * `status` - Status of node pool.
 * `tag` - Tag for node pool.
 * `nodes` - Array that contains information about nodes within this node pool.
+* `auto_scaler` - Boolean indicating if the auto scaler for the default node pool is active.
+* `min_nodes` - The minimum number of nodes used by the auto scaler.
+* `max_nodes` - The maximum number of nodes used by the auto scaler.
 
 `nodes`
 
