@@ -1,3 +1,44 @@
+## [v2.11.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.10.1..v2.11.0) (2022-05-11)
+Documentation:
+- resource/instance: add additional examples for backups [246](https://github.com/vultr/terraform-provider-vultr/pull/246)
+- resource/kubernetes: update examples for default optional node pool [249](https://github.com/vultr/terraform-provider-vultr/pull/249)
+- readme: add link to quickstart guide [244](https://github.com/vultr/terraform-provider-vultr/pull/244)
+
+Dependency:
+- updated terraform-plugin-sdk from 2.15.0 to 2.16.0 [245](https://github.com/vultr/terraform-provider-vultr/pull/245)
+- updated terraform-plugin-sdk from 2.12.0 to 2.15.0 [242](https://github.com/vultr/terraform-provider-vultr/pull/242)
+- updated Go v1.16 -> v1.17  [221](https://github.com/vultr/terraform-provider-vultr/pull/221)
+- updated govultr from 2.14.2 to 2.15.1 [233](https://github.com/vultr/terraform-provider-vultr/pull/233)
+- updated govultr from 2.15.1 to 2.16.0 [241](https://github.com/vultr/terraform-provider-vultr/pull/241)
+
+Enhancement:
+- resource/kubernetes: allow removal of default node pool after resource creation [248](https://github.com/vultr/terraform-provider-vultr/pull/248)
+- resource/kubernetes: add support for auto scaler options on node pools [247](https://github.com/vultr/terraform-provider-vultr/pull/247)
+- resource/kubernetes node pools: add support for auto scaler options on node pools [247](https://github.com/vultr/terraform-provider-vultr/pull/247)
+- data source/kubernetes: add auto scaler fields[247](https://github.com/vultr/terraform-provider-vultr/pull/247)
+- data source/kubernetes node pools: add auto scaler fields [247](https://github.com/vultr/terraform-provider-vultr/pull/247)
+- resource/block storage: add block type [238](https://github.com/vultr/terraform-provider-vultr/pull/238)
+- data source/block storage: add block type field [238](https://github.com/vultr/terraform-provider-vultr/pull/238)
+- resource/instance: add VPC support [237](https://github.com/vultr/terraform-provider-vultr/pull/237)
+- resource/load balancer: add VPC support [237](https://github.com/vultr/terraform-provider-vultr/pull/237)
+- data source/instance: add VPC fields[237](https://github.com/vultr/terraform-provider-vultr/pull/237)
+- data source/load balancer: add VPC support [237](https://github.com/vultr/terraform-provider-vultr/pull/237)
+- resource/kubernetes: add better error handling to reads [236](https://github.com/vultr/terraform-provider-vultr/pull/236)
+- resource/kubernetes node pools: add better error handling to reads [236](https://github.com/vultr/terraform-provider-vultr/pull/236)
+- resource/instance: add support for tags [240](https://github.com/vultr/terraform-provider-vultr/pull/240)
+- resource/bare metal: add support for tags [240](https://github.com/vultr/terraform-provider-vultr/pull/240)
+- data source/instance: add support for tags [240](https://github.com/vultr/terraform-provider-vultr/pull/240)
+- data source/bare metal: add support for tags [240](https://github.com/vultr/terraform-provider-vultr/pull/240)
+
+Bug Fix:
+- resource/kubernetes: fix labeling on cluster updates [239](https://github.com/vultr/terraform-provider-vultr/pull/239)
+- resource/firewall rule: read from correct govultr data [243](https://github.com/vultr/terraform-provider-vultr/pull/243)
+
+New Contributors:
+- @optik-aper made their first contribution in [238](https://github.com/vultr/terraform-provider-vultr/pull/238)
+- @dfinr made their first contribution in [244](https://github.com/vultr/terraform-provider-vultr/pull/244)
+- @travispaul made their first contribution in [246](https://github.com/vultr/terraform-provider-vultr/pull/246)
+
 ## 2.10.1 (March 30, 2022)
 Enhancement:
 - vultr_resource_instance : Updating hostname will result in a forcenew change [226](https://github.com/vultr/terraform-provider-vultr/pull/226)
