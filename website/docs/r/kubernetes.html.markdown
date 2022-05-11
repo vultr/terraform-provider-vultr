@@ -33,6 +33,29 @@ resource "vultr_kubernetes" "k8" {
 } 
 ```
 
+A default node pool is required when first creating the resource but it can be removed at a later point so long as there is a separate `vultr_kubernetes_node_pools` resource attached. For example:
+
+```hcl
+resource "vultr_kubernetes" "k8" {
+  region = "ewr"
+  label     = "tf-test"
+  version = "v1.23.5+1"
+} 
+
+# This resource must be created and attached to the cluster
+# before removing the default node from the vultr_kubernetes resource
+resource "vultr_kubernetes_node_pools" "np" {
+	cluster_id = vultr_kubernetes.k8.id
+    node_quantity = 1
+    plan = "vc2-2c-4gb"
+    label = "my-label"
+	auto_scaler = true
+	min_nodes = 1
+	max_nodes = 2
+```
+
+There is still a requirement that there be one node pool attached to the cluster but this should allow more flexibility about which node pool that is.
+
 ## Argument Reference
 
 The follow arguments are supported:
@@ -41,8 +64,7 @@ The follow arguments are supported:
 * `version` - (Required) The version your VKE cluster you want deployed. [See Available Version](https://www.vultr.com/api/#operation/get-kubernetes-versions)
 * `label` - (Optional) The VKE clusters label.
 
-
-`node_pools` (Required) There must be 1 node pool with the kubernetes resource. It supports the following fields
+`node_pools` (Optional) **NOTE** There must be 1 node pool when the kubernetes resource is first created (see explanation above). It supports the following fields
 
 * `node_quantity` - (Required) The number of nodes in this node pool.
 * `plan` - (Required) The plan to be used in this node pool. [See Plans List](https://www.vultr.com/api/#operation/list-plans) Note the minimum plan requirements must have at least 1 core and 2 gbs of memory.
@@ -50,8 +72,6 @@ The follow arguments are supported:
 * `auto_scaler` - (Optional) Enable the auto scaler for the default node pool.
 * `min_nodes` - (Optional) The minimum number of nodes to use with the auto scaler.
 * `max_nodes` - (Optional) The maximum number of nodes to use with the auto scaler.
-
-
 
 ## Attributes Reference
 
