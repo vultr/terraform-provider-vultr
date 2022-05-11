@@ -18,18 +18,18 @@ Create a new VKE cluster:
 
 ```hcl
 resource "vultr_kubernetes" "k8" {
-  region = "ewr"
-  label     = "tf-test"
-  version = "v1.23.5+1"
+	region = "ewr"
+	label     = "tf-test"
+	version = "v1.23.5+1"
 
-  node_pools {
-    node_quantity = 1
-    plan = "vc2-2c-4gb"
-    label = "my-label"
-	auto_scaler = true
-	min_nodes = 1
-	max_nodes = 2
-  }
+	node_pools {
+		node_quantity = 1
+		plan = "vc2-2c-4gb"
+		label = "my-label"
+		auto_scaler = true
+		min_nodes = 1
+		max_nodes = 2
+	}
 } 
 ```
 
@@ -52,6 +52,7 @@ resource "vultr_kubernetes_node_pools" "np" {
 	auto_scaler = true
 	min_nodes = 1
 	max_nodes = 2
+}
 ```
 
 There is still a requirement that there be one node pool attached to the cluster but this should allow more flexibility about which node pool that is.
