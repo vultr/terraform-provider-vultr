@@ -37,18 +37,18 @@ A default node pool is required when first creating the resource but it can be r
 
 ```hcl
 resource "vultr_kubernetes" "k8" {
-  region = "ewr"
-  label     = "tf-test"
-  version = "v1.23.5+1"
+	region = "ewr"
+	label     = "tf-test"
+	version = "v1.23.5+1"
 } 
 
 # This resource must be created and attached to the cluster
 # before removing the default node from the vultr_kubernetes resource
 resource "vultr_kubernetes_node_pools" "np" {
 	cluster_id = vultr_kubernetes.k8.id
-    node_quantity = 1
-    plan = "vc2-2c-4gb"
-    label = "my-label"
+	node_quantity = 1
+	plan = "vc2-2c-4gb"
+	label = "my-label"
 	auto_scaler = true
 	min_nodes = 1
 	max_nodes = 2
