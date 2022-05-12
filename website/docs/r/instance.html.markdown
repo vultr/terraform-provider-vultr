@@ -130,8 +130,8 @@ The following attributes are exported:
 
 ## Import
 
-Servers can be imported using the server `ID`, e.g.
+Instances can be imported using the instance `ID`, e.g.
 
 ```
-terraform import vultr_server.my_server b6a859c5-b299-49dd-8888-b1abbc517d08
+terraform import vultr_instance.my_instance b6a859c5-b299-49dd-8888-b1abbc517d08
 ```
