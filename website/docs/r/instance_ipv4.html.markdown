@@ -6,7 +6,7 @@ description: |-
   Provides a instance IPv4 resource. This can be used to create, read, and modify a IPv4 address.
 ---
 
-# vultr_reverse_ipv4
+# vultr_instance_ipv4
 
 Provides a Vultr instance IPv4 resource. This can be used to create, read, and
 modify a IPv4 address. instance is rebooted by default.
@@ -33,8 +33,7 @@ resource "vultr_instance_ipv4" "my_instance_ipv4" {
 
 The following arguments are supported:
 
-* `instance_id` - (Required) The ID of the instance you want to set an IPv4
-  reverse DNS record for.
+* `instance_id` - (Required) The ID of the instance to be assigned the IPv4 address.
 * `reboot` - (Optional) Default true. Determines whether or not the server is rebooted after adding the IPv4 address.
 
 ## Attributes Reference
