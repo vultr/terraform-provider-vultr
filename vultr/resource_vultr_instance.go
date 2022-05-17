@@ -474,7 +474,7 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 
 	req := &govultr.InstanceUpdateReq{
 		Label:           d.Get("label").(string),
-		Tag:             d.Get("tag").(string),
+		Tag:             govultr.StringToStringPtr(d.Get("tag").(string)),
 		FirewallGroupID: d.Get("firewall_group_id").(string),
 		EnableIPv6:      govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
 	}
