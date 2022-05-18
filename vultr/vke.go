@@ -88,7 +88,6 @@ func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 		s["tag"] = &schema.Schema{
 			Type:     schema.TypeString,
 			Optional: true,
-			Computed: true,
 		}
 
 	} else {

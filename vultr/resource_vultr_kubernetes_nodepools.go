@@ -107,7 +107,7 @@ func resourceVultrKubernetesNodePoolsUpdate(ctx context.Context, d *schema.Resou
 
 	req := &govultr.NodePoolReqUpdate{
 		NodeQuantity: d.Get("node_quantity").(int),
-		Tag:          d.Get("tag").(string),
+		Tag:          govultr.StringToStringPtr(d.Get("tag").(string)),
 		AutoScaler:   govultr.BoolToBoolPtr(d.Get("auto_scaler").(bool)),
 		MinNodes:     d.Get("min_nodes").(int),
 		MaxNodes:     d.Get("max_nodes").(int),

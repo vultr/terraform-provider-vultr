@@ -290,7 +290,7 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 
 	req := &govultr.BareMetalUpdate{
 		Label:      d.Get("label").(string),
-		Tag:        d.Get("tag").(string),
+		Tag:        govultr.StringToStringPtr(d.Get("tag").(string)),
 		Tags:       []string{},
 		EnableIPv6: govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
 	}
