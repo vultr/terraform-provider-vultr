@@ -1,3 +1,19 @@
+## [v2.12.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.0...v2.12.0) (2022-05-18)
+Documentation:
+- resource/instance: fix incorrect import example [251](https://github.com/vultr/terraform-provider-vultr/pull/251)
+- resource/instance_ipv4: fix vultr_instance_ipv4 resource doc and argument reference [253](https://github.com/vultr/terraform-provider-vultr/pull/253)
+
+Dependency:
+- updated govultr from v1.16.0 to v1.17.0 [255](https://github.com/vultr/terraform-provider-vultr/pull/255)
+
+Bug Fix:
+- resource/kubernetes_nodepool: fix `tag` so that it can be deleted [255](https://github.com/vultr/terraform-provider-vultr/pull/255)
+- resource/instance: fix `tag` so that it can be deleted [255](https://github.com/vultr/terraform-provider-vultr/pull/255)
+- resource/bare_metal_server: fix `tag` so that it can be deleted [255](https://github.com/vultr/terraform-provider-vultr/pull/255)
+
+New Contributors:
+- @NicolasCARPi made their first contribution in [251](https://github.com/vultr/terraform-provider-vultr/pull/251)
+
 ## [v2.11.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.10.1..v2.11.0) (2022-05-11)
 Documentation:
 - resource/instance: add additional examples for backups [246](https://github.com/vultr/terraform-provider-vultr/pull/246)
