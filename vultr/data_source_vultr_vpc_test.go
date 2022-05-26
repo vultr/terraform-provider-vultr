@@ -17,7 +17,7 @@ func TestAccDataSourceVultrVPC(t *testing.T) {
 		CheckDestroy:      testAccCheckVultrNetworkDestroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccDataSourceVultrNetworkConfig(rDesc),
+				Config: testAccDataSourceVultrVPCConfig(rDesc),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("data.vultr_vpc.my_vpc", "description", rDesc),
 					resource.TestCheckResourceAttrSet("data.vultr_vpc.my_vpc", "date_created"),

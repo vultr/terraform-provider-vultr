@@ -14,10 +14,10 @@ func TestAccVultrIsoPublic(t *testing.T) {
 		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrIsoPublicRead("10.11 x64"),
+				Config: testAccVultrIsoPublicRead("10.12 x64"),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(
-						"data.vultr_iso_public.deb", "description", "10.11 x64"),
+						"data.vultr_iso_public.deb", "description", "10.12 x64"),
 					resource.TestCheckResourceAttr(
 						"data.vultr_iso_public.deb", "name", "Debian Buster"),
 					resource.TestCheckResourceAttrSet("data.vultr_iso_public.deb", "id"),

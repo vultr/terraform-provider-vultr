@@ -24,7 +24,7 @@ func TestAccVultrKubernetes(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.vultr_kubernetes.k8", "region"),
 					resource.TestCheckResourceAttrSet("data.vultr_kubernetes.k8", "label"),
 					resource.TestCheckResourceAttrSet("data.vultr_kubernetes.k8", "kube_config"),
-					resource.TestCheckResourceAttrSet("data.vultr_kubernetes.k8", "node_pools"),
+					resource.TestCheckResourceAttr("data.vultr_kubernetes.k8", "node_pools.#", "1"),
 				),
 			},
 		},
@@ -36,7 +36,7 @@ func testAccCheckVultrKubernetes(label string) string {
 		resource "vultr_kubernetes" "test" {
 			region = "ewr"
 			label = "%s"
-			version = "v1.20.11+1"
+			version = "v1.23.5+3"
 
 			node_pools {
 				node_quantity = 1
