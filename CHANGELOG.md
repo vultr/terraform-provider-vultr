@@ -8,7 +8,7 @@ Bug Fix:
 
 Dependency:
 * update govultr to v2.17.1 [262](https://github.com/vultr/terraform-provider-vultr/pull/262)
-* update github.com/hashicorp/terraform-plugin-sdk/v2 from 2.16.0 to 2.17.0 [262](https://github.com/vultr/terraform-provider-vultr/pull/261)
+* update github.com/hashicorp/terraform-plugin-sdk/v2 from 2.16.0 to 2.17.0 [261](https://github.com/vultr/terraform-provider-vultr/pull/261)
 
 ## [v2.11.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.0...v2.11.1) (2022-05-18)
 Documentation:
