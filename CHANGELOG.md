@@ -1,3 +1,15 @@
+## [v2.11.2](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.1...v2.11.2) (2022-06-03)
+
+Enhancement:
+* data source/plan: Add GPU fields [264](https://github.com/vultr/terraform-provider-vultr/pull/264)
+
+Bug Fix:
+* Fix acceptance tests [260](https://github.com/vultr/terraform-provider-vultr/pull/260)
+
+Dependency:
+* update govultr to v2.17.1 [262](https://github.com/vultr/terraform-provider-vultr/pull/262)
+* update github.com/hashicorp/terraform-plugin-sdk/v2 from 2.16.0 to 2.17.0 [262](https://github.com/vultr/terraform-provider-vultr/pull/261)
+
 ## [v2.11.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.0...v2.11.1) (2022-05-18)
 Documentation:
 - resource/instance: fix incorrect import example [251](https://github.com/vultr/terraform-provider-vultr/pull/251)
