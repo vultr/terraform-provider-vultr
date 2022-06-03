@@ -37,6 +37,14 @@ func dataSourceVultrPlan() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"gpu_vram": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
+			"gpu_type": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"locations": {
 				Type:     schema.TypeList,
 				Computed: true,
@@ -105,6 +113,8 @@ func dataSourceVultrPlanRead(ctx context.Context, d *schema.ResourceData, meta i
 	d.Set("monthly_cost", planList[0].MonthlyCost)
 	d.Set("disk_count", planList[0].DiskCount)
 	d.Set("type", planList[0].Type)
+	d.Set("gpu_vram", planList[0].GPUVRAM)
+	d.Set("gpu_type", planList[0].GPUType)
 	if err := d.Set("locations", planList[0].Locations); err != nil {
 		return diag.Errorf("error setting `available_locations`: %#v", err)
 	}
