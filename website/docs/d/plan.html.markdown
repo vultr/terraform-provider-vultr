@@ -44,5 +44,7 @@ The following attributes are exported:
 * `bandwidth` - The bandwidth available on the plan in GB.
 * `monthly_cost` - The price per month of the plan in USD.
 * `type` - The type of plan it is.
+* `gpu_vram` - For GPU plans, the VRAM available in the plan.
+* `gpu_type` - For GPU plans, the GPU card type.
 * `locations` - A list of DCIDs (used as `region` in Terraform) where the plan can be deployed.
 * `disk_count` - The number of disks that this plan offers.
