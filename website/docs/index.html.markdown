@@ -19,7 +19,7 @@ terraform {
   required_providers {
     vultr = {
       source = "vultr/vultr"
-      version = "2.11.1"
+      version = "2.11.2"
     }
   }
 }
