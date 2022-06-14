@@ -25,8 +25,8 @@ resource "vultr_instance" "my_server" {
 }
 
 resource "vultr_reverse_ipv6" "my_reverse_ipv6" {
-	instance_id = "${vultr_server.my_server.id}"
-	ip = "${vultr_server.my_server.v6_networks[0].v6_main_ip}"
+	instance_id = "${vultr_instance.my_server.id}"
+	ip = "${vultr_instance.my_server.v6_networks[0].v6_main_ip}"
 	reverse = "host.example.com"
 }
 ```
