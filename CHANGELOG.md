@@ -1,5 +1,13 @@
-## [v2.11.2](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.1...v2.11.2) (2022-06-03)
+# Change log
+## [v2.11.3](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.2...v2.11.3) (2022-06-14)
+Enchancement:
+* resource/reserved_ip: Add support for reserved IP label updates [268](https://github.com/vultr/terraform-provider-vultr/pull/268)
 
+Documentation:
+* resource/instance: Fix typo [268](https://github.com/vultr/terraform-provider-vultr/pull/268)
+* resource/reverse_ip: Fix type [268](https://github.com/vultr/terraform-provider-vultr/pull/268)
+
+## [v2.11.2](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.1...v2.11.2) (2022-06-03)
 Enhancement:
 * data source/plan: Add GPU fields [264](https://github.com/vultr/terraform-provider-vultr/pull/264)
 
