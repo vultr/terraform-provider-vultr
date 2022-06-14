@@ -109,6 +109,33 @@ func TestAccVultrReservedIPIPv6(t *testing.T) {
 	})
 }
 
+func TestAccVultrReservedIPLabelUpdate(t *testing.T) {
+	rLabel := acctest.RandomWithPrefix("tf-rip-rs")
+	rLabelUpdated := rLabel + "_updated"
+
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckVultrReservedIPDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccVultrReservedIPConfigLabel(rLabel),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckVultrReservedIPExists("vultr_reserved_ip.foo"),
+					resource.TestCheckResourceAttr("vultr_reserved_ip.foo", "label", rLabel),
+				),
+			},
+			{
+				Config: testAccVultrReservedIPConfigLabel(rLabelUpdated),
+				Check: resource.ComposeTestCheckFunc(
+					testAccCheckVultrReservedIPExists("vultr_reserved_ip.foo"),
+					resource.TestCheckResourceAttr("vultr_reserved_ip.foo", "label", rLabelUpdated),
+				),
+			},
+		},
+	})
+}
+
 func testAccCheckVultrReservedIPDestroy(s *terraform.State) error {
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "vultr_reserved_ip" {
@@ -146,6 +173,16 @@ func testAccCheckVultrReservedIPExists(n string) resource.TestCheckFunc {
 
 		return nil
 	}
+}
+
+func testAccVultrReservedIPConfigLabel(label string) string {
+	return fmt.Sprintf(`
+
+   resource "vultr_reserved_ip" "foo" {
+       label     = "%s"
+       region    = "ewr"
+       ip_type   = "v4"
+   }`, label)
 }
 
 func testAccVultrReservedIPConfig(rServerLabel, label, ipType string) string {
