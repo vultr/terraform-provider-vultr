@@ -13,6 +13,7 @@ import (
 func TestAccVultrReservedIPIPv4(t *testing.T) {
 	rServerLabel := acctest.RandomWithPrefix("tf-vps-rip4")
 	rLabel := acctest.RandomWithPrefix("tf-rip4-rs")
+	rLabelUpdated := rLabel + "_updated"
 	ipType := "v4"
 
 	resource.Test(t, resource.TestCase{
@@ -32,10 +33,10 @@ func TestAccVultrReservedIPIPv4(t *testing.T) {
 				),
 			},
 			{
-				Config: testAccVultrReservedIPConfigAttach(rServerLabel, rLabel, ipType),
+				Config: testAccVultrReservedIPConfigAttach(rServerLabel, rLabelUpdated, ipType),
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrReservedIPExists("vultr_reserved_ip.foo"),
-					resource.TestCheckResourceAttr("vultr_reserved_ip.foo", "label", rLabel),
+					resource.TestCheckResourceAttr("vultr_reserved_ip.foo", "label", rLabelUpdated),
 					resource.TestCheckResourceAttr("vultr_reserved_ip.foo", "ip_type", ipType),
 					resource.TestCheckResourceAttrSet("vultr_reserved_ip.foo", "region"),
 					resource.TestCheckResourceAttrSet("vultr_reserved_ip.foo", "subnet"),

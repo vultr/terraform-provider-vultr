@@ -35,7 +35,6 @@ func resourceVultrReservedIP() *schema.Resource {
 			"label": {
 				Type:     schema.TypeString,
 				Optional: true,
-				ForceNew: true,
 				Default:  "",
 			},
 			"instance_id": {
@@ -106,10 +105,10 @@ func resourceVultrReservedIPRead(ctx context.Context, d *schema.ResourceData, me
 }
 
 func resourceVultrReservedIPUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	if d.HasChange("instance_id") {
-		client := meta.(*Client).govultrClient()
+	client := meta.(*Client).govultrClient()
 
-		log.Printf("[INFO] Updating Reserved IP: %s", d.Id())
+	if d.HasChange("instance_id") {
+		log.Printf("[INFO] Updating Reserved IP instance: %s", d.Id())
 
 		old, newVal := d.GetChange("instance_id")
 
@@ -122,6 +121,18 @@ func resourceVultrReservedIPUpdate(ctx context.Context, d *schema.ResourceData, 
 			if err := client.ReservedIP.Attach(ctx, d.Id(), newVal.(string)); err != nil {
 				return diag.Errorf("error attaching Reserved IP (%s): %v", d.Id(), err)
 			}
+		}
+	}
+
+	if d.HasChange("label") {
+		log.Printf("[INFO] Updating Reserved IP label: %s", d.Id())
+
+		req := &govultr.ReservedIPUpdateReq{
+			Label: govultr.StringToStringPtr(d.Get("label").(string)),
+		}
+
+		if _, err := client.ReservedIP.Update(ctx, d.Id(), req); err != nil {
+			return diag.Errorf("error updating reserved IP %s : %s", d.Id(), err.Error())
 		}
 	}
 
