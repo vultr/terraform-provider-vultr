@@ -75,7 +75,7 @@ The following arguments are supported:
 
 `backups_schedule` supports the following:
 
-* `type` - Type of backup schedule Possible values are `daily`, `weekly`, `monthly`, `daily_alt_event`, or `daily_alt_odd`.
+* `type` - Type of backup schedule Possible values are `daily`, `weekly`, `monthly`, `daily_alt_even`, or `daily_alt_odd`.
 * `hour` - (Optional) Hour of day to run in UTC.
 * `dow` - (Optional) Day of week to run. `1 = Sunday`, `2 = Monday`, `3 = Tuesday`, `4 = Wednesday`, `5 = Thursday`, `6 = Friday`, `7 = Saturday`
 * `dom` - (Optional) Day of month to run. Use values between 1 and 28.
