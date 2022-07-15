@@ -46,8 +46,8 @@ func dataSourceVultrBlockStorage() *schema.Resource {
 				Computed: true,
 			},
 			"block_type": {
-				Type:         schema.TypeString,
-				Computed:     true,
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 		},
 	}
