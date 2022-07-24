@@ -4,47 +4,34 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccVultrObjectStorage(t *testing.T) {
+func TestAccVultrObjectStorageCluster(t *testing.T) {
 	t.Parallel()
-	rLabel := acctest.RandomWithPrefix("tf-test-s3")
-	name := "data.vultr_object_storage.s3"
+	name := "data.vultr_object_storage_cluster.s3"
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckVultrObjectStorage(rLabel),
+				Config: testAccCheckVultrObjectStorageCluster(),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttrSet(name, "label"),
-					resource.TestCheckResourceAttrSet(name, "cluster_id"),
 					resource.TestCheckResourceAttrSet(name, "region"),
-					resource.TestCheckResourceAttrSet(name, "location"),
-					resource.TestCheckResourceAttrSet(name, "s3_access_key"),
-					resource.TestCheckResourceAttrSet(name, "s3_hostname"),
-					resource.TestCheckResourceAttrSet(name, "s3_secret_key"),
-					resource.TestCheckResourceAttrSet(name, "status"),
-					resource.TestCheckResourceAttrSet(name, "date_created"),
+					resource.TestCheckResourceAttrSet(name, "hostname"),
+					resource.TestCheckResourceAttrSet(name, "deploy"),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckVultrObjectStorage(label string) string {
+func testAccCheckVultrObjectStorageCluster() string {
 	return fmt.Sprintf(`
-		resource "vultr_object_storage" "tf" {
-			cluster_id = 2
-			label = "%s"
-		}
-
-		data "vultr_object_storage" "s3" {
+		data "vultr_object_storage_cluster" "s3" {
 			filter {
-				name = "label"
-				values = ["${vultr_object_storage.tf.label}"]
+				name = "region"
+				values = ["ewr"]
 			}
-		}`, label)
+		}`)
 }
