@@ -1,5 +1,5 @@
 # Change log
-## [v2.11.4](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.3...v2.11.4) (2022-07-25)
+## [v2.11.4](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.3...v2.11.4) (2022-07-25) 
 Enhancement:
 * data source/object storage cluster: add datasource for object storage cluster [275](https://github.com/vultr/terraform-provider-vultr/pull/275)
 
