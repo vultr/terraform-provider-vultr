@@ -8,7 +8,7 @@ Documentation
 
 Dependency:
 * update terraform-sdk to v2.18.0 [273](https://github.com/vultr/terraform-provider-vultr/pull/273)
-* update terraform-plugin-sdk from 2.18.0 to 2.19.0 [273](https://github.com/vultr/terraform-provider-vultr/pull/274)
+* update terraform-plugin-sdk from 2.18.0 to 2.19.0 [274](https://github.com/vultr/terraform-provider-vultr/pull/274)
 
 ## [v2.11.3](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.2...v2.11.3) (2022-06-14)
 Enchancement:
