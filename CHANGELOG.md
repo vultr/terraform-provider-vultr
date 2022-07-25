@@ -1,4 +1,15 @@
 # Change log
+## [v2.11.4](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.3...v2.11.4) (2022-07-25)
+Enhancement:
+* data source/object storage cluster: add datasource for object storage cluster [275](https://github.com/vultr/terraform-provider-vultr/pull/275)
+
+Documentation
+* data source/object storage cluster: add docs for object storage cluster [275](https://github.com/vultr/terraform-provider-vultr/pull/275)
+
+Dependency:
+* update terraform-sdk to v2.18.0 [273](https://github.com/vultr/terraform-provider-vultr/pull/273)
+* update terraform-plugin-sdk from 2.18.0 to 2.19.0 [274](https://github.com/vultr/terraform-provider-vultr/pull/274)
+
 ## [v2.11.3](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.2...v2.11.3) (2022-06-14)
 Enchancement:
 * resource/reserved_ip: Add support for reserved IP label updates [268](https://github.com/vultr/terraform-provider-vultr/pull/268)
