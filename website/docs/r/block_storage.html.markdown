@@ -31,7 +31,7 @@ The following arguments are supported:
 * `region` - (Required) Region in which this block storage will reside in. (Currently only NJ/NY supported region "ewr")
 * `attached_to_instance` - (Optional) VPS ID that you want to have this block storage attached to.
 * `label` - (Optional) Label that is given to your block storage.
-* `block_type` - (Optional)  Determines on the type of block storage volume that will be created. Soon to become a required parameter. Options are `high_per` or `storage_opt`.
+* `block_type` - (Optional)  Determines on the type of block storage volume that will be created. Soon to become a required parameter. Options are `high_perf` or `storage_opt`.
 * `live` - (Optional) Boolean value that will allow attachment of the volume to an instance without a restart. Default is false.
 
 
@@ -50,7 +50,7 @@ The following attributes are exported:
 * `status` - Current status of your block storage.
 * `live` - Flag which will determine if a volume should be attached with a restart or not.
 * `mount_id` - An ID associated with the instance, when mounted the ID can be found in /dev/disk/by-id prefixed with virtio.
-* `block_type` - The type of block storage volume. Values are `high_per` or `storage_opt`.
+* `block_type` - The type of block storage volume. Values are `high_perf` or `storage_opt`.
 
 ## Import
 
