@@ -36,7 +36,7 @@ func testAccCheckVultrKubernetes(label string) string {
 		resource "vultr_kubernetes" "test" {
 			region = "ewr"
 			label = "%s"
-			version = "v1.23.5+3"
+			version = "v1.24.3+2"
 
 			node_pools {
 				node_quantity = 1
