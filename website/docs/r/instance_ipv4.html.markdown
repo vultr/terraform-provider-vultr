@@ -25,7 +25,7 @@ resource "vultr_instance" "my_instance" {
 
 resource "vultr_instance_ipv4" "my_instance_ipv4" {
 	instance_id = "${vultr_instance.my_instance.id}"
-	reboot = "false"
+	reboot = false
 }
 ```
 
