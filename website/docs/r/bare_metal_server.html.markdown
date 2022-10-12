@@ -57,7 +57,7 @@ The following arguments are supported:
 * `tag` - (Deprecated: use `tags` instead) (Optional) The tag to assign to the server.
 * `tags` - (Optional) A list of tags to apply to the servier.
 * `label` - (Optional) A label for the server.
-* `reserved_ipv4` - (Optional) IP address of the floating IP to use as the main IP of this server. 
+* `reserved_ipv4` - (Optional) The ID of the floating IP to use as the main IP of this server. [See Reserved IPs](https://www.vultr.com/api/#operation/list-reserved-ips)
 
 ## Attributes Reference
 
