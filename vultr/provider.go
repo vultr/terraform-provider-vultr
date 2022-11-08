@@ -50,6 +50,7 @@ func Provider() *schema.Provider {
 			"vultr_reverse_ipv4":           dataSourceVultrReverseIPV4(),
 			"vultr_reverse_ipv6":           dataSourceVultrReverseIPV6(),
 			"vultr_instance":               dataSourceVultrInstance(),
+			"vultr_instances":              dataSourceVultrInstances(),
 			"vultr_instance_ipv4":          dataSourceVultrInstanceIPV4(),
 			"vultr_snapshot":               dataSourceVultrSnapshot(),
 			"vultr_ssh_key":                dataSourceVultrSSHKey(),
