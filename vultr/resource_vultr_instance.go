@@ -122,11 +122,6 @@ func resourceVultrInstance() *schema.Resource {
 				Optional:    true,
 				Description: "The hostname of the instance. Updating the hostname will cause a force new. This behavior is in place to prevent accidental reinstalls. Issuing an update to the hostname on UI or API issues a reinstall of the OS.",
 			},
-			"tag": {
-				Type:       schema.TypeString,
-				Optional:   true,
-				Deprecated: "tag has been deprecated and should no longer be used. Instead, use tags",
-			},
 			"tags": {
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -298,7 +293,6 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		ActivationEmail: govultr.BoolToBoolPtr(d.Get("activation_email").(bool)),
 		DDOSProtection:  govultr.BoolToBoolPtr(d.Get("ddos_protection").(bool)),
 		Hostname:        d.Get("hostname").(string),
-		Tag:             d.Get("tag").(string),
 		FirewallGroupID: d.Get("firewall_group_id").(string),
 		ScriptID:        d.Get("script_id").(string),
 		ReservedIPv4:    d.Get("reserved_ip_id").(string),
@@ -413,7 +407,6 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 	d.Set("v6_network", instance.V6Network)
 	d.Set("v6_main_ip", instance.V6MainIP)
 	d.Set("v6_network_size", instance.V6NetworkSize)
-	d.Set("tag", instance.Tag)
 	d.Set("tags", instance.Tags)
 	d.Set("firewall_group_id", instance.FirewallGroupID)
 	d.Set("region", instance.Region)
@@ -474,7 +467,6 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 
 	req := &govultr.InstanceUpdateReq{
 		Label:           d.Get("label").(string),
-		Tag:             govultr.StringToStringPtr(d.Get("tag").(string)),
 		FirewallGroupID: d.Get("firewall_group_id").(string),
 		EnableIPv6:      govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
 	}

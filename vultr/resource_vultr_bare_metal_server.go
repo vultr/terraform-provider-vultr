@@ -41,12 +41,6 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Optional: true,
 				Default:  "",
 			},
-			"tag": {
-				Type:       schema.TypeString,
-				Optional:   true,
-				Default:    "",
-				Deprecated: "tag has been deprecated and should no longer be used. Instead, use tags",
-			},
 			"tags": {
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -207,7 +201,6 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 		UserData:        base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string))),
 		ActivationEmail: govultr.BoolToBoolPtr(d.Get("activation_email").(bool)),
 		Hostname:        d.Get("hostname").(string),
-		Tag:             d.Get("tag").(string),
 		ReservedIPv4:    d.Get("reserved_ipv4").(string),
 	}
 
@@ -272,7 +265,6 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 	d.Set("gateway_v4", bms.GatewayV4)
 	d.Set("plan", bms.Plan)
 	d.Set("label", bms.Label)
-	d.Set("tag", bms.Tag)
 	d.Set("tags", bms.Tags)
 	d.Set("mac_address", bms.MacAddress)
 	d.Set("os_id", bms.OsID)
@@ -290,7 +282,6 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 
 	req := &govultr.BareMetalUpdate{
 		Label:      d.Get("label").(string),
-		Tag:        govultr.StringToStringPtr(d.Get("tag").(string)),
 		Tags:       []string{},
 		EnableIPv6: govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
 	}
