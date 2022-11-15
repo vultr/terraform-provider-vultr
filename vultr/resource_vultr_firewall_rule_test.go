@@ -3,14 +3,11 @@ package vultr
 import (
 	"context"
 	"fmt"
-	"reflect"
-	"strconv"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
-	"github.com/vultr/govultr/v2"
 )
 
 func TestAccVultrFirewallRuleBasic(t *testing.T) {
@@ -19,6 +16,7 @@ func TestAccVultrFirewallRuleBasic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrFirewallRuleDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrFirewallRuleBase(rString),
@@ -39,6 +37,7 @@ func TestAccVultrFirewallRuleIcmp(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrFirewallRuleDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrFirewallRuleIcmp(rString),
@@ -58,6 +57,7 @@ func TestAccVultrFirewallRuleUpdate(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrFirewallRuleDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrFirewallRuleBase(rString),
@@ -88,6 +88,7 @@ func TestAccVultrFirewallRuleImportBasic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrFirewallRuleDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrFirewallRuleBase(rString),
@@ -109,32 +110,18 @@ func testAccCheckVultrFirewallRuleDestroy(s *terraform.State) error {
 		if rs.Type != "vultr_firewall_rule" {
 			continue
 		}
+
 		groupID := rs.Primary.Attributes["firewall_group_id"]
 
-		group, err := client.FirewallGroup.Get(context.Background(), groupID)
-		if err != nil {
-			return fmt.Errorf("error getting firewall group %s", err)
-		}
-		if reflect.DeepEqual(group, &govultr.FirewallGroup{}) {
-			// the group & rules were deleted
-			return nil
-		}
+		// If the group exists, something went wrong, probably
+		_, groupErr := client.FirewallGroup.Get(context.Background(), groupID)
+		if groupErr == nil {
 
-		firewallRules, _, err := client.FirewallRule.List(context.Background(), group.ID, nil)
-		if err != nil {
-			return fmt.Errorf("error getting list of firewall rules: %s", err)
-		}
-
-		exists := false
-		for i := range firewallRules {
-			if strconv.Itoa(firewallRules[i].ID) == rs.Primary.ID {
-				exists = true
-				break
+			// group and rules don't throw an error from the api so the resources still exist
+			_, _, rulesErr := client.FirewallRule.List(context.Background(), groupID, nil)
+			if rulesErr == nil {
+				return fmt.Errorf("firewall rules still exist: %s", rulesErr)
 			}
-		}
-
-		if exists {
-			return fmt.Errorf("firewall rule still exists : %s", rs.Primary.ID)
 		}
 	}
 
