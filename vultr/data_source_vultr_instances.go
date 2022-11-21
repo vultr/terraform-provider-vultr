@@ -256,10 +256,6 @@ func dataSourceVultrInstancesRead(ctx context.Context, d *schema.ResourceData, m
 		}
 	}
 
-	if len(serverList) < 1 {
-		return diag.Errorf("no results were found")
-	}
-
 	d.SetId("instances")
 	d.Set("instances", serverList)
 
