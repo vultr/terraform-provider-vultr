@@ -517,14 +517,8 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 			newIDs = append(newIDs, v.(string))
 		}
 
-		for _, v := range diffSlice(oldIDs, newIDs) {
-			req.AttachPrivateNetwork = append(req.AttachPrivateNetwork, v)
-		}
-
-		for _, v := range diffSlice(newIDs, oldIDs) {
-			req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, v)
-		}
-
+		req.AttachPrivateNetwork = append(req.AttachPrivateNetwork, diffSlice(oldIDs, newIDs)...)
+		req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, diffSlice(newIDs, oldIDs)...)
 	}
 
 	if d.HasChange("vpc_ids") {
@@ -541,13 +535,8 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 			newIDs = append(newIDs, v.(string))
 		}
 
-		for _, v := range diffSlice(oldIDs, newIDs) {
-			req.AttachVPC = append(req.AttachVPC, v)
-		}
-
-		for _, v := range diffSlice(newIDs, oldIDs) {
-			req.DetachVPC = append(req.DetachVPC, v)
-		}
+		req.AttachVPC = append(req.AttachVPC, diffSlice(oldIDs, newIDs)...)
+		req.DetachVPC = append(req.DetachVPC, diffSlice(newIDs, oldIDs)...)
 	}
 
 	if d.HasChange("tags") {
@@ -637,7 +626,7 @@ func optionCheck(options map[string]bool) (string, error) {
 
 	var result []string
 	for k, v := range options {
-		if v == true {
+		if v {
 			result = append(result, k)
 		}
 	}

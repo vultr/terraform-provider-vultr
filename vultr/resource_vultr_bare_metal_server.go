@@ -328,7 +328,7 @@ func resourceVultrBareMetalServerDelete(ctx context.Context, d *schema.ResourceD
 func bareMetalServerOSCheck(options map[string]bool) (string, error) {
 	var result []string
 	for k, v := range options {
-		if v == true {
+		if v {
 			result = append(result, k)
 		}
 	}

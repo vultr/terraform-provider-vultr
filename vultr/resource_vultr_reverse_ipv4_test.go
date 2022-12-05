@@ -22,6 +22,7 @@ func TestAccVultrReverseIPV4Basic(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrReverseIPV4Destroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrReverseIPV4(rServerLabel, reverse),

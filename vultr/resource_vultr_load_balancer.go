@@ -246,7 +246,7 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		instanceList = nil
 	}
 
-	ssl := &govultr.SSL{}
+	var ssl = &govultr.SSL{}
 	if sslData, sslOk := d.GetOk("ssl"); sslOk {
 		ssl = generateSSL(sslData)
 	} else {
@@ -601,20 +601,4 @@ func generateSSL(sslData interface{}) *govultr.SSL {
 		Certificate: config["certificate"].(string),
 		Chain:       config["chain"].(string),
 	}
-}
-
-func diff(in, out []int) []int {
-	var diff []int
-
-	b := map[int]int{}
-	for i := range in {
-		b[in[i]] = 0
-	}
-
-	for i := range out {
-		if _, ok := b[out[i]]; !ok {
-			diff = append(diff, out[i])
-		}
-	}
-	return diff
 }
