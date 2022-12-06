@@ -35,7 +35,7 @@ func (c *Config) Client() (*Client, error) {
 	})
 
 	client := oauth2.NewClient(context.Background(), tokenSrc)
-	client.Transport = logging.NewTransport("Vultr", client.Transport)
+	client.Transport = logging.NewSubsystemLoggingHTTPTransport("Vultr", client.Transport)
 
 	vultrClient := govultr.NewClient(client)
 	vultrClient.SetUserAgent(userAgent)
