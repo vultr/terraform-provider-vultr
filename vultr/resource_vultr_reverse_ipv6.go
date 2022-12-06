@@ -73,7 +73,7 @@ func resourceVultrReverseIPV6Read(ctx context.Context, d *schema.ResourceData, m
 		}
 	}
 
-	if reverseIPV6 == nil {
+	if reverseIPV6.IP == "" {
 		log.Printf("[WARN] Removing reverse IPv6 (%s) because it is gone", d.Id())
 		d.SetId("")
 		return nil
