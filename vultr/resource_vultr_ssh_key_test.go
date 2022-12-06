@@ -28,7 +28,7 @@ func TestAccVultrSSHKeyBasic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrSSHKeyExists("vultr_ssh_key.foo"),
 					resource.TestCheckResourceAttr("vultr_ssh_key.foo", "name", fmt.Sprintf("foo-%d", rInt)),
-					resource.TestCheckResourceAttr("vultr_ssh_key.foo", "ssh_key", fmt.Sprintf("%s", rSSH)),
+					resource.TestCheckResourceAttr("vultr_ssh_key.foo", "ssh_key", rSSH),
 					resource.TestCheckResourceAttrSet("vultr_ssh_key.foo", "date_created"),
 				),
 			},
@@ -37,7 +37,7 @@ func TestAccVultrSSHKeyBasic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					testAccCheckVultrSSHKeyExists("vultr_ssh_key.foo"),
 					resource.TestCheckResourceAttr("vultr_ssh_key.foo", "name", fmt.Sprintf("bar-%d", rInt)),
-					resource.TestCheckResourceAttr("vultr_ssh_key.foo", "ssh_key", fmt.Sprintf("%s", rSSH)),
+					resource.TestCheckResourceAttr("vultr_ssh_key.foo", "ssh_key", rSSH),
 					resource.TestCheckResourceAttrSet("vultr_ssh_key.foo", "date_created"),
 				),
 			},
