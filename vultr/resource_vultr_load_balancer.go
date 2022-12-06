@@ -246,7 +246,7 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		instanceList = nil
 	}
 
-	var ssl = &govultr.SSL{}
+	var ssl *govultr.SSL
 	if sslData, sslOk := d.GetOk("ssl"); sslOk {
 		ssl = generateSSL(sslData)
 	} else {
