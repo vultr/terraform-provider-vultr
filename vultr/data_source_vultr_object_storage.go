@@ -100,15 +100,34 @@ func dataSourceVultrObjectStorageRead(ctx context.Context, d *schema.ResourceDat
 	if len(objStoreList) < 1 {
 		return diag.Errorf("no results were found")
 	}
+
 	d.SetId(objStoreList[0].ID)
-	d.Set("date_created", objStoreList[0].DateCreated)
-	d.Set("cluster_id", objStoreList[0].ObjectStoreClusterID)
-	d.Set("label", objStoreList[0].Label)
-	d.Set("region", objStoreList[0].Region)
-	d.Set("location", objStoreList[0].Location)
-	d.Set("status", objStoreList[0].Status)
-	d.Set("s3_hostname", objStoreList[0].S3Hostname)
-	d.Set("s3_access_key", objStoreList[0].S3AccessKey)
-	d.Set("s3_secret_key", objStoreList[0].S3SecretKey)
+	if err := d.Set("date_created", objStoreList[0].DateCreated); err != nil {
+		return diag.Errorf("unable to set object_storage `date_created` read value: %v", err)
+	}
+	if err := d.Set("cluster_id", objStoreList[0].ObjectStoreClusterID); err != nil {
+		return diag.Errorf("unable to set object_storage `cluster_id` read value: %v", err)
+	}
+	if err := d.Set("label", objStoreList[0].Label); err != nil {
+		return diag.Errorf("unable to set object_storage `label` read value: %v", err)
+	}
+	if err := d.Set("region", objStoreList[0].Region); err != nil {
+		return diag.Errorf("unable to set object_storage `region` read value: %v", err)
+	}
+	if err := d.Set("location", objStoreList[0].Location); err != nil {
+		return diag.Errorf("unable to set object_storage `location` read value: %v", err)
+	}
+	if err := d.Set("status", objStoreList[0].Status); err != nil {
+		return diag.Errorf("unable to set object_storage `status` read value: %v", err)
+	}
+	if err := d.Set("s3_hostname", objStoreList[0].S3Hostname); err != nil {
+		return diag.Errorf("unable to set object_storage `s3_hostname` read value: %v", err)
+	}
+	if err := d.Set("s3_access_key", objStoreList[0].S3AccessKey); err != nil {
+		return diag.Errorf("unable to set object_storage `s3_access_key` read value: %v", err)
+	}
+	if err := d.Set("s3_secret_key", objStoreList[0].S3SecretKey); err != nil {
+		return diag.Errorf("unable to set object_storage `s3_secret_key` read value: %v", err)
+	}
 	return nil
 }

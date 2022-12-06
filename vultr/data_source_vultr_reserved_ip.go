@@ -87,11 +87,23 @@ func dataSourceVultrReservedIPRead(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	d.SetId(ipList[0].ID)
-	d.Set("region", ipList[0].Region)
-	d.Set("ip_type", ipList[0].IPType)
-	d.Set("subnet", ipList[0].Subnet)
-	d.Set("subnet_size", ipList[0].SubnetSize)
-	d.Set("label", ipList[0].Label)
-	d.Set("instance_id", ipList[0].InstanceID)
+	if err := d.Set("region", ipList[0].Region); err != nil {
+		return diag.Errorf("unable to set reserved_ip `region` read value: %v", err)
+	}
+	if err := d.Set("ip_type", ipList[0].IPType); err != nil {
+		return diag.Errorf("unable to set reserved_ip `ip_type` read value: %v", err)
+	}
+	if err := d.Set("subnet", ipList[0].Subnet); err != nil {
+		return diag.Errorf("unable to set reserved_ip `subnet` read value: %v", err)
+	}
+	if err := d.Set("subnet_size", ipList[0].SubnetSize); err != nil {
+		return diag.Errorf("unable to set reserved_ip `subnet_size` read value: %v", err)
+	}
+	if err := d.Set("label", ipList[0].Label); err != nil {
+		return diag.Errorf("unable to set reserved_ip `label` read value: %v", err)
+	}
+	if err := d.Set("instance_id", ipList[0].InstanceID); err != nil {
+		return diag.Errorf("unable to set reserved_ip `instance_id` read value: %v", err)
+	}
 	return nil
 }

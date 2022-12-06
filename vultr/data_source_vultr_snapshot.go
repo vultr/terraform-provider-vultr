@@ -89,11 +89,23 @@ func dataSourceVultrSnapshotRead(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	d.SetId(snapshotList[0].ID)
-	d.Set("date_created", snapshotList[0].DateCreated)
-	d.Set("description", snapshotList[0].Description)
-	d.Set("size", snapshotList[0].Size)
-	d.Set("status", snapshotList[0].Status)
-	d.Set("os_id", snapshotList[0].OsID)
-	d.Set("app_id", snapshotList[0].AppID)
+	if err := d.Set("date_created", snapshotList[0].DateCreated); err != nil {
+		return diag.Errorf("unable to set snapshot `date_created` read value: %v", err)
+	}
+	if err := d.Set("description", snapshotList[0].Description); err != nil {
+		return diag.Errorf("unable to set snapshot `description` read value: %v", err)
+	}
+	if err := d.Set("size", snapshotList[0].Size); err != nil {
+		return diag.Errorf("unable to set snapshot `size` read value: %v", err)
+	}
+	if err := d.Set("status", snapshotList[0].Status); err != nil {
+		return diag.Errorf("unable to set snapshot `status` read value: %v", err)
+	}
+	if err := d.Set("os_id", snapshotList[0].OsID); err != nil {
+		return diag.Errorf("unable to set snapshot `os_id` read value: %v", err)
+	}
+	if err := d.Set("app_id", snapshotList[0].AppID); err != nil {
+		return diag.Errorf("unable to set snapshot `app_id` read value: %v", err)
+	}
 	return nil
 }

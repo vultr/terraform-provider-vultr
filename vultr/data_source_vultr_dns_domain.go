@@ -39,8 +39,14 @@ func dataSourceVultrDNSDomainRead(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	d.SetId(domain.Domain)
-	d.Set("domain", domain.Domain)
-	d.Set("date_created", domain.DateCreated)
-	d.Set("dns_sec", domain.DNSSec)
+	if err := d.Set("domain", domain.Domain); err != nil {
+		return diag.Errorf("unable to set dns_domain `domain` read value: %v", err)
+	}
+	if err := d.Set("date_created", domain.DateCreated); err != nil {
+		return diag.Errorf("unable to set dns_domain `date_created` read value: %v", err)
+	}
+	if err := d.Set("dns_sec", domain.DNSSec); err != nil {
+		return diag.Errorf("unable to set dns_domain `dns_sec` read value: %v", err)
+	}
 	return nil
 }

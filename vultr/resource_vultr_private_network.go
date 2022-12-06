@@ -88,11 +88,21 @@ func resourceVultrNetworkRead(ctx context.Context, d *schema.ResourceData, meta 
 		return diag.Errorf("error getting private network: %v", err)
 	}
 
-	d.Set("region", network.Region)
-	d.Set("description", network.Description)
-	d.Set("v4_subnet", network.V4Subnet)
-	d.Set("v4_subnet_mask", network.V4SubnetMask)
-	d.Set("date_created", network.DateCreated)
+	if err := d.Set("region", network.Region); err != nil {
+		return diag.Errorf("unable to set resource private_network `region` read value: %v", err)
+	}
+	if err := d.Set("description", network.Description); err != nil {
+		return diag.Errorf("unable to set resource private_network `description` read value: %v", err)
+	}
+	if err := d.Set("v4_subnet", network.V4Subnet); err != nil {
+		return diag.Errorf("unable to set resource private_network `v4_subnet` read value: %v", err)
+	}
+	if err := d.Set("v4_subnet_mask", network.V4SubnetMask); err != nil {
+		return diag.Errorf("unable to set resource private_network `v4_subnet_mask` read value: %v", err)
+	}
+	if err := d.Set("date_created", network.DateCreated); err != nil {
+		return diag.Errorf("unable to set resource private_network `date_created` read value: %v", err)
+	}
 
 	return nil
 }

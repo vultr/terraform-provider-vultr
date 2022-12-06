@@ -85,12 +85,24 @@ func resourceVultrDNSRecordRead(ctx context.Context, d *schema.ResourceData, met
 		return nil
 	}
 
-	d.Set("domain", d.Get("domain").(string))
-	d.Set("type", record.Type)
-	d.Set("name", record.Name)
-	d.Set("data", record.Data)
-	d.Set("priority", record.Priority)
-	d.Set("ttl", record.TTL)
+	if err := d.Set("domain", d.Get("domain").(string)); err != nil {
+		return diag.Errorf("unable to set resource dns_records `domain` read value: %v", err)
+	}
+	if err := d.Set("type", record.Type); err != nil {
+		return diag.Errorf("unable to set resource dns_records `type` read value: %v", err)
+	}
+	if err := d.Set("name", record.Name); err != nil {
+		return diag.Errorf("unable to set resource dns_records `name` read value: %v", err)
+	}
+	if err := d.Set("data", record.Data); err != nil {
+		return diag.Errorf("unable to set resource dns_records `data` read value: %v", err)
+	}
+	if err := d.Set("priority", record.Priority); err != nil {
+		return diag.Errorf("unable to set resource dns_records `priority` read value: %v", err)
+	}
+	if err := d.Set("ttl", record.TTL); err != nil {
+		return diag.Errorf("unable to set resource dns_records `ttl` read value: %v", err)
+	}
 	return nil
 }
 func resourceVultrDNSRecordUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
@@ -140,6 +152,8 @@ func resourceVultrDNSRecordImport(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	d.SetId(record.ID)
-	d.Set("domain", domain)
+	if err := d.Set("domain", domain); err != nil {
+		return nil, fmt.Errorf("unable to set resource dns_records `domain` import value: %v", err)
+	}
 	return []*schema.ResourceData{d}, nil
 }

@@ -135,19 +135,45 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	}
 
 	d.SetId(lbList[0].ID)
-	d.Set("has_ssl", lbList[0].SSLInfo)
-	d.Set("attached_instances", lbList[0].Instances)
-	d.Set("balancing_algorithm", lbList[0].GenericInfo.BalancingAlgorithm)
-	d.Set("ssl_redirect", lbList[0].GenericInfo.SSLRedirect)
-	d.Set("proxy_protocol", lbList[0].GenericInfo.ProxyProtocol)
-	d.Set("cookie_name", lbList[0].GenericInfo.StickySessions.CookieName)
-	d.Set("date_created", lbList[0].DateCreated)
-	d.Set("status", lbList[0].Status)
-	d.Set("region", lbList[0].Region)
-	d.Set("label", lbList[0].Label)
-	d.Set("ipv4", lbList[0].IPV4)
-	d.Set("ipv6", lbList[0].IPV6)
-	d.Set("private_network", lbList[0].GenericInfo.PrivateNetwork)
+	if err := d.Set("has_ssl", lbList[0].SSLInfo); err != nil {
+		return diag.Errorf("unable to set load_balancer `has_ssl` read value: %v", err)
+	}
+	if err := d.Set("attached_instances", lbList[0].Instances); err != nil {
+		return diag.Errorf("unable to set load_balancer `attached_instances` read value: %v", err)
+	}
+	if err := d.Set("balancing_algorithm", lbList[0].GenericInfo.BalancingAlgorithm); err != nil {
+		return diag.Errorf("unable to set load_balancer `balancing_algorithm` read value: %v", err)
+	}
+	if err := d.Set("ssl_redirect", lbList[0].GenericInfo.SSLRedirect); err != nil {
+		return diag.Errorf("unable to set load_balancer `ssl_redirect` read value: %v", err)
+	}
+	if err := d.Set("proxy_protocol", lbList[0].GenericInfo.ProxyProtocol); err != nil {
+		return diag.Errorf("unable to set load_balancer `proxy_protocol` read value: %v", err)
+	}
+	if err := d.Set("cookie_name", lbList[0].GenericInfo.StickySessions.CookieName); err != nil {
+		return diag.Errorf("unable to set load_balancer `cookie_name` read value: %v", err)
+	}
+	if err := d.Set("date_created", lbList[0].DateCreated); err != nil {
+		return diag.Errorf("unable to set load_balancer `date_created` read value: %v", err)
+	}
+	if err := d.Set("status", lbList[0].Status); err != nil {
+		return diag.Errorf("unable to set load_balancer `status` read value: %v", err)
+	}
+	if err := d.Set("region", lbList[0].Region); err != nil {
+		return diag.Errorf("unable to set load_balancer `region` read value: %v", err)
+	}
+	if err := d.Set("label", lbList[0].Label); err != nil {
+		return diag.Errorf("unable to set load_balancer `label` read value: %v", err)
+	}
+	if err := d.Set("ipv4", lbList[0].IPV4); err != nil {
+		return diag.Errorf("unable to set load_balancer `ipv4` read value: %v", err)
+	}
+	if err := d.Set("ipv6", lbList[0].IPV6); err != nil {
+		return diag.Errorf("unable to set load_balancer `ipv6` read value: %v", err)
+	}
+	if err := d.Set("private_network", lbList[0].GenericInfo.PrivateNetwork); err != nil {
+		return diag.Errorf("unable to set load_balancer `private_network` read value: %v", err)
+	}
 
 	var rulesList []map[string]interface{}
 	for _, rules := range lbList[0].ForwardingRules {
@@ -162,7 +188,7 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	}
 
 	if err := d.Set("forwarding_rules", rulesList); err != nil {
-		return diag.Errorf("error setting `forwarding_rules`: %#v", err)
+		return diag.Errorf("unable to set load_balancer `forwarding_rules` read value: %v", err)
 	}
 
 	hcInfo := map[string]interface{}{
@@ -176,7 +202,7 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	}
 
 	if err := d.Set("health_check", hcInfo); err != nil {
-		return diag.Errorf("error setting `health_check`: %#v", err)
+		return diag.Errorf("unable to set load_balancer `health_check` read value: %v", err)
 	}
 
 	var fwrRules []map[string]interface{}
@@ -191,7 +217,7 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	}
 
 	if err := d.Set("firewall_rules", fwrRules); err != nil {
-		return diag.Errorf("error setting `firewall_rules`: %#v", err)
+		return diag.Errorf("unable to set load_balancer `firewall_rules` read value: %v", err)
 	}
 
 	return nil

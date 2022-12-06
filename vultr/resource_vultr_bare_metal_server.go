@@ -252,27 +252,69 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 	}
 
 	d.SetId(bms.ID)
-	d.Set("os", bms.Os)
-	d.Set("ram", bms.RAM)
-	d.Set("disk", bms.Disk)
-	d.Set("main_ip", bms.MainIP)
-	d.Set("cpu_count", bms.CPUCount)
-	d.Set("region", bms.Region)
-	d.Set("default_password", bms.DefaultPassword)
-	d.Set("date_created", bms.DateCreated)
-	d.Set("status", bms.Status)
-	d.Set("netmask_v4", bms.NetmaskV4)
-	d.Set("gateway_v4", bms.GatewayV4)
-	d.Set("plan", bms.Plan)
-	d.Set("label", bms.Label)
-	d.Set("tags", bms.Tags)
-	d.Set("mac_address", bms.MacAddress)
-	d.Set("os_id", bms.OsID)
-	d.Set("app_id", bms.AppID)
-	d.Set("image_id", bms.ImageID)
-	d.Set("v6_network", bms.V6Network)
-	d.Set("v6_main_ip", bms.V6MainIP)
-	d.Set("v6_network_size", bms.V6NetworkSize)
+	if err := d.Set("os", bms.Os); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `os` read value: %v", err)
+	}
+	if err := d.Set("ram", bms.RAM); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `ram` read value: %v", err)
+	}
+	if err := d.Set("disk", bms.Disk); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `disk` read value: %v", err)
+	}
+	if err := d.Set("main_ip", bms.MainIP); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `main_ip` read value: %v", err)
+	}
+	if err := d.Set("cpu_count", bms.CPUCount); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `cpu_count` read value: %v", err)
+	}
+	if err := d.Set("region", bms.Region); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `region` read value: %v", err)
+	}
+	if err := d.Set("default_password", bms.DefaultPassword); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `default_password` read value: %v", err)
+	}
+	if err := d.Set("date_created", bms.DateCreated); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `date_created` read value: %v", err)
+	}
+	if err := d.Set("status", bms.Status); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `status` read value: %v", err)
+	}
+	if err := d.Set("netmask_v4", bms.NetmaskV4); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `netmask_v4` read value: %v", err)
+	}
+	if err := d.Set("gateway_v4", bms.GatewayV4); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `gateway_v4` read value: %v", err)
+	}
+	if err := d.Set("plan", bms.Plan); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `plan` read value: %v", err)
+	}
+	if err := d.Set("label", bms.Label); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `label` read value: %v", err)
+	}
+	if err := d.Set("tags", bms.Tags); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `tags` read value: %v", err)
+	}
+	if err := d.Set("mac_address", bms.MacAddress); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `mac_address` read value: %v", err)
+	}
+	if err := d.Set("os_id", bms.OsID); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `os_id` read value: %v", err)
+	}
+	if err := d.Set("app_id", bms.AppID); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `app_id` read value: %v", err)
+	}
+	if err := d.Set("image_id", bms.ImageID); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `image_id` read value: %v", err)
+	}
+	if err := d.Set("v6_network", bms.V6Network); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `v6_network` read value: %v", err)
+	}
+	if err := d.Set("v6_main_ip", bms.V6MainIP); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `v6_main_ip` read value: %v", err)
+	}
+	if err := d.Set("v6_network_size", bms.V6NetworkSize); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `v6_network_size` read value: %v", err)
+	}
 
 	return nil
 }

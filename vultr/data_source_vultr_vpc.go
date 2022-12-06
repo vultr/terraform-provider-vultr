@@ -86,11 +86,21 @@ func dataSourceVultrVPCRead(ctx context.Context, d *schema.ResourceData, meta in
 	}
 
 	d.SetId(vpcList[0].ID)
-	d.Set("region", vpcList[0].Region)
-	d.Set("description", vpcList[0].Description)
-	d.Set("date_created", vpcList[0].DateCreated)
-	d.Set("v4_subnet", vpcList[0].V4Subnet)
-	d.Set("v4_subnet_mask", vpcList[0].V4SubnetMask)
+	if err := d.Set("region", vpcList[0].Region); err != nil {
+		return diag.Errorf("unable to set vpc `region` read value: %v", err)
+	}
+	if err := d.Set("description", vpcList[0].Description); err != nil {
+		return diag.Errorf("unable to set vpc `description` read value: %v", err)
+	}
+	if err := d.Set("date_created", vpcList[0].DateCreated); err != nil {
+		return diag.Errorf("unable to set vpc `date_created` read value: %v", err)
+	}
+	if err := d.Set("v4_subnet", vpcList[0].V4Subnet); err != nil {
+		return diag.Errorf("unable to set vpc `v4_subnet` read value: %v", err)
+	}
+	if err := d.Set("v4_subnet_mask", vpcList[0].V4SubnetMask); err != nil {
+		return diag.Errorf("unable to set vpc `v4_subnet_mask` read value: %v", err)
+	}
 
 	return nil
 }

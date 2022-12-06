@@ -138,16 +138,36 @@ func resourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData, 
 		return diag.Errorf("error getting block storage: %v", err)
 	}
 
-	d.Set("live", d.Get("live").(bool))
-	d.Set("date_created", bs.DateCreated)
-	d.Set("cost", bs.Cost)
-	d.Set("status", bs.Status)
-	d.Set("size_gb", bs.SizeGB)
-	d.Set("region", bs.Region)
-	d.Set("attached_to_instance", bs.AttachedToInstance)
-	d.Set("label", bs.Label)
-	d.Set("mount_id", bs.MountID)
-	d.Set("block_type", bs.BlockType)
+	if err := d.Set("live", d.Get("live").(bool)); err != nil {
+		return diag.Errorf("unable to set resource block_storage `live` read value: %v", err)
+	}
+	if err := d.Set("date_created", bs.DateCreated); err != nil {
+		return diag.Errorf("unable to set resource block_storage `date_created` read value: %v", err)
+	}
+	if err := d.Set("cost", bs.Cost); err != nil {
+		return diag.Errorf("unable to set resource block_storage `cost` read value: %v", err)
+	}
+	if err := d.Set("status", bs.Status); err != nil {
+		return diag.Errorf("unable to set resource block_storage `status` read value: %v", err)
+	}
+	if err := d.Set("size_gb", bs.SizeGB); err != nil {
+		return diag.Errorf("unable to set resource block_storage `size_gb` read value: %v", err)
+	}
+	if err := d.Set("region", bs.Region); err != nil {
+		return diag.Errorf("unable to set resource block_storage `region` read value: %v", err)
+	}
+	if err := d.Set("attached_to_instance", bs.AttachedToInstance); err != nil {
+		return diag.Errorf("unable to set resource block_storage `attached_to_instance` read value: %v", err)
+	}
+	if err := d.Set("label", bs.Label); err != nil {
+		return diag.Errorf("unable to set resource block_storage `label` read value: %v", err)
+	}
+	if err := d.Set("mount_id", bs.MountID); err != nil {
+		return diag.Errorf("unable to set resource block_storage `mount_id` read value: %v", err)
+	}
+	if err := d.Set("block_type", bs.BlockType); err != nil {
+		return diag.Errorf("unable to set resource block_storage `block_type` read value: %v", err)
+	}
 
 	return nil
 }

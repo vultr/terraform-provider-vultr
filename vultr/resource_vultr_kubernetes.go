@@ -136,25 +136,39 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 	for _, v := range vke.NodePools {
 		if tfVKEDefault == v.Tag {
 			if err := d.Set("node_pools", flattenNodePool(&v)); err != nil {
-				return diag.Errorf("error setting `node_pool`: %v", err)
+				return diag.Errorf("unable to set resource kubernetes `node_pool` read value: %v", err)
 			}
 			break
 		}
 	}
 
-	d.Set("date_created", vke.DateCreated)
-	d.Set("cluster_subnet", vke.ClusterSubnet)
-	d.Set("service_subnet", vke.ServiceSubnet)
-	d.Set("ip", vke.IP)
-	d.Set("endpoint", vke.Endpoint)
-	d.Set("status", vke.Status)
+	if err := d.Set("date_created", vke.DateCreated); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `date_created` read value: %v", err)
+	}
+	if err := d.Set("cluster_subnet", vke.ClusterSubnet); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `cluster_subnet` read value: %v", err)
+	}
+	if err := d.Set("service_subnet", vke.ServiceSubnet); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `service_subnet` read value: %v", err)
+	}
+	if err := d.Set("ip", vke.IP); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `ip` read value: %v", err)
+	}
+	if err := d.Set("endpoint", vke.Endpoint); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `endpoint` read value: %v", err)
+	}
+	if err := d.Set("status", vke.Status); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `status` read value: %v", err)
+	}
 
 	config, err := client.Kubernetes.GetKubeConfig(ctx, d.Id())
 	if err != nil {
 		return diag.Errorf("could not get kubeconfig : %v", err)
 	}
 
-	d.Set("kube_config", config.KubeConfig)
+	if err := d.Set("kube_config", config.KubeConfig); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `kube_config` read value: %v", err)
+	}
 
 	return nil
 }

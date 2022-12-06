@@ -79,8 +79,12 @@ func resourceVultrReverseIPV6Read(ctx context.Context, d *schema.ResourceData, m
 		return nil
 	}
 
-	d.Set("ip", reverseIPV6.IP)
-	d.Set("reverse", reverseIPV6.Reverse)
+	if err := d.Set("ip", reverseIPV6.IP); err != nil {
+		return diag.Errorf("unable to set resource reverse_ipv6 `ip` read value: %v", err)
+	}
+	if err := d.Set("reverse", reverseIPV6.Reverse); err != nil {
+		return diag.Errorf("unable to set resource reverse_ipv6 `reverse` read value: %v", err)
+	}
 
 	return nil
 }

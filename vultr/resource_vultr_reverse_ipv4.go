@@ -60,7 +60,10 @@ func resourceVultrReverseIPV4Create(ctx context.Context, d *schema.ResourceData,
 	}
 
 	d.SetId(ip)
-	d.Set("instance_id", instanceID)
+
+	if err := d.Set("instance_id", instanceID); err != nil {
+		return diag.Errorf("unable to set resource reverse_ipv4 `instance_id` create value: %v", err)
+	}
 
 	return resourceVultrReverseIPV4Read(ctx, d, meta)
 }
@@ -98,10 +101,18 @@ func resourceVultrReverseIPV4Read(ctx context.Context, d *schema.ResourceData, m
 		options.Cursor = meta.Links.Next
 	}
 
-	d.Set("ip", ReverseIPV4.IP)
-	d.Set("reverse", ReverseIPV4.Reverse)
-	d.Set("netmask", ReverseIPV4.Netmask)
-	d.Set("gateway", ReverseIPV4.Gateway)
+	if err := d.Set("ip", ReverseIPV4.IP); err != nil {
+		return diag.Errorf("unable to set resource reverse_ipv4 `ip` read value: %v", err)
+	}
+	if err := d.Set("reverse", ReverseIPV4.Reverse); err != nil {
+		return diag.Errorf("unable to set resource reverse_ipv4 `reverse` read value: %v", err)
+	}
+	if err := d.Set("netmask", ReverseIPV4.Netmask); err != nil {
+		return diag.Errorf("unable to set resource reverse_ipv4 `netmask` read value: %v", err)
+	}
+	if err := d.Set("gateway", ReverseIPV4.Gateway); err != nil {
+		return diag.Errorf("unable to set resource reverse_ipv4 `gateway` read value: %v", err)
+	}
 
 	return nil
 }

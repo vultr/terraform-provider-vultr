@@ -87,11 +87,21 @@ func resourceVultrVPCRead(ctx context.Context, d *schema.ResourceData, meta inte
 		return diag.Errorf("error getting VPC: %v", err)
 	}
 
-	d.Set("region", vpc.Region)
-	d.Set("description", vpc.Description)
-	d.Set("v4_subnet", vpc.V4Subnet)
-	d.Set("v4_subnet_mask", vpc.V4SubnetMask)
-	d.Set("date_created", vpc.DateCreated)
+	if err := d.Set("region", vpc.Region); err != nil {
+		return diag.Errorf("unable to set resource vpc `region` read value: %v", err)
+	}
+	if err := d.Set("description", vpc.Description); err != nil {
+		return diag.Errorf("unable to set resource vpc `description` read value: %v", err)
+	}
+	if err := d.Set("v4_subnet", vpc.V4Subnet); err != nil {
+		return diag.Errorf("unable to set resource vpc `v4_subnet` read value: %v", err)
+	}
+	if err := d.Set("v4_subnet_mask", vpc.V4SubnetMask); err != nil {
+		return diag.Errorf("unable to set resource vpc `v4_subnet_mask` read value: %v", err)
+	}
+	if err := d.Set("date_created", vpc.DateCreated); err != nil {
+		return diag.Errorf("unable to set resource vpc `date_created` read value: %v", err)
+	}
 
 	return nil
 }

@@ -89,11 +89,23 @@ func dataSourceVultrApplicationRead(ctx context.Context, d *schema.ResourceData,
 		return diag.Errorf("no results were found")
 	}
 	d.SetId(strconv.Itoa(appList[0].ID))
-	d.Set("deploy_name", appList[0].DeployName)
-	d.Set("name", appList[0].Name)
-	d.Set("short_name", appList[0].ShortName)
-	d.Set("vendor", appList[0].Vendor)
-	d.Set("image_id", appList[0].ImageID)
-	d.Set("type", appList[0].Type)
+	if err := d.Set("deploy_name", appList[0].DeployName); err != nil {
+		return diag.Errorf("unable to set application `deploy_name` read value: %v", err)
+	}
+	if err := d.Set("name", appList[0].Name); err != nil {
+		return diag.Errorf("unable to set application `name` read value: %v", err)
+	}
+	if err := d.Set("short_name", appList[0].ShortName); err != nil {
+		return diag.Errorf("unable to set application `short_name` read value: %v", err)
+	}
+	if err := d.Set("vendor", appList[0].Vendor); err != nil {
+		return diag.Errorf("unable to set application `vendor` read value: %v", err)
+	}
+	if err := d.Set("image_id", appList[0].ImageID); err != nil {
+		return diag.Errorf("unable to set application `image_id` read value: %v", err)
+	}
+	if err := d.Set("type", appList[0].Type); err != nil {
+		return diag.Errorf("unable to set application `type` read value: %v", err)
+	}
 	return nil
 }

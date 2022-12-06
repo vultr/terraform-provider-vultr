@@ -44,7 +44,9 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 	}
 
 	d.SetId(nodePool.ID)
-	d.Set("cluster_id", clusterID)
+	if err := d.Set("cluster_id", clusterID); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `cluster_id` create value: %v", err)
+	}
 
 	//block until status is ready
 	if _, err = waitForNodePoolAvailable(ctx, d, "active", []string{"pending"}, "status", meta); err != nil {
@@ -73,16 +75,36 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 		return diag.Errorf("error getting node pool: %v", err)
 	}
 
-	d.Set("status", nodePool.Status)
-	d.Set("label", nodePool.Label)
-	d.Set("plan", nodePool.Plan)
-	d.Set("tag", nodePool.Tag)
-	d.Set("node_quantity", nodePool.NodeQuantity)
-	d.Set("date_created", nodePool.DateCreated)
-	d.Set("date_updated", nodePool.DateUpdated)
-	d.Set("auto_scaler", nodePool.AutoScaler)
-	d.Set("min_nodes", nodePool.MinNodes)
-	d.Set("max_nodes", nodePool.MaxNodes)
+	if err := d.Set("status", nodePool.Status); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `status` read value: %v", err)
+	}
+	if err := d.Set("label", nodePool.Label); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `label` read value: %v", err)
+	}
+	if err := d.Set("plan", nodePool.Plan); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `plan` read value: %v", err)
+	}
+	if err := d.Set("tag", nodePool.Tag); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `tag` read value: %v", err)
+	}
+	if err := d.Set("node_quantity", nodePool.NodeQuantity); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `node_quantity` read value: %v", err)
+	}
+	if err := d.Set("date_created", nodePool.DateCreated); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `date_created` read value: %v", err)
+	}
+	if err := d.Set("date_updated", nodePool.DateUpdated); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `date_updated` read value: %v", err)
+	}
+	if err := d.Set("auto_scaler", nodePool.AutoScaler); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `auto_scaler` read value: %v", err)
+	}
+	if err := d.Set("min_nodes", nodePool.MinNodes); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `min_nodes` read value: %v", err)
+	}
+	if err := d.Set("max_nodes", nodePool.MaxNodes); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `max_nodes` read value: %v", err)
+	}
 
 	var instances []map[string]interface{}
 	for _, v := range nodePool.Nodes {
@@ -95,7 +117,9 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 		instances = append(instances, n)
 	}
 
-	d.Set("nodes", instances)
+	if err := d.Set("nodes", instances); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `nodes` read value: %v", err)
+	}
 
 	return nil
 }

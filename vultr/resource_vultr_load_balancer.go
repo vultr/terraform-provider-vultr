@@ -335,7 +335,7 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	if err := d.Set("forwarding_rules", rulesList); err != nil {
-		return diag.Errorf("error setting `forwarding_rules`: %v", err)
+		return diag.Errorf("unable to set resource load_balancer `forwarding_rules` read value: %v", err)
 	}
 
 	var fwrList []map[string]interface{}
@@ -350,7 +350,7 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	if err := d.Set("firewall_rules", fwrList); err != nil {
-		return diag.Errorf("error setting `firewall_rules`: %v", err)
+		return diag.Errorf("unable to set resource load_balancer `firewall_rules` read value: %v", err)
 	}
 
 	var hc []map[string]interface{}
@@ -366,30 +366,59 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	hc = append(hc, hcInfo)
 
 	if err := d.Set("health_check", hc); err != nil {
-		return diag.Errorf("error setting `health_check`: %v", err)
+		return diag.Errorf("unable to set resource load_balancer `health_check` read value: %v", err)
 	}
-
-	d.Set("has_ssl", lb.SSLInfo)
-	d.Set("attached_instances", lb.Instances)
-	d.Set("balancing_algorithm", lb.GenericInfo.BalancingAlgorithm)
-	d.Set("proxy_protocol", lb.GenericInfo.ProxyProtocol)
-	d.Set("cookie_name", lb.GenericInfo.StickySessions.CookieName)
-	d.Set("label", lb.Label)
-	d.Set("status", lb.Status)
-	d.Set("ipv4", lb.IPV4)
-	d.Set("ipv6", lb.IPV6)
-	d.Set("region", lb.Region)
-	d.Set("ssl_redirect", lb.GenericInfo.SSLRedirect)
+	if err := d.Set("has_ssl", lb.SSLInfo); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `has_ssl` read value: %v", err)
+	}
+	if err := d.Set("attached_instances", lb.Instances); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `attached_instances` read value: %v", err)
+	}
+	if err := d.Set("balancing_algorithm", lb.GenericInfo.BalancingAlgorithm); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `balancing_algorithm` read value: %v", err)
+	}
+	if err := d.Set("proxy_protocol", lb.GenericInfo.ProxyProtocol); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `proxy_protocol` read value: %v", err)
+	}
+	if err := d.Set("cookie_name", lb.GenericInfo.StickySessions.CookieName); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `cookie_name` read value: %v", err)
+	}
+	if err := d.Set("label", lb.Label); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `label` read value: %v", err)
+	}
+	if err := d.Set("status", lb.Status); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `status` read value: %v", err)
+	}
+	if err := d.Set("ipv4", lb.IPV4); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `ipv4` read value: %v", err)
+	}
+	if err := d.Set("ipv6", lb.IPV6); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `ipv6` read value: %v", err)
+	}
+	if err := d.Set("region", lb.Region); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `region` read value: %v", err)
+	}
+	if err := d.Set("ssl_redirect", lb.GenericInfo.SSLRedirect); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `ssl_redirect` read value: %v", err)
+	}
 
 	// Manipulate the read state so that only one of these two values is
 	// returned based on which is passed in. Needed since both private_network
 	// and vpc are set to the same value after creation
 	if d.Get("private_network") == "" && d.Get("vpc") != "" {
-		d.Set("private_network", "")
-		d.Set("vpc", lb.GenericInfo.VPC)
+		if err := d.Set("private_network", ""); err != nil {
+			return diag.Errorf("unable to set resource load_balancer `private_network` read value: %v", err)
+		}
+		if err := d.Set("vpc", lb.GenericInfo.VPC); err != nil {
+			return diag.Errorf("unable to set resource load_balancer `vpc` read value: %v", err)
+		}
 	} else if d.Get("private_network") != "" && d.Get("vpc") == "" {
-		d.Set("private_network", lb.GenericInfo.VPC)
-		d.Set("vpc", "")
+		if err := d.Set("private_network", lb.GenericInfo.VPC); err != nil {
+			return diag.Errorf("unable to set resource load_balancer `private_network` read value: %v", err)
+		}
+		if err := d.Set("vpc", ""); err != nil {
+			return diag.Errorf("unable to set resource load_balancer `vpc` read value: %v", err)
+		}
 	}
 
 	return nil

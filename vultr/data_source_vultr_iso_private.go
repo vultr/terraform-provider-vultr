@@ -87,11 +87,23 @@ func dataSourceVultrIsoPrivateRead(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	d.SetId(isoList[0].ID)
-	d.Set("date_created", isoList[0].DateCreated)
-	d.Set("filename", isoList[0].FileName)
-	d.Set("size", isoList[0].Size)
-	d.Set("md5sum", isoList[0].MD5Sum)
-	d.Set("sha512sum", isoList[0].SHA512Sum)
-	d.Set("status", isoList[0].Status)
+	if err := d.Set("date_created", isoList[0].DateCreated); err != nil {
+		return diag.Errorf("unable to set iso_private `date_created` read value: %v", err)
+	}
+	if err := d.Set("filename", isoList[0].FileName); err != nil {
+		return diag.Errorf("unable to set iso_private `filename` read value: %v", err)
+	}
+	if err := d.Set("size", isoList[0].Size); err != nil {
+		return diag.Errorf("unable to set iso_private `size` read value: %v", err)
+	}
+	if err := d.Set("md5sum", isoList[0].MD5Sum); err != nil {
+		return diag.Errorf("unable to set iso_private `md5sum` read value: %v", err)
+	}
+	if err := d.Set("sha512sum", isoList[0].SHA512Sum); err != nil {
+		return diag.Errorf("unable to set iso_private `sha512sum` read value: %v", err)
+	}
+	if err := d.Set("status", isoList[0].Status); err != nil {
+		return diag.Errorf("unable to set iso_private `status` read value: %v", err)
+	}
 	return nil
 }

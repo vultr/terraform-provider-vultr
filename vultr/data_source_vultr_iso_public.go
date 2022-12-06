@@ -77,8 +77,14 @@ func dataSourceVultrIsoPublicRead(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	d.SetId(isoList[0].ID)
-	d.Set("description", isoList[0].Description)
-	d.Set("name", isoList[0].Name)
-	d.Set("md5sum", isoList[0].MD5Sum)
+	if err := d.Set("description", isoList[0].Description); err != nil {
+		return diag.Errorf("unable to set iso_public `description` read value: %v", err)
+	}
+	if err := d.Set("name", isoList[0].Name); err != nil {
+		return diag.Errorf("unable to set iso_public `name` read value: %v", err)
+	}
+	if err := d.Set("md5sum", isoList[0].MD5Sum); err != nil {
+		return diag.Errorf("unable to set iso_public `md5sum` read value: %v", err)
+	}
 	return nil
 }

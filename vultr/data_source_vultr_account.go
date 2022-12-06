@@ -55,14 +55,26 @@ func dataSourceVultrAccountRead(ctx context.Context, d *schema.ResourceData, met
 	}
 
 	d.SetId("account")
-	d.Set("name", account.Name)
-	d.Set("email", account.Email)
-	d.Set("balance", math.Round(float64(account.Balance)*100)/100)
-	d.Set("pending_charges", math.Round(float64(account.PendingCharges)*100)/100)
-	d.Set("last_payment_date", account.LastPaymentDate)
-	d.Set("last_payment_amount", math.Round(float64(account.LastPaymentAmount)*100)/100)
+	if err := d.Set("name", account.Name); err != nil {
+		return diag.Errorf("unable to set account `name` read value: %v", err)
+	}
+	if err := d.Set("email", account.Email); err != nil {
+		return diag.Errorf("unable to set account `email` read value: %v", err)
+	}
+	if err := d.Set("balance", math.Round(float64(account.Balance)*100)/100); err != nil {
+		return diag.Errorf("unable to set account `balance` read value: %v", err)
+	}
+	if err := d.Set("pending_charges", math.Round(float64(account.PendingCharges)*100)/100); err != nil {
+		return diag.Errorf("unable to set account `pending_charges` read value: %v", err)
+	}
+	if err := d.Set("last_payment_date", account.LastPaymentDate); err != nil {
+		return diag.Errorf("unable to set account `last_payment_date` read value: %v", err)
+	}
+	if err := d.Set("last_payment_amount", math.Round(float64(account.LastPaymentAmount)*100)/100); err != nil {
+		return diag.Errorf("unable to set account `last_payment_amount` read value: %v", err)
+	}
 	if err := d.Set("acl", account.ACL); err != nil {
-		return diag.Errorf("error setting `acls`: %#v", err)
+		return diag.Errorf("unable to set account `acls` read value: %#v", err)
 	}
 	return nil
 }

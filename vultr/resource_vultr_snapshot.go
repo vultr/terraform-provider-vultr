@@ -3,9 +3,10 @@ package vultr
 import (
 	"context"
 	"fmt"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"log"
 	"time"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -96,12 +97,24 @@ func resourceVultrSnapshotRead(ctx context.Context, d *schema.ResourceData, meta
 		return nil
 	}
 
-	d.Set("description", snapshot.Description)
-	d.Set("date_created", snapshot.DateCreated)
-	d.Set("size", snapshot.Size)
-	d.Set("status", snapshot.Status)
-	d.Set("os_id", snapshot.OsID)
-	d.Set("app_id", snapshot.AppID)
+	if err := d.Set("description", snapshot.Description); err != nil {
+		return diag.Errorf("unable to set resource snapshot `description` read value: %v", err)
+	}
+	if err := d.Set("date_created", snapshot.DateCreated); err != nil {
+		return diag.Errorf("unable to set resource snapshot `date_created` read value: %v", err)
+	}
+	if err := d.Set("size", snapshot.Size); err != nil {
+		return diag.Errorf("unable to set resource snapshot `size` read value: %v", err)
+	}
+	if err := d.Set("status", snapshot.Status); err != nil {
+		return diag.Errorf("unable to set resource snapshot `status` read value: %v", err)
+	}
+	if err := d.Set("os_id", snapshot.OsID); err != nil {
+		return diag.Errorf("unable to set resource snapshot `os_id` read value: %v", err)
+	}
+	if err := d.Set("app_id", snapshot.AppID); err != nil {
+		return diag.Errorf("unable to set resource snapshot `app_id` read value: %v", err)
+	}
 
 	return nil
 }

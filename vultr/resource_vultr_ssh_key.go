@@ -64,9 +64,15 @@ func resourceVultrSSHKeyRead(ctx context.Context, d *schema.ResourceData, meta i
 		return diag.Errorf("error getting SSH keys: %v", err)
 	}
 
-	d.Set("name", key.Name)
-	d.Set("ssh_key", key.SSHKey)
-	d.Set("date_created", key.DateCreated)
+	if err := d.Set("name", key.Name); err != nil {
+		return diag.Errorf("unable to set resource ssh_key `name` read value: %v", err)
+	}
+	if err := d.Set("ssh_key", key.SSHKey); err != nil {
+		return diag.Errorf("unable to set resource ssh_key `ssh_key` read value: %v", err)
+	}
+	if err := d.Set("date_created", key.DateCreated); err != nil {
+		return diag.Errorf("unable to set resource ssh_key `date_created` read value: %v", err)
+	}
 
 	return nil
 }

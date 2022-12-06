@@ -94,12 +94,24 @@ func resourceVultrReservedIPRead(ctx context.Context, d *schema.ResourceData, me
 		return nil
 	}
 
-	d.Set("region", rip.Region)
-	d.Set("ip_type", rip.IPType)
-	d.Set("subnet", rip.Subnet)
-	d.Set("subnet_size", rip.SubnetSize)
-	d.Set("label", rip.Label)
-	d.Set("instance_id", rip.InstanceID)
+	if err := d.Set("region", rip.Region); err != nil {
+		return diag.Errorf("unable to set resource reserved_ip `region` read value: %v", err)
+	}
+	if err := d.Set("ip_type", rip.IPType); err != nil {
+		return diag.Errorf("unable to set resource reserved_ip `ip_type` read value: %v", err)
+	}
+	if err := d.Set("subnet", rip.Subnet); err != nil {
+		return diag.Errorf("unable to set resource reserved_ip `subnet` read value: %v", err)
+	}
+	if err := d.Set("subnet_size", rip.SubnetSize); err != nil {
+		return diag.Errorf("unable to set resource reserved_ip `subnet_size` read value: %v", err)
+	}
+	if err := d.Set("label", rip.Label); err != nil {
+		return diag.Errorf("unable to set resource reserved_ip `label` read value: %v", err)
+	}
+	if err := d.Set("instance_id", rip.InstanceID); err != nil {
+		return diag.Errorf("unable to set resource reserved_ip `instance_id` read value: %v", err)
+	}
 
 	return nil
 }

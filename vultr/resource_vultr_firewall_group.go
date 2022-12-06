@@ -78,12 +78,24 @@ func resourceVultrFirewallGroupRead(ctx context.Context, d *schema.ResourceData,
 		return diag.Errorf("error getting firewall group %s : %v", d.Id(), err)
 	}
 
-	d.Set("description", group.Description)
-	d.Set("date_created", group.DateCreated)
-	d.Set("date_modified", group.DateModified)
-	d.Set("instance_count", group.InstanceCount)
-	d.Set("rule_count", group.RuleCount)
-	d.Set("max_rule_count", group.MaxRuleCount)
+	if err := d.Set("description", group.Description); err != nil {
+		return diag.Errorf("unable to set resource firewall_group `description` read value: %v", err)
+	}
+	if err := d.Set("date_created", group.DateCreated); err != nil {
+		return diag.Errorf("unable to set resource firewall_group `date_created` read value: %v", err)
+	}
+	if err := d.Set("date_modified", group.DateModified); err != nil {
+		return diag.Errorf("unable to set resource firewall_group `date_modified` read value: %v", err)
+	}
+	if err := d.Set("instance_count", group.InstanceCount); err != nil {
+		return diag.Errorf("unable to set resource firewall_group `instance_count` read value: %v", err)
+	}
+	if err := d.Set("rule_count", group.RuleCount); err != nil {
+		return diag.Errorf("unable to set resource firewall_group `rule_count` read value: %v", err)
+	}
+	if err := d.Set("max_rule_count", group.MaxRuleCount); err != nil {
+		return diag.Errorf("unable to set resource firewall_group `max_rule_count` read value: %v", err)
+	}
 	return nil
 }
 

@@ -91,10 +91,20 @@ func dataSourceVultrStartupScriptRead(ctx context.Context, d *schema.ResourceDat
 	}
 
 	d.SetId(script.ID)
-	d.Set("name", script.Name)
-	d.Set("date_created", script.DateCreated)
-	d.Set("date_modified", script.DateModified)
-	d.Set("type", script.Type)
-	d.Set("script", script.Script)
+	if err := d.Set("name", script.Name); err != nil {
+		return diag.Errorf("unable to set startup_script `name` read value: %v", err)
+	}
+	if err := d.Set("date_created", script.DateCreated); err != nil {
+		return diag.Errorf("unable to set startup_script `date_created` read value: %v", err)
+	}
+	if err := d.Set("date_modified", script.DateModified); err != nil {
+		return diag.Errorf("unable to set startup_script `date_modified` read value: %v", err)
+	}
+	if err := d.Set("type", script.Type); err != nil {
+		return diag.Errorf("unable to set startup_script `type` read value: %v", err)
+	}
+	if err := d.Set("script", script.Script); err != nil {
+		return diag.Errorf("unable to set startup_script `script` read value: %v", err)
+	}
 	return nil
 }

@@ -82,9 +82,17 @@ func dataSourceVultrRegionRead(ctx context.Context, d *schema.ResourceData, meta
 	}
 
 	d.SetId(regionList[0].ID)
-	d.Set("country", regionList[0].Country)
-	d.Set("continent", regionList[0].Continent)
-	d.Set("city", regionList[0].City)
-	d.Set("options", regionList[0].Options)
+	if err := d.Set("country", regionList[0].Country); err != nil {
+		return diag.Errorf("unable to set region `country` read value: %v", err)
+	}
+	if err := d.Set("continent", regionList[0].Continent); err != nil {
+		return diag.Errorf("unable to set region `continent` read value: %v", err)
+	}
+	if err := d.Set("city", regionList[0].City); err != nil {
+		return diag.Errorf("unable to set region `city` read value: %v", err)
+	}
+	if err := d.Set("options", regionList[0].Options); err != nil {
+		return diag.Errorf("unable to set region `options` read value: %v", err)
+	}
 	return nil
 }

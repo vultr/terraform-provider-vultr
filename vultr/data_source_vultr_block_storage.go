@@ -99,14 +99,32 @@ func dataSourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData
 	}
 
 	d.SetId(blockList[0].ID)
-	d.Set("date_created", blockList[0].DateCreated)
-	d.Set("cost", blockList[0].Cost)
-	d.Set("status", blockList[0].Status)
-	d.Set("size_gb", blockList[0].SizeGB)
-	d.Set("region", blockList[0].Region)
-	d.Set("attached_to_instance", blockList[0].AttachedToInstance)
-	d.Set("label", blockList[0].Label)
-	d.Set("mount_id", blockList[0].MountID)
-	d.Set("block_type", blockList[0].BlockType)
+	if err := d.Set("date_created", blockList[0].DateCreated); err != nil {
+		return diag.Errorf("unable to set block_storage `date_created` read value: %v", err)
+	}
+	if err := d.Set("cost", blockList[0].Cost); err != nil {
+		return diag.Errorf("unable to set block_storage `cost` read value: %v", err)
+	}
+	if err := d.Set("status", blockList[0].Status); err != nil {
+		return diag.Errorf("unable to set block_storage `status` read value: %v", err)
+	}
+	if err := d.Set("size_gb", blockList[0].SizeGB); err != nil {
+		return diag.Errorf("unable to set block_storage `size_gb` read value: %v", err)
+	}
+	if err := d.Set("region", blockList[0].Region); err != nil {
+		return diag.Errorf("unable to set block_storage `region` read value: %v", err)
+	}
+	if err := d.Set("attached_to_instance", blockList[0].AttachedToInstance); err != nil {
+		return diag.Errorf("unable to set block_storage `attached_to_instance` read value: %v", err)
+	}
+	if err := d.Set("label", blockList[0].Label); err != nil {
+		return diag.Errorf("unable to set block_storage `label` read value: %v", err)
+	}
+	if err := d.Set("mount_id", blockList[0].MountID); err != nil {
+		return diag.Errorf("unable to set block_storage `mount_id` read value: %v", err)
+	}
+	if err := d.Set("block_type", blockList[0].BlockType); err != nil {
+		return diag.Errorf("unable to set block_storage `block_type` read value: %v", err)
+	}
 	return nil
 }
