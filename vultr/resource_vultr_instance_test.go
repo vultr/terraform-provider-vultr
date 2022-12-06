@@ -33,7 +33,6 @@ func TestAccVultrInstanceBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region", "sea"),
-					resource.TestCheckResourceAttr(name, "tag", "even better tag"),
 					resource.TestCheckResourceAttr(name, "tags.#", "2"),
 					resource.TestCheckResourceAttr(name, "backups", "enabled"),
 					resource.TestCheckResourceAttr(name, "backups_schedule.#", "1"),
@@ -66,7 +65,6 @@ func TestAccVultrInstanceUpdate(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region", "sea"),
-					resource.TestCheckResourceAttr(name, "tag", "even better tag"),
 					resource.TestCheckResourceAttr(name, "tags.#", "2"),
 				),
 			},
@@ -81,7 +79,6 @@ func TestAccVultrInstanceUpdate(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region", "ewr"),
-					resource.TestCheckResourceAttr(name, "tag", "even better tag"),
 					resource.TestCheckResourceAttr(name, "tags.#", "2"),
 				),
 			},
@@ -110,7 +107,6 @@ func TestAccVultrInstanceUpdateFirewall(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region", "sea"),
-					resource.TestCheckResourceAttr(name, "tag", "even better tag"),
 					resource.TestCheckResourceAttr(name, "tags.#", "2"),
 				),
 			},
@@ -125,7 +121,6 @@ func TestAccVultrInstanceUpdateFirewall(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region", "sea"),
-					resource.TestCheckResourceAttr(name, "tag", "even better tag"),
 					resource.TestCheckResourceAttr(name, "tags.#", "2"),
 					resource.TestCheckResourceAttrSet(name, "firewall_group_id"),
 				),
@@ -153,7 +148,6 @@ func TestAccVultrInstanceUpdateVPCIDs(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region", "sea"),
-					resource.TestCheckResourceAttr(name, "tag", "even better tag"),
 					resource.TestCheckResourceAttr(name, "tags.#", "2"),
 				),
 			},
@@ -166,7 +160,6 @@ func TestAccVultrInstanceUpdateVPCIDs(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region", "sea"),
-					resource.TestCheckResourceAttr(name, "tag", "even better tag"),
 					resource.TestCheckResourceAttr(name, "tags.#", "2"),
 					resource.TestCheckResourceAttr(name, "vpc_ids.#", "2"),
 				),
@@ -194,7 +187,6 @@ func TestAccVultrInstanceUpdateTags(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region", "sea"),
-					resource.TestCheckResourceAttr(name, "tag", "even better tag"),
 					resource.TestCheckResourceAttr(name, "tags.#", "2"),
 				),
 			},
@@ -207,7 +199,6 @@ func TestAccVultrInstanceUpdateTags(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "status", "active"),
 					resource.TestCheckResourceAttr(name, "power_status", "running"),
 					resource.TestCheckResourceAttr(name, "region", "sea"),
-					resource.TestCheckResourceAttr(name, "tag", "even better tag"),
 					resource.TestCheckResourceAttr(name, "tags.#", "3"),
 				),
 			},
@@ -246,7 +237,6 @@ func testAccVultrInstanceBase(name string) string {
 			enable_ipv6 = true
 			activation_email = false
 			ddos_protection = true
-			tag = "even better tag"
 			tags = [ "test tag", "another test" ]
 			backups = "enabled"
 			backups_schedule{
@@ -268,7 +258,6 @@ func testAccVultrInstanceBaseUpdateFirewall(name string) string {
 			enable_ipv6 = true
 			activation_email = false
 			ddos_protection = true
-			tag = "even better tag"
 			tags = [ "test tag", "another test" ]
 			firewall_group_id = "${vultr_firewall_group.fwg.id}"
 		}
@@ -304,7 +293,6 @@ func testAccVultrInstanceBaseUpdateVPCIDs(name string) string {
 		enable_ipv6 = true
 		activation_email = false
 		ddos_protection = true
-		tag = "even better tag"
 		tags = [ "test tag", "another test" ]
 		vpc_ids = ["${vultr_vpc.foo.id}","${vultr_vpc.bar.id}"]
 	}
@@ -322,7 +310,6 @@ func testAccVultrInstanceBaseUpdatedRegion(name string) string {
 			enable_ipv6 = true
 			activation_email = false
 			ddos_protection = true
-			tag = "even better tag"
 			tags = [ "test tag", "another test" ]
 		} `, name)
 }
@@ -338,7 +325,6 @@ func testAccVultrInstanceBaseUpdateTags(name string) string {
 			enable_ipv6 = true
 			activation_email = false
 			ddos_protection = true
-			tag = "even better tag"
 			tags = [ "test tag", "another test", "another another tag" ]
 			backups = "enabled"
 			backups_schedule{

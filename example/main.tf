@@ -22,7 +22,7 @@ resource "vultr_instance" "my_instance" {
   enable_private_network = true
   activation_email       = false
   ddos_protection        = true
-  tag                    = "tag"
+  tags                   = ["my_tag"]
   firewall_group_id      = vultr_firewall_group.fwg.id
   backups_type {
     type = "daily"

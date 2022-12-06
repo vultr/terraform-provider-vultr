@@ -29,7 +29,6 @@ func TestAccDataSourceVultrBareMetalServer(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "gateway_v4"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "plan"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "label"),
-					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "tag"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "os_id"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "app_id"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "v6_network"),
@@ -51,7 +50,6 @@ func testAccCheckVultrBareMetalServer(label string) string {
 			enable_ipv6 = true
 			activation_email = false
 			label = "%s"
-			tag = "bms-tag"
 		}
 
 		data "vultr_bare_metal_server" "server" {
