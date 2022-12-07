@@ -42,7 +42,6 @@ func testAccDataSourceVultrSnapshotBase(vpsLabel, desc string) string {
 			os_id = "167"
 			label = "%s"
 			hostname = "testing-the-hostname"
-			tag = "even better tag"
 		}
 
 		resource "vultr_snapshot" "foo" {
