@@ -108,18 +108,35 @@ func dataSourceVultrBareMetalPlanRead(ctx context.Context, d *schema.ResourceDat
 	}
 
 	d.SetId(planList[0].ID)
-	d.Set("cpu_count", planList[0].CPUCount)
-	d.Set("cpu_model", planList[0].CPUModel)
-	d.Set("cpu_threads", planList[0].CPUThreads)
-	d.Set("ram", planList[0].RAM)
-	d.Set("disk", planList[0].Disk)
-	d.Set("bandwidth", planList[0].Bandwidth)
-	d.Set("monthly_cost", planList[0].MonthlyCost)
-	d.Set("type", planList[0].Type)
-	d.Set("disk_count", planList[0].DiskCount)
-
+	if err := d.Set("cpu_count", planList[0].CPUCount); err != nil {
+		return diag.Errorf("unable to set bare_metal_plan `cpu_count` read value: %v", err)
+	}
+	if err := d.Set("cpu_model", planList[0].CPUModel); err != nil {
+		return diag.Errorf("unable to set bare_metal_plan `cpu_model` read value: %v", err)
+	}
+	if err := d.Set("cpu_threads", planList[0].CPUThreads); err != nil {
+		return diag.Errorf("unable to set bare_metal_plan `cpu_threads` read value: %v", err)
+	}
+	if err := d.Set("ram", planList[0].RAM); err != nil {
+		return diag.Errorf("unable to set bare_metal_plan `ram` read value: %v", err)
+	}
+	if err := d.Set("disk", planList[0].Disk); err != nil {
+		return diag.Errorf("unable to set bare_metal_plan `disk` read value: %v", err)
+	}
+	if err := d.Set("bandwidth", planList[0].Bandwidth); err != nil {
+		return diag.Errorf("unable to set bare_metal_plan `bandwidth` read value: %v", err)
+	}
+	if err := d.Set("monthly_cost", planList[0].MonthlyCost); err != nil {
+		return diag.Errorf("unable to set bare_metal_plan `monthly_cost` read value: %v", err)
+	}
+	if err := d.Set("type", planList[0].Type); err != nil {
+		return diag.Errorf("unable to set bare_metal_plan `type` read value: %v", err)
+	}
+	if err := d.Set("disk_count", planList[0].DiskCount); err != nil {
+		return diag.Errorf("unable to set bare_metal_plan `disk_count` read value: %v", err)
+	}
 	if err := d.Set("locations", planList[0].Locations); err != nil {
-		return diag.Errorf("error setting `locations`: %#v", err)
+		return diag.Errorf("unable to set bare_metal_plan `locations` read value: %#v", err)
 	}
 
 	return nil

@@ -106,17 +106,35 @@ func dataSourceVultrPlanRead(ctx context.Context, d *schema.ResourceData, meta i
 	}
 
 	d.SetId(planList[0].ID)
-	d.Set("vcpu_count", planList[0].VCPUCount)
-	d.Set("ram", planList[0].RAM)
-	d.Set("disk", planList[0].Disk)
-	d.Set("bandwidth", planList[0].Bandwidth)
-	d.Set("monthly_cost", planList[0].MonthlyCost)
-	d.Set("disk_count", planList[0].DiskCount)
-	d.Set("type", planList[0].Type)
-	d.Set("gpu_vram", planList[0].GPUVRAM)
-	d.Set("gpu_type", planList[0].GPUType)
+	if err := d.Set("vcpu_count", planList[0].VCPUCount); err != nil {
+		return diag.Errorf("unable to set plan `vcpu_count` read value: %v", err)
+	}
+	if err := d.Set("ram", planList[0].RAM); err != nil {
+		return diag.Errorf("unable to set plan `ram` read value: %v", err)
+	}
+	if err := d.Set("disk", planList[0].Disk); err != nil {
+		return diag.Errorf("unable to set plan `disk` read value: %v", err)
+	}
+	if err := d.Set("bandwidth", planList[0].Bandwidth); err != nil {
+		return diag.Errorf("unable to set plan `bandwidth` read value: %v", err)
+	}
+	if err := d.Set("monthly_cost", planList[0].MonthlyCost); err != nil {
+		return diag.Errorf("unable to set plan `monthly_cost` read value: %v", err)
+	}
+	if err := d.Set("disk_count", planList[0].DiskCount); err != nil {
+		return diag.Errorf("unable to set plan `disk_count` read value: %v", err)
+	}
+	if err := d.Set("type", planList[0].Type); err != nil {
+		return diag.Errorf("unable to set plan `type` read value: %v", err)
+	}
+	if err := d.Set("gpu_vram", planList[0].GPUVRAM); err != nil {
+		return diag.Errorf("unable to set plan `gpu_vram` read value: %v", err)
+	}
+	if err := d.Set("gpu_type", planList[0].GPUType); err != nil {
+		return diag.Errorf("unable to set plan `gpu_type` read value: %v", err)
+	}
 	if err := d.Set("locations", planList[0].Locations); err != nil {
-		return diag.Errorf("error setting `available_locations`: %#v", err)
+		return diag.Errorf("unable to set plan `available_locations` read value: %v", err)
 	}
 	return nil
 }

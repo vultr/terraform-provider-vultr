@@ -61,7 +61,7 @@ func testAccCheckVultrNetworkDestroy(s *terraform.State) error {
 		networkID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		_, err := client.Network.Get(context.Background(), networkID)
+		_, err := client.Network.Get(context.Background(), networkID) // nolint
 		if err == nil {
 			return fmt.Errorf("network still exists: %s", networkID)
 		}
@@ -83,7 +83,7 @@ func testAccCheckVultrNetworkExists(n string) resource.TestCheckFunc {
 		networkID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		_, err := client.Network.Get(context.Background(), networkID)
+		_, err := client.Network.Get(context.Background(), networkID) // nolint
 		if err != nil {
 			return fmt.Errorf("network does not exist: %s", networkID)
 		}

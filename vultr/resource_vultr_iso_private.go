@@ -93,12 +93,24 @@ func resourceVultrIsoRead(ctx context.Context, d *schema.ResourceData, meta inte
 		return diag.Errorf("Error getting ISO %s : %v", d.Id(), err)
 	}
 
-	d.Set("date_created", iso.DateCreated)
-	d.Set("filename", iso.FileName)
-	d.Set("size", iso.Size)
-	d.Set("md5sum", iso.MD5Sum)
-	d.Set("sha512sum", iso.SHA512Sum)
-	d.Set("status", iso.Status)
+	if err := d.Set("date_created", iso.DateCreated); err != nil {
+		return diag.Errorf("unable to set resource iso_private `date_created` read value: %v", err)
+	}
+	if err := d.Set("filename", iso.FileName); err != nil {
+		return diag.Errorf("unable to set resource iso_private `filename` read value: %v", err)
+	}
+	if err := d.Set("size", iso.Size); err != nil {
+		return diag.Errorf("unable to set resource iso_private `size` read value: %v", err)
+	}
+	if err := d.Set("md5sum", iso.MD5Sum); err != nil {
+		return diag.Errorf("unable to set resource iso_private `md5sum` read value: %v", err)
+	}
+	if err := d.Set("sha512sum", iso.SHA512Sum); err != nil {
+		return diag.Errorf("unable to set resource iso_private `sha512sum` read value: %v", err)
+	}
+	if err := d.Set("status", iso.Status); err != nil {
+		return diag.Errorf("unable to set resource iso_private `status` read value: %v", err)
+	}
 
 	return nil
 }

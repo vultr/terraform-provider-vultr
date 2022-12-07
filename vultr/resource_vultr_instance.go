@@ -357,7 +357,9 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	d.SetId(instance.ID)
-	d.Set("default_password", instance.DefaultPassword)
+	if err := d.Set("default_password", instance.DefaultPassword); err != nil {
+		return diag.Errorf("unable to set resource instance `default_password` create value: %v", err)
+	}
 
 	if _, err = waitForServerAvailable(ctx, d, "active", []string{"pending", "installing"}, "status", meta); err != nil {
 		return diag.Errorf("error while waiting for Server %s to be completed: %s", d.Id(), err)
@@ -390,38 +392,90 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("error getting instance (%s): %v", d.Id(), err)
 	}
 
-	d.Set("os", instance.Os)
-	d.Set("ram", instance.RAM)
-	d.Set("disk", instance.Disk)
-	d.Set("main_ip", instance.MainIP)
-	d.Set("vcpu_count", instance.VCPUCount)
-	d.Set("date_created", instance.DateCreated)
-	d.Set("status", instance.Status)
-	d.Set("allowed_bandwidth", instance.AllowedBandwidth)
-	d.Set("netmask_v4", instance.NetmaskV4)
-	d.Set("gateway_v4", instance.GatewayV4)
-	d.Set("power_status", instance.PowerStatus)
-	d.Set("server_status", instance.ServerStatus)
-	d.Set("internal_ip", instance.InternalIP)
-	d.Set("kvm", instance.KVM)
-	d.Set("v6_network", instance.V6Network)
-	d.Set("v6_main_ip", instance.V6MainIP)
-	d.Set("v6_network_size", instance.V6NetworkSize)
-	d.Set("tags", instance.Tags)
-	d.Set("firewall_group_id", instance.FirewallGroupID)
-	d.Set("region", instance.Region)
-	d.Set("plan", instance.Plan)
-	d.Set("os_id", instance.OsID)
-	d.Set("app_id", instance.AppID)
-	d.Set("features", instance.Features)
-	d.Set("hostname", instance.Hostname)
+	if err := d.Set("os", instance.Os); err != nil {
+		return diag.Errorf("unable to set resource instance `os` read value: %v", err)
+	}
+	if err := d.Set("ram", instance.RAM); err != nil {
+		return diag.Errorf("unable to set resource instance `ram` read value: %v", err)
+	}
+	if err := d.Set("disk", instance.Disk); err != nil {
+		return diag.Errorf("unable to set resource instance `disk` read value: %v", err)
+	}
+	if err := d.Set("main_ip", instance.MainIP); err != nil {
+		return diag.Errorf("unable to set resource instance `main_ip` read value: %v", err)
+	}
+	if err := d.Set("vcpu_count", instance.VCPUCount); err != nil {
+		return diag.Errorf("unable to set resource instance `vcpu_count` read value: %v", err)
+	}
+	if err := d.Set("date_created", instance.DateCreated); err != nil {
+		return diag.Errorf("unable to set resource instance `date_created` read value: %v", err)
+	}
+	if err := d.Set("status", instance.Status); err != nil {
+		return diag.Errorf("unable to set resource instance `status` read value: %v", err)
+	}
+	if err := d.Set("allowed_bandwidth", instance.AllowedBandwidth); err != nil {
+		return diag.Errorf("unable to set resource instance `allowed_bandwidth` read value: %v", err)
+	}
+	if err := d.Set("netmask_v4", instance.NetmaskV4); err != nil {
+		return diag.Errorf("unable to set resource instance `netmask_v4` read value: %v", err)
+	}
+	if err := d.Set("gateway_v4", instance.GatewayV4); err != nil {
+		return diag.Errorf("unable to set resource instance `gateway_v4` read value: %v", err)
+	}
+	if err := d.Set("power_status", instance.PowerStatus); err != nil {
+		return diag.Errorf("unable to set resource instance `power_status` read value: %v", err)
+	}
+	if err := d.Set("server_status", instance.ServerStatus); err != nil {
+		return diag.Errorf("unable to set resource instance `server_status` read value: %v", err)
+	}
+	if err := d.Set("internal_ip", instance.InternalIP); err != nil {
+		return diag.Errorf("unable to set resource instance `internal_ip` read value: %v", err)
+	}
+	if err := d.Set("kvm", instance.KVM); err != nil {
+		return diag.Errorf("unable to set resource instance `kvm` read value: %v", err)
+	}
+	if err := d.Set("v6_network", instance.V6Network); err != nil {
+		return diag.Errorf("unable to set resource instance `v6_network` read value: %v", err)
+	}
+	if err := d.Set("v6_main_ip", instance.V6MainIP); err != nil {
+		return diag.Errorf("unable to set resource instance `v6_main_ip` read value: %v", err)
+	}
+	if err := d.Set("v6_network_size", instance.V6NetworkSize); err != nil {
+		return diag.Errorf("unable to set resource instance `v6_network_size` read value: %v", err)
+	}
+	if err := d.Set("tags", instance.Tags); err != nil {
+		return diag.Errorf("unable to set resource instance `tags` read value: %v", err)
+	}
+	if err := d.Set("firewall_group_id", instance.FirewallGroupID); err != nil {
+		return diag.Errorf("unable to set resource instance `firewall_group_id` read value: %v", err)
+	}
+	if err := d.Set("region", instance.Region); err != nil {
+		return diag.Errorf("unable to set resource instance `region` read value: %v", err)
+	}
+	if err := d.Set("plan", instance.Plan); err != nil {
+		return diag.Errorf("unable to set resource instance `plan` read value: %v", err)
+	}
+	if err := d.Set("os_id", instance.OsID); err != nil {
+		return diag.Errorf("unable to set resource instance `os_id` read value: %v", err)
+	}
+	if err := d.Set("app_id", instance.AppID); err != nil {
+		return diag.Errorf("unable to set resource instance `app_id` read value: %v", err)
+	}
+	if err := d.Set("features", instance.Features); err != nil {
+		return diag.Errorf("unable to set resource instance `features` read value: %v", err)
+	}
+	if err := d.Set("hostname", instance.Hostname); err != nil {
+		return diag.Errorf("unable to set resource instance `hostname` read value: %v", err)
+	}
 
 	backup, err := client.Instance.GetBackupSchedule(ctx, d.Id())
 	if err != nil {
 		return diag.Errorf("error getting backup schedule: %v", err)
 	}
 
-	d.Set("backups", backupStatus(backup.Enabled))
+	if err := d.Set("backups", backupStatus(backup.Enabled)); err != nil {
+		return diag.Errorf("unable to set resource instance `backups` read value: %v", err)
+	}
 
 	if backupStatus(backup.Enabled) != "disabled" {
 		var bs []map[string]interface{}
@@ -434,10 +488,12 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		bs = append(bs, backupScheduleInfo)
 
 		if err := d.Set("backups_schedule", bs); err != nil {
-			return diag.Errorf("error setting `backups_schedule`: %v", err)
+			return diag.Errorf("unable to set resource instance `backups_schedule` read value: %v", err)
 		}
 	} else {
-		d.Set("backups_schedule", nil)
+		if err := d.Set("backups_schedule", nil); err != nil {
+			return diag.Errorf("unable to set resource instance `backups_schedule` read value: %v", err)
+		}
 	}
 
 	vpcs, err := getVPCs(client, d.Id())
@@ -449,15 +505,23 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 	// only one of these values is populated when a VPC or PN is defined for
 	// the instance
 	if _, pnUpdate := d.GetOk("private_network_ids"); pnUpdate {
-		d.Set("private_network_ids", vpcs)
-		d.Set("vpc_ids", nil)
+		if err := d.Set("private_network_ids", vpcs); err != nil {
+			return diag.Errorf("unable to set resource instance `private_network_ids` read value: %v", err)
+		}
+		if err := d.Set("vpc_ids", nil); err != nil {
+			return diag.Errorf("unable to set resource instance `vpc_ids` read value: %v", err)
+		}
 	}
 
 	// Since VPC is last, if an instance read invloves both vpc_ids &
 	// private_network_ids, only the vpc_ids will be preserved
 	if _, vpcUpdate := d.GetOk("vpc_ids"); vpcUpdate {
-		d.Set("vpc_ids", vpcs)
-		d.Set("private_network_ids", nil)
+		if err := d.Set("vpc_ids", vpcs); err != nil {
+			return diag.Errorf("unable to set resource instance `vpc_ids` read value: %v", err)
+		}
+		if err := d.Set("private_network_ids", nil); err != nil {
+			return diag.Errorf("unable to set resource instance `private_network_ids` read value: %v", err)
+		}
 	}
 
 	return nil
@@ -517,14 +581,8 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 			newIDs = append(newIDs, v.(string))
 		}
 
-		for _, v := range diffSlice(oldIDs, newIDs) {
-			req.AttachPrivateNetwork = append(req.AttachPrivateNetwork, v)
-		}
-
-		for _, v := range diffSlice(newIDs, oldIDs) {
-			req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, v)
-		}
-
+		req.AttachPrivateNetwork = append(req.AttachPrivateNetwork, diffSlice(oldIDs, newIDs)...) // nolint
+		req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, diffSlice(newIDs, oldIDs)...) // nolint
 	}
 
 	if d.HasChange("vpc_ids") {
@@ -541,13 +599,8 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 			newIDs = append(newIDs, v.(string))
 		}
 
-		for _, v := range diffSlice(oldIDs, newIDs) {
-			req.AttachVPC = append(req.AttachVPC, v)
-		}
-
-		for _, v := range diffSlice(newIDs, oldIDs) {
-			req.DetachVPC = append(req.DetachVPC, v)
-		}
+		req.AttachVPC = append(req.AttachVPC, diffSlice(oldIDs, newIDs)...)
+		req.DetachVPC = append(req.DetachVPC, diffSlice(newIDs, oldIDs)...)
 	}
 
 	if d.HasChange("tags") {
@@ -607,7 +660,7 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
 		detach := &govultr.InstanceUpdateReq{}
 		for _, v := range networkIDs.(*schema.Set).List() {
-			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string))
+			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string)) // nolint
 		}
 
 		if _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
@@ -637,7 +690,7 @@ func optionCheck(options map[string]bool) (string, error) {
 
 	var result []string
 	for k, v := range options {
-		if v == true {
+		if v {
 			result = append(result, k)
 		}
 	}

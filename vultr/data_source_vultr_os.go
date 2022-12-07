@@ -76,8 +76,14 @@ func dataSourceVultrOSRead(ctx context.Context, d *schema.ResourceData, meta int
 	}
 
 	d.SetId(strconv.Itoa(osList[0].ID))
-	d.Set("name", osList[0].Name)
-	d.Set("arch", osList[0].Arch)
-	d.Set("family", osList[0].Family)
+	if err := d.Set("name", osList[0].Name); err != nil {
+		return diag.Errorf("unable to set os `name` read value: %v", err)
+	}
+	if err := d.Set("arch", osList[0].Arch); err != nil {
+		return diag.Errorf("unable to set os `arch` read value: %v", err)
+	}
+	if err := d.Set("family", osList[0].Family); err != nil {
+		return diag.Errorf("unable to set os `family` read value: %v", err)
+	}
 	return nil
 }

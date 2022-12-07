@@ -64,7 +64,7 @@ func resourceVultrNetworkCreate(ctx context.Context, d *schema.ResourceData, met
 		V4SubnetMask: d.Get("v4_subnet_mask").(int),
 	}
 
-	network, err := client.Network.Create(ctx, networkReq)
+	network, err := client.Network.Create(ctx, networkReq) // nolint
 	if err != nil {
 		return diag.Errorf("error creating network: %v", err)
 	}
@@ -78,7 +78,7 @@ func resourceVultrNetworkCreate(ctx context.Context, d *schema.ResourceData, met
 func resourceVultrNetworkRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	network, err := client.Network.Get(ctx, d.Id())
+	network, err := client.Network.Get(ctx, d.Id()) // nolint
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid private network ID") {
 			log.Printf("[WARN] Vultr Private Network (%s) not found", d.Id())
@@ -88,11 +88,21 @@ func resourceVultrNetworkRead(ctx context.Context, d *schema.ResourceData, meta 
 		return diag.Errorf("error getting private network: %v", err)
 	}
 
-	d.Set("region", network.Region)
-	d.Set("description", network.Description)
-	d.Set("v4_subnet", network.V4Subnet)
-	d.Set("v4_subnet_mask", network.V4SubnetMask)
-	d.Set("date_created", network.DateCreated)
+	if err := d.Set("region", network.Region); err != nil {
+		return diag.Errorf("unable to set resource private_network `region` read value: %v", err)
+	}
+	if err := d.Set("description", network.Description); err != nil {
+		return diag.Errorf("unable to set resource private_network `description` read value: %v", err)
+	}
+	if err := d.Set("v4_subnet", network.V4Subnet); err != nil {
+		return diag.Errorf("unable to set resource private_network `v4_subnet` read value: %v", err)
+	}
+	if err := d.Set("v4_subnet_mask", network.V4SubnetMask); err != nil {
+		return diag.Errorf("unable to set resource private_network `v4_subnet_mask` read value: %v", err)
+	}
+	if err := d.Set("date_created", network.DateCreated); err != nil {
+		return diag.Errorf("unable to set resource private_network `date_created` read value: %v", err)
+	}
 
 	return nil
 }
@@ -100,7 +110,7 @@ func resourceVultrNetworkRead(ctx context.Context, d *schema.ResourceData, meta 
 func resourceVultrNetworkUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	if err := client.Network.Update(ctx, d.Id(), d.Get("description").(string)); err != nil {
+	if err := client.Network.Update(ctx, d.Id(), d.Get("description").(string)); err != nil { // nolint
 		return diag.Errorf("error update private network: %v", err)
 	}
 
@@ -111,7 +121,7 @@ func resourceVultrNetworkDelete(ctx context.Context, d *schema.ResourceData, met
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting Network: %s", d.Id())
-	if err := client.Network.Delete(ctx, d.Id()); err != nil {
+	if err := client.Network.Delete(ctx, d.Id()); err != nil { // nolint
 		return diag.Errorf("error destroying private network (%s): %v", d.Id(), err)
 	}
 

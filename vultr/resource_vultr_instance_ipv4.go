@@ -60,7 +60,9 @@ func resourceVultrInstanceIPV4Create(ctx context.Context, d *schema.ResourceData
 	}
 
 	d.SetId(ip.IP)
-	d.Set("instance_id", instanceID)
+	if err := d.Set("instance_id", instanceID); err != nil {
+		return diag.Errorf("unable to set resource instance_ipv4 `instance_id` create value: %v", err)
+	}
 
 	return resourceVultrInstanceIPV4Read(ctx, d, meta)
 }
@@ -100,10 +102,18 @@ func resourceVultrInstanceIPV4Read(ctx context.Context, d *schema.ResourceData, 
 		return nil
 	}
 
-	d.Set("ip", ipv4.IP)
-	d.Set("instance_id", instanceID)
-	d.Set("reverse", ipv4.Reverse)
-	d.Set("reboot", d.Get("reboot").(bool))
+	if err := d.Set("ip", ipv4.IP); err != nil {
+		return diag.Errorf("unable to set resource instance_ipv4 `ip` read value: %v", err)
+	}
+	if err := d.Set("instance_id", instanceID); err != nil {
+		return diag.Errorf("unable to set resource instance_ipv4 `instance_id` read value: %v", err)
+	}
+	if err := d.Set("reverse", ipv4.Reverse); err != nil {
+		return diag.Errorf("unable to set resource instance_ipv4 `reverse` read value: %v", err)
+	}
+	if err := d.Set("reboot", d.Get("reboot").(bool)); err != nil {
+		return diag.Errorf("unable to set resource instance_ipv4 `reboot` read value: %v", err)
+	}
 
 	return nil
 }

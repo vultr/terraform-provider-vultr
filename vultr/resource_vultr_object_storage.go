@@ -93,15 +93,33 @@ func resourceVultrObjectStorageRead(ctx context.Context, d *schema.ResourceData,
 		return diag.Errorf("error getting object storage account: %v", err)
 	}
 
-	d.Set("date_created", obj.DateCreated)
-	d.Set("cluster_id", obj.ObjectStoreClusterID)
-	d.Set("label", obj.Label)
-	d.Set("location", obj.Location)
-	d.Set("region", obj.Region)
-	d.Set("status", obj.Status)
-	d.Set("s3_hostname", obj.S3Hostname)
-	d.Set("s3_access_key", obj.S3AccessKey)
-	d.Set("s3_secret_key", obj.S3SecretKey)
+	if err := d.Set("date_created", obj.DateCreated); err != nil {
+		return diag.Errorf("unable to set resource object_storage `date_created` read value: %v", err)
+	}
+	if err := d.Set("cluster_id", obj.ObjectStoreClusterID); err != nil {
+		return diag.Errorf("unable to set resource object_storage `cluster_id` read value: %v", err)
+	}
+	if err := d.Set("label", obj.Label); err != nil {
+		return diag.Errorf("unable to set resource object_storage `label` read value: %v", err)
+	}
+	if err := d.Set("location", obj.Location); err != nil {
+		return diag.Errorf("unable to set resource object_storage `location` read value: %v", err)
+	}
+	if err := d.Set("region", obj.Region); err != nil {
+		return diag.Errorf("unable to set resource object_storage `region` read value: %v", err)
+	}
+	if err := d.Set("status", obj.Status); err != nil {
+		return diag.Errorf("unable to set resource object_storage `status` read value: %v", err)
+	}
+	if err := d.Set("s3_hostname", obj.S3Hostname); err != nil {
+		return diag.Errorf("unable to set resource object_storage `s3_hostname` read value: %v", err)
+	}
+	if err := d.Set("s3_access_key", obj.S3AccessKey); err != nil {
+		return diag.Errorf("unable to set resource object_storage `s3_access_key` read value: %v", err)
+	}
+	if err := d.Set("s3_secret_key", obj.S3SecretKey); err != nil {
+		return diag.Errorf("unable to set resource object_storage `s3_secret_key` read value: %v", err)
+	}
 
 	return nil
 }

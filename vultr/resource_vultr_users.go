@@ -77,7 +77,9 @@ func resourceVultrUsersCreate(ctx context.Context, d *schema.ResourceData, meta 
 	}
 
 	d.SetId(user.ID)
-	d.Set("api_key", user.APIKey)
+	if err := d.Set("api_key", user.APIKey); err != nil {
+		return diag.Errorf("unable to set resource user `api_key` create value: %v", err)
+	}
 
 	return resourceVultrUsersRead(ctx, d, meta)
 }
@@ -90,11 +92,17 @@ func resourceVultrUsersRead(ctx context.Context, d *schema.ResourceData, meta in
 		return diag.Errorf("error getting user: %v", err)
 	}
 
-	d.Set("name", user.Name)
-	d.Set("email", user.Email)
-	d.Set("api_enabled", user.APIEnabled)
+	if err := d.Set("name", user.Name); err != nil {
+		return diag.Errorf("unable to set resource user `name` read value: %v", err)
+	}
+	if err := d.Set("email", user.Email); err != nil {
+		return diag.Errorf("unable to set resource user `email` read value: %v", err)
+	}
+	if err := d.Set("api_enabled", user.APIEnabled); err != nil {
+		return diag.Errorf("unable to set resource user `api_enabled` read value: %v", err)
+	}
 	if err := d.Set("acl", user.ACL); err != nil {
-		return diag.Errorf("error setting `acl`: %#v", err)
+		return diag.Errorf("unable to set resource user `acl` read value: %v", err)
 	}
 
 	return nil

@@ -115,13 +115,27 @@ func resourceVultrFirewallRuleRead(ctx context.Context, d *schema.ResourceData, 
 		return diag.Errorf("error getting firewall rule %s: %v", d.Get("firewall_group_id").(string), err)
 	}
 
-	d.Set("ip_type", fw.IPType)
-	d.Set("protocol", fw.Protocol)
-	d.Set("subnet", fw.Subnet)
-	d.Set("subnet_size", fw.SubnetSize)
-	d.Set("notes", fw.Notes)
-	d.Set("port", fw.Port)
-	d.Set("source", fw.Source)
+	if err := d.Set("ip_type", fw.IPType); err != nil {
+		return diag.Errorf("unable to set resource firewall_rule `ip_type` read value: %v", err)
+	}
+	if err := d.Set("protocol", fw.Protocol); err != nil {
+		return diag.Errorf("unable to set resource firewall_rule `protocol` read value: %v", err)
+	}
+	if err := d.Set("subnet", fw.Subnet); err != nil {
+		return diag.Errorf("unable to set resource firewall_rule `subnet` read value: %v", err)
+	}
+	if err := d.Set("subnet_size", fw.SubnetSize); err != nil {
+		return diag.Errorf("unable to set resource firewall_rule `subnet_size` read value: %v", err)
+	}
+	if err := d.Set("notes", fw.Notes); err != nil {
+		return diag.Errorf("unable to set resource firewall_rule `notes` read value: %v", err)
+	}
+	if err := d.Set("port", fw.Port); err != nil {
+		return diag.Errorf("unable to set resource firewall_rule `port` read value: %v", err)
+	}
+	if err := d.Set("source", fw.Source); err != nil {
+		return diag.Errorf("unable to set resource firewall_rule `source` read value: %v", err)
+	}
 
 	return nil
 }
@@ -159,6 +173,8 @@ func resourceVultrFirewallRuleImport(ctx context.Context, d *schema.ResourceData
 	}
 
 	d.SetId(strconv.Itoa(fw.ID))
-	d.Set("firewall_group_id", fwGroup)
+	if err := d.Set("firewall_group_id", fwGroup); err != nil {
+		return nil, fmt.Errorf("unable to set resource firewall_rule `firewall_group_id` import value: %v", err)
+	}
 	return []*schema.ResourceData{d}, nil
 }

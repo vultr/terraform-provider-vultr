@@ -1,7 +1,6 @@
 package vultr
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -27,11 +26,11 @@ func TestAccVultrObjectStorageCluster(t *testing.T) {
 }
 
 func testAccCheckVultrObjectStorageCluster() string {
-	return fmt.Sprintf(`
+	return `
 		data "vultr_object_storage_cluster" "s3" {
 			filter {
 				name = "region"
 				values = ["ewr"]
 			}
-		}`)
+		}`
 }

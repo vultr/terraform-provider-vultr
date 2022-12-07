@@ -16,8 +16,8 @@ Create a new Startup Script
 
 ```hcl
 resource "vultr_startup_script" "my_script" {
-    name = "man_run_docs"
-    script = "echo $PATH"
+    name = "echo_path"
+    script = "ZWNobyAkUEFUSAo="
 }
 ```
 

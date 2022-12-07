@@ -119,19 +119,38 @@ func dataSourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	d.SetId(k8List[0].ID)
-	d.Set("label", k8List[0].Label)
-	d.Set("date_created", k8List[0].DateCreated)
-	d.Set("cluster_subnet", k8List[0].ClusterSubnet)
-	d.Set("service_subnet", k8List[0].ServiceSubnet)
-	d.Set("ip", k8List[0].IP)
-	d.Set("endpoint", k8List[0].Endpoint)
-	d.Set("version", k8List[0].Version)
-	d.Set("region", k8List[0].Region)
-	d.Set("status", k8List[0].Status)
-	d.Set("kube_config", kubeConfig.KubeConfig)
-
+	if err := d.Set("label", k8List[0].Label); err != nil {
+		return diag.Errorf("unable to set kubernetes `label` read value: %v", err)
+	}
+	if err := d.Set("date_created", k8List[0].DateCreated); err != nil {
+		return diag.Errorf("unable to set kubernetes `date_created` read value: %v", err)
+	}
+	if err := d.Set("cluster_subnet", k8List[0].ClusterSubnet); err != nil {
+		return diag.Errorf("unable to set kubernetes `cluster_subnet` read value: %v", err)
+	}
+	if err := d.Set("service_subnet", k8List[0].ServiceSubnet); err != nil {
+		return diag.Errorf("unable to set kubernetes `service_subnet` read value: %v", err)
+	}
+	if err := d.Set("ip", k8List[0].IP); err != nil {
+		return diag.Errorf("unable to set kubernetes `ip` read value: %v", err)
+	}
+	if err := d.Set("endpoint", k8List[0].Endpoint); err != nil {
+		return diag.Errorf("unable to set kubernetes `endpoint` read value: %v", err)
+	}
+	if err := d.Set("version", k8List[0].Version); err != nil {
+		return diag.Errorf("unable to set kubernetes `version` read value: %v", err)
+	}
+	if err := d.Set("region", k8List[0].Region); err != nil {
+		return diag.Errorf("unable to set kubernetes `region` read value: %v", err)
+	}
+	if err := d.Set("status", k8List[0].Status); err != nil {
+		return diag.Errorf("unable to set kubernetes `status` read value: %v", err)
+	}
+	if err := d.Set("kube_config", kubeConfig.KubeConfig); err != nil {
+		return diag.Errorf("unable to set kubernetes `kube_config` read value: %v", err)
+	}
 	if err := d.Set("node_pools", flattenNodePools(k8List[0].NodePools)); err != nil {
-		return diag.FromErr(err)
+		return diag.Errorf("unable to set kubernetes `node_pools` read value: %v", err)
 	}
 
 	return nil

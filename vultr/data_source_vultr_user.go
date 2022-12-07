@@ -80,11 +80,17 @@ func dataSourceVultrUserRead(ctx context.Context, d *schema.ResourceData, meta i
 	}
 
 	d.SetId(userList[0].ID)
-	d.Set("name", userList[0].Name)
-	d.Set("email", userList[0].Email)
-	d.Set("api_enabled", userList[0].APIEnabled)
+	if err := d.Set("name", userList[0].Name); err != nil {
+		return diag.Errorf("unable to set user `name` read value: %v", err)
+	}
+	if err := d.Set("email", userList[0].Email); err != nil {
+		return diag.Errorf("unable to set user `email` read value: %v", err)
+	}
+	if err := d.Set("api_enabled", userList[0].APIEnabled); err != nil {
+		return diag.Errorf("unable to set user `api_enabled` read value: %v", err)
+	}
 	if err := d.Set("acl", userList[0].ACL); err != nil {
-		return diag.Errorf("error setting `acl`: %#v", err)
+		return diag.Errorf("unable to set user `acl` read value: %v", err)
 	}
 	return nil
 }

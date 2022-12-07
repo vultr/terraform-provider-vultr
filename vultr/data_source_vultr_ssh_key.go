@@ -77,8 +77,14 @@ func dataSourceVultrSSHKeyRead(ctx context.Context, d *schema.ResourceData, meta
 	}
 
 	d.SetId(sshKeyList[0].ID)
-	d.Set("name", sshKeyList[0].Name)
-	d.Set("ssh_key", sshKeyList[0].SSHKey)
-	d.Set("date_created", sshKeyList[0].DateCreated)
+	if err := d.Set("name", sshKeyList[0].Name); err != nil {
+		return diag.Errorf("unable to set ssh_key `name` read value: %v", err)
+	}
+	if err := d.Set("ssh_key", sshKeyList[0].SSHKey); err != nil {
+		return diag.Errorf("unable to set ssh_key `ssh_key` read value: %v", err)
+	}
+	if err := d.Set("date_created", sshKeyList[0].DateCreated); err != nil {
+		return diag.Errorf("unable to set ssh_key `date_created` read value: %v", err)
+	}
 	return nil
 }

@@ -82,9 +82,15 @@ func dataSourceVultrObjectStorageClustersRead(ctx context.Context, d *schema.Res
 	}
 
 	d.SetId(strconv.Itoa(clusterList[0].ID))
-	d.Set("region", clusterList[0].Region)
-	d.Set("hostname", clusterList[0].Hostname)
-	d.Set("deploy", clusterList[0].Deploy)
+	if err := d.Set("region", clusterList[0].Region); err != nil {
+		return diag.Errorf("unable to set object_storage_cluster `region` read value: %v", err)
+	}
+	if err := d.Set("hostname", clusterList[0].Hostname); err != nil {
+		return diag.Errorf("unable to set object_storage_cluster `hostname` read value: %v", err)
+	}
+	if err := d.Set("deploy", clusterList[0].Deploy); err != nil {
+		return diag.Errorf("unable to set object_storage_cluster `deploy` read value: %v", err)
+	}
 
 	return nil
 }

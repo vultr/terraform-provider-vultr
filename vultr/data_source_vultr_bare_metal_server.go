@@ -151,27 +151,69 @@ func dataSourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceD
 	}
 
 	d.SetId(serverList[0].ID)
-	d.Set("os", serverList[0].Os)
-	d.Set("ram", serverList[0].RAM)
-	d.Set("disk", serverList[0].Disk)
-	d.Set("main_ip", serverList[0].MainIP)
-	d.Set("cpu_count", serverList[0].CPUCount)
-	d.Set("region", serverList[0].Region)
-	d.Set("date_created", serverList[0].DateCreated)
-	d.Set("status", serverList[0].Status)
-	d.Set("netmask_v4", serverList[0].NetmaskV4)
-	d.Set("gateway_v4", serverList[0].GatewayV4)
-	d.Set("plan", serverList[0].Plan)
-	d.Set("label", serverList[0].Label)
-	d.Set("tags", serverList[0].Tags)
-	d.Set("mac_address", serverList[0].MacAddress)
-	d.Set("os_id", serverList[0].OsID)
-	d.Set("app_id", serverList[0].AppID)
-	d.Set("image_id", serverList[0].ImageID)
-	d.Set("v6_network", serverList[0].V6Network)
-	d.Set("v6_main_ip", serverList[0].V6MainIP)
-	d.Set("v6_network_size", serverList[0].V6NetworkSize)
-	d.Set("features", serverList[0].Features)
+	if err := d.Set("os", serverList[0].Os); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `os` read value: %v", err)
+	}
+	if err := d.Set("ram", serverList[0].RAM); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `ram` read value: %v", err)
+	}
+	if err := d.Set("disk", serverList[0].Disk); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `disk` read value: %v", err)
+	}
+	if err := d.Set("main_ip", serverList[0].MainIP); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `main_ip` read value: %v", err)
+	}
+	if err := d.Set("cpu_count", serverList[0].CPUCount); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `cpu_count` read value: %v", err)
+	}
+	if err := d.Set("region", serverList[0].Region); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `region` read value: %v", err)
+	}
+	if err := d.Set("date_created", serverList[0].DateCreated); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `date_created` read value: %v", err)
+	}
+	if err := d.Set("status", serverList[0].Status); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `status` read value: %v", err)
+	}
+	if err := d.Set("netmask_v4", serverList[0].NetmaskV4); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `netmask_v4` read value: %v", err)
+	}
+	if err := d.Set("gateway_v4", serverList[0].GatewayV4); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `gateway_v4` read value: %v", err)
+	}
+	if err := d.Set("plan", serverList[0].Plan); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `plan` read value: %v", err)
+	}
+	if err := d.Set("label", serverList[0].Label); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `label` read value: %v", err)
+	}
+	if err := d.Set("tags", serverList[0].Tags); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `tags` read value: %v", err)
+	}
+	if err := d.Set("mac_address", serverList[0].MacAddress); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `mac_address` read value: %v", err)
+	}
+	if err := d.Set("os_id", serverList[0].OsID); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `os_id` read value: %v", err)
+	}
+	if err := d.Set("app_id", serverList[0].AppID); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `app_id` read value: %v", err)
+	}
+	if err := d.Set("image_id", serverList[0].ImageID); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `image_id` read value: %v", err)
+	}
+	if err := d.Set("v6_network", serverList[0].V6Network); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `v6_network` read value: %v", err)
+	}
+	if err := d.Set("v6_main_ip", serverList[0].V6MainIP); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `v6_main_ip` read value: %v", err)
+	}
+	if err := d.Set("v6_network_size", serverList[0].V6NetworkSize); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `v6_network_size` read value: %v", err)
+	}
+	if err := d.Set("features", serverList[0].Features); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `features` read value: %v", err)
+	}
 
 	return nil
 }

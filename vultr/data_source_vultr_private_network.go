@@ -52,7 +52,7 @@ func dataSourceVultrPrivateNetworkRead(ctx context.Context, d *schema.ResourceDa
 	options := &govultr.ListOptions{}
 
 	for {
-		networks, meta, err := client.Network.List(ctx, options)
+		networks, meta, err := client.Network.List(ctx, options) // nolint
 		if err != nil {
 			return diag.Errorf("error getting networks: %v", err)
 		}
@@ -87,11 +87,21 @@ func dataSourceVultrPrivateNetworkRead(ctx context.Context, d *schema.ResourceDa
 	}
 
 	d.SetId(networkList[0].NetworkID)
-	d.Set("region", networkList[0].Region)
-	d.Set("description", networkList[0].Description)
-	d.Set("date_created", networkList[0].DateCreated)
-	d.Set("v4_subnet", networkList[0].V4Subnet)
-	d.Set("v4_subnet_mask", networkList[0].V4SubnetMask)
+	if err := d.Set("region", networkList[0].Region); err != nil {
+		return diag.Errorf("unable to set private_network `region` read value: %v", err)
+	}
+	if err := d.Set("description", networkList[0].Description); err != nil {
+		return diag.Errorf("unable to set private_network `description` read value: %v", err)
+	}
+	if err := d.Set("date_created", networkList[0].DateCreated); err != nil {
+		return diag.Errorf("unable to set private_network `date_created` read value: %v", err)
+	}
+	if err := d.Set("v4_subnet", networkList[0].V4Subnet); err != nil {
+		return diag.Errorf("unable to set private_network `v4_subnet` read value: %v", err)
+	}
+	if err := d.Set("v4_subnet_mask", networkList[0].V4SubnetMask); err != nil {
+		return diag.Errorf("unable to set private_network `v4_subnet_mask` read value: %v", err)
+	}
 
 	return nil
 }

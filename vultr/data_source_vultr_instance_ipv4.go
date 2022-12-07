@@ -121,11 +121,21 @@ func dataSourceVultrInstanceIPV4Read(ctx context.Context, d *schema.ResourceData
 	}
 
 	d.SetId(result.IP)
-	d.Set("instance_id", resultInstanceID)
-	d.Set("ip", result.IP)
-	d.Set("reverse", result.Reverse)
-	d.Set("netmask", result.Netmask)
-	d.Set("gateway", result.Gateway)
+	if err := d.Set("instance_id", resultInstanceID); err != nil {
+		return diag.Errorf("unable to set instance_ipv4 `instance_id` read value: %v", err)
+	}
+	if err := d.Set("ip", result.IP); err != nil {
+		return diag.Errorf("unable to set instance_ipv4 `ip` read value: %v", err)
+	}
+	if err := d.Set("reverse", result.Reverse); err != nil {
+		return diag.Errorf("unable to set instance_ipv4 `reverse` read value: %v", err)
+	}
+	if err := d.Set("netmask", result.Netmask); err != nil {
+		return diag.Errorf("unable to set instance_ipv4 `netmask` read value: %v", err)
+	}
+	if err := d.Set("gateway", result.Gateway); err != nil {
+		return diag.Errorf("unable to set instance_ipv4 `gateway` read value: %v", err)
+	}
 
 	return nil
 }
