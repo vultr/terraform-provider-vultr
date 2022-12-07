@@ -171,7 +171,7 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	if err := d.Set("ipv6", lbList[0].IPV6); err != nil {
 		return diag.Errorf("unable to set load_balancer `ipv6` read value: %v", err)
 	}
-	if err := d.Set("private_network", lbList[0].GenericInfo.PrivateNetwork); err != nil {
+	if err := d.Set("private_network", lbList[0].GenericInfo.PrivateNetwork); err != nil { // nolint
 		return diag.Errorf("unable to set load_balancer `private_network` read value: %v", err)
 	}
 

@@ -581,8 +581,8 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 			newIDs = append(newIDs, v.(string))
 		}
 
-		req.AttachPrivateNetwork = append(req.AttachPrivateNetwork, diffSlice(oldIDs, newIDs)...)
-		req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, diffSlice(newIDs, oldIDs)...)
+		req.AttachPrivateNetwork = append(req.AttachPrivateNetwork, diffSlice(oldIDs, newIDs)...) // nolint
+		req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, diffSlice(newIDs, oldIDs)...) // nolint
 	}
 
 	if d.HasChange("vpc_ids") {
@@ -660,7 +660,7 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
 		detach := &govultr.InstanceUpdateReq{}
 		for _, v := range networkIDs.(*schema.Set).List() {
-			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string))
+			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string)) // nolint
 		}
 
 		if _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
