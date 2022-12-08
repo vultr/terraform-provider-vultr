@@ -1,33 +1,64 @@
 # Change log
-## [v2.11.4](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.3...v2.11.4) (2022-07-25) 
+## [v2.12.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.4...v2.12.0) (2022-12-08)
 Enhancement:
-* data source/object storage cluster: add datasource for object storage cluster [275](https://github.com/vultr/terraform-provider-vultr/pull/275)
+- resource/instance: remove deprecated tag fields [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
+- resource/bare_metal_server: remove deprecated tag fields [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
+- data source/instance: remove deprecated tag fields [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
+- data source/bare_metal_server: remove deprecated tag fields [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
 
-Documentation
-* data source/object storage cluster: add docs for object storage cluster [275](https://github.com/vultr/terraform-provider-vultr/pull/275)
+Bug Fix:
+- everything: golangci-lint fixes [302](https://github.com/vultr/terraform-provider-vultr/pull/302)
+
+Documentation:
+- Fixed typo [279](https://github.com/vultr/terraform-provider-vultr/pull/279)
+- Update rate-limit documentation [283](https://github.com/vultr/terraform-provider-vultr/pull/283)
+- resource/instance_ipv4 fix type error on reboot [292](https://github.com/vultr/terraform-provider-vultr/pull/292)
+- resource/bare_metal_server: update floating IP description [293](https://github.com/vultr/terraform-provider-vultr/pull/293)
+- resource/instance: remove the tag field from the docs [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
+- resource/bare_metal_server: remove the tag field from the docs [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
+- data source/instance: remove the tag field from the docs [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
+- data source/bare_metal_server: remove the tag field from the docs [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
 
 Dependency:
-* update terraform-sdk to v2.18.0 [273](https://github.com/vultr/terraform-provider-vultr/pull/273)
-* update terraform-plugin-sdk from 2.18.0 to 2.19.0 [274](https://github.com/vultr/terraform-provider-vultr/pull/274)
+- update terraform-sdk from 2.19.0 to 2.21.0 [280](https://github.com/vultr/terraform-provider-vultr/pull/280)
+- update terraform-sdk from 2.21.0 to 2.24.0 [294](https://github.com/vultr/terraform-provider-vultr/pull/294)
+- update terraform-sdk from 2.24.0 to 2.24.1 [298](https://github.com/vultr/terraform-provider-vultr/pull/298)
+- update go to v1.19 [303](https://github.com/vultr/terraform-provider-vultr/pull/303)
+
+New Contributors:
+- @nschlemm made their first contribution in [279](https://github.com/vultr/terraform-provider-vultr/pull/279)
+- @jesseorr made their first contribution in [292](https://github.com/vultr/terraform-provider-vultr/pull/292)
+- @jasites made their first contribution in [293](https://github.com/vultr/terraform-provider-vultr/pull/293)
+
+## [v2.11.4](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.3...v2.11.4) (2022-07-25)
+Enhancement:
+- data source/object storage cluster: add datasource for object storage cluster [275](https://github.com/vultr/terraform-provider-vultr/pull/275)
+
+Documentation
+- data source/object storage cluster: add docs for object storage cluster [275](https://github.com/vultr/terraform-provider-vultr/pull/275)
+
+Dependency:
+- update terraform-sdk to v2.18.0 [273](https://github.com/vultr/terraform-provider-vultr/pull/273)
+- update terraform-plugin-sdk from 2.18.0 to 2.19.0 [274](https://github.com/vultr/terraform-provider-vultr/pull/274)
 
 ## [v2.11.3](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.2...v2.11.3) (2022-06-14)
 Enchancement:
-* resource/reserved_ip: Add support for reserved IP label updates [268](https://github.com/vultr/terraform-provider-vultr/pull/268)
+- resource/reserved_ip: Add support for reserved IP label updates [268](https://github.com/vultr/terraform-provider-vultr/pull/268)
 
 Documentation:
-* resource/instance: Fix typo [268](https://github.com/vultr/terraform-provider-vultr/pull/268)
-* resource/reverse_ip: Fix type [268](https://github.com/vultr/terraform-provider-vultr/pull/268)
+- resource/instance: Fix typo [268](https://github.com/vultr/terraform-provider-vultr/pull/268)
+- resource/reverse_ip: Fix type [268](https://github.com/vultr/terraform-provider-vultr/pull/268)
 
 ## [v2.11.2](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.1...v2.11.2) (2022-06-03)
 Enhancement:
-* data source/plan: Add GPU fields [264](https://github.com/vultr/terraform-provider-vultr/pull/264)
+- data source/plan: Add GPU fields [264](https://github.com/vultr/terraform-provider-vultr/pull/264)
 
 Bug Fix:
-* Fix acceptance tests [260](https://github.com/vultr/terraform-provider-vultr/pull/260)
+- Fix acceptance tests [260](https://github.com/vultr/terraform-provider-vultr/pull/260)
 
 Dependency:
-* update govultr to v2.17.1 [262](https://github.com/vultr/terraform-provider-vultr/pull/262)
-* update github.com/hashicorp/terraform-plugin-sdk/v2 from 2.16.0 to 2.17.0 [261](https://github.com/vultr/terraform-provider-vultr/pull/261)
+- update govultr to v2.17.1 [262](https://github.com/vultr/terraform-provider-vultr/pull/262)
+- update github.com/hashicorp/terraform-plugin-sdk/v2 from 2.16.0 to 2.17.0 [261](https://github.com/vultr/terraform-provider-vultr/pull/261)
 
 ## [v2.11.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.0...v2.11.1) (2022-05-18)
 Documentation:
@@ -107,7 +138,7 @@ Dependency:
 Enhancement:
 - datasource/kubernetes: New datasource for VKE [198](https://github.com/vultr/terraform-provider-vultr/pull/198)
 - Updated all datasources deprecations read -> readContext [204](https://github.com/vultr/terraform-provider-vultr/pull/204)
-- 
+-
 Bug Fix:
 - datasource/backups : fix scheme mismatch [201](https://github.com/vultr/terraform-provider-vultr/pull/201)
 
@@ -136,7 +167,7 @@ Bug Fix:
 - resource/instance : Fix issue where changing hostname didn't trigger hostname change [180](https://github.com/vultr/terraform-provider-vultr/pull/180)
 
 Documentation
-- resource/snapshots : fix typo [167](https://github.com/vultr/terraform-provider-vultr/pull/167) 
+- resource/snapshots : fix typo [167](https://github.com/vultr/terraform-provider-vultr/pull/167)
 - resources/vultr_kubernetes : Add description that kubeconfigs are base64 encoded [169](https://github.com/vultr/terraform-provider-vultr/pull/169)
 
 Dependency:
@@ -224,7 +255,7 @@ IMPROVEMENTS:
 
 ## 2.1.0 (December 03, 2020)
 BUG FIXES:
-- resource/vultr_instances: In v2 the ID of the Reserved IP, not the IP itself, is required for creation. [79](https://github.com/vultr/terraform-provider-vultr/pull/79) 
+- resource/vultr_instances: In v2 the ID of the Reserved IP, not the IP itself, is required for creation. [79](https://github.com/vultr/terraform-provider-vultr/pull/79)
 
 Breaking Change:
 - resource/vultr_instances: Changing `reservered_ip` to `reservered_ip_id` to make it clear that the ID should be passed [79](https://github.com/vultr/terraform-provider-vultr/pull/79)
@@ -235,7 +266,7 @@ Breaking Changes:
 - The TF Vultr provider v2.0.0 is a large change that uses the new Vultr API v2. This change resolves quite a few limitations and improves overall performance of tooling. These changes include field and resource/datasource name updates to match the API and offer a consistent experience.
 
 Dependency:
-- updated GoVultr to v2.1.0 
+- updated GoVultr to v2.1.0
 
 ## 1.5.0 (November 09, 2020)
 Breaking Change:
@@ -339,17 +370,17 @@ BUG FIXES:
     - `iso_id` - uses os_id `159`
     - `snap_id` - uses os_id `164`
     - `script_id` - uses os_id `159` or any os specific id
-    
+
 ## [v1.0.2](https://github.com/vultr/terraform-provider-vultr/compare/v1.0.1..v1.0.2) (2019-07-15)
 ### Dependencies
 * Updated dependencies [PR #89](https://github.com/vultr/terraform-provider-vultr/pull/89)
   * Govultr `v0.1.3` -> `v0.1.4`
-  
+
 ## [v1.0.1](https://github.com/vultr/terraform-provider-vultr/compare/v1.0.0..v1.0.1) (2019-07-08)
 ### Fixes
-- Fixed bug where scriptID was not being 
+- Fixed bug where scriptID was not being
 properly handled in server creation [#82](https://github.com/vultr/terraform-provider-vultr/issues/82)
-### Enhancements 
+### Enhancements
 - Added error handler on protocol case sensitivity [#83](https://github.com/vultr/terraform-provider-vultr/issues/83)
 ### Docs
 - Typo in doc firewall_rule doc for protocol [#83](https://github.com/vultr/terraform-provider-vultr/issues/83)
@@ -377,7 +408,7 @@ properly handled in server creation [#82](https://github.com/vultr/terraform-pro
     * Server
     * Snapshot
     * SSH Key
-    * Startup Script 
+    * Startup Script
     * User
 * Supported Resources
     * Bare Metal Server
