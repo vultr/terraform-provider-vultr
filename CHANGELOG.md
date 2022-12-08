@@ -24,6 +24,7 @@ Dependency:
 - update terraform-sdk from 2.21.0 to 2.24.0 [294](https://github.com/vultr/terraform-provider-vultr/pull/294)
 - update terraform-sdk from 2.24.0 to 2.24.1 [298](https://github.com/vultr/terraform-provider-vultr/pull/298)
 - update go to v1.19 [303](https://github.com/vultr/terraform-provider-vultr/pull/303)
+- update goreleaser to v1.19 [305](https://github.com/vultr/terraform-provider-vultr/pull/305)
 
 New Contributors:
 - @nschlemm made their first contribution in [279](https://github.com/vultr/terraform-provider-vultr/pull/279)
