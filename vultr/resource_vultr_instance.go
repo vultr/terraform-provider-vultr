@@ -679,6 +679,12 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
+	if _, isoOK := d.GetOk("iso_id"); isoOK {
+		if err := client.Instance.DetachISO(ctx, d.Id()); err != nil {
+			return diag.Errorf("error detaching ISO prior to deleting instance %s : %v", d.Id(), err)
+		}
+	}
+
 	if err := client.Instance.Delete(ctx, d.Id()); err != nil {
 		return diag.Errorf("error destroying instance %s : %v", d.Id(), err)
 	}
