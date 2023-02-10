@@ -27,9 +27,10 @@ func resourceVultrBareMetalServer() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			"region": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:             schema.TypeString,
+				Required:         true,
+				ForceNew:         true,
+				DiffSuppressFunc: IgnoreCase,
 			},
 			"plan": {
 				Type:     schema.TypeString,

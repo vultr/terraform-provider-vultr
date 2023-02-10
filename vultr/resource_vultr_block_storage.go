@@ -29,9 +29,10 @@ func resourceVultrBlockStorage() *schema.Resource {
 				Required: true,
 			},
 			"region": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:             schema.TypeString,
+				Required:         true,
+				ForceNew:         true,
+				DiffSuppressFunc: IgnoreCase,
 			},
 			"attached_to_instance": {
 				Type:     schema.TypeString,

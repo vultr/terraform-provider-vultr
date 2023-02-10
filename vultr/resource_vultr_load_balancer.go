@@ -24,9 +24,10 @@ func resourceVultrLoadBalancer() *schema.Resource {
 		},
 		Schema: map[string]*schema.Schema{
 			"region": {
-				Type:     schema.TypeString,
-				ForceNew: true,
-				Required: true,
+				Type:             schema.TypeString,
+				ForceNew:         true,
+				Required:         true,
+				DiffSuppressFunc: IgnoreCase,
 			},
 			"label": {
 				Type:     schema.TypeString,
