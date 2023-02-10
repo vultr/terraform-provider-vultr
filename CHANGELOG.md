@@ -1,4 +1,10 @@
 # Change log
+## [v2.12.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.12.0...v2.12.1) (2023-02-10)
+Enhancement:
+* resource/instance: Add check for & detach of ISO on instance delete [312](https://github.com/vultr/terraform-provider-vultr/pull/312)
+* All resources that use "region":
+    * Add DiffSuppressFunc to ignore case [318](https://github.com/vultr/terraform-provider-vultr/pull/318)
+
 ## [v2.12.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.4...v2.12.0) (2022-12-08)
 Enhancement:
 - resource/instance: remove deprecated tag fields [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
