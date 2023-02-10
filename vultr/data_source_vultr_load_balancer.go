@@ -23,9 +23,8 @@ func dataSourceVultrLoadBalancer() *schema.Resource {
 				Computed: true,
 			},
 			"region": {
-				Type:             schema.TypeString,
-				Computed:         true,
-				DiffSuppressFunc: IgnoreCase,
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 			"label": {
 				Type:     schema.TypeString,

@@ -34,9 +34,8 @@ func dataSourceVultrBareMetalServer() *schema.Resource {
 				Computed: true,
 			},
 			"region": {
-				Type:             schema.TypeString,
-				Computed:         true,
-				DiffSuppressFunc: IgnoreCase,
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 			"date_created": {
 				Type:     schema.TypeString,

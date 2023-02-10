@@ -14,9 +14,8 @@ func dataSourceVultrVPC() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"region": {
-				Type:             schema.TypeString,
-				Computed:         true,
-				DiffSuppressFunc: IgnoreCase,
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 			"v4_subnet": {
 				Type:     schema.TypeString,
