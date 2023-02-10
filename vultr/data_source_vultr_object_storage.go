@@ -30,8 +30,9 @@ func dataSourceVultrObjectStorage() *schema.Resource {
 				Computed: true,
 			},
 			"region": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:             schema.TypeString,
+				Computed:         true,
+				DiffSuppressFunc: IgnoreCase,
 			},
 			"status": {
 				Type:     schema.TypeString,

@@ -30,9 +30,10 @@ func resourceVultrKubernetes() *schema.Resource {
 				Required: true,
 			},
 			"region": {
-				Type:     schema.TypeString,
-				ForceNew: true,
-				Required: true,
+				Type:             schema.TypeString,
+				ForceNew:         true,
+				Required:         true,
+				DiffSuppressFunc: IgnoreCase,
 			},
 			"version": {
 				Type:     schema.TypeString,

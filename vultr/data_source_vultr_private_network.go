@@ -14,8 +14,9 @@ func dataSourceVultrPrivateNetwork() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"region": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:             schema.TypeString,
+				Computed:         true,
+				DiffSuppressFunc: IgnoreCase,
 			},
 			"v4_subnet": {
 				Type:     schema.TypeString,

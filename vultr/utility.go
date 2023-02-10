@@ -1,6 +1,10 @@
 package vultr
 
-import "github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+import (
+	"strings"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+)
 
 // Lookup changes on a TF field and convert schema.Set to []string
 func tfChangeToSlices(fieldname string, d *schema.ResourceData) ([]string, []string) {
@@ -35,4 +39,12 @@ func diffSlice(x, y []string) []string {
 	}
 
 	return diff
+}
+
+// IgnoreCase implement a DiffSupressFunc to ignore case
+func IgnoreCase(k, old, new string, d *schema.ResourceData) bool {
+	if strings.ToLower(old) == strings.ToLower(new) {
+		return true
+	}
+	return false
 }

@@ -14,8 +14,9 @@ func dataSourceVultrReservedIP() *schema.Resource {
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"region": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:             schema.TypeString,
+				Computed:         true,
+				DiffSuppressFunc: IgnoreCase,
 			},
 			"ip_type": {
 				Type:     schema.TypeString,
