@@ -43,5 +43,5 @@ func diffSlice(x, y []string) []string {
 
 // IgnoreCase implement a DiffSupressFunc to ignore case
 func IgnoreCase(k, old, new string, d *schema.ResourceData) bool {
-	return strings.ToLower(old) == strings.ToLower(new)
+	return strings.EqualFold(old, new)
 }
