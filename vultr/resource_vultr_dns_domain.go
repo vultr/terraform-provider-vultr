@@ -2,8 +2,11 @@ package vultr
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"strings"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -75,6 +78,11 @@ func resourceVultrDNSDomainRead(ctx context.Context, d *schema.ResourceData, met
 
 	domain, err := client.Domain.Get(ctx, d.Id())
 	if err != nil {
+		if strings.Contains(err.Error(), "Invalid domain") {
+			tflog.Warn(ctx, fmt.Sprintf("Removing domain (%s) because it is gone", d.Id()))
+			d.SetId("")
+			return nil
+		}
 		return diag.Errorf("error getting domains : %v", err)
 	}
 
