@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -112,6 +113,11 @@ func resourceVultrFirewallRuleRead(ctx context.Context, d *schema.ResourceData, 
 	ruleID, _ := strconv.Atoi(d.Id())
 	fw, err := client.FirewallRule.Get(ctx, d.Get("firewall_group_id").(string), ruleID)
 	if err != nil {
+		if strings.Contains(err.Error(), "Firewall rule ID not found") {
+			tflog.Warn(ctx, fmt.Sprintf("Removing firewall rule ID (%s) in group (%s) because it is gone", d.Id(), d.Get("firewall_group_id")))
+			d.SetId("")
+			return nil
+		}
 		return diag.Errorf("error getting firewall rule %s: %v", d.Get("firewall_group_id").(string), err)
 	}
 
