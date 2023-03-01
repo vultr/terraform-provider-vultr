@@ -36,7 +36,7 @@ func TestAccVultrInstances(t *testing.T) {
 					resource.TestCheckResourceAttrSet(name, "instances.0.plan"),
 					resource.TestCheckResourceAttrSet(name, "instances.0.label"),
 					resource.TestCheckResourceAttrSet(name, "instances.0.kvm"),
-					resource.TestCheckResourceAttrSet(name, "instances.0.tag"),
+					resource.TestCheckResourceAttrSet(name, "instances.0.tags.0"),
 					resource.TestCheckResourceAttrSet(name, "instances.0.os_id"),
 					resource.TestCheckResourceAttrSet(name, "instances.0.app_id"),
 					resource.TestCheckResourceAttrSet(name, "instances.0.v6_main_ip"),
@@ -59,7 +59,7 @@ func testAccCheckVultrInstances(label string) string {
 			hostname = "testing-the-hostname"
 			enable_ipv6 = true
 			ddos_protection = true
-			tag = "even better tag"
+			tags = ["my_tag"]
 			backups = "enabled"
 			backups_schedule{
 				type = "weekly"
