@@ -252,7 +252,9 @@ func dataSourceVultrInstancesRead(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	d.SetId("instances")
-	d.Set("instances", serverList)
+	if err := d.Set("instances", serverList); err != nil {
+		return diag.Errorf("error setting `instances`: %#v", err)
+	}
 
 	return nil
 }
