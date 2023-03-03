@@ -2,8 +2,11 @@ package vultr
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"strings"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -86,6 +89,11 @@ func resourceVultrReservedIPRead(ctx context.Context, d *schema.ResourceData, me
 
 	rip, err := client.ReservedIP.Get(ctx, d.Id())
 	if err != nil {
+		if strings.Contains(err.Error(), "Invalid reserved-ip ID") {
+			tflog.Warn(ctx, fmt.Sprintf("Removing reserved-ip (%s) because it is gone", d.Id()))
+			d.SetId("")
+			return nil
+		}
 		return diag.Errorf("error getting Reserved IPs: %v", err)
 	}
 
