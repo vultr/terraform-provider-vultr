@@ -22,3 +22,23 @@ jobs:
       - name: Run golangci-lint
         run: |
           golangci-lint run vultr/...
+
+  Go-Fmt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Setup Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: 1.20
+
+      - name: Run fmt
+        run: |
+          gofmt_files=$(gofmt -l vultr)
+          if [[ -n ${gofmt_files} ]]; then
+              echo 'gofmt needs running on the following files:'
+              echo "${gofmt_files}"
+              exit 1
+          fi
+          exit 0
