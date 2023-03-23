@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func resourceVultrStartupScript() *schema.Resource {
@@ -61,7 +61,7 @@ func resourceVultrStartupScriptCreate(ctx context.Context, d *schema.ResourceDat
 		Type:   d.Get("type").(string),
 	}
 
-	s, err := client.StartupScript.Create(ctx, scriptReq)
+	s,_, err := client.StartupScript.Create(ctx, scriptReq)
 	if err != nil {
 		return diag.Errorf("Error creating startup script: %v", err)
 	}
@@ -75,7 +75,7 @@ func resourceVultrStartupScriptCreate(ctx context.Context, d *schema.ResourceDat
 func resourceVultrStartupScriptRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	script, err := client.StartupScript.Get(ctx, d.Id())
+	script,_, err := client.StartupScript.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid startup script ID") {
 			tflog.Warn(ctx, fmt.Sprintf("Removing startup script (%s) because it is gone", d.Id()))

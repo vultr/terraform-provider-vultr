@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrBareMetalPlan() *schema.Resource {
@@ -73,7 +73,7 @@ func dataSourceVultrBareMetalPlanRead(ctx context.Context, d *schema.ResourceDat
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 	for {
-		plans, meta, err := client.Plan.ListBareMetal(ctx, options)
+		plans, meta,_, err := client.Plan.ListBareMetal(ctx, options)
 
 		if err != nil {
 			return diag.Errorf("Error getting bare metal plans: %v", err)

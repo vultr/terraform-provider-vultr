@@ -12,7 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func resourceVultrInstance() *schema.Resource {
@@ -352,7 +352,7 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	log.Printf("[INFO] Creating server")
-	instance, err := client.Instance.Create(ctx, req)
+	instance,_, err := client.Instance.Create(ctx, req)
 	if err != nil {
 		return diag.Errorf("error creating server: %v", err)
 	}
@@ -372,7 +372,7 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 
 	if backups == "enabled" {
 		backupReq := generateBackupSchedule(backupSchedule)
-		if err := client.Instance.SetBackupSchedule(context.Background(), instance.ID, backupReq); err != nil {
+		if _,err := client.Instance.SetBackupSchedule(context.Background(), instance.ID, backupReq); err != nil {
 			return diag.Errorf("error setting backup schedule: %v", err)
 		}
 	}
@@ -383,7 +383,7 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	instance, err := client.Instance.Get(ctx, d.Id())
+	instance,_, err := client.Instance.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "invalid instance ID") {
 			log.Printf("[WARN] Removing instance (%s) because it is gone", d.Id())
@@ -469,7 +469,7 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("unable to set resource instance `hostname` read value: %v", err)
 	}
 
-	backup, err := client.Instance.GetBackupSchedule(ctx, d.Id())
+	backup,_, err := client.Instance.GetBackupSchedule(ctx, d.Id())
 	if err != nil {
 		return diag.Errorf("error getting backup schedule: %v", err)
 	}
@@ -609,7 +609,7 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		req.Tags = newTags
 	}
 
-	if _, err := client.Instance.Update(ctx, d.Id(), req); err != nil {
+	if _,_, err := client.Instance.Update(ctx, d.Id(), req); err != nil {
 		return diag.Errorf("error updating instance %s : %s", d.Id(), err.Error())
 	}
 
@@ -618,11 +618,11 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 
 		_, newISOId := d.GetChange("iso_id")
 		if newISOId == "" {
-			if err := client.Instance.DetachISO(ctx, d.Id()); err != nil {
+			if _,err := client.Instance.DetachISO(ctx, d.Id()); err != nil {
 				return diag.Errorf("error detaching iso from instance %s : %v", d.Id(), err)
 			}
 		} else {
-			if err := client.Instance.AttachISO(ctx, d.Id(), newISOId.(string)); err != nil {
+			if _,err := client.Instance.AttachISO(ctx, d.Id(), newISOId.(string)); err != nil {
 				return diag.Errorf("error attaching iso to instance %s : %v", d.Id(), err)
 			}
 		}
@@ -636,7 +636,7 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 	// On the read that gets called we will nil out backups_schedule.
 	if newBackupValue.(string) != "disabled" && d.HasChange("backups_schedule") {
 		schedule := generateBackupSchedule(bs)
-		if err := client.Instance.SetBackupSchedule(ctx, d.Id(), schedule); err != nil {
+		if _,err := client.Instance.SetBackupSchedule(ctx, d.Id(), schedule); err != nil {
 			return diag.Errorf("error setting backup for %s : %v", d.Id(), err)
 		}
 	}
@@ -664,7 +664,7 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string)) // nolint
 		}
 
-		if _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
+		if _,_, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
 			return diag.Errorf("error detaching private networks prior to deleting instance %s : %v", d.Id(), err)
 		}
 	}
@@ -675,13 +675,13 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 			detach.DetachVPC = append(detach.DetachVPC, v.(string))
 		}
 
-		if _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
+		if _,_, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
 			return diag.Errorf("error detaching VPCs prior to deleting instance %s : %v", d.Id(), err)
 		}
 	}
 
 	if _, isoOK := d.GetOk("iso_id"); isoOK {
-		if err := client.Instance.DetachISO(ctx, d.Id()); err != nil {
+		if _,err := client.Instance.DetachISO(ctx, d.Id()); err != nil {
 			return diag.Errorf("error detaching ISO prior to deleting instance %s : %v", d.Id(), err)
 		}
 	}
@@ -737,7 +737,7 @@ func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta int
 	return func() (interface{}, string, error) {
 
 		log.Printf("[INFO] Creating Server")
-		server, err := client.Instance.Get(ctx, d.Id())
+		server,_, err := client.Instance.Get(ctx, d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving Server %s : %s", d.Id(), err)
 		}
@@ -776,7 +776,7 @@ func newInstancePlanRefresh(ctx context.Context, d *schema.ResourceData, meta in
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Upgrading instance")
-		instance, err := client.Instance.Get(ctx, d.Id())
+		instance,_, err := client.Instance.Get(ctx, d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving instance %s : %s", d.Id(), err)
 		}

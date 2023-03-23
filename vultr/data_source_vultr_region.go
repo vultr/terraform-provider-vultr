@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrRegion() *schema.Resource {
@@ -47,7 +47,7 @@ func dataSourceVultrRegionRead(ctx context.Context, d *schema.ResourceData, meta
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 	for {
-		regions, meta, err := client.Region.List(ctx, options)
+		regions, meta,_, err := client.Region.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("Error getting regions: %v", err)
 		}

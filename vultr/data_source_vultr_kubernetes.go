@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrKubernetes() *schema.Resource {
@@ -80,7 +80,7 @@ func dataSourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, 
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 	for {
-		k8s, meta, err := client.Kubernetes.ListClusters(ctx, options)
+		k8s, meta, _, err := client.Kubernetes.ListClusters(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting kubernetes")
 		}
@@ -113,7 +113,7 @@ func dataSourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, 
 		return diag.Errorf("no results were found")
 	}
 
-	kubeConfig, err := client.Kubernetes.GetKubeConfig(ctx, k8List[0].ID)
+	kubeConfig,_, err := client.Kubernetes.GetKubeConfig(ctx, k8List[0].ID)
 	if err != nil {
 		return diag.Errorf("error getting kubeconfig")
 	}

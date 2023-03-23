@@ -11,7 +11,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func resourceVultrFirewallRule() *schema.Resource {
@@ -97,7 +97,7 @@ func resourceVultrFirewallRuleCreate(ctx context.Context, d *schema.ResourceData
 
 	firewallGroupID := d.Get("firewall_group_id").(string)
 
-	rule, err := client.FirewallRule.Create(ctx, firewallGroupID, fwRule)
+	rule,_, err := client.FirewallRule.Create(ctx, firewallGroupID, fwRule)
 	if err != nil {
 		return diag.Errorf("error creating firewall rule : %v", err)
 	}
@@ -111,7 +111,7 @@ func resourceVultrFirewallRuleRead(ctx context.Context, d *schema.ResourceData, 
 	client := meta.(*Client).govultrClient()
 
 	ruleID, _ := strconv.Atoi(d.Id())
-	fw, err := client.FirewallRule.Get(ctx, d.Get("firewall_group_id").(string), ruleID)
+	fw,_, err := client.FirewallRule.Get(ctx, d.Get("firewall_group_id").(string), ruleID)
 	if err != nil {
 		if strings.Contains(err.Error(), "Firewall rule ID not found") {
 			tflog.Warn(ctx, fmt.Sprintf("Removing firewall rule ID (%s) in group (%s) because it is gone", d.Id(), d.Get("firewall_group_id")))
@@ -173,7 +173,7 @@ func resourceVultrFirewallRuleImport(ctx context.Context, d *schema.ResourceData
 	fwGroup, ruleID := importID[:commaIdx], importID[commaIdx+1:]
 
 	rule, _ := strconv.Atoi(ruleID)
-	fw, err := client.FirewallRule.Get(ctx, fwGroup, rule)
+	fw,_, err := client.FirewallRule.Get(ctx, fwGroup, rule)
 	if err != nil {
 		return nil, fmt.Errorf("firewall Rule %s not found for firewall group %s", ruleID, fwGroup)
 	}

@@ -99,7 +99,7 @@ func testAccCheckVultrUsersDestroy(s *terraform.State) error {
 			continue
 		}
 
-		if _, err := client.User.Get(context.Background(), rs.Primary.ID); err == nil {
+		if _,_, err := client.User.Get(context.Background(), rs.Primary.ID); err == nil {
 			return fmt.Errorf("user still exists : %s", rs.Primary.ID)
 		}
 

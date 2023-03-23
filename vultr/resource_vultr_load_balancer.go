@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func resourceVultrLoadBalancer() *schema.Resource {
@@ -296,7 +296,7 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		req.VPC = govultr.StringToStringPtr(d.Get("vpc").(string))
 	}
 
-	lb, err := client.LoadBalancer.Create(ctx, req)
+	lb,_, err := client.LoadBalancer.Create(ctx, req)
 	if err != nil {
 		return diag.Errorf("error creating load balancer: %v", err)
 	}
@@ -316,7 +316,7 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	lb, err := client.LoadBalancer.Get(ctx, d.Id())
+	lb,_, err := client.LoadBalancer.Get(ctx, d.Id())
 	if err != nil {
 		log.Printf("[WARN] Vultr load balancer (%v) not found", d.Id())
 		d.SetId("")
@@ -564,7 +564,7 @@ func newLBStateRefresh(ctx context.Context, d *schema.ResourceData, meta interfa
 
 		log.Printf("[INFO] Creating load balancer")
 
-		lb, err := client.LoadBalancer.Get(ctx, d.Id())
+		lb,_, err := client.LoadBalancer.Get(ctx, d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving lb %s ", d.Id())
 		}

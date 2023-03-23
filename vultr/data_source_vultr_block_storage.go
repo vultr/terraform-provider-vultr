@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrBlockStorage() *schema.Resource {
@@ -66,7 +66,7 @@ func dataSourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 	for {
-		block, meta, err := client.BlockStorage.List(ctx, options)
+		block, meta,_, err := client.BlockStorage.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting block storages: %v", err)
 		}

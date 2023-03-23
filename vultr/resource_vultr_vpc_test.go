@@ -61,7 +61,7 @@ func testAccCheckVultrVPCDestroy(s *terraform.State) error {
 		vpcID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		_, err := client.VPC.Get(context.Background(), vpcID)
+		_,_, err := client.VPC.Get(context.Background(), vpcID)
 		if err == nil {
 			return fmt.Errorf("vpc still exists: %s", vpcID)
 		}
@@ -83,7 +83,7 @@ func testAccCheckVultrVPCExists(n string) resource.TestCheckFunc {
 		vpcID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		_, err := client.VPC.Get(context.Background(), vpcID)
+		_,_, err := client.VPC.Get(context.Background(), vpcID)
 		if err != nil {
 			return fmt.Errorf("VPC does not exist: %s", vpcID)
 		}

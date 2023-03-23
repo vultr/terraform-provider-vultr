@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrReverseIPV4() *schema.Resource {
@@ -71,7 +71,7 @@ func dataSourceVultrReverseIPV4Read(ctx context.Context, d *schema.ResourceData,
 	options := &govultr.ListOptions{}
 	if len(instanceIDs) == 0 {
 		for {
-			servers, meta, err := client.Instance.List(ctx, options)
+			servers, meta,_, err := client.Instance.List(ctx, options)
 			if err != nil {
 				return diag.Errorf("error getting servers: %v", err)
 			}
@@ -94,7 +94,7 @@ func dataSourceVultrReverseIPV4Read(ctx context.Context, d *schema.ResourceData,
 	resultInstanceID := ""
 
 	for _, instanceID := range instanceIDs {
-		ipv4s, _, err := client.Instance.ListIPv4(ctx, instanceID, nil)
+		ipv4s, _,_, err := client.Instance.ListIPv4(ctx, instanceID, nil)
 		if err != nil {
 			return diag.Errorf("error getting IPv4s: %v", err)
 		}

@@ -46,7 +46,7 @@ func testAccCheckVultrSnapshotDestroy(s *terraform.State) error {
 		snapshotID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		if _, err := client.Snapshot.Get(context.Background(), snapshotID); err == nil {
+		if _,_, err := client.Snapshot.Get(context.Background(), snapshotID); err == nil {
 			return fmt.Errorf("snapshot still exists: %s", snapshotID)
 		}
 
@@ -68,7 +68,7 @@ func testAccCheckVultrSnapshotExists(n string) resource.TestCheckFunc {
 		snapshotID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		if _, err := client.Snapshot.Get(context.Background(), snapshotID); err != nil {
+		if _,_, err := client.Snapshot.Get(context.Background(), snapshotID); err != nil {
 			return fmt.Errorf("snapshot does not exist: %s", snapshotID)
 		}
 

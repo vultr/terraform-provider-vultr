@@ -54,7 +54,7 @@ func testAccCheckVultrStartupScriptDestroy(s *terraform.State) error {
 		scriptID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		_, err := client.StartupScript.Get(context.Background(), scriptID)
+		_,_, err := client.StartupScript.Get(context.Background(), scriptID)
 		if err == nil {
 			return fmt.Errorf("startup script still exists: %s", scriptID)
 		}
@@ -78,7 +78,7 @@ func testAccCheckVultrStartupScriptExists(n string) resource.TestCheckFunc {
 		scriptID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		_, err := client.StartupScript.Get(context.Background(), scriptID)
+		_,_, err := client.StartupScript.Get(context.Background(), scriptID)
 		if err != nil {
 			return fmt.Errorf("startup script not found ID: %s", scriptID)
 		}

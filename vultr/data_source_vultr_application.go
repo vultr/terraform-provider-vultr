@@ -6,7 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrApplication() *schema.Resource {
@@ -56,7 +56,7 @@ func dataSourceVultrApplicationRead(ctx context.Context, d *schema.ResourceData,
 	options := &govultr.ListOptions{}
 
 	for {
-		apps, meta, err := client.Application.List(ctx, options)
+		apps, meta,_, err := client.Application.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting applications: %v", err)
 		}

@@ -12,7 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func resourceVultrBareMetalServer() *schema.Resource {
@@ -224,7 +224,7 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 
 	client := meta.(*Client).govultrClient()
 
-	bm, err := client.BareMetalServer.Create(ctx, req)
+	bm,_, err := client.BareMetalServer.Create(ctx, req)
 	if err != nil {
 		return diag.Errorf("error creating bare metal server: %v", err)
 	}
@@ -242,7 +242,7 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	bms, err := client.BareMetalServer.Get(ctx, d.Id())
+	bms,_, err := client.BareMetalServer.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid server") {
 			log.Printf("[WARN] Removing bare metal server %s because it is gone", d.Id())
@@ -350,7 +350,7 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 		req.Tags = newTags
 	}
 
-	if _, err := client.BareMetalServer.Update(ctx, d.Id(), req); err != nil {
+	if _,_, err := client.BareMetalServer.Update(ctx, d.Id(), req); err != nil {
 		return diag.Errorf("error updating bare metal %s : %s", d.Id(), err.Error())
 	}
 
@@ -407,7 +407,7 @@ func newBareMetalServerStatusStateRefresh(ctx context.Context, d *schema.Resourc
 	client := meta.(*Client).govultrClient()
 
 	return func() (interface{}, string, error) {
-		bms, err := client.BareMetalServer.Get(ctx, d.Id())
+		bms,_, err := client.BareMetalServer.Get(ctx, d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving bare metal server %s : %s", d.Id(), err)
 		}

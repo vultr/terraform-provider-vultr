@@ -6,7 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func resourceVultrReverseIPV6() *schema.Resource {
@@ -61,7 +61,7 @@ func resourceVultrReverseIPV6Read(ctx context.Context, d *schema.ResourceData, m
 
 	reverseIPV6 := &govultr.ReverseIP{}
 
-	reverseIPv6s, err := client.Instance.ListReverseIPv6(ctx, instanceID)
+	reverseIPv6s,_, err := client.Instance.ListReverseIPv6(ctx, instanceID)
 	if err != nil {
 		return diag.Errorf("error getting reverse IPv4s: %v, %v", err, instanceID)
 	}

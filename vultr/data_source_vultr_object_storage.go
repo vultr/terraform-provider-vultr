@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrObjectStorage() *schema.Resource {
@@ -68,7 +68,7 @@ func dataSourceVultrObjectStorageRead(ctx context.Context, d *schema.ResourceDat
 	options := &govultr.ListOptions{}
 
 	for {
-		objectStorages, meta, err := client.ObjectStorage.List(ctx, options)
+		objectStorages, meta,_, err := client.ObjectStorage.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting object storage list: %v", filtersOK)
 		}

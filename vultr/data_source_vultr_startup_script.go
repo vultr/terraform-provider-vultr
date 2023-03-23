@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrStartupScript() *schema.Resource {
@@ -52,7 +52,7 @@ func dataSourceVultrStartupScriptRead(ctx context.Context, d *schema.ResourceDat
 	options := &govultr.ListOptions{}
 
 	for {
-		scripts, meta, err := client.StartupScript.List(ctx, options)
+		scripts, meta,_, err := client.StartupScript.List(ctx, options)
 
 		if err != nil {
 			return diag.Errorf("error getting startup scripts: %v", err)
@@ -85,7 +85,7 @@ func dataSourceVultrStartupScriptRead(ctx context.Context, d *schema.ResourceDat
 	}
 
 	// The script field is not returned in the list call but only in the get.
-	script, err := client.StartupScript.Get(ctx, scriptList[0].ID)
+	script,_, err := client.StartupScript.Get(ctx, scriptList[0].ID)
 	if err != nil {
 		return diag.Errorf("error retrieving script : %s", scriptList[0])
 	}

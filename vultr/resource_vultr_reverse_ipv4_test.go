@@ -107,7 +107,7 @@ func vultrReverseIPV4Exists(rs *terraform.ResourceState) (bool, error) {
 		return false, errors.New("error getting instance ID")
 	}
 
-	reverseIPV4s, _, err := client.Instance.ListIPv4(context.Background(), instanceID, nil)
+	reverseIPV4s, _,_, err := client.Instance.ListIPv4(context.Background(), instanceID, nil)
 	if err != nil {
 		return false, fmt.Errorf("error getting reverse IPv4s: %v", err)
 	}

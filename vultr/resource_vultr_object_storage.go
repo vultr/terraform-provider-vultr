@@ -71,7 +71,7 @@ func resourceVultrObjectStorageCreate(ctx context.Context, d *schema.ResourceDat
 	objStoreCluster := d.Get("cluster_id").(int)
 	label := d.Get("label").(string)
 
-	obj, err := client.ObjectStorage.Create(ctx, objStoreCluster, label)
+	obj,_, err := client.ObjectStorage.Create(ctx, objStoreCluster, label)
 	if err != nil {
 		return diag.Errorf("error creating object storage: %v", err)
 	}
@@ -88,7 +88,7 @@ func resourceVultrObjectStorageCreate(ctx context.Context, d *schema.ResourceDat
 func resourceVultrObjectStorageRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	obj, err := client.ObjectStorage.Get(ctx, d.Id())
+	obj,_, err := client.ObjectStorage.Get(ctx, d.Id())
 	if err != nil {
 		return diag.Errorf("error getting object storage account: %v", err)
 	}
@@ -171,7 +171,7 @@ func newServerObjRefresh(ctx context.Context, d *schema.ResourceData, meta inter
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Creating Object Storage")
 
-		obj, err := client.ObjectStorage.Get(ctx, d.Id())
+		obj,_, err := client.ObjectStorage.Get(ctx, d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving Object Store %s : %s", d.Id(), err)
 		}

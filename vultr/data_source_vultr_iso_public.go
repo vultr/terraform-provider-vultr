@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrIsoPublic() *schema.Resource {
@@ -43,7 +43,7 @@ func dataSourceVultrIsoPublicRead(ctx context.Context, d *schema.ResourceData, m
 	options := &govultr.ListOptions{}
 
 	for {
-		iso, meta, err := client.ISO.ListPublic(ctx, options)
+		iso, meta,_, err := client.ISO.ListPublic(ctx, options)
 		if err != nil {
 			return diag.Errorf("Error getting isos: %v", err)
 		}

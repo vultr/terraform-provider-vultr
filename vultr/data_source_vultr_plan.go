@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrPlan() *schema.Resource {
@@ -71,7 +71,7 @@ func dataSourceVultrPlanRead(ctx context.Context, d *schema.ResourceData, meta i
 	options := &govultr.ListOptions{}
 
 	for {
-		plans, meta, err := client.Plan.List(ctx, "", options)
+		plans, meta,_, err := client.Plan.List(ctx, "", options)
 		if err != nil {
 			return diag.Errorf("Error getting plans: %v", err)
 		}

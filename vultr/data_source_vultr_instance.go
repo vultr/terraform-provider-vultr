@@ -6,7 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrInstance() *schema.Resource {
@@ -163,7 +163,7 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 	for {
-		servers, meta, err := client.Instance.List(ctx, options)
+		servers, meta,_, err := client.Instance.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting servers: %v", err)
 		}
@@ -280,7 +280,7 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set instance `hostname` read value: %v", err)
 	}
 
-	schedule, err := client.Instance.GetBackupSchedule(ctx, serverList[0].ID)
+	schedule,_, err := client.Instance.GetBackupSchedule(ctx, serverList[0].ID)
 	if err != nil {
 		return diag.Errorf("error getting backup schedule: %v", err)
 	}
