@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrPrivateNetwork() *schema.Resource {
@@ -52,7 +52,7 @@ func dataSourceVultrPrivateNetworkRead(ctx context.Context, d *schema.ResourceDa
 	options := &govultr.ListOptions{}
 
 	for {
-		networks, meta, err := client.Network.List(ctx, options) // nolint
+		networks, meta, _, err := client.Network.List(ctx, options) // nolint
 		if err != nil {
 			return diag.Errorf("error getting networks: %v", err)
 		}

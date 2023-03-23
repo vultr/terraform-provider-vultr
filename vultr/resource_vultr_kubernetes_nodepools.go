@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func resourceVultrKubernetesNodePools() *schema.Resource {
@@ -38,7 +38,7 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 		MaxNodes:     d.Get("max_nodes").(int),
 	}
 
-	nodePool, err := client.Kubernetes.CreateNodePool(ctx, clusterID, req)
+	nodePool,_, err := client.Kubernetes.CreateNodePool(ctx, clusterID, req)
 	if err != nil {
 		return diag.Errorf("error creating node pool: %v", err)
 	}
@@ -62,7 +62,7 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 
 	clusterID := d.Get("cluster_id").(string)
 
-	nodePool, err := client.Kubernetes.GetNodePool(ctx, clusterID, d.Id())
+	nodePool,_, err := client.Kubernetes.GetNodePool(ctx, clusterID, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Unauthorized") {
 			return diag.Errorf("API authorization error: %v", err)
@@ -137,7 +137,7 @@ func resourceVultrKubernetesNodePoolsUpdate(ctx context.Context, d *schema.Resou
 		MaxNodes:     d.Get("max_nodes").(int),
 	}
 
-	if _, err := client.Kubernetes.UpdateNodePool(ctx, clusterID, d.Id(), req); err != nil {
+	if _,_, err := client.Kubernetes.UpdateNodePool(ctx, clusterID, d.Id(), req); err != nil {
 		return diag.Errorf("error deleting VKE node pool %v : %v", d.Id(), err)
 	}
 
@@ -178,7 +178,7 @@ func newNodePoolStateRefresh(ctx context.Context, d *schema.ResourceData, meta i
 
 		log.Printf("[INFO] Creating node pool")
 
-		np, err := client.Kubernetes.GetNodePool(ctx, d.Get("cluster_id").(string), d.Id())
+		np,_, err := client.Kubernetes.GetNodePool(ctx, d.Get("cluster_id").(string), d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving node pool %s ", d.Id())
 		}

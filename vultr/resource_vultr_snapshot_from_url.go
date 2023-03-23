@@ -3,7 +3,7 @@ package vultr
 import (
 	"context"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"log"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -59,7 +59,7 @@ func resourceVultrSnapshotFromURLCreate(ctx context.Context, d *schema.ResourceD
 		URL: d.Get("url").(string),
 	}
 
-	snapshot, err := client.Snapshot.CreateFromURL(ctx, snapReq)
+	snapshot,_, err := client.Snapshot.CreateFromURL(ctx, snapReq)
 	if err != nil {
 		return diag.Errorf("error creating snapshot: %v", err)
 	}

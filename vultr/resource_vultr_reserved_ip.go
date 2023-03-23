@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func resourceVultrReservedIP() *schema.Resource {
@@ -67,7 +67,7 @@ func resourceVultrReservedIPCreate(ctx context.Context, d *schema.ResourceData, 
 		Label:      d.Get("label").(string),
 		InstanceID: d.Get("instance_id").(string),
 	}
-	rip, err := client.ReservedIP.Create(ctx, req)
+	rip,_, err := client.ReservedIP.Create(ctx, req)
 	if err != nil {
 		return diag.Errorf("error creating reserved IP: %v", err)
 	}
@@ -87,7 +87,7 @@ func resourceVultrReservedIPCreate(ctx context.Context, d *schema.ResourceData, 
 func resourceVultrReservedIPRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	rip, err := client.ReservedIP.Get(ctx, d.Id())
+	rip,_, err := client.ReservedIP.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid reserved-ip ID") {
 			tflog.Warn(ctx, fmt.Sprintf("Removing reserved-ip (%s) because it is gone", d.Id()))
@@ -152,7 +152,7 @@ func resourceVultrReservedIPUpdate(ctx context.Context, d *schema.ResourceData, 
 			Label: govultr.StringToStringPtr(d.Get("label").(string)),
 		}
 
-		if _, err := client.ReservedIP.Update(ctx, d.Id(), req); err != nil {
+		if _,_, err := client.ReservedIP.Update(ctx, d.Id(), req); err != nil {
 			return diag.Errorf("error updating reserved IP %s : %s", d.Id(), err.Error())
 		}
 	}

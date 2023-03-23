@@ -10,7 +10,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func resourceVultrSnapshot() *schema.Resource {
@@ -66,7 +66,7 @@ func resourceVultrSnapshotCreate(ctx context.Context, d *schema.ResourceData, me
 		Description: d.Get("description").(string),
 	}
 
-	snapshot, err := client.Snapshot.Create(ctx, req)
+	snapshot,_, err := client.Snapshot.Create(ctx, req)
 	if err != nil {
 		return diag.Errorf("error creating snapshot: %v", err)
 	}
@@ -86,7 +86,7 @@ func resourceVultrSnapshotCreate(ctx context.Context, d *schema.ResourceData, me
 func resourceVultrSnapshotRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	snapshot, err := client.Snapshot.Get(ctx, d.Id())
+	snapshot,_, err := client.Snapshot.Get(ctx, d.Id())
 	if err != nil {
 		return diag.Errorf("error getting snapshots: %v", err)
 	}
@@ -153,7 +153,7 @@ func newSnapStateRefresh(d *schema.ResourceData, meta interface{}) resource.Stat
 	return func() (interface{}, string, error) {
 
 		log.Printf("[INFO] Creating Snapshot")
-		snap, err := client.Snapshot.Get(context.Background(), d.Id())
+		snap,_, err := client.Snapshot.Get(context.Background(), d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving Snapshot %s : %s", d.Id(), err)
 		}

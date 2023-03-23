@@ -12,7 +12,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func resourceVultrBlockStorage() *schema.Resource {
@@ -87,7 +87,7 @@ func resourceVultrBlockStorageCreate(ctx context.Context, d *schema.ResourceData
 		BlockType: d.Get("block_type").(string),
 	}
 
-	bs, err := client.BlockStorage.Create(ctx, bsReq)
+	bs,_, err := client.BlockStorage.Create(ctx, bsReq)
 	if err != nil {
 		return diag.Errorf("error creating block storage: %v", err)
 	}
@@ -105,7 +105,7 @@ func resourceVultrBlockStorageCreate(ctx context.Context, d *schema.ResourceData
 		// Wait for the BS state to become active for 30 seconds
 		bsReady := false
 		for i := 0; i <= 30; i++ {
-			bState, err := client.BlockStorage.Get(ctx, bs.ID)
+			bState,_, err := client.BlockStorage.Get(ctx, bs.ID)
 			if err != nil {
 				return diag.Errorf("error attaching: %s", err.Error())
 			}
@@ -136,7 +136,7 @@ func resourceVultrBlockStorageCreate(ctx context.Context, d *schema.ResourceData
 func resourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	bs, err := client.BlockStorage.Get(ctx, d.Id())
+	bs,_, err := client.BlockStorage.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid block storage ID") {
 			tflog.Warn(ctx, fmt.Sprintf("Removing block storage (%s) because it is gone", d.Id()))
@@ -201,7 +201,7 @@ func resourceVultrBlockStorageUpdate(ctx context.Context, d *schema.ResourceData
 
 		if old.(string) != "" {
 			// The following check is necessary so we do not erroneously detach after a formerly attached server has been tainted and/or destroyed.
-			bs, err := client.BlockStorage.Get(ctx, d.Id())
+			bs,_, err := client.BlockStorage.Get(ctx, d.Id())
 			if err != nil {
 				return diag.Errorf("error getting block storage: %v", err)
 			}
@@ -266,7 +266,7 @@ func newBlockStateRefresh(ctx context.Context, d *schema.ResourceData, meta inte
 	return func() (interface{}, string, error) {
 
 		log.Printf("[INFO] Creating Block")
-		block, err := client.BlockStorage.Get(ctx, d.Id())
+		block,_, err := client.BlockStorage.Get(ctx, d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving block %s : %s", d.Id(), err)
 		}

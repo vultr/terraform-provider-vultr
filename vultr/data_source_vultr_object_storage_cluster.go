@@ -6,7 +6,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrObjectStorageClusters() *schema.Resource {
@@ -47,7 +47,7 @@ func dataSourceVultrObjectStorageClustersRead(ctx context.Context, d *schema.Res
 	options := &govultr.ListOptions{}
 
 	for {
-		clusters, meta, err := client.ObjectStorage.ListCluster(ctx, options)
+		clusters, meta,_, err := client.ObjectStorage.ListCluster(ctx, options)
 		if err != nil {
 			return diag.Errorf("Error getting plans: %v", err)
 		}

@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -64,7 +64,7 @@ func resourceVultrIsoCreate(ctx context.Context, d *schema.ResourceData, meta in
 	log.Printf("[INFO] Creating new ISO")
 
 	isoReq := &govultr.ISOReq{URL: d.Get("url").(string)}
-	iso, err := client.ISO.Create(ctx, isoReq)
+	iso,_, err := client.ISO.Create(ctx, isoReq)
 	if err != nil {
 		return diag.Errorf("Error creating ISO : %v", err)
 	}
@@ -83,7 +83,7 @@ func resourceVultrIsoCreate(ctx context.Context, d *schema.ResourceData, meta in
 func resourceVultrIsoRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	iso, err := client.ISO.Get(ctx, d.Id())
+	iso,_, err := client.ISO.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains("Invalid iso", err.Error()) {
 			log.Printf("[WARN] Removing ISO (%s) because it is gone", d.Id())
@@ -144,7 +144,7 @@ func resourceVultrIsoDelete(ctx context.Context, d *schema.ResourceData, meta in
 		// default is 100 instances
 		var options govultr.ListOptions
 		for {
-			instances, responseMeta, err := client.Instance.List(ctx, &options)
+			instances, responseMeta,_, err := client.Instance.List(ctx, &options)
 			if err != nil {
 				return diag.Errorf("error deleting ISO %s : failed to list instances for detaching ISO: %v", d.Id(), err)
 			}
@@ -152,7 +152,7 @@ func resourceVultrIsoDelete(ctx context.Context, d *schema.ResourceData, meta in
 			// check for the instance with this IP, return on failure or discovery
 			for _, instance := range instances {
 				if instance.MainIP == ip {
-					if err := client.Instance.DetachISO(ctx, instance.ID); err != nil {
+					if _,err := client.Instance.DetachISO(ctx, instance.ID); err != nil {
 						return diag.Errorf("error deleting ISO %s : failed to detach from instances %s : %v", d.Id(), instance.ID, err)
 					}
 					_, err := waitForIsoDetached(ctx, instance.ID, "ready", []string{"isomounted"}, "status", meta)
@@ -204,7 +204,7 @@ func newIsoStateRefresh(ctx context.Context,
 	return func() (interface{}, string, error) {
 
 		log.Printf("[INFO] Creating Private ISO")
-		iso, err := client.ISO.Get(ctx, d.Id())
+		iso, _,err := client.ISO.Get(ctx, d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving ISO %s : %s", d.Id(), err)
 		}
@@ -237,7 +237,7 @@ func isoDetachStateRefresh(ctx context.Context, instanceID string, meta interfac
 	return func() (interface{}, string, error) {
 
 		log.Printf("[INFO] Detaching ISO")
-		iso, err := client.Instance.ISOStatus(ctx, instanceID)
+		iso,_, err := client.Instance.ISOStatus(ctx, instanceID)
 		if err != nil {
 			return nil, "", fmt.Errorf("error getting ISO status for instance %s : %s", instanceID, err)
 		}

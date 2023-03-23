@@ -9,7 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func resourceVultrSSHKey() *schema.Resource {
@@ -48,7 +48,7 @@ func resourceVultrSSHKeyCreate(ctx context.Context, d *schema.ResourceData, meta
 		SSHKey: d.Get("ssh_key").(string),
 	}
 
-	key, err := client.SSHKey.Create(ctx, sshReq)
+	key,_, err := client.SSHKey.Create(ctx, sshReq)
 	if err != nil {
 		return diag.Errorf("error creating SSH key: %v", err)
 	}
@@ -62,7 +62,7 @@ func resourceVultrSSHKeyCreate(ctx context.Context, d *schema.ResourceData, meta
 func resourceVultrSSHKeyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	key, err := client.SSHKey.Get(ctx, d.Id())
+	key,_, err := client.SSHKey.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid ssh key") {
 			tflog.Warn(ctx, fmt.Sprintf("Removing ssh key (%s) because it is gone", d.Id()))

@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 var tfVKEDefault = "tf-vke-default"
@@ -101,7 +101,7 @@ func resourceVultrKubernetesCreate(ctx context.Context, d *schema.ResourceData, 
 		NodePools: nodePoolReq,
 	}
 
-	cluster, err := client.Kubernetes.CreateCluster(ctx, req)
+	cluster,_, err := client.Kubernetes.CreateCluster(ctx, req)
 	if err != nil {
 		return diag.Errorf("error creating kubernetes cluster: %v", err)
 	}
@@ -120,7 +120,7 @@ func resourceVultrKubernetesCreate(ctx context.Context, d *schema.ResourceData, 
 func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	vke, err := client.Kubernetes.GetCluster(ctx, d.Id())
+	vke,_, err := client.Kubernetes.GetCluster(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Unauthorized") {
 			return diag.Errorf("API authorization error: %v", err)
@@ -162,7 +162,7 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set resource kubernetes `status` read value: %v", err)
 	}
 
-	config, err := client.Kubernetes.GetKubeConfig(ctx, d.Id())
+	config,_, err := client.Kubernetes.GetKubeConfig(ctx, d.Id())
 	if err != nil {
 		return diag.Errorf("could not get kubeconfig : %v", err)
 	}
@@ -202,7 +202,7 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 				// Not updating tag for default node pool since it's needed to lookup in terraform
 			}
 
-			if _, err := client.Kubernetes.UpdateNodePool(ctx, d.Id(), n["id"].(string), req); err != nil {
+			if _,_, err := client.Kubernetes.UpdateNodePool(ctx, d.Id(), n["id"].(string), req); err != nil {
 				return diag.Errorf("error updating VKE node pool %v : %v", d.Id(), err)
 			}
 		} else if len(newNP.([]interface{})) == 0 && len(oldNP.([]interface{})) != 0 {
@@ -227,7 +227,7 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 				Label:        n["label"].(string),
 			}
 
-			if _, err := client.Kubernetes.CreateNodePool(ctx, d.Id(), req); err != nil {
+			if _,_, err := client.Kubernetes.CreateNodePool(ctx, d.Id(), req); err != nil {
 				return diag.Errorf("error creating VKE node pool %v : %v", d.Id(), err)
 			}
 		}
@@ -292,7 +292,7 @@ func newVKEStateRefresh(ctx context.Context, d *schema.ResourceData, meta interf
 
 		log.Printf("[INFO] Creating kubernetes cluster")
 
-		vke, err := client.Kubernetes.GetCluster(ctx, d.Id())
+		vke,_, err := client.Kubernetes.GetCluster(ctx, d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving kubernetes cluster %s ", d.Id())
 		}

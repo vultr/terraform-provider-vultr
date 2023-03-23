@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrFirewallGroup() *schema.Resource {
@@ -56,7 +56,7 @@ func dataSourceVultrFirewallGroupRead(ctx context.Context, d *schema.ResourceDat
 	options := &govultr.ListOptions{}
 
 	for {
-		firewallGroup, meta, err := client.FirewallGroup.List(ctx, options)
+		firewallGroup, meta,_, err := client.FirewallGroup.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting firewall group: %v", err)
 		}

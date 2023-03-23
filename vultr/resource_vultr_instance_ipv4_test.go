@@ -82,7 +82,7 @@ func vultrInstanceIPV4Exists(rs *terraform.ResourceState) (bool, error) {
 		return false, errors.New("error getting instance ID")
 	}
 
-	ipv4s, _, err := client.Instance.ListIPv4(context.Background(), instanceID, nil)
+	ipv4s, _,_, err := client.Instance.ListIPv4(context.Background(), instanceID, nil)
 	if err != nil {
 		return false, fmt.Errorf("error getting IPv4s: %v", err)
 	}

@@ -111,7 +111,7 @@ func testAccCheckVultrLoadBalancerDestroy(s *terraform.State) error {
 		id := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		_, err := client.LoadBalancer.Get(context.Background(), id)
+		_,_, err := client.LoadBalancer.Get(context.Background(), id)
 		if err == nil {
 			return fmt.Errorf("load balancer still exists: %s", id)
 		}

@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrSnapshot() *schema.Resource {
@@ -56,7 +56,7 @@ func dataSourceVultrSnapshotRead(ctx context.Context, d *schema.ResourceData, me
 	options := &govultr.ListOptions{}
 
 	for {
-		snapshots, meta, err := client.Snapshot.List(ctx, options)
+		snapshots, meta,_, err := client.Snapshot.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting snapshots: %v", err)
 		}

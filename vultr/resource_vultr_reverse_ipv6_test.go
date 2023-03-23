@@ -106,7 +106,7 @@ func vultrReverseIPV6Exists(rs *terraform.ResourceState) (bool, error) {
 		return false, errors.New("error getting instance ID")
 	}
 
-	reverseIPV6s, err := client.Instance.ListReverseIPv6(context.Background(), instanceID)
+	reverseIPV6s,_, err := client.Instance.ListReverseIPv6(context.Background(), instanceID)
 	if err != nil {
 		return false, fmt.Errorf("error getting reverse IPv6s: %v", err)
 	}

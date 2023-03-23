@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/logging"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/meta"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 	"golang.org/x/oauth2"
 )
 

@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func resourceVultrDNSDomain() *schema.Resource {
@@ -63,7 +63,7 @@ func resourceVultrDNSDomainCreate(ctx context.Context, d *schema.ResourceData, m
 
 	log.Print("[INFO] Creating domain")
 
-	domain, err := client.Domain.Create(ctx, domainReq)
+	domain,_, err := client.Domain.Create(ctx, domainReq)
 	if err != nil {
 		return diag.Errorf("error while creating domain : %s", err)
 	}
@@ -76,7 +76,7 @@ func resourceVultrDNSDomainCreate(ctx context.Context, d *schema.ResourceData, m
 func resourceVultrDNSDomainRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	domain, err := client.Domain.Get(ctx, d.Id())
+	domain,_, err := client.Domain.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid domain") {
 			tflog.Warn(ctx, fmt.Sprintf("Removing domain (%s) because it is gone", d.Id()))

@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrSSHKey() *schema.Resource {
@@ -44,7 +44,7 @@ func dataSourceVultrSSHKeyRead(ctx context.Context, d *schema.ResourceData, meta
 	options := &govultr.ListOptions{}
 
 	for {
-		sshKeys, meta, err := client.SSHKey.List(ctx, options)
+		sshKeys, meta,_, err := client.SSHKey.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting SSH keys: %v", err)
 		}

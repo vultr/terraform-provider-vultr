@@ -51,7 +51,7 @@ func testAccCheckVultrIsoScriptDestroy(s *terraform.State) error {
 			continue
 		}
 
-		if _, err := client.ISO.Get(context.Background(), rs.Primary.ID); err == nil {
+		if _,_, err := client.ISO.Get(context.Background(), rs.Primary.ID); err == nil {
 			return fmt.Errorf("ISO still exists : %s", rs.Primary.ID)
 		}
 

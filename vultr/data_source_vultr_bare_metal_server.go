@@ -5,7 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/vultr/govultr/v2"
+	"github.com/vultr/govultr/v3"
 )
 
 func dataSourceVultrBareMetalServer() *schema.Resource {
@@ -117,7 +117,7 @@ func dataSourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceD
 	options := &govultr.ListOptions{}
 
 	for {
-		servers, meta, err := client.BareMetalServer.List(ctx, options)
+		servers, meta,_, err := client.BareMetalServer.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting bare metal servers: %v", err)
 		}
