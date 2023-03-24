@@ -13,6 +13,10 @@ func dataSourceVultrSSHKey() *schema.Resource {
 		ReadContext: dataSourceVultrSSHKeyRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
+			"id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"name": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -44,7 +48,7 @@ func dataSourceVultrSSHKeyRead(ctx context.Context, d *schema.ResourceData, meta
 	options := &govultr.ListOptions{}
 
 	for {
-		sshKeys, meta,_, err := client.SSHKey.List(ctx, options)
+		sshKeys, meta, _, err := client.SSHKey.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting SSH keys: %v", err)
 		}
