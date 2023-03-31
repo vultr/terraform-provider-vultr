@@ -113,7 +113,7 @@ func dataSourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, 
 		return diag.Errorf("no results were found")
 	}
 
-	kubeConfig,_, err := client.Kubernetes.GetKubeConfig(ctx, k8List[0].ID)
+	kubeConfig, _, err := client.Kubernetes.GetKubeConfig(ctx, k8List[0].ID)
 	if err != nil {
 		return diag.Errorf("error getting kubeconfig")
 	}

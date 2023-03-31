@@ -63,7 +63,7 @@ func resourceVultrDNSDomainCreate(ctx context.Context, d *schema.ResourceData, m
 
 	log.Print("[INFO] Creating domain")
 
-	domain,_, err := client.Domain.Create(ctx, domainReq)
+	domain, _, err := client.Domain.Create(ctx, domainReq)
 	if err != nil {
 		return diag.Errorf("error while creating domain : %s", err)
 	}
@@ -76,7 +76,7 @@ func resourceVultrDNSDomainCreate(ctx context.Context, d *schema.ResourceData, m
 func resourceVultrDNSDomainRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	domain,_, err := client.Domain.Get(ctx, d.Id())
+	domain, _, err := client.Domain.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid domain") {
 			tflog.Warn(ctx, fmt.Sprintf("Removing domain (%s) because it is gone", d.Id()))

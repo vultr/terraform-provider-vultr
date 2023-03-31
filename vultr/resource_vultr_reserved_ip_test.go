@@ -145,7 +145,7 @@ func testAccCheckVultrReservedIPDestroy(s *terraform.State) error {
 		ripID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		_,_, err := client.ReservedIP.Get(context.Background(), ripID)
+		_, _, err := client.ReservedIP.Get(context.Background(), ripID)
 		if err == nil {
 			return fmt.Errorf("reserved IP still exists: %s", ripID)
 		}
@@ -167,7 +167,7 @@ func testAccCheckVultrReservedIPExists(n string) resource.TestCheckFunc {
 		ripID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		if _,_, err := client.ReservedIP.Get(context.Background(), ripID); err != nil {
+		if _, _, err := client.ReservedIP.Get(context.Background(), ripID); err != nil {
 			return fmt.Errorf("reserved IP does not exist: %s", ripID)
 		}
 

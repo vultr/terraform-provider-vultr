@@ -61,7 +61,7 @@ func resourceVultrReverseIPV6Read(ctx context.Context, d *schema.ResourceData, m
 
 	reverseIPV6 := &govultr.ReverseIP{}
 
-	reverseIPv6s,_, err := client.Instance.ListReverseIPv6(ctx, instanceID)
+	reverseIPv6s, _, err := client.Instance.ListReverseIPv6(ctx, instanceID)
 	if err != nil {
 		return diag.Errorf("error getting reverse IPv4s: %v, %v", err, instanceID)
 	}

@@ -54,7 +54,7 @@ func resourceVultrInstanceIPV4Create(ctx context.Context, d *schema.ResourceData
 
 	log.Printf("[INFO] Creating IPv4")
 
-	ip,_, err := client.Instance.CreateIPv4(ctx, instanceID, govultr.BoolToBoolPtr(d.Get("reboot").(bool)))
+	ip, _, err := client.Instance.CreateIPv4(ctx, instanceID, govultr.BoolToBoolPtr(d.Get("reboot").(bool)))
 	if err != nil {
 		return diag.Errorf("error creating IPv4: %v", err)
 	}
@@ -76,7 +76,7 @@ func resourceVultrInstanceIPV4Read(ctx context.Context, d *schema.ResourceData, 
 	options := &govultr.ListOptions{}
 
 	for {
-		ips, meta,_, err := client.Instance.ListIPv4(ctx, instanceID, options)
+		ips, meta, _, err := client.Instance.ListIPv4(ctx, instanceID, options)
 		if err != nil {
 			return diag.Errorf("error getting IPv4s: %v", err)
 		}

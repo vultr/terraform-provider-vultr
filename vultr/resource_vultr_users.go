@@ -74,7 +74,7 @@ func resourceVultrUsersCreate(ctx context.Context, d *schema.ResourceData, meta 
 		userReq.ACL = aclMap
 	}
 
-	user,_, err := client.User.Create(context.Background(), userReq)
+	user, _, err := client.User.Create(context.Background(), userReq)
 	if err != nil {
 		return diag.Errorf("error creating user: %v", err)
 	}
@@ -90,7 +90,7 @@ func resourceVultrUsersCreate(ctx context.Context, d *schema.ResourceData, meta 
 func resourceVultrUsersRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	user,_, err := client.User.Get(ctx, d.Id())
+	user, _, err := client.User.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid user") {
 			tflog.Warn(ctx, fmt.Sprintf("Removing user (%s) because it is gone", d.Id()))

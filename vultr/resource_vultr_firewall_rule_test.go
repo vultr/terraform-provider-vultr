@@ -114,11 +114,11 @@ func testAccCheckVultrFirewallRuleDestroy(s *terraform.State) error {
 		groupID := rs.Primary.Attributes["firewall_group_id"]
 
 		// If the group exists, something went wrong, probably
-		_,_, groupErr := client.FirewallGroup.Get(context.Background(), groupID)
+		_, _, groupErr := client.FirewallGroup.Get(context.Background(), groupID)
 		if groupErr == nil {
 
 			// group and rules don't throw an error from the api so the resources still exist
-			_, _,_, rulesErr := client.FirewallRule.List(context.Background(), groupID, nil)
+			_, _, _, rulesErr := client.FirewallRule.List(context.Background(), groupID, nil)
 			if rulesErr == nil {
 				return fmt.Errorf("firewall rules still exist: %s", rulesErr)
 			}

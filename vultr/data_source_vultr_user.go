@@ -47,7 +47,7 @@ func dataSourceVultrUserRead(ctx context.Context, d *schema.ResourceData, meta i
 	userList := []govultr.User{}
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	for {
-		users, meta,_, err := client.User.List(ctx, options)
+		users, meta, _, err := client.User.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting users: %v", err)
 		}
