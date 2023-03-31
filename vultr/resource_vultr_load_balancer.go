@@ -296,7 +296,7 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		req.VPC = govultr.StringToStringPtr(d.Get("vpc").(string))
 	}
 
-	lb,_, err := client.LoadBalancer.Create(ctx, req)
+	lb, _, err := client.LoadBalancer.Create(ctx, req)
 	if err != nil {
 		return diag.Errorf("error creating load balancer: %v", err)
 	}
@@ -316,7 +316,7 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	lb,_, err := client.LoadBalancer.Get(ctx, d.Id())
+	lb, _, err := client.LoadBalancer.Get(ctx, d.Id())
 	if err != nil {
 		log.Printf("[WARN] Vultr load balancer (%v) not found", d.Id())
 		d.SetId("")
@@ -545,7 +545,7 @@ func waitForLBAvailable(ctx context.Context, d *schema.ResourceData, target stri
 		"[INFO] Waiting for load balancer (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &resource.StateChangeConf{
+	stateConf := &resource.StateChangeConf{ // nolint:all
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newLBStateRefresh(ctx, d, meta, attribute),
@@ -558,13 +558,13 @@ func waitForLBAvailable(ctx context.Context, d *schema.ResourceData, target stri
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newLBStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc {
+func newLBStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc { // nolint:all
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 
 		log.Printf("[INFO] Creating load balancer")
 
-		lb,_, err := client.LoadBalancer.Get(ctx, d.Id())
+		lb, _, err := client.LoadBalancer.Get(ctx, d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving lb %s ", d.Id())
 		}

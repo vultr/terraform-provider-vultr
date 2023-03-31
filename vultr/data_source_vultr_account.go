@@ -48,7 +48,7 @@ func dataSourceVultrAccount() *schema.Resource {
 func dataSourceVultrAccountRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	account,_, err := client.Account.Get(ctx)
+	account, _, err := client.Account.Get(ctx)
 
 	if err != nil {
 		return diag.Errorf("error getting account info: %v", err)

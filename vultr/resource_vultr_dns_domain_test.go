@@ -78,7 +78,7 @@ func testAccCheckVultrDNSDomainDestroy(s *terraform.State) error {
 			continue
 		}
 
-		_,_, err := client.Domain.Get(context.Background(), rs.Primary.ID)
+		_, _, err := client.Domain.Get(context.Background(), rs.Primary.ID)
 		if err == nil {
 			return fmt.Errorf("domain still exists : %s", rs.Primary.ID)
 		}

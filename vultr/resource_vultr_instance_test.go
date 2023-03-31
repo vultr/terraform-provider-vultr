@@ -213,7 +213,7 @@ func testAccCheckVultrInstanceDestroy(s *terraform.State) error {
 		}
 
 		client := testAccProvider.Meta().(*Client).govultrClient()
-		_,_, err := client.Instance.Get(context.Background(), rs.Primary.ID)
+		_, _, err := client.Instance.Get(context.Background(), rs.Primary.ID)
 		if err != nil {
 			if strings.Contains(err.Error(), "Server is pending destruction") {
 				return nil

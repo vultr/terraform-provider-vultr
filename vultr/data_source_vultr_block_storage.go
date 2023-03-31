@@ -66,7 +66,7 @@ func dataSourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 	for {
-		block, meta,_, err := client.BlockStorage.List(ctx, options)
+		block, meta, _, err := client.BlockStorage.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting block storages: %v", err)
 		}

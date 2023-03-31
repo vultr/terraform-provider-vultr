@@ -67,7 +67,7 @@ func resourceVultrDNSRecordCreate(ctx context.Context, d *schema.ResourceData, m
 	}
 
 	log.Print("[INFO] Creating DNS record")
-	record,_, err := client.DomainRecord.Create(ctx, d.Get("domain").(string), recordReq)
+	record, _, err := client.DomainRecord.Create(ctx, d.Get("domain").(string), recordReq)
 	if err != nil {
 		return diag.Errorf("error creating DNS record : %v", err)
 	}
@@ -78,7 +78,7 @@ func resourceVultrDNSRecordCreate(ctx context.Context, d *schema.ResourceData, m
 func resourceVultrDNSRecordRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	record,_, err := client.DomainRecord.Get(ctx, d.Get("domain").(string), d.Id())
+	record, _, err := client.DomainRecord.Get(ctx, d.Get("domain").(string), d.Id())
 	if err != nil {
 		log.Printf("[WARN] DNS Record %s not found", d.Id())
 		d.SetId("")
@@ -146,7 +146,7 @@ func resourceVultrDNSRecordImport(ctx context.Context, d *schema.ResourceData, m
 	}
 	domain, recordID := importID[:commaIdx], importID[commaIdx+1:]
 
-	record,_, err := client.DomainRecord.Get(ctx, domain, recordID)
+	record, _, err := client.DomainRecord.Get(ctx, domain, recordID)
 	if err != nil {
 		return nil, fmt.Errorf("DNS record not found for domain %s", domain)
 	}

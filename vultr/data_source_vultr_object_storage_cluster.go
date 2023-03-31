@@ -47,7 +47,7 @@ func dataSourceVultrObjectStorageClustersRead(ctx context.Context, d *schema.Res
 	options := &govultr.ListOptions{}
 
 	for {
-		clusters, meta,_, err := client.ObjectStorage.ListCluster(ctx, options)
+		clusters, meta, _, err := client.ObjectStorage.ListCluster(ctx, options)
 		if err != nil {
 			return diag.Errorf("Error getting plans: %v", err)
 		}

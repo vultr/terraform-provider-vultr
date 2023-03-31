@@ -54,7 +54,7 @@ func resourceVultrFirewallGroupCreate(ctx context.Context, d *schema.ResourceDat
 
 	fwReq := &govultr.FirewallGroupReq{Description: d.Get("description").(string)}
 	log.Printf("[INFO] Creating new firewall group")
-	fwGroup,_, err := client.FirewallGroup.Create(ctx, fwReq)
+	fwGroup, _, err := client.FirewallGroup.Create(ctx, fwReq)
 	if err != nil {
 		return diag.Errorf("error creating firewall group: %v", err)
 	}
@@ -67,7 +67,7 @@ func resourceVultrFirewallGroupCreate(ctx context.Context, d *schema.ResourceDat
 func resourceVultrFirewallGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	group,_, err := client.FirewallGroup.Get(ctx, d.Id())
+	group, _, err := client.FirewallGroup.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "\"status\":404") {
 			log.Printf("[WARN] Removing firewall group (%s) because it is gone", d.Id())

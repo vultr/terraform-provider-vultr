@@ -38,7 +38,7 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 		MaxNodes:     d.Get("max_nodes").(int),
 	}
 
-	nodePool,_, err := client.Kubernetes.CreateNodePool(ctx, clusterID, req)
+	nodePool, _, err := client.Kubernetes.CreateNodePool(ctx, clusterID, req)
 	if err != nil {
 		return diag.Errorf("error creating node pool: %v", err)
 	}
@@ -62,7 +62,7 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 
 	clusterID := d.Get("cluster_id").(string)
 
-	nodePool,_, err := client.Kubernetes.GetNodePool(ctx, clusterID, d.Id())
+	nodePool, _, err := client.Kubernetes.GetNodePool(ctx, clusterID, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Unauthorized") {
 			return diag.Errorf("API authorization error: %v", err)
@@ -137,7 +137,7 @@ func resourceVultrKubernetesNodePoolsUpdate(ctx context.Context, d *schema.Resou
 		MaxNodes:     d.Get("max_nodes").(int),
 	}
 
-	if _,_, err := client.Kubernetes.UpdateNodePool(ctx, clusterID, d.Id(), req); err != nil {
+	if _, _, err := client.Kubernetes.UpdateNodePool(ctx, clusterID, d.Id(), req); err != nil {
 		return diag.Errorf("error deleting VKE node pool %v : %v", d.Id(), err)
 	}
 
@@ -159,7 +159,7 @@ func waitForNodePoolAvailable(ctx context.Context, d *schema.ResourceData, targe
 		"[INFO] Waiting for node pool (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &resource.StateChangeConf{
+	stateConf := &resource.StateChangeConf{ // nolint:all
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newNodePoolStateRefresh(ctx, d, meta, attribute),
@@ -172,13 +172,13 @@ func waitForNodePoolAvailable(ctx context.Context, d *schema.ResourceData, targe
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newNodePoolStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc {
+func newNodePoolStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc { // nolint:all
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 
 		log.Printf("[INFO] Creating node pool")
 
-		np,_, err := client.Kubernetes.GetNodePool(ctx, d.Get("cluster_id").(string), d.Id())
+		np, _, err := client.Kubernetes.GetNodePool(ctx, d.Get("cluster_id").(string), d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving node pool %s ", d.Id())
 		}

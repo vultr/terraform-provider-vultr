@@ -61,7 +61,7 @@ func resourceVultrStartupScriptCreate(ctx context.Context, d *schema.ResourceDat
 		Type:   d.Get("type").(string),
 	}
 
-	s,_, err := client.StartupScript.Create(ctx, scriptReq)
+	s, _, err := client.StartupScript.Create(ctx, scriptReq)
 	if err != nil {
 		return diag.Errorf("Error creating startup script: %v", err)
 	}
@@ -75,7 +75,7 @@ func resourceVultrStartupScriptCreate(ctx context.Context, d *schema.ResourceDat
 func resourceVultrStartupScriptRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	script,_, err := client.StartupScript.Get(ctx, d.Id())
+	script, _, err := client.StartupScript.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid startup script ID") {
 			tflog.Warn(ctx, fmt.Sprintf("Removing startup script (%s) because it is gone", d.Id()))

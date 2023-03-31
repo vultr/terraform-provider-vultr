@@ -13,12 +13,12 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.20
+          go-version: "1.20"
 
       - name: Install dependencies
         run: |
           go version
-          go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.49.0
+          go install github.com/golangci/golangci-lint/cmd/golangci-lint@v1.52.2
       - name: Run golangci-lint
         run: |
           golangci-lint run vultr/...
@@ -31,7 +31,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
-          go-version: 1.20
+          go-version: "1.20"
 
       - name: Run fmt
         run: |

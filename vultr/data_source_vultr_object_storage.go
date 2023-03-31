@@ -68,7 +68,7 @@ func dataSourceVultrObjectStorageRead(ctx context.Context, d *schema.ResourceDat
 	options := &govultr.ListOptions{}
 
 	for {
-		objectStorages, meta,_, err := client.ObjectStorage.List(ctx, options)
+		objectStorages, meta, _, err := client.ObjectStorage.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting object storage list: %v", filtersOK)
 		}
