@@ -1,9 +1,32 @@
 # Change log
+
+## [v2.13.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.12.1...v2.13.0) (2023-04-03)
+Enhancement:
+- resource/reserved ip: Add missing resource warning for reserved IP [PR 327](https://github.com/vultr/terraform-provider-vultr/pull/327)
+- resource/dns domain: Add missing resource warnings [PR 323](https://github.com/vultr/terraform-provider-vultr/pull/323)
+- resource/block storage: Add missing resource warnings [PR 323](https://github.com/vultr/terraform-provider-vultr/pull/323)
+- resource/user: Add missing resource warnings [PR 323](https://github.com/vultr/terraform-provider-vultr/pull/323)
+- resource/startup script: Add missing resource warnings [PR 323](https://github.com/vultr/terraform-provider-vultr/pull/323)
+- resource/ssh key: Add missing resource warnings [PR 323](https://github.com/vultr/terraform-provider-vultr/pull/323)
+- resource/firewall rule: Add missing resource warnings [PR 323](https://github.com/vultr/terraform-provider-vultr/pull/323)
+
+Dependencies:
+- Bump golang.org/x/text from 0.3.7 to 0.3.8 [PR 324](https://github.com/vultr/terraform-provider-vultr/pull/324)
+- Update govultr to v3.0.1 [PR 336](https://github.com/vultr/terraform-provider-vultr/pull/336)
+- Bump github.com/vultr/govultr/v3 from 3.0.1 to 3.0.2 [PR 339](https://github.com/vultr/terraform-provider-vultr/pull/339)
+
+Automation:
+- Fix broken workflows resulting from go version 1.20 [PR 340](https://github.com/vultr/terraform-provider-vultr/pull/340)
+- bump setup-go in github workflow [PR 337](https://github.com/vultr/terraform-provider-vultr/pull/337)
+
+New Contributors:
+- @mondragonfx made their first contribution in [PR 336](https://github.com/vultr/terraform-provider-vultr/pull/336)
+
 ## [v2.12.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.12.0...v2.12.1) (2023-02-10)
 Enhancement:
-* resource/instance: Add check for & detach of ISO on instance delete [312](https://github.com/vultr/terraform-provider-vultr/pull/312)
-* All resources that use "region":
-    * Add DiffSuppressFunc to ignore case [318](https://github.com/vultr/terraform-provider-vultr/pull/318)
+- resource/instance: Add check for & detach of ISO on instance delete [312](https://github.com/vultr/terraform-provider-vultr/pull/312)
+- All resources that use "region":
+    - Add DiffSuppressFunc to ignore case [318](https://github.com/vultr/terraform-provider-vultr/pull/318)
 
 ## [v2.12.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.4...v2.12.0) (2022-12-08)
 Enhancement:
