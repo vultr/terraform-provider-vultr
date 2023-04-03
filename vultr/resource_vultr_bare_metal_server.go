@@ -224,7 +224,7 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 
 	client := meta.(*Client).govultrClient()
 
-	bm,_, err := client.BareMetalServer.Create(ctx, req)
+	bm, _, err := client.BareMetalServer.Create(ctx, req)
 	if err != nil {
 		return diag.Errorf("error creating bare metal server: %v", err)
 	}
@@ -242,7 +242,7 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	bms,_, err := client.BareMetalServer.Get(ctx, d.Id())
+	bms, _, err := client.BareMetalServer.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid server") {
 			log.Printf("[WARN] Removing bare metal server %s because it is gone", d.Id())
@@ -350,7 +350,7 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 		req.Tags = newTags
 	}
 
-	if _,_, err := client.BareMetalServer.Update(ctx, d.Id(), req); err != nil {
+	if _, _, err := client.BareMetalServer.Update(ctx, d.Id(), req); err != nil {
 		return diag.Errorf("error updating bare metal %s : %s", d.Id(), err.Error())
 	}
 
@@ -389,7 +389,7 @@ func bareMetalServerOSCheck(options map[string]bool) (string, error) {
 func waitForBareMetalServerActiveStatus(ctx context.Context, d *schema.ResourceData, meta interface{}) (interface{}, error) {
 	log.Printf("[INFO] Waiting for bare metal server (%s) to have status of active", d.Id())
 
-	stateConf := &resource.StateChangeConf{
+	stateConf := &resource.StateChangeConf{ //nolint:all
 		Pending:    []string{"pending"},
 		Target:     []string{"active"},
 		Refresh:    newBareMetalServerStatusStateRefresh(ctx, d, meta),
@@ -403,11 +403,11 @@ func waitForBareMetalServerActiveStatus(ctx context.Context, d *schema.ResourceD
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newBareMetalServerStatusStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}) resource.StateRefreshFunc {
+func newBareMetalServerStatusStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}) resource.StateRefreshFunc { //nolint:all
 	client := meta.(*Client).govultrClient()
 
 	return func() (interface{}, string, error) {
-		bms,_, err := client.BareMetalServer.Get(ctx, d.Id())
+		bms, _, err := client.BareMetalServer.Get(ctx, d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving bare metal server %s : %s", d.Id(), err)
 		}

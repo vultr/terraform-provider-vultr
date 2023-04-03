@@ -64,7 +64,7 @@ func resourceVultrVPCCreate(ctx context.Context, d *schema.ResourceData, meta in
 		V4SubnetMask: d.Get("v4_subnet_mask").(int),
 	}
 
-	vpc,_, err := client.VPC.Create(ctx, vpcReq)
+	vpc, _, err := client.VPC.Create(ctx, vpcReq)
 	if err != nil {
 		return diag.Errorf("error creating VPC: %v", err)
 	}
@@ -78,7 +78,7 @@ func resourceVultrVPCCreate(ctx context.Context, d *schema.ResourceData, meta in
 func resourceVultrVPCRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	vpc,_, err := client.VPC.Get(ctx, d.Id())
+	vpc, _, err := client.VPC.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid VPC ID") {
 			log.Printf("[WARN] Vultr VPC (%s) not found", d.Id())

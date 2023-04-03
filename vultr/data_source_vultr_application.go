@@ -56,7 +56,7 @@ func dataSourceVultrApplicationRead(ctx context.Context, d *schema.ResourceData,
 	options := &govultr.ListOptions{}
 
 	for {
-		apps, meta,_, err := client.Application.List(ctx, options)
+		apps, meta, _, err := client.Application.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting applications: %v", err)
 		}

@@ -77,7 +77,7 @@ func resourceVultrReverseIPV4Read(ctx context.Context, d *schema.ResourceData, m
 
 	options := &govultr.ListOptions{}
 	for {
-		ReverseIPV4s, meta,_, err := client.Instance.ListIPv4(ctx, instanceID, options)
+		ReverseIPV4s, meta, _, err := client.Instance.ListIPv4(ctx, instanceID, options)
 		if err != nil {
 			return diag.Errorf("error getting reverse IPv4s: %v, %v", err, instanceID)
 		}

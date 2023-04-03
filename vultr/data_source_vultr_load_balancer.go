@@ -102,7 +102,7 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 	for {
-		lbs, meta,_, err := client.LoadBalancer.List(ctx, options)
+		lbs, meta, _, err := client.LoadBalancer.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting load balancer: %v", err)
 		}

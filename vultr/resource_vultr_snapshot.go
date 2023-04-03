@@ -66,7 +66,7 @@ func resourceVultrSnapshotCreate(ctx context.Context, d *schema.ResourceData, me
 		Description: d.Get("description").(string),
 	}
 
-	snapshot,_, err := client.Snapshot.Create(ctx, req)
+	snapshot, _, err := client.Snapshot.Create(ctx, req)
 	if err != nil {
 		return diag.Errorf("error creating snapshot: %v", err)
 	}
@@ -86,7 +86,7 @@ func resourceVultrSnapshotCreate(ctx context.Context, d *schema.ResourceData, me
 func resourceVultrSnapshotRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	snapshot,_, err := client.Snapshot.Get(ctx, d.Id())
+	snapshot, _, err := client.Snapshot.Get(ctx, d.Id())
 	if err != nil {
 		return diag.Errorf("error getting snapshots: %v", err)
 	}
@@ -135,7 +135,7 @@ func waitForSnapshot(ctx context.Context, d *schema.ResourceData, target string,
 		"[INFO] Waiting for Snapshot (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &resource.StateChangeConf{
+	stateConf := &resource.StateChangeConf{ // nolint:all
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newSnapStateRefresh(d, meta),
@@ -148,12 +148,12 @@ func waitForSnapshot(ctx context.Context, d *schema.ResourceData, target string,
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newSnapStateRefresh(d *schema.ResourceData, meta interface{}) resource.StateRefreshFunc {
+func newSnapStateRefresh(d *schema.ResourceData, meta interface{}) resource.StateRefreshFunc { // nolint:all
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 
 		log.Printf("[INFO] Creating Snapshot")
-		snap,_, err := client.Snapshot.Get(context.Background(), d.Id())
+		snap, _, err := client.Snapshot.Get(context.Background(), d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving Snapshot %s : %s", d.Id(), err)
 		}

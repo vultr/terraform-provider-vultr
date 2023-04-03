@@ -48,7 +48,7 @@ func testAccCheckVultrFirewallGroupDestroy(s *terraform.State) error {
 			continue
 		}
 
-		_,_, err := client.FirewallGroup.Get(context.Background(), rs.Primary.ID)
+		_, _, err := client.FirewallGroup.Get(context.Background(), rs.Primary.ID)
 		if err == nil {
 			return fmt.Errorf("firewall group still exists : %s", err)
 		}
@@ -71,7 +71,7 @@ func testAccCheckVultrFirewallGroupExists(n string) resource.TestCheckFunc {
 		keyID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		key,_, err := client.FirewallGroup.Get(context.Background(), keyID)
+		key, _, err := client.FirewallGroup.Get(context.Background(), keyID)
 		if err != nil {
 			return fmt.Errorf("error getting firewall group : %s", err)
 		}

@@ -81,7 +81,7 @@ func testAccCheckVultrBareMetalServerDestroy(s *terraform.State) error {
 
 		bmsID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
-		_,_, err := client.BareMetalServer.Get(context.Background(), bmsID)
+		_, _, err := client.BareMetalServer.Get(context.Background(), bmsID)
 		if err != nil {
 			if strings.Contains(err.Error(), "Invalid server") {
 				return nil
@@ -107,7 +107,7 @@ func testAccCheckVultrBareMetalServerExists(n string) resource.TestCheckFunc {
 
 		bmsID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
-		_,_, err := client.BareMetalServer.Get(context.Background(), bmsID)
+		_, _, err := client.BareMetalServer.Get(context.Background(), bmsID)
 		if err != nil {
 			if strings.Contains(err.Error(), "Invalid server") {
 				return fmt.Errorf("Bare metal server (%s) does not exist", bmsID)

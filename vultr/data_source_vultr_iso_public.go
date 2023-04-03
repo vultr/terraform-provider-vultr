@@ -43,7 +43,7 @@ func dataSourceVultrIsoPublicRead(ctx context.Context, d *schema.ResourceData, m
 	options := &govultr.ListOptions{}
 
 	for {
-		iso, meta,_, err := client.ISO.ListPublic(ctx, options)
+		iso, meta, _, err := client.ISO.ListPublic(ctx, options)
 		if err != nil {
 			return diag.Errorf("Error getting isos: %v", err)
 		}

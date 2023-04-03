@@ -71,7 +71,7 @@ func resourceVultrObjectStorageCreate(ctx context.Context, d *schema.ResourceDat
 	objStoreCluster := d.Get("cluster_id").(int)
 	label := d.Get("label").(string)
 
-	obj,_, err := client.ObjectStorage.Create(ctx, objStoreCluster, label)
+	obj, _, err := client.ObjectStorage.Create(ctx, objStoreCluster, label)
 	if err != nil {
 		return diag.Errorf("error creating object storage: %v", err)
 	}
@@ -88,7 +88,7 @@ func resourceVultrObjectStorageCreate(ctx context.Context, d *schema.ResourceDat
 func resourceVultrObjectStorageRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	obj,_, err := client.ObjectStorage.Get(ctx, d.Id())
+	obj, _, err := client.ObjectStorage.Get(ctx, d.Id())
 	if err != nil {
 		return diag.Errorf("error getting object storage account: %v", err)
 	}
@@ -153,7 +153,7 @@ func waitForObjAvailable(ctx context.Context, d *schema.ResourceData, target str
 		"[INFO] Waiting for Object Storage (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &resource.StateChangeConf{
+	stateConf := &resource.StateChangeConf{ // nolint:all
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newServerObjRefresh(ctx, d, meta, attribute),
@@ -166,12 +166,12 @@ func waitForObjAvailable(ctx context.Context, d *schema.ResourceData, target str
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newServerObjRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc {
+func newServerObjRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc { // nolint:all
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Creating Object Storage")
 
-		obj,_, err := client.ObjectStorage.Get(ctx, d.Id())
+		obj, _, err := client.ObjectStorage.Get(ctx, d.Id())
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving Object Store %s : %s", d.Id(), err)
 		}
