@@ -170,6 +170,10 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set resource kubernetes `kube_config` read value: %v", err)
 	}
 
+	if err := d.Set("version", vke.Version); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `version` read value: %v", err)
+	}
+
 	return nil
 }
 
