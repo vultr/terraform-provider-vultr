@@ -37,7 +37,6 @@ func resourceVultrKubernetes() *schema.Resource {
 			},
 			"version": {
 				Type:     schema.TypeString,
-				ForceNew: true,
 				Required: true,
 			},
 
@@ -230,6 +229,17 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 			if _, _, err := client.Kubernetes.CreateNodePool(ctx, d.Id(), req); err != nil {
 				return diag.Errorf("error creating VKE node pool %v : %v", d.Id(), err)
 			}
+		}
+	}
+
+	// k8s version upgrade
+	if d.HasChange("version") {
+		upgradeReq := &govultr.ClusterUpgradeReq{
+			UpgradeVersion: d.Get("version").(string),
+		}
+
+		if err := client.Kubernetes.Upgrade(ctx, d.Id(), upgradeReq); err != nil {
+			return diag.Errorf("error upgrading VKE cluster %v : %v", d.Id(), err)
 		}
 	}
 
