@@ -37,7 +37,6 @@ func resourceVultrKubernetes() *schema.Resource {
 			},
 			"version": {
 				Type:     schema.TypeString,
-				ForceNew: true,
 				Required: true,
 			},
 
@@ -171,6 +170,10 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set resource kubernetes `kube_config` read value: %v", err)
 	}
 
+	if err := d.Set("version", vke.Version); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `version` read value: %v", err)
+	}
+
 	return nil
 }
 
@@ -230,6 +233,17 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 			if _, _, err := client.Kubernetes.CreateNodePool(ctx, d.Id(), req); err != nil {
 				return diag.Errorf("error creating VKE node pool %v : %v", d.Id(), err)
 			}
+		}
+	}
+
+	// k8s version upgrade
+	if d.HasChange("version") {
+		upgradeReq := &govultr.ClusterUpgradeReq{
+			UpgradeVersion: d.Get("version").(string),
+		}
+
+		if err := client.Kubernetes.Upgrade(ctx, d.Id(), upgradeReq); err != nil {
+			return diag.Errorf("error upgrading VKE cluster %v : %v", d.Id(), err)
 		}
 	}
 
