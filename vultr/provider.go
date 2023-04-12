@@ -4,7 +4,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-// Provider ...
+// Provider is the base Vultr terraform provider
 func Provider() *schema.Provider {
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
@@ -33,6 +33,7 @@ func Provider() *schema.Provider {
 			"vultr_bare_metal_plan":        dataSourceVultrBareMetalPlan(),
 			"vultr_bare_metal_server":      dataSourceVultrBareMetalServer(),
 			"vultr_block_storage":          dataSourceVultrBlockStorage(),
+			"vultr_database":               dataSourceVultrDatabase(),
 			"vultr_dns_domain":             dataSourceVultrDNSDomain(),
 			"vultr_firewall_group":         dataSourceVultrFirewallGroup(),
 			"vultr_iso_private":            dataSourceVultrIsoPrivate(),
@@ -60,6 +61,7 @@ func Provider() *schema.Provider {
 		ResourcesMap: map[string]*schema.Resource{
 			"vultr_bare_metal_server":     resourceVultrBareMetalServer(),
 			"vultr_block_storage":         resourceVultrBlockStorage(),
+			"vultr_database":              resourceVultrDatabase(),
 			"vultr_dns_domain":            resourceVultrDNSDomain(),
 			"vultr_dns_record":            resourceVultrDNSRecord(),
 			"vultr_firewall_group":        resourceVultrFirewallGroup(),
