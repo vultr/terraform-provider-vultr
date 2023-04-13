@@ -78,6 +78,7 @@ func resourceVultrKubernetes() *schema.Resource {
 				Description: "Base64 encoded KubeConfig",
 				Type:        schema.TypeString,
 				Computed:    true,
+				Sensitive:   true,
 			},
 		},
 	}
