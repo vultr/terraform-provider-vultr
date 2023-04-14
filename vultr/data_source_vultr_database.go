@@ -144,16 +144,16 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("error getting databases: %v", err)
 	}
 
-	for _, s := range databases {
+	for s := range databases {
 		// we need convert the a struct INTO a map so we can easily manipulate the data here
-		sm, err := structToMap(s)
+		sm, err := structToMap(databases[s])
 
 		if err != nil {
 			return diag.FromErr(err)
 		}
 
 		if filterLoop(f, sm) {
-			databaseList = append(databaseList, s)
+			databaseList = append(databaseList, databases[s])
 		}
 	}
 

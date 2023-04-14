@@ -2,7 +2,6 @@ package vultr
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"log"
 	"strings"
@@ -41,7 +40,6 @@ func resourceVultrDatabase() *schema.Resource {
 			},
 			"label": {
 				Type:     schema.TypeString,
-				Computed: true,
 				Required: true,
 			},
 			"tag": {
@@ -56,7 +54,6 @@ func resourceVultrDatabase() *schema.Resource {
 			},
 			"database_engine_version": {
 				Type:     schema.TypeString,
-				Computed: true,
 				Required: true,
 			},
 			"maintenance_dow": {
@@ -85,6 +82,10 @@ func resourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
+			"mysql_require_primary_key": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
 			"mysql_long_query_time": {
 				Type:     schema.TypeInt,
 				Optional: true,
@@ -102,7 +103,7 @@ func resourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
-			"plan_raw": {
+			"plan_ram": {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
@@ -153,185 +154,175 @@ func resourceVultrDatabase() *schema.Resource {
 func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	req := &govultr.InstanceCreateReq{
-		EnableIPv6:      govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
-		Label:           d.Get("label").(string),
-		UserData:        base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string))),
-		ActivationEmail: govultr.BoolToBoolPtr(d.Get("activation_email").(bool)),
-		DDOSProtection:  govultr.BoolToBoolPtr(d.Get("ddos_protection").(bool)),
-		Hostname:        d.Get("hostname").(string),
-		FirewallGroupID: d.Get("firewall_group_id").(string),
-		ScriptID:        d.Get("script_id").(string),
-		ReservedIPv4:    d.Get("reserved_ip_id").(string),
-		Region:          d.Get("region").(string),
-		Plan:            d.Get("plan").(string),
+	req := &govultr.DatabaseCreateReq{
+		DatabaseEngine:         d.Get("database_engine").(string),
+		DatabaseEngineVersion:  d.Get("database_engine_version").(string),
+		Region:                 d.Get("region").(string),
+		Plan:                   d.Get("plan").(string),
+		Label:                  d.Get("label").(string),
+		Tag:                    d.Get("tag").(string),
+		MaintenanceDOW:         d.Get("maintenance_dow").(string),
+		MaintenanceTime:        d.Get("maintenance_time").(string),
+		MySQLRequirePrimaryKey: govultr.BoolToBoolPtr(true),
+		MySQLSlowQueryLog:      govultr.BoolToBoolPtr(false),
+		MySQLLongQueryTime:     d.Get("mysql_long_query_time").(int),
+		RedisEvictionPolicy:    d.Get("redis_eviction_policy").(string),
 	}
 
-	if tagsIDs, tagsOK := d.GetOk("tags"); tagsOK {
-		for _, v := range tagsIDs.(*schema.Set).List() {
-			req.Tags = append(req.Tags, v.(string))
+	if trustedIPs, trustedIPsOK := d.GetOk("trusted_ips"); trustedIPsOK {
+		for _, v := range trustedIPs.(*schema.Set).List() {
+			req.TrustedIPs = append(req.TrustedIPs, v.(string))
 		}
 	}
 
-	if len(d.Get("private_network_ids").(*schema.Set).List()) != 0 && len(d.Get("vpc_ids").(*schema.Set).List()) != 0 {
-		return diag.Errorf("private_network_ids cannot be used along with vpc_ids. Use only vpc_ids instead.")
-	}
-
-	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
-		for _, v := range networkIDs.(*schema.Set).List() {
-			req.AttachVPC = append(req.AttachVPC, v.(string))
+	if mysqlSQLModes, mysqlSQLModesOK := d.GetOk("mysql_sql_modes"); mysqlSQLModesOK {
+		for _, v := range mysqlSQLModes.(*schema.Set).List() {
+			req.MySQLSQLModes = append(req.MySQLSQLModes, v.(string))
 		}
 	}
 
-	if vpcIDs, vpcOK := d.GetOk("vpc_ids"); vpcOK {
-		for _, v := range vpcIDs.(*schema.Set).List() {
-			req.AttachVPC = append(req.AttachVPC, v.(string))
-		}
+	if mysqlRequirePrimaryKey, mysqlRequirePrimaryKeyOK := d.GetOk("mysql_require_primary_key"); mysqlRequirePrimaryKeyOK {
+		req.MySQLRequirePrimaryKey = govultr.BoolToBoolPtr(mysqlRequirePrimaryKey.(bool))
 	}
 
-	if sshKeyIDs, sshKeyOK := d.GetOk("ssh_key_ids"); sshKeyOK {
-		for _, v := range sshKeyIDs.([]interface{}) {
-			req.SSHKeys = append(req.SSHKeys, v.(string))
-		}
+	if mysqlSlowQueryLog, mysqlSlowQueryLogOK := d.GetOk("mysql_require_primary_key"); mysqlSlowQueryLogOK {
+		req.MySQLSlowQueryLog = govultr.BoolToBoolPtr(mysqlSlowQueryLog.(bool))
 	}
 
-	log.Printf("[INFO] Creating server")
-	instance, _, err := client.Instance.Create(ctx, req)
+	log.Printf("[INFO] Creating database")
+	database, _, err := client.Database.Create(ctx, req)
 	if err != nil {
-		return diag.Errorf("error creating server: %v", err)
+		return diag.Errorf("error creating database: %v", err)
 	}
 
-	d.SetId(instance.ID)
-	if err := d.Set("default_password", instance.DefaultPassword); err != nil {
-		return diag.Errorf("unable to set resource instance `default_password` create value: %v", err)
+	d.SetId(database.ID)
+
+	if _, err = waitForDatabaseAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Error"}, "status", meta); err != nil {
+		return diag.Errorf("error while waiting for Managed Database %s to be in an active state : %s", d.Id(), err)
 	}
 
-	if _, err = waitForDatabaseAvailable(ctx, d, "active", []string{"pending", "installing"}, "status", meta); err != nil {
-		return diag.Errorf("error while waiting for Server %s to be completed: %s", d.Id(), err)
-	}
-
-	if _, err = waitForDatabaseAvailable(ctx, d, "running", []string{"stopped"}, "power_status", meta); err != nil {
-		return diag.Errorf("error while waiting for Server %s to be in a active state : %s", d.Id(), err)
-	}
-
-	return resourceVultrInstanceRead(ctx, d, meta)
+	return resourceVultrDatabaseRead(ctx, d, meta)
 }
 
 func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	instance, _, err := client.Instance.Get(ctx, d.Id())
+	database, _, err := client.Database.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "invalid instance ID") {
-			log.Printf("[WARN] Removing instance (%s) because it is gone", d.Id())
+		if strings.Contains(err.Error(), "invalid database ID") {
+			log.Printf("[WARN] Removing database (%s) because it is gone", d.Id())
 			d.SetId("")
 			return nil
 		}
-		return diag.Errorf("error getting instance (%s): %v", d.Id(), err)
+		return diag.Errorf("error getting database (%s): %v", d.Id(), err)
 	}
 
-	if err := d.Set("os", instance.Os); err != nil {
-		return diag.Errorf("unable to set resource instance `os` read value: %v", err)
-	}
-	if err := d.Set("ram", instance.RAM); err != nil {
-		return diag.Errorf("unable to set resource instance `ram` read value: %v", err)
-	}
-	if err := d.Set("disk", instance.Disk); err != nil {
-		return diag.Errorf("unable to set resource instance `disk` read value: %v", err)
-	}
-	if err := d.Set("main_ip", instance.MainIP); err != nil {
-		return diag.Errorf("unable to set resource instance `main_ip` read value: %v", err)
-	}
-	if err := d.Set("vcpu_count", instance.VCPUCount); err != nil {
-		return diag.Errorf("unable to set resource instance `vcpu_count` read value: %v", err)
-	}
-	if err := d.Set("date_created", instance.DateCreated); err != nil {
-		return diag.Errorf("unable to set resource instance `date_created` read value: %v", err)
-	}
-	if err := d.Set("status", instance.Status); err != nil {
-		return diag.Errorf("unable to set resource instance `status` read value: %v", err)
-	}
-	if err := d.Set("allowed_bandwidth", instance.AllowedBandwidth); err != nil {
-		return diag.Errorf("unable to set resource instance `allowed_bandwidth` read value: %v", err)
-	}
-	if err := d.Set("netmask_v4", instance.NetmaskV4); err != nil {
-		return diag.Errorf("unable to set resource instance `netmask_v4` read value: %v", err)
-	}
-	if err := d.Set("gateway_v4", instance.GatewayV4); err != nil {
-		return diag.Errorf("unable to set resource instance `gateway_v4` read value: %v", err)
-	}
-	if err := d.Set("power_status", instance.PowerStatus); err != nil {
-		return diag.Errorf("unable to set resource instance `power_status` read value: %v", err)
-	}
-	if err := d.Set("server_status", instance.ServerStatus); err != nil {
-		return diag.Errorf("unable to set resource instance `server_status` read value: %v", err)
-	}
-	if err := d.Set("internal_ip", instance.InternalIP); err != nil {
-		return diag.Errorf("unable to set resource instance `internal_ip` read value: %v", err)
-	}
-	if err := d.Set("kvm", instance.KVM); err != nil {
-		return diag.Errorf("unable to set resource instance `kvm` read value: %v", err)
-	}
-	if err := d.Set("v6_network", instance.V6Network); err != nil {
-		return diag.Errorf("unable to set resource instance `v6_network` read value: %v", err)
-	}
-	if err := d.Set("v6_main_ip", instance.V6MainIP); err != nil {
-		return diag.Errorf("unable to set resource instance `v6_main_ip` read value: %v", err)
-	}
-	if err := d.Set("v6_network_size", instance.V6NetworkSize); err != nil {
-		return diag.Errorf("unable to set resource instance `v6_network_size` read value: %v", err)
-	}
-	if err := d.Set("tags", instance.Tags); err != nil {
-		return diag.Errorf("unable to set resource instance `tags` read value: %v", err)
-	}
-	if err := d.Set("firewall_group_id", instance.FirewallGroupID); err != nil {
-		return diag.Errorf("unable to set resource instance `firewall_group_id` read value: %v", err)
-	}
-	if err := d.Set("region", instance.Region); err != nil {
-		return diag.Errorf("unable to set resource instance `region` read value: %v", err)
-	}
-	if err := d.Set("plan", instance.Plan); err != nil {
-		return diag.Errorf("unable to set resource instance `plan` read value: %v", err)
-	}
-	if err := d.Set("os_id", instance.OsID); err != nil {
-		return diag.Errorf("unable to set resource instance `os_id` read value: %v", err)
-	}
-	if err := d.Set("app_id", instance.AppID); err != nil {
-		return diag.Errorf("unable to set resource instance `app_id` read value: %v", err)
-	}
-	if err := d.Set("features", instance.Features); err != nil {
-		return diag.Errorf("unable to set resource instance `features` read value: %v", err)
-	}
-	if err := d.Set("hostname", instance.Hostname); err != nil {
-		return diag.Errorf("unable to set resource instance `hostname` read value: %v", err)
+	if err := d.Set("date_created", database.DateCreated); err != nil {
+		return diag.Errorf("unable to set resource database `date_created` read value: %v", err)
 	}
 
-	vpcs, err := getVPCs(client, d.Id())
-	if err != nil {
-		return diag.Errorf(err.Error())
+	if err := d.Set("plan", database.Plan); err != nil {
+		return diag.Errorf("unable to set resource database `plan` read value: %v", err)
 	}
 
-	// Manipulate the read state so that, depending on which value was passed,
-	// only one of these values is populated when a VPC or PN is defined for
-	// the instance
-	if _, pnUpdate := d.GetOk("private_network_ids"); pnUpdate {
-		if err := d.Set("private_network_ids", vpcs); err != nil {
-			return diag.Errorf("unable to set resource instance `private_network_ids` read value: %v", err)
-		}
-		if err := d.Set("vpc_ids", nil); err != nil {
-			return diag.Errorf("unable to set resource instance `vpc_ids` read value: %v", err)
-		}
+	if err := d.Set("plan_disk", database.PlanDisk); err != nil {
+		return diag.Errorf("unable to set resource database `plan_disk` read value: %v", err)
 	}
 
-	// Since VPC is last, if an instance read involves both vpc_ids &
-	// private_network_ids, only the vpc_ids will be preserved
-	if _, vpcUpdate := d.GetOk("vpc_ids"); vpcUpdate {
-		if err := d.Set("vpc_ids", vpcs); err != nil {
-			return diag.Errorf("unable to set resource instance `vpc_ids` read value: %v", err)
-		}
-		if err := d.Set("private_network_ids", nil); err != nil {
-			return diag.Errorf("unable to set resource instance `private_network_ids` read value: %v", err)
-		}
+	if err := d.Set("plan_ram", database.PlanRAM); err != nil {
+		return diag.Errorf("unable to set resource database `plan_ram` read value: %v", err)
+	}
+
+	if err := d.Set("plan_vcpus", database.PlanVCPUs); err != nil {
+		return diag.Errorf("unable to set resource database `plan_vcpus` read value: %v", err)
+	}
+
+	if err := d.Set("plan_replicas", database.PlanReplicas); err != nil {
+		return diag.Errorf("unable to set resource database `plan_replicas` read value: %v", err)
+	}
+
+	if err := d.Set("region", database.Region); err != nil {
+		return diag.Errorf("unable to set resource database `region` read value: %v", err)
+	}
+
+	if err := d.Set("status", database.Status); err != nil {
+		return diag.Errorf("unable to set resource database `status` read value: %v", err)
+	}
+
+	if err := d.Set("label", database.Label); err != nil {
+		return diag.Errorf("unable to set resource database `label` read value: %v", err)
+	}
+
+	if err := d.Set("tag", database.Tag); err != nil {
+		return diag.Errorf("unable to set resource database `tag` read value: %v", err)
+	}
+
+	if err := d.Set("database_engine", database.DatabaseEngine); err != nil {
+		return diag.Errorf("unable to set resource database `database_engine` read value: %v", err)
+	}
+
+	if err := d.Set("database_engine_version", database.DatabaseEngineVersion); err != nil {
+		return diag.Errorf("unable to set resource database `database_engine_version` read value: %v", err)
+	}
+
+	if err := d.Set("dbname", database.DBName); err != nil {
+		return diag.Errorf("unable to set resource database `dbname` read value: %v", err)
+	}
+
+	if err := d.Set("host", database.Host); err != nil {
+		return diag.Errorf("unable to set resource database `host` read value: %v", err)
+	}
+
+	if err := d.Set("user", database.User); err != nil {
+		return diag.Errorf("unable to set resource database `user` read value: %v", err)
+	}
+
+	if err := d.Set("password", database.Password); err != nil {
+		return diag.Errorf("unable to set resource database `password` read value: %v", err)
+	}
+
+	if err := d.Set("port", database.Port); err != nil {
+		return diag.Errorf("unable to set resource database `port` read value: %v", err)
+	}
+
+	if err := d.Set("maintenance_dow", database.MaintenanceDOW); err != nil {
+		return diag.Errorf("unable to set resource database `maintenance_dow` read value: %v", err)
+	}
+
+	if err := d.Set("maintenance_time", database.MaintenanceTime); err != nil {
+		return diag.Errorf("unable to set resource database `maintenance_time` read value: %v", err)
+	}
+
+	if err := d.Set("latest_backup", database.LatestBackup); err != nil {
+		return diag.Errorf("unable to set resource database `latest_backup` read value: %v", err)
+	}
+
+	if err := d.Set("trusted_ips", database.TrustedIPs); err != nil {
+		return diag.Errorf("unable to set resource database `trusted_ips` read value: %v", err)
+	}
+
+	if err := d.Set("mysql_sql_modes", database.MySQLSQLModes); err != nil {
+		return diag.Errorf("unable to set resource database `mysql_sql_modes` read value: %v", err)
+	}
+
+	if err := d.Set("mysql_require_primary_key", database.MySQLRequirePrimaryKey); err != nil {
+		return diag.Errorf("unable to set resource database `mysql_require_primary_key` read value: %v", err)
+	}
+
+	if err := d.Set("mysql_slow_query_log", database.MySQLSlowQueryLog); err != nil {
+		return diag.Errorf("unable to set resource database `mysql_slow_query_log` read value: %v", err)
+	}
+
+	if err := d.Set("mysql_long_query_time", database.MySQLLongQueryTime); err != nil {
+		return diag.Errorf("unable to set resource database `mysql_long_query_time` read value: %v", err)
+	}
+
+	if err := d.Set("redis_eviction_policy", database.RedisEvictionPolicy); err != nil {
+		return diag.Errorf("unable to set resource database `redis_eviction_policy` read value: %v", err)
+	}
+
+	if err := d.Set("cluster_time_zone", database.ClusterTimeZone); err != nil {
+		return diag.Errorf("unable to set resource database `cluster_time_zone` read value: %v", err)
 	}
 
 	return nil
@@ -432,44 +423,16 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
-	return resourceVultrInstanceRead(ctx, d, meta)
+	return resourceVultrDatabaseRead(ctx, d, meta)
 }
 
 func resourceVultrDatabaseDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 
 	client := meta.(*Client).govultrClient()
-	log.Printf("[INFO] Deleting instance (%s)", d.Id())
+	log.Printf("[INFO] Deleting database (%s)", d.Id())
 
-	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
-		detach := &govultr.InstanceUpdateReq{}
-		for _, v := range networkIDs.(*schema.Set).List() {
-			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string)) // nolint
-		}
-
-		if _, _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
-			return diag.Errorf("error detaching private networks prior to deleting instance %s : %v", d.Id(), err)
-		}
-	}
-
-	if vpcIDs, vpcOK := d.GetOk("vpc_ids"); vpcOK {
-		detach := &govultr.InstanceUpdateReq{}
-		for _, v := range vpcIDs.(*schema.Set).List() {
-			detach.DetachVPC = append(detach.DetachVPC, v.(string))
-		}
-
-		if _, _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
-			return diag.Errorf("error detaching VPCs prior to deleting instance %s : %v", d.Id(), err)
-		}
-	}
-
-	if _, isoOK := d.GetOk("iso_id"); isoOK {
-		if _, err := client.Instance.DetachISO(ctx, d.Id()); err != nil {
-			return diag.Errorf("error detaching ISO prior to deleting instance %s : %v", d.Id(), err)
-		}
-	}
-
-	if err := client.Instance.Delete(ctx, d.Id()); err != nil {
-		return diag.Errorf("error destroying instance %s : %v", d.Id(), err)
+	if err := client.Database.Delete(ctx, d.Id()); err != nil {
+		return diag.Errorf("error destroying database %s : %v", d.Id(), err)
 	}
 
 	return nil
@@ -477,7 +440,7 @@ func resourceVultrDatabaseDelete(ctx context.Context, d *schema.ResourceData, me
 
 func waitForDatabaseAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
 	log.Printf(
-		"[INFO] Waiting for Server (%s) to have %s of %s",
+		"[INFO] Waiting for Managed Database (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
 	stateConf := &resource.StateChangeConf{ // nolint:all
@@ -497,21 +460,18 @@ func newDatabaseStateRefresh(ctx context.Context, d *schema.ResourceData, meta i
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 
-		log.Printf("[INFO] Creating Server")
-		server, _, err := client.Instance.Get(ctx, d.Id())
+		log.Printf("[INFO] Creating Database")
+		server, _, err := client.Database.Get(ctx, d.Id())
 		if err != nil {
-			return nil, "", fmt.Errorf("error retrieving Server %s : %s", d.Id(), err)
+			return nil, "", fmt.Errorf("error retrieving Managed Database %s : %s", d.Id(), err)
 		}
 
 		if attr == "status" {
-			log.Printf("[INFO] The Server Status is %s", server.Status)
+			log.Printf("[INFO] The Managed Database Status is %s", server.Status)
 			return server, server.Status, nil
-		} else if attr == "power_status" {
-			log.Printf("[INFO] The Server Power Status is %s", server.PowerStatus)
-			return server, server.PowerStatus, nil
-		} else {
-			return nil, "", nil
 		}
+
+		return nil, "", nil
 	}
 }
 
