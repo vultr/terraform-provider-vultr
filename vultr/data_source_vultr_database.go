@@ -94,12 +94,12 @@ func dataSourceVultrDatabase() *schema.Resource {
 				Computed: true,
 			},
 			"trusted_ips": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Computed: true,
 			},
 			"mysql_sql_modes": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Computed: true,
 			},

@@ -69,12 +69,12 @@ func resourceVultrDatabase() *schema.Resource {
 				Optional: true,
 			},
 			"trusted_ips": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"mysql_sql_modes": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
@@ -199,6 +199,18 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 
 	if _, err = waitForDatabaseAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Error"}, "status", meta); err != nil {
 		return diag.Errorf("error while waiting for Managed Database %s to be in an active state : %s", d.Id(), err)
+	}
+
+	// Cluster Time Zone can only be customized after creation
+	if clusterTimeZone, clusterTimeZoneOK := d.GetOk("cluster_time_zone"); clusterTimeZoneOK {
+		req2 := &govultr.DatabaseUpdateReq{
+			ClusterTimeZone: clusterTimeZone.(string),
+		}
+
+		log.Printf("[INFO] Updating database default time zone")
+		if _, _, err := client.Database.Update(ctx, d.Id(), req2); err != nil {
+			return diag.Errorf("error updating database: %v", err)
+		}
 	}
 
 	return resourceVultrDatabaseRead(ctx, d, meta)
@@ -330,10 +342,15 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	req := &govultr.InstanceUpdateReq{
-		Label:           d.Get("label").(string),
-		FirewallGroupID: d.Get("firewall_group_id").(string),
-		EnableIPv6:      govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
+	req := &govultr.DatabaseUpdateReq{
+		Label: d.Get("label").(string),
+	}
+
+	if d.HasChange("region") {
+		log.Printf("[INFO] Updating Region")
+		_, newVal := d.GetChange("region")
+		region := newVal.(string)
+		req.Region = region
 	}
 
 	if d.HasChange("plan") {
@@ -343,83 +360,93 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 		req.Plan = plan
 	}
 
-	if d.HasChange("ddos_protection") {
-		log.Printf("[INFO] Updating DDOS Protection")
-		_, newVal := d.GetChange("ddos_protection")
-		ddos := newVal.(bool)
-		req.DDOSProtection = &ddos
+	if d.HasChange("tag") {
+		log.Printf("[INFO] Updating Tag")
+		_, newVal := d.GetChange("tag")
+		tag := newVal.(string)
+		req.Tag = tag
 	}
 
-	if len(d.Get("private_network_ids").(*schema.Set).List()) != 0 && len(d.Get("vpc_ids").(*schema.Set).List()) != 0 {
-		return diag.Errorf("private_network_ids cannot be used along with vpc_ids. Use only vpc_ids instead.")
+	if d.HasChange("maintenance_dow") {
+		log.Printf("[INFO] Updating Maintenance DOW")
+		_, newVal := d.GetChange("maintenance_dow")
+		maintenanceDOW := newVal.(string)
+		req.MaintenanceDOW = maintenanceDOW
 	}
 
-	if d.HasChange("private_network_ids") {
-		log.Printf("[INFO] Updating private_network_ids")
-		oldNetwork, newNetwork := d.GetChange("private_network_ids")
+	if d.HasChange("maintenance_time") {
+		log.Printf("[INFO] Updating Maintenance Time")
+		_, newVal := d.GetChange("maintenance_time")
+		maintenanceTime := newVal.(string)
+		req.MaintenanceTime = maintenanceTime
+	}
 
-		var oldIDs []string
-		for _, v := range oldNetwork.(*schema.Set).List() {
-			oldIDs = append(oldIDs, v.(string))
+	if d.HasChange("cluster_time_zone") {
+		log.Printf("[INFO] Updating Cluster Time Zone")
+		_, newVal := d.GetChange("cluster_time_zone")
+		clusterTimeZone := newVal.(string)
+		req.ClusterTimeZone = clusterTimeZone
+	}
+
+	if d.HasChange("trusted_ips") {
+		log.Printf("[INFO] Updating Trusted IPs")
+		_, newVal := d.GetChange("trusted_ips")
+
+		var newIPs []string
+		for _, v := range newVal.(*schema.Set).List() {
+			newIPs = append(newIPs, v.(string))
 		}
 
-		var newIDs []string
-		for _, v := range newNetwork.(*schema.Set).List() {
-			newIDs = append(newIDs, v.(string))
+		req.TrustedIPs = newIPs
+	}
+
+	if d.HasChange("mysql_sql_modes") {
+		log.Printf("[INFO] Updating MySQL SQL Modes")
+		_, newVal := d.GetChange("mysql_sql_modes")
+
+		var newModes []string
+		for _, v := range newVal.(*schema.Set).List() {
+			newModes = append(newModes, v.(string))
 		}
 
-		req.AttachPrivateNetwork = append(req.AttachPrivateNetwork, diffSlice(oldIDs, newIDs)...) // nolint
-		req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, diffSlice(newIDs, oldIDs)...) // nolint
+		req.MySQLSQLModes = newModes
 	}
 
-	if d.HasChange("vpc_ids") {
-		log.Printf("[INFO] Updating vpc_ids")
-		oldVPC, newVPC := d.GetChange("vpc_ids")
-
-		var oldIDs []string
-		for _, v := range oldVPC.(*schema.Set).List() {
-			oldIDs = append(oldIDs, v.(string))
-		}
-
-		var newIDs []string
-		for _, v := range newVPC.(*schema.Set).List() {
-			newIDs = append(newIDs, v.(string))
-		}
-
-		req.AttachVPC = append(req.AttachVPC, diffSlice(oldIDs, newIDs)...)
-		req.DetachVPC = append(req.DetachVPC, diffSlice(newIDs, oldIDs)...)
+	if d.HasChange("mysql_require_primary_key") {
+		log.Printf("[INFO] Updating MySQL Require Primary Key")
+		_, newVal := d.GetChange("mysql_require_primary_key")
+		mysqlRequirePrimaryKey := newVal.(bool)
+		req.MySQLRequirePrimaryKey = &mysqlRequirePrimaryKey
 	}
 
-	if d.HasChange("tags") {
-		_, newTags := tfChangeToSlices("tags", d)
-		req.Tags = newTags
+	if d.HasChange("mysql_slow_query_log") {
+		log.Printf("[INFO] Updating MySQL Slow Query Log")
+		_, newVal := d.GetChange("mysql_slow_query_log")
+		mysqlSlowQueryLog := newVal.(bool)
+		req.MySQLSlowQueryLog = &mysqlSlowQueryLog
 	}
 
-	if _, _, err := client.Instance.Update(ctx, d.Id(), req); err != nil {
-		return diag.Errorf("error updating instance %s : %s", d.Id(), err.Error())
+	if d.HasChange("mysql_long_query_time") {
+		log.Printf("[INFO] Updating MySQL Long Query Time")
+		_, newVal := d.GetChange("mysql_long_query_time")
+		mysqlLongQueryTime := newVal.(int)
+		req.MySQLLongQueryTime = mysqlLongQueryTime
 	}
 
-	if d.HasChange("iso_id") {
-		log.Printf("[INFO] Updating ISO")
-
-		_, newISOId := d.GetChange("iso_id")
-		if newISOId == "" {
-			if _, err := client.Instance.DetachISO(ctx, d.Id()); err != nil {
-				return diag.Errorf("error detaching iso from instance %s : %v", d.Id(), err)
-			}
-		} else {
-			if _, err := client.Instance.AttachISO(ctx, d.Id(), newISOId.(string)); err != nil {
-				return diag.Errorf("error attaching iso to instance %s : %v", d.Id(), err)
-			}
-		}
+	if d.HasChange("redis_eviction_policy") {
+		log.Printf("[INFO] Updating Redis Eviction Policy")
+		_, newVal := d.GetChange("redis_eviction_policy")
+		redisEvictionPolicy := newVal.(string)
+		req.RedisEvictionPolicy = redisEvictionPolicy
 	}
 
-	// There is a delay between the API data returning the newly updated plan change
-	// This will wait until the plan has been updated before going to the read call
-	if d.HasChange("plan") {
-		oldP, newP := d.GetChange("plan")
-		if _, err := waitForDatabaseUpgrade(ctx, d, newP.(string), []string{oldP.(string)}, "plan", meta); err != nil {
-			return diag.Errorf("error while waiting for instance %s to have updated plan : %s", d.Id(), err)
+	if _, _, err := client.Database.Update(ctx, d.Id(), req); err != nil {
+		return diag.Errorf("error updating database %s : %s", d.Id(), err.Error())
+	}
+
+	if d.HasChange("region") || d.HasChange("plan") {
+		if _, err := waitForDatabaseAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Error"}, "status", meta); err != nil {
+			return diag.Errorf("error while waiting for Managed Database %s to be in an active state : %s", d.Id(), err)
 		}
 	}
 
@@ -472,37 +499,5 @@ func newDatabaseStateRefresh(ctx context.Context, d *schema.ResourceData, meta i
 		}
 
 		return nil, "", nil
-	}
-}
-
-func waitForDatabaseUpgrade(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
-	log.Printf(
-		"[INFO] Waiting for instance (%s) to have %s of %s",
-		d.Id(), attribute, target)
-
-	stateConf := &resource.StateChangeConf{ // nolint:all
-		Pending:        pending,
-		Target:         []string{target},
-		Refresh:        newDatabasePlanRefresh(ctx, d, meta, attribute),
-		Timeout:        60 * time.Minute,
-		Delay:          10 * time.Second,
-		MinTimeout:     3 * time.Second,
-		NotFoundChecks: 60,
-	}
-
-	return stateConf.WaitForStateContext(ctx)
-}
-
-func newDatabasePlanRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc { // nolint:all
-	client := meta.(*Client).govultrClient()
-	return func() (interface{}, string, error) {
-		log.Printf("[INFO] Upgrading instance")
-		instance, _, err := client.Instance.Get(ctx, d.Id())
-		if err != nil {
-			return nil, "", fmt.Errorf("error retrieving instance %s : %s", d.Id(), err)
-		}
-
-		log.Printf("[INFO] The instances plan is %s", instance.Plan)
-		return instance, instance.Plan, nil
 	}
 }
