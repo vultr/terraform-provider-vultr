@@ -14,8 +14,6 @@ import (
 	"github.com/vultr/govultr/v3"
 )
 
-const defaultTimeout = 60 * time.Minute
-
 func resourceVultrDatabase() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVultrDatabaseCreate,
@@ -102,6 +100,7 @@ func resourceVultrDatabase() *schema.Resource {
 			"plan_disk": {
 				Type:     schema.TypeInt,
 				Computed: true,
+				Optional: true,
 			},
 			"plan_ram": {
 				Type:     schema.TypeInt,
@@ -142,6 +141,14 @@ func resourceVultrDatabase() *schema.Resource {
 			"latest_backup": {
 				Type:     schema.TypeString,
 				Computed: true,
+			},
+			"read_replicas": {
+				Type:     schema.TypeSet,
+				Computed: true,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: readReplicaSchema(false),
+				},
 			},
 		},
 		Timeouts: &schema.ResourceTimeout{
@@ -185,7 +192,7 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 		req.MySQLRequirePrimaryKey = govultr.BoolToBoolPtr(mysqlRequirePrimaryKey.(bool))
 	}
 
-	if mysqlSlowQueryLog, mysqlSlowQueryLogOK := d.GetOk("mysql_require_primary_key"); mysqlSlowQueryLogOK {
+	if mysqlSlowQueryLog, mysqlSlowQueryLogOK := d.GetOk("mysql_slow_query_log"); mysqlSlowQueryLogOK {
 		req.MySQLSlowQueryLog = govultr.BoolToBoolPtr(mysqlSlowQueryLog.(bool))
 	}
 
@@ -237,8 +244,10 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("unable to set resource database `plan` read value: %v", err)
 	}
 
-	if err := d.Set("plan_disk", database.PlanDisk); err != nil {
-		return diag.Errorf("unable to set resource database `plan_disk` read value: %v", err)
+	if database.DatabaseEngine != "redis" {
+		if err := d.Set("plan_disk", database.PlanDisk); err != nil {
+			return diag.Errorf("unable to set resource database `plan_disk` read value: %v", err)
+		}
 	}
 
 	if err := d.Set("plan_ram", database.PlanRAM); err != nil {
@@ -313,28 +322,38 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("unable to set resource database `trusted_ips` read value: %v", err)
 	}
 
-	if err := d.Set("mysql_sql_modes", database.MySQLSQLModes); err != nil {
-		return diag.Errorf("unable to set resource database `mysql_sql_modes` read value: %v", err)
+	if database.DatabaseEngine == "mysql" {
+		if err := d.Set("mysql_sql_modes", database.MySQLSQLModes); err != nil {
+			return diag.Errorf("unable to set resource database `mysql_sql_modes` read value: %v", err)
+		}
+
+		if err := d.Set("mysql_require_primary_key", database.MySQLRequirePrimaryKey); err != nil {
+			return diag.Errorf("unable to set resource database `mysql_require_primary_key` read value: %v", err)
+		}
+
+		if err := d.Set("mysql_slow_query_log", database.MySQLSlowQueryLog); err != nil {
+			return diag.Errorf("unable to set resource database `mysql_slow_query_log` read value: %v", err)
+		}
+
+		if err := d.Set("mysql_long_query_time", database.MySQLLongQueryTime); err != nil {
+			return diag.Errorf("unable to set resource database `mysql_long_query_time` read value: %v", err)
+		}
 	}
 
-	if err := d.Set("mysql_require_primary_key", database.MySQLRequirePrimaryKey); err != nil {
-		return diag.Errorf("unable to set resource database `mysql_require_primary_key` read value: %v", err)
+	if database.DatabaseEngine == "redis" {
+		if err := d.Set("redis_eviction_policy", database.RedisEvictionPolicy); err != nil {
+			return diag.Errorf("unable to set resource database `redis_eviction_policy` read value: %v", err)
+		}
 	}
 
-	if err := d.Set("mysql_slow_query_log", database.MySQLSlowQueryLog); err != nil {
-		return diag.Errorf("unable to set resource database `mysql_slow_query_log` read value: %v", err)
+	if database.DatabaseEngine != "redis" {
+		if err := d.Set("cluster_time_zone", database.ClusterTimeZone); err != nil {
+			return diag.Errorf("unable to set resource database `cluster_time_zone` read value: %v", err)
+		}
 	}
 
-	if err := d.Set("mysql_long_query_time", database.MySQLLongQueryTime); err != nil {
-		return diag.Errorf("unable to set resource database `mysql_long_query_time` read value: %v", err)
-	}
-
-	if err := d.Set("redis_eviction_policy", database.RedisEvictionPolicy); err != nil {
-		return diag.Errorf("unable to set resource database `redis_eviction_policy` read value: %v", err)
-	}
-
-	if err := d.Set("cluster_time_zone", database.ClusterTimeZone); err != nil {
-		return diag.Errorf("unable to set resource database `cluster_time_zone` read value: %v", err)
+	if err := d.Set("read_replicas", flattenReplicas(database)); err != nil {
+		return diag.Errorf("unable to set resource database `read_replicas` read value: %v", err)
 	}
 
 	return nil
@@ -450,6 +469,34 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
+	if d.HasChange("database_engine_version") {
+		// Check available versions against input
+		log.Printf("[INFO] Checking available version upgrades")
+		availableVersions, _, err := client.Database.ListAvailableVersions(ctx, d.Id())
+		if err != nil {
+			return diag.Errorf("error checking available version upgrades %s : %s", d.Id(), err.Error())
+		}
+		_, newVal := d.GetChange("database_engine_version")
+		databaseEngineVersion := newVal.(string)
+		if !versionCompare(availableVersions, databaseEngineVersion) {
+			return diag.Errorf("invalid version %s provided for database %s", databaseEngineVersion, d.Id())
+		}
+
+		// Start version upgrade
+		log.Printf("[INFO] Initiating version upgrade")
+		req2 := &govultr.DatabaseVersionUpgradeReq{
+			Version: databaseEngineVersion,
+		}
+		if _, _, err := client.Database.StartVersionUpgrade(ctx, d.Id(), req2); err != nil {
+			return diag.Errorf("error upgrading database version %s : %s", d.Id(), err.Error())
+		}
+
+		// Wait for running state
+		if _, err := waitForDatabaseAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Error"}, "status", meta); err != nil {
+			return diag.Errorf("error while waiting for Managed Database %s to be in an active state : %s", d.Id(), err)
+		}
+	}
+
 	return resourceVultrDatabaseRead(ctx, d, meta)
 }
 
@@ -500,4 +547,13 @@ func newDatabaseStateRefresh(ctx context.Context, d *schema.ResourceData, meta i
 
 		return nil, "", nil
 	}
+}
+
+func versionCompare(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
