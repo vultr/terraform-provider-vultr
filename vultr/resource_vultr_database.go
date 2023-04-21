@@ -533,9 +533,9 @@ func waitForDatabaseAvailable(ctx context.Context, d *schema.ResourceData, targe
 func newDatabaseStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc { // nolint:all
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-
 		log.Printf("[INFO] Creating Database")
 		server, _, err := client.Database.Get(ctx, d.Id())
+
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving Managed Database %s : %s", d.Id(), err)
 		}

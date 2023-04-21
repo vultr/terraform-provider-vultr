@@ -33,6 +33,11 @@ func resourceVultrDatabaseReplica() *schema.Resource {
 func resourceVultrDatabaseReplicaCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
+	// Wait for at least one backup on the parent database to be available
+	if _, err := waitForParentBackupAvailable(ctx, d, "yes", []string{"yes", "no"}, "latest_backup", meta); err != nil {
+		return diag.Errorf("error while waiting for parent Managed Database %s to have at least one backup : %s", d.Get("database_id").(string), err)
+	}
+
 	databaseID := d.Get("database_id").(string)
 
 	req := &govultr.DatabaseAddReplicaReq{
@@ -50,6 +55,18 @@ func resourceVultrDatabaseReplicaCreate(ctx context.Context, d *schema.ResourceD
 
 	if _, err = waitForDatabaseReplicaAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Error"}, "status", meta); err != nil {
 		return diag.Errorf("error while waiting for Managed Database read replica %s to be in an active state : %s", d.Id(), err)
+	}
+
+	// Tags for read replicas can only be changed after creation
+	if tag, tagOK := d.GetOk("tag"); tagOK {
+		req2 := &govultr.DatabaseUpdateReq{
+			Tag: tag.(string),
+		}
+
+		log.Printf("[INFO] Updating database read replica tag")
+		if _, _, err := client.Database.Update(ctx, d.Id(), req2); err != nil {
+			return diag.Errorf("error updating database read replica: %v", err)
+		}
 	}
 
 	return resourceVultrDatabaseReplicaRead(ctx, d, meta)
@@ -253,9 +270,9 @@ func waitForDatabaseReplicaAvailable(ctx context.Context, d *schema.ResourceData
 func newDatabaseReplicaStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc { // nolint:all
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-
 		log.Printf("[INFO] Creating Database read replica")
 		server, _, err := client.Database.Get(ctx, d.Id())
+
 		if err != nil {
 			return nil, "", fmt.Errorf("error retrieving Managed Database read replica %s : %s", d.Id(), err)
 		}
@@ -263,6 +280,46 @@ func newDatabaseReplicaStateRefresh(ctx context.Context, d *schema.ResourceData,
 		if attr == "status" {
 			log.Printf("[INFO] The Managed Database read replica Status is %s", server.Status)
 			return server, server.Status, nil
+		}
+
+		return nil, "", nil
+	}
+}
+
+func waitForParentBackupAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+	log.Printf(
+		"[INFO] Waiting for parent Managed Database (%s) to have %s of %s",
+		d.Get("database_id").(string), attribute, target)
+
+	stateConf := &resource.StateChangeConf{ // nolint:all
+		Pending:        pending,
+		Target:         []string{target},
+		Refresh:        parentDatabaseRefresh(ctx, d, meta, attribute),
+		Timeout:        60 * time.Minute,
+		Delay:          10 * time.Second,
+		MinTimeout:     3 * time.Second,
+		NotFoundChecks: 60,
+	}
+
+	return stateConf.WaitForStateContext(ctx)
+}
+
+func parentDatabaseRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc { // nolint:all
+	client := meta.(*Client).govultrClient()
+	return func() (interface{}, string, error) {
+		log.Printf("[INFO] Waiting for parent Managed Database backup status")
+		server, _, err := client.Database.Get(ctx, d.Get("database_id").(string))
+
+		if err != nil {
+			return nil, "", fmt.Errorf("error retrieving Managed Database %s : %s", d.Get("database_id"), err)
+		}
+
+		if attr == "latest_backup" {
+			log.Printf("[INFO] The Managed Database read replica LatestBackup is %s", server.LatestBackup)
+			if server.LatestBackup == "" {
+				return server, "no", nil
+			}
+			return server, "yes", nil
 		}
 
 		return nil, "", nil
