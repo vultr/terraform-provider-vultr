@@ -42,7 +42,6 @@ func resourceVultrDatabase() *schema.Resource {
 			},
 			"tag": {
 				Type:     schema.TypeString,
-				Computed: true,
 				Optional: true,
 			},
 			"database_engine": {
@@ -92,6 +91,11 @@ func resourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
+			"password": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
 			// Computed
 			"date_created": {
 				Type:     schema.TypeString,
@@ -127,10 +131,6 @@ func resourceVultrDatabase() *schema.Resource {
 				Computed: true,
 			},
 			"user": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"password": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -217,6 +217,18 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 		log.Printf("[INFO] Updating database default time zone")
 		if _, _, err := client.Database.Update(ctx, d.Id(), req2); err != nil {
 			return diag.Errorf("error updating database: %v", err)
+		}
+	}
+
+	// Default user (vultradmin) password can only be changed after creation
+	if password, passwordOK := d.GetOk("password"); passwordOK && d.Get("database_engine").(string) != "redis" {
+		req3 := &govultr.DatabaseUserUpdateReq{
+			Password: password.(string),
+		}
+
+		log.Printf("[INFO] Updating default user password")
+		if _, _, err := client.Database.UpdateUser(ctx, d.Id(), "vultradmin", req3); err != nil {
+			return diag.Errorf("error updating default user: %v", err)
 		}
 	}
 
@@ -469,6 +481,21 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
+	// Updating the default user password requires a separate API call
+	if d.HasChange("password") && d.Get("database_engine").(string) != "redis" {
+		_, newVal := d.GetChange("password")
+		password := newVal.(string)
+		reqP := &govultr.DatabaseUserUpdateReq{
+			Password: password,
+		}
+
+		log.Printf("[INFO] Updating default user password")
+		if _, _, err := client.Database.UpdateUser(ctx, d.Id(), "vultradmin", reqP); err != nil {
+			return diag.Errorf("error updating default user: %v", err)
+		}
+	}
+
+	// Version changes have their own API protocol/checks
 	if d.HasChange("database_engine_version") {
 		// Check available versions against input
 		log.Printf("[INFO] Checking available version upgrades")
