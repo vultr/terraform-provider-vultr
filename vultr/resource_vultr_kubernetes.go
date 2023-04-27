@@ -183,7 +183,7 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 
 	ca, cert, key, err := getCertsFromKubeConfig(config.KubeConfig)
 	if err != nil {
-		return diag.Error(err)
+		return diag.Errorf("error getting certs from kubeconfig : %v", err)
 	}
 
 	if err := d.Set("kube_config", config.KubeConfig); err != nil {

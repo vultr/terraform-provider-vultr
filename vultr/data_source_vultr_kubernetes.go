@@ -134,7 +134,7 @@ func dataSourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, 
 
 	ca, cert, key, err := getCertsFromKubeConfig(kubeConfig.KubeConfig)
 	if err != nil {
-		return diag.Error(err)
+		return diag.Errorf("error getting certs from kubeconfig : %v", err)
 	}
 
 	d.SetId(k8List[0].ID)
