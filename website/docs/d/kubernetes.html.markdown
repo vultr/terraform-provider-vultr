@@ -49,6 +49,9 @@ The following attributes are exported:
 * `ip` - IP address of VKE cluster control plane.
 * `date_created` - Date of VKE cluster creation.
 * `kube_config` - Base64 encoded Kubeconfig for this VKE cluster.
+* `cluster_ca_certificate` - The base64 encoded public certificate for the cluster's certificate authority.
+* `client_key` - The base64 encoded private key used by clients to access the cluster.
+* `client_certificate` - The base64 encoded public certificate used by clients to access the cluster.
 * `node_pools` - Contains the default node pool that was deployed.
 
 `node_pools`
