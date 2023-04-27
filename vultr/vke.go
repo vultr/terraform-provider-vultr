@@ -1,9 +1,31 @@
 package vultr
 
 import (
+	"encoding/base64"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	"gopkg.in/yaml.v2"
 )
+
+type KubeConfig struct {
+	APIVersion string `yaml:"apiVersion"`
+	Kind       string `yaml:"kind"`
+	Clusters   []struct {
+		Name    string `yaml:"name"`
+		Cluster struct {
+			CaCert string `yaml:"certificate-authority-data"`
+			Server string `yaml:"server"`
+		} `yaml:"cluster"`
+	} `yaml:"clusters"`
+	Users []struct {
+		Name string `yaml:"name"`
+		User struct {
+			ClientCert string `yaml:"client-certificate-data"`
+			ClientKey  string `yaml:"client-key-data"`
+		} `yaml:"user"`
+	} `yaml:"users"`
+}
 
 func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 	s := map[string]*schema.Schema{
@@ -100,4 +122,21 @@ func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 	}
 
 	return s
+}
+
+func getCertsFromKubeConfig(kubeconfig string) (ca string, cert string, key string, err error) {
+	decodedKC, err := base64.StdEncoding.DecodeString(kubeconfig)
+	if err != nil {
+		return "", "", "", err
+	}
+
+	var kc KubeConfig
+
+	err = yaml.Unmarshal(decodedKC, &kc)
+	if err != nil {
+		return "", "", "", err
+	}
+
+	return kc.Clusters[0].Cluster.CaCert, kc.Users[0].User.ClientCert, kc.Users[0].User.ClientKey, nil
+
 }
