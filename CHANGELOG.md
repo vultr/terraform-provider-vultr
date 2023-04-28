@@ -1,5 +1,5 @@
 # Change log
-## [v2.14.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.14.0...v2.14.1)
+## [v2.14.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.14.0...v2.14.1) (2023-04-28)
 Enhancement:
 - resource/kuberneters: added vke certs as exported atrributes [PR 349](https://github.com/vultr/terraform-provider-vultr/pull/349)
 - data source/kuberneters: added vke certs as exported atrributes [PR 349](https://github.com/vultr/terraform-provider-vultr/pull/349)
