@@ -80,6 +80,23 @@ func resourceVultrKubernetes() *schema.Resource {
 				Computed:    true,
 				Sensitive:   true,
 			},
+			"cluster_ca_certificate": {
+				Type:      schema.TypeString,
+				Computed:  true,
+				Sensitive: true,
+			},
+
+			"client_key": {
+				Type:      schema.TypeString,
+				Computed:  true,
+				Sensitive: true,
+			},
+
+			"client_certificate": {
+				Type:      schema.TypeString,
+				Computed:  true,
+				Sensitive: true,
+			},
 		},
 	}
 }
@@ -167,10 +184,23 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("could not get kubeconfig : %v", err)
 	}
 
+	ca, cert, key, err := getCertsFromKubeConfig(config.KubeConfig)
+	if err != nil {
+		return diag.Errorf("error getting certs from kubeconfig : %v", err)
+	}
+
 	if err := d.Set("kube_config", config.KubeConfig); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `kube_config` read value: %v", err)
 	}
-
+	if err := d.Set("cluster_ca_certificate", ca); err != nil {
+		return diag.Errorf("unable to set kubernetes `cluster_ca_certificate` read value: %v", err)
+	}
+	if err := d.Set("client_certificate", cert); err != nil {
+		return diag.Errorf("unable to set kubernetes `client_certificate` read value: %v", err)
+	}
+	if err := d.Set("client_key", key); err != nil {
+		return diag.Errorf("unable to set kubernetes `client_key` read value: %v", err)
+	}
 	if err := d.Set("version", vke.Version); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `version` read value: %v", err)
 	}

@@ -1,4 +1,12 @@
-# Change log
+# Changelog
+## [v2.14.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.14.0...v2.14.1) (2023-04-28)
+Enhancement:
+- resource/kuberneters: added vke certs as exported atrributes [PR 349](https://github.com/vultr/terraform-provider-vultr/pull/349)
+- data source/kuberneters: added vke certs as exported atrributes [PR 349](https://github.com/vultr/terraform-provider-vultr/pull/349)
+
+New Contributors:
+- @happytreees made their first contribution in [PR 349](https://github.com/vultr/terraform-provider-vultr/pull/349)
+
 ## [v2.14.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.13.0...v2.14.0) (2023-04-13)
 Enhancement:
 - resource/kubernetes: Add VKE k8s version upgrade functionality [PR 344](https://github.com/vultr/terraform-provider-vultr/pull/344)

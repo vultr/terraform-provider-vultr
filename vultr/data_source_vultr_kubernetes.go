@@ -64,6 +64,20 @@ func dataSourceVultrKubernetes() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"cluster_ca_certificate": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+
+			"client_key": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+
+			"client_certificate": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -118,6 +132,11 @@ func dataSourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, 
 		return diag.Errorf("error getting kubeconfig")
 	}
 
+	ca, cert, key, err := getCertsFromKubeConfig(kubeConfig.KubeConfig)
+	if err != nil {
+		return diag.Errorf("error getting certs from kubeconfig : %v", err)
+	}
+
 	d.SetId(k8List[0].ID)
 	if err := d.Set("label", k8List[0].Label); err != nil {
 		return diag.Errorf("unable to set kubernetes `label` read value: %v", err)
@@ -148,6 +167,15 @@ func dataSourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, 
 	}
 	if err := d.Set("kube_config", kubeConfig.KubeConfig); err != nil {
 		return diag.Errorf("unable to set kubernetes `kube_config` read value: %v", err)
+	}
+	if err := d.Set("cluster_ca_certificate", ca); err != nil {
+		return diag.Errorf("unable to set kubernetes `cluster_ca_certificate` read value: %v", err)
+	}
+	if err := d.Set("client_certificate", cert); err != nil {
+		return diag.Errorf("unable to set kubernetes `client_certificate` read value: %v", err)
+	}
+	if err := d.Set("client_key", key); err != nil {
+		return diag.Errorf("unable to set kubernetes `client_key` read value: %v", err)
 	}
 	if err := d.Set("node_pools", flattenNodePools(k8List[0].NodePools)); err != nil {
 		return diag.Errorf("unable to set kubernetes `node_pools` read value: %v", err)
