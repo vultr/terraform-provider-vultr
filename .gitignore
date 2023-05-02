@@ -10,3 +10,5 @@ terraform.tfstate
 .DS_STORE
 .vscode/
 .idea
+terraform-provider-vultr
+terraform-provider-vultr.exe
