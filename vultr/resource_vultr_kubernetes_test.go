@@ -78,7 +78,7 @@ func testAccVultrKubernetesBase(label string) string {
 		resource "vultr_kubernetes" "foo" {
 			region   = "ewr"
 			label       = "%s"
-			version = "v1.24.3+2"
+			version = "v1.26.2+2"
 
 			node_pools {
 				node_quantity = 1
@@ -93,7 +93,7 @@ func testAccVultrKubernetesUpdate(label string) string {
 		resource "vultr_kubernetes" "foo" {
 			region   = "ewr"
 			label       = "%s"
-			version = "v1.24.3+2"
+			version = "v1.26.2+2"
 
 			node_pools {
 				node_quantity = 2
