@@ -14,7 +14,7 @@ func TestAccDataSourceVultrVPC(t *testing.T) {
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckVultrNetworkDestroy,
+		CheckDestroy:      testAccCheckVultrVPCDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccDataSourceVultrVPCConfig(rDesc),

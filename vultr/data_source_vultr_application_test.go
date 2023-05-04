@@ -13,22 +13,18 @@ func TestAccVultrApplication(t *testing.T) {
 		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckVultrApplication("Docker on CentOS 7 x64"),
+				Config: testAccCheckVultrApplication("Docker on Ubuntu 22.04"),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr(
-						"data.vultr_application.docker", "deploy_name", "Docker on CentOS 7 x64"),
 					resource.TestCheckResourceAttr(
 						"data.vultr_application.docker", "name", "Docker"),
 					resource.TestCheckResourceAttr(
 						"data.vultr_application.docker", "short_name", "docker"),
 					resource.TestCheckResourceAttr(
-						"data.vultr_application.docker", "id", "17"),
+						"data.vultr_application.docker", "type", "marketplace"),
 					resource.TestCheckResourceAttr(
-						"data.vultr_application.docker", "type", "one-click"),
+						"data.vultr_application.docker", "vendor", "vultr-labs"),
 					resource.TestCheckResourceAttr(
-						"data.vultr_application.docker", "vendor", "vultr"),
-					resource.TestCheckResourceAttr(
-						"data.vultr_application.docker", "image_id", ""),
+						"data.vultr_application.docker", "image_id", "docker"),
 				),
 			},
 		},
