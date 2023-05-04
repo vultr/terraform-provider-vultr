@@ -8,7 +8,7 @@ Automation:
 - Update acceptance test configurations [PR 353](https://github.com/vultr/terraform-provider-vultr/pull/353)
 
 New Contributors:
-- @christhemorse made their first contribution in https://github.com/vultr/terraform-provider-vultr/pull/352
+- @christhemorse made their first contribution in [PR 352](https://github.com/vultr/terraform-provider-vultr/pull/352)
 
 ## [v2.14.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.14.0...v2.14.1) (2023-04-28)
 Enhancement:
