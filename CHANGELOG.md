@@ -1,4 +1,15 @@
 # Changelog
+## [v2.15.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.14.1...v2.15.0) (2023-05-04)
+Enhancement
+- resource/database: Add Support for Vultr Managed Databases [PR 352](https://github.com/vultr/terraform-provider-vultr/pull/352)
+- data source/database: Add Support for Vultr Managed Databases [PR 352](https://github.com/vultr/terraform-provider-vultr/pull/352)
+
+Automation:
+- Update acceptance test configurations [PR 353](https://github.com/vultr/terraform-provider-vultr/pull/353)
+
+New Contributors:
+- @christhemorse made their first contribution in https://github.com/vultr/terraform-provider-vultr/pull/352
+
 ## [v2.14.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.14.0...v2.14.1) (2023-04-28)
 Enhancement:
 - resource/kuberneters: added vke certs as exported atrributes [PR 349](https://github.com/vultr/terraform-provider-vultr/pull/349)
