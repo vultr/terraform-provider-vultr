@@ -1,6 +1,14 @@
 # Changelog
+## [v2.15.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.15.0...v2.15.1) (2023-05-10)
+Enhancement:
+- Add documentation for Vultr managed database data sources and resources [PR 356](https://github.com/vultr/terraform-provider-vultr/pull/356)
+- Add VPC delete retries [PR 358](https://github.com/vultr/terraform-provider-vultr/pull/358)
+
+Dependencies:
+- Bump golang.org/x/oauth2 from 0.7.0 to 0.8.0 [PR 357](https://github.com/vultr/terraform-provider-vultr/pull/357)
+
 ## [v2.15.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.14.1...v2.15.0) (2023-05-04)
-Enhancement
+Enhancement:
 - resource/database: Add Support for Vultr Managed Databases [PR 352](https://github.com/vultr/terraform-provider-vultr/pull/352)
 - data source/database: Add Support for Vultr Managed Databases [PR 352](https://github.com/vultr/terraform-provider-vultr/pull/352)
 
