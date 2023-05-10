@@ -125,7 +125,7 @@ func resourceVultrVPCDelete(ctx context.Context, d *schema.ResourceData, meta in
 
 	log.Printf("[INFO] Deleting VPC: %s", d.Id())
 
-	err := retry.Retry(d.Timeout(schema.TimeoutCreate)-time.Minute, func() *retry.RetryError {
+	err := retry.RetryContext(ctx, d.Timeout(schema.TimeoutCreate)-time.Minute, func() *retry.RetryError {
 		err := client.VPC.Delete(ctx, d.Id())
 
 		if err == nil {
