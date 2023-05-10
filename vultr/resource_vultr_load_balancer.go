@@ -533,6 +533,19 @@ func resourceVultrLoadBalancerDelete(ctx context.Context, d *schema.ResourceData
 
 	log.Printf("[INFO] Deleting load balancer: %v", d.Id())
 
+	// items we should detach before we destroy
+	// instances and firewall rules are default "null" if not present in LoadBalancerReq
+	detachConfig := &govultr.LoadBalancerReq{}
+
+	if _, vpcOK := d.GetOk("vpc"); vpcOK {
+		detachConfig.VPC = govultr.StringToStringPtr("")
+	}
+
+	// send update to perform detach
+	if err := client.LoadBalancer.Update(ctx, d.Id(), detachConfig); err != nil {
+		return diag.Errorf("error detaching VPC from load balancer before deletion (%v): %v", d.Id(), err)
+	}
+
 	if err := client.LoadBalancer.Delete(ctx, d.Id()); err != nil {
 		return diag.Errorf("error deleting load balancer %v : %v", d.Id(), err)
 	}

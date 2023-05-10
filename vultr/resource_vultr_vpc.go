@@ -2,10 +2,13 @@ package vultr
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v3"
@@ -121,7 +124,22 @@ func resourceVultrVPCDelete(ctx context.Context, d *schema.ResourceData, meta in
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting VPC: %s", d.Id())
-	if err := client.VPC.Delete(ctx, d.Id()); err != nil {
+
+	err := retry.RetryContext(ctx, d.Timeout(schema.TimeoutCreate)-time.Minute, func() *retry.RetryError {
+		err := client.VPC.Delete(ctx, d.Id())
+
+		if err == nil {
+			return nil
+		}
+
+		if strings.Contains(err.Error(), "VPC is attached") {
+			return retry.RetryableError(fmt.Errorf("cannot remove attached VPC: %s", err.Error()))
+		}
+
+		return retry.NonRetryableError(err)
+	})
+
+	if err != nil {
 		return diag.Errorf("error destroying VPC (%s): %v", d.Id(), err)
 	}
 
