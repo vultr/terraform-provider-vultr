@@ -10,6 +10,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v3"
@@ -352,9 +353,26 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	log.Printf("[INFO] Creating server")
-	instance, _, err := client.Instance.Create(ctx, req)
-	if err != nil {
-		return diag.Errorf("error creating server: %v", err)
+	var instance *govultr.Instance = nil
+
+	// allow for retries on creation to handle retryable platform errors
+	retryErr := retry.RetryContext(ctx, d.Timeout(schema.TimeoutCreate)-time.Minute, func() *retry.RetryError {
+		instanceData, _, err := client.Instance.Create(ctx, req)
+		instance = instanceData
+
+		if err == nil {
+			return nil
+		}
+
+		if strings.Contains(err.Error(), "Floating IPv4 address is already attached to another server") {
+			return retry.RetryableError(fmt.Errorf("cannot create instance with reserved IP: %s", err.Error()))
+		}
+
+		return retry.NonRetryableError(err)
+	})
+
+	if retryErr != nil {
+		return diag.Errorf("error creating server: %v", retryErr)
 	}
 
 	d.SetId(instance.ID)
