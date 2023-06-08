@@ -78,6 +78,7 @@ func resourceVultrLoadBalancer() *schema.Resource {
 						"path": {
 							Type:     schema.TypeString,
 							Optional: true,
+							Default:  "/",
 						},
 						"port": {
 							Type:         schema.TypeInt,
