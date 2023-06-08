@@ -78,6 +78,7 @@ func resourceVultrLoadBalancer() *schema.Resource {
 						"path": {
 							Type:     schema.TypeString,
 							Optional: true,
+							Default:  "/",
 						},
 						"port": {
 							Type:         schema.TypeInt,
@@ -86,23 +87,27 @@ func resourceVultrLoadBalancer() *schema.Resource {
 						},
 						"check_interval": {
 							Type:         schema.TypeInt,
-							Required:     true,
+							Optional:     true,
 							ValidateFunc: validation.IntBetween(1, 300),
+							Default:      15,
 						},
 						"response_timeout": {
 							Type:         schema.TypeInt,
-							Required:     true,
+							Optional:     true,
 							ValidateFunc: validation.IntBetween(1, 300),
+							Default:      5,
 						},
 						"unhealthy_threshold": {
 							Type:         schema.TypeInt,
-							Required:     true,
+							Optional:     true,
 							ValidateFunc: validation.IntBetween(1, 300),
+							Default:      5,
 						},
 						"healthy_threshold": {
 							Type:         schema.TypeInt,
-							Required:     true,
+							Optional:     true,
 							ValidateFunc: validation.IntBetween(1, 300),
+							Default:      5,
 						},
 					},
 				},
