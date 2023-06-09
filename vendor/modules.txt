@@ -53,7 +53,7 @@ github.com/hashicorp/go-multierror
 ## explicit; go 1.17
 github.com/hashicorp/go-plugin
 github.com/hashicorp/go-plugin/internal/plugin
-# github.com/hashicorp/go-retryablehttp v0.7.2
+# github.com/hashicorp/go-retryablehttp v0.7.4
 ## explicit; go 1.13
 github.com/hashicorp/go-retryablehttp
 # github.com/hashicorp/go-uuid v1.0.3
@@ -193,7 +193,7 @@ github.com/vmihailenco/msgpack/v4/codes
 github.com/vmihailenco/tagparser
 github.com/vmihailenco/tagparser/internal
 github.com/vmihailenco/tagparser/internal/parser
-# github.com/vultr/govultr/v3 v3.0.2
+# github.com/vultr/govultr/v3 v3.0.3
 ## explicit; go 1.20
 github.com/vultr/govultr/v3
 # github.com/zclconf/go-cty v1.13.1
