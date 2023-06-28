@@ -61,7 +61,7 @@ There is still a requirement that there be one node pool attached to the cluster
 
 The follow arguments are supported:
 
-* `region` - (Required) The region your VKE cluster will be deployed in. Currently, supported values are `ewr` and `lax`
+* `region` - (Required) The region your VKE cluster will be deployed in.
 * `version` - (Required) The version your VKE cluster you want deployed. [See Available Version](https://www.vultr.com/api/#operation/get-kubernetes-versions)
 * `label` - (Optional) The VKE clusters label.
 
