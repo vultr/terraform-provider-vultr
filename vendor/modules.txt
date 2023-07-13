@@ -193,7 +193,7 @@ github.com/vmihailenco/msgpack/v4/codes
 github.com/vmihailenco/tagparser
 github.com/vmihailenco/tagparser/internal
 github.com/vmihailenco/tagparser/internal/parser
-# github.com/vultr/govultr/v3 v3.0.3
+# github.com/vultr/govultr/v3 v3.1.0
 ## explicit; go 1.20
 github.com/vultr/govultr/v3
 # github.com/zclconf/go-cty v1.13.1

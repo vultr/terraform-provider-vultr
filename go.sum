@@ -187,8 +187,8 @@ github.com/vmihailenco/msgpack/v4 v4.3.12/go.mod h1:gborTTJjAo/GWTqqRjrLCn9pgNN+
 github.com/vmihailenco/tagparser v0.1.1/go.mod h1:OeAg3pn3UbLjkWt+rN9oFYB6u/cQgqMEUPoW2WPyhdI=
 github.com/vmihailenco/tagparser v0.1.2 h1:gnjoVuB/kljJ5wICEEOpx98oXMWPLj22G67Vbd1qPqc=
 github.com/vmihailenco/tagparser v0.1.2/go.mod h1:OeAg3pn3UbLjkWt+rN9oFYB6u/cQgqMEUPoW2WPyhdI=
-github.com/vultr/govultr/v3 v3.0.3 h1:SobHBEZnErjW6s0i9QsSH8/Gf9+2T7eH4Nsglgu/jkw=
-github.com/vultr/govultr/v3 v3.0.3/go.mod h1:7NjuHeQv5vgUWR2H1sPc9D+xffrT5ql+kNi6R3yuwzo=
+github.com/vultr/govultr/v3 v3.1.0 h1:usmAhzC0RgFwADvqorllIVH+ZgV+7Lqkd0FBSNcwCu4=
+github.com/vultr/govultr/v3 v3.1.0/go.mod h1:7NjuHeQv5vgUWR2H1sPc9D+xffrT5ql+kNi6R3yuwzo=
 github.com/xanzy/ssh-agent v0.3.0 h1:wUMzuKtKilRgBAD1sUb8gOwwRr2FGoBVumcjoOACClI=
 github.com/xanzy/ssh-agent v0.3.0/go.mod h1:3s9xbODqPuuhK9JV1R321M/FlMZSBvE5aY6eAcqrDh0=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
