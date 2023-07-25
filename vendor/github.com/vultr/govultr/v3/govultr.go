@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	version     = "3.1.0"
+	version     = "3.2.0"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 500 * time.Millisecond
@@ -153,7 +153,7 @@ func (c *Client) NewRequest(ctx context.Context, method, uri string, body interf
 		}
 	}
 
-	req, err := http.NewRequest(method, resolvedURL.String(), buf)
+	req, err := http.NewRequestWithContext(ctx, method, resolvedURL.String(), buf)
 	if err != nil {
 		return nil, err
 	}
