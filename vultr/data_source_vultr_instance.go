@@ -166,7 +166,7 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 
 	var serverList []govultr.Instance
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
-	options := &govultr.ListOptions{}
+	options := &govultr.ListOptions{PerPage: 400}
 	for {
 		servers, meta, _, err := client.Instance.List(ctx, options)
 		if err != nil {
