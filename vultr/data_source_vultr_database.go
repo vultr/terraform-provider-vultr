@@ -41,6 +41,18 @@ func dataSourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"database_engine": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"database_engine_version": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"vpc_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"status": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -50,14 +62,6 @@ func dataSourceVultrDatabase() *schema.Resource {
 				Computed: true,
 			},
 			"tag": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"database_engine": {
-				Type:     schema.TypeString,
-				Computed: true,
-			},
-			"database_engine_version": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -204,6 +208,18 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set resource database `region` read value: %v", err)
 	}
 
+	if err := d.Set("database_engine", databaseList[0].DatabaseEngine); err != nil {
+		return diag.Errorf("unable to set resource database `database_engine` read value: %v", err)
+	}
+
+	if err := d.Set("database_engine_version", databaseList[0].DatabaseEngineVersion); err != nil {
+		return diag.Errorf("unable to set resource database `database_engine_version` read value: %v", err)
+	}
+
+	if err := d.Set("vpc_id", databaseList[0].VPCID); err != nil {
+		return diag.Errorf("unable to set resource database `vpc_id` read value: %v", err)
+	}
+
 	if err := d.Set("status", databaseList[0].Status); err != nil {
 		return diag.Errorf("unable to set resource database `status` read value: %v", err)
 	}
@@ -214,14 +230,6 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 
 	if err := d.Set("tag", databaseList[0].Tag); err != nil {
 		return diag.Errorf("unable to set resource database `tag` read value: %v", err)
-	}
-
-	if err := d.Set("database_engine", databaseList[0].DatabaseEngine); err != nil {
-		return diag.Errorf("unable to set resource database `database_engine` read value: %v", err)
-	}
-
-	if err := d.Set("database_engine_version", databaseList[0].DatabaseEngineVersion); err != nil {
-		return diag.Errorf("unable to set resource database `database_engine_version` read value: %v", err)
 	}
 
 	if err := d.Set("dbname", databaseList[0].DBName); err != nil {
@@ -309,11 +317,12 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 			"plan_vcpus":                db.ReadReplicas[v].PlanVCPUs,
 			"plan_replicas":             db.ReadReplicas[v].PlanReplicas,
 			"region":                    db.ReadReplicas[v].Region,
+			"database_engine":           db.ReadReplicas[v].DatabaseEngine,
+			"database_engine_version":   db.ReadReplicas[v].DatabaseEngineVersion,
+			"vpc_id":                    db.ReadReplicas[v].VPCID,
 			"status":                    db.ReadReplicas[v].Status,
 			"label":                     db.ReadReplicas[v].Label,
 			"tag":                       db.ReadReplicas[v].Tag,
-			"database_engine":           db.ReadReplicas[v].DatabaseEngine,
-			"database_engine_version":   db.ReadReplicas[v].DatabaseEngineVersion,
 			"dbname":                    db.ReadReplicas[v].DBName,
 			"host":                      db.ReadReplicas[v].Host,
 			"user":                      db.ReadReplicas[v].User,

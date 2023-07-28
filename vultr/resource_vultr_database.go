@@ -26,6 +26,15 @@ func resourceVultrDatabase() *schema.Resource {
 
 		Schema: map[string]*schema.Schema{
 			// Required
+			"database_engine": {
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+			},
+			"database_engine_version": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
 			"region": {
 				Type:             schema.TypeString,
 				Required:         true,
@@ -44,14 +53,9 @@ func resourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 			},
-			"database_engine": {
+			"vpc_id": {
 				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
-			},
-			"database_engine_version": {
-				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"maintenance_dow": {
 				Type:     schema.TypeString,
@@ -168,6 +172,7 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 		Plan:                   d.Get("plan").(string),
 		Label:                  d.Get("label").(string),
 		Tag:                    d.Get("tag").(string),
+		VPCID:                  d.Get("vpc_id").(string),
 		MaintenanceDOW:         d.Get("maintenance_dow").(string),
 		MaintenanceTime:        d.Get("maintenance_time").(string),
 		MySQLRequirePrimaryKey: govultr.BoolToBoolPtr(true),
@@ -278,6 +283,18 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("unable to set resource database `region` read value: %v", err)
 	}
 
+	if err := d.Set("database_engine", database.DatabaseEngine); err != nil {
+		return diag.Errorf("unable to set resource database `database_engine` read value: %v", err)
+	}
+
+	if err := d.Set("database_engine_version", database.DatabaseEngineVersion); err != nil {
+		return diag.Errorf("unable to set resource database `database_engine_version` read value: %v", err)
+	}
+
+	if err := d.Set("vpc_id", database.VPCID); err != nil {
+		return diag.Errorf("unable to set resource database `vpc_id` read value: %v", err)
+	}
+
 	if err := d.Set("status", database.Status); err != nil {
 		return diag.Errorf("unable to set resource database `status` read value: %v", err)
 	}
@@ -288,14 +305,6 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 
 	if err := d.Set("tag", database.Tag); err != nil {
 		return diag.Errorf("unable to set resource database `tag` read value: %v", err)
-	}
-
-	if err := d.Set("database_engine", database.DatabaseEngine); err != nil {
-		return diag.Errorf("unable to set resource database `database_engine` read value: %v", err)
-	}
-
-	if err := d.Set("database_engine_version", database.DatabaseEngineVersion); err != nil {
-		return diag.Errorf("unable to set resource database `database_engine_version` read value: %v", err)
 	}
 
 	if err := d.Set("dbname", database.DBName); err != nil {
@@ -398,6 +407,13 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 		req.Tag = tag
 	}
 
+	if d.HasChange("vpc_id") {
+		log.Printf("[INFO] Updating VPC ID")
+		_, newVal := d.GetChange("vpc_id")
+		vpc := newVal.(string)
+		req.VPCID = vpc
+	}
+
 	if d.HasChange("maintenance_dow") {
 		log.Printf("[INFO] Updating Maintenance DOW")
 		_, newVal := d.GetChange("maintenance_dow")
@@ -475,7 +491,7 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("error updating database %s : %s", d.Id(), err.Error())
 	}
 
-	if d.HasChange("region") || d.HasChange("plan") {
+	if d.HasChange("region") || d.HasChange("plan") || d.HasChange("vpc_id") {
 		if _, err := waitForDatabaseAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Error"}, "status", meta); err != nil {
 			return diag.Errorf("error while waiting for Managed Database %s to be in an active state : %s", d.Id(), err)
 		}
