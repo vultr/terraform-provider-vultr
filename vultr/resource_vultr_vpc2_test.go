@@ -10,66 +10,66 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrVPC(t *testing.T) {
-	rDesc := acctest.RandomWithPrefix("tf-vpc-rs-nocdir")
+func TestAccVultrVPC2(t *testing.T) {
+	rDesc := acctest.RandomWithPrefix("tf-vpc2-rs-nocdir")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckVultrVPCDestroy,
+		CheckDestroy:      testAccCheckVultrVPC2Destroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrVPCConfigBase(rDesc),
+				Config: testAccVultrVPC2ConfigBase(rDesc),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckVultrVPCExists("vultr_vpc.foo"),
-					resource.TestCheckResourceAttr("vultr_vpc.foo", "description", rDesc),
-					resource.TestCheckResourceAttrSet("vultr_vpc.foo", "date_created"),
-					resource.TestCheckResourceAttrSet("vultr_vpc.foo", "v4_subnet"),
+					testAccCheckVultrVPC2Exists("vultr_vpc2.foo"),
+					resource.TestCheckResourceAttr("vultr_vpc2.foo", "description", rDesc),
+					resource.TestCheckResourceAttrSet("vultr_vpc2.foo", "date_created"),
+					resource.TestCheckResourceAttrSet("vultr_vpc2.foo", "ip_block"),
 				),
 			},
 		},
 	})
 }
 
-func TestAccVultrVPCWithSubnet(t *testing.T) {
-	rDesc := acctest.RandomWithPrefix("tf-vpc-rs-subnet")
+func TestAccVultrVPC2WithSubnet(t *testing.T) {
+	rDesc := acctest.RandomWithPrefix("tf-vpc2-rs-subnet")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckVultrVPCDestroy,
+		CheckDestroy:      testAccCheckVultrVPC2Destroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccVultrVPCConfigWithSubnet(rDesc),
+				Config: testAccVultrVPC2ConfigWithSubnet(rDesc),
 				Check: resource.ComposeTestCheckFunc(
-					testAccCheckVultrVPCExists("vultr_vpc.foo"),
-					resource.TestCheckResourceAttr("vultr_vpc.foo", "description", rDesc),
-					resource.TestCheckResourceAttr("vultr_vpc.foo", "v4_subnet", "10.0.0.0"),
-					resource.TestCheckResourceAttrSet("vultr_vpc.foo", "date_created"),
+					testAccCheckVultrVPC2Exists("vultr_vpc2.foo"),
+					resource.TestCheckResourceAttr("vultr_vpc2.foo", "description", rDesc),
+					resource.TestCheckResourceAttr("vultr_vpc2.foo", "ip_block", "10.0.0.0"),
+					resource.TestCheckResourceAttrSet("vultr_vpc2.foo", "date_created"),
 				),
 			},
 		},
 	})
 }
 
-func testAccCheckVultrVPCDestroy(s *terraform.State) error {
+func testAccCheckVultrVPC2Destroy(s *terraform.State) error {
 	for _, rs := range s.RootModule().Resources {
-		if rs.Type != "vultr_vpc" {
+		if rs.Type != "vultr_vpc2" {
 			continue
 		}
 
-		vpcID := rs.Primary.ID
+		vpc2ID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		_, _, err := client.VPC.Get(context.Background(), vpcID)
+		_, _, err := client.VPC2.Get(context.Background(), vpc2ID)
 		if err == nil {
-			return fmt.Errorf("vpc still exists: %s", vpcID)
+			return fmt.Errorf("vpc 2.0 still exists: %s", vpc2ID)
 		}
 	}
 	return nil
 }
 
-func testAccCheckVultrVPCExists(n string) resource.TestCheckFunc {
+func testAccCheckVultrVPC2Exists(n string) resource.TestCheckFunc {
 	return func(s *terraform.State) error {
 		rs, ok := s.RootModule().Resources[n]
 		if !ok {
@@ -77,37 +77,38 @@ func testAccCheckVultrVPCExists(n string) resource.TestCheckFunc {
 		}
 
 		if rs.Primary.ID == "" {
-			return fmt.Errorf("VPC ID is not set")
+			return fmt.Errorf("VPC 2.0 ID is not set")
 		}
 
-		vpcID := rs.Primary.ID
+		vpc2ID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		_, _, err := client.VPC.Get(context.Background(), vpcID)
+		_, _, err := client.VPC2.Get(context.Background(), vpc2ID)
 		if err != nil {
-			return fmt.Errorf("VPC does not exist: %s", vpcID)
+			return fmt.Errorf("VPC 2.0 does not exist: %s", vpc2ID)
 		}
 
 		return nil
 	}
 }
 
-func testAccVultrVPCConfigBase(rDesc string) string {
+func testAccVultrVPC2ConfigBase(rDesc string) string {
 	return fmt.Sprintf(`
-		resource "vultr_vpc" "foo" {
-			region   = "atl"
+		resource "vultr_vpc2" "foo" {
+			region      = "atl"
 			description = "%s"
 		}
 	`, rDesc)
 }
 
-func testAccVultrVPCConfigWithSubnet(rDesc string) string {
+func testAccVultrVPC2ConfigWithSubnet(rDesc string) string {
 	return fmt.Sprintf(`
-		resource "vultr_vpc" "foo" {
-			region   = "atl"
-			description = "%s"
-			v4_subnet  = "10.0.0.0"
-			v4_subnet_mask = 24
+		resource "vultr_vpc2" "foo" {
+			region        = "atl"
+			description   = "%s"
+			ip_type 	  = "v4"
+			ip_block      = "10.0.0.0"
+			prefix_length = 24
 		}
 	`, rDesc)
 }

@@ -56,6 +56,7 @@ func Provider() *schema.Provider {
 			"vultr_startup_script":         dataSourceVultrStartupScript(),
 			"vultr_user":                   dataSourceVultrUser(),
 			"vultr_vpc":                    dataSourceVultrVPC(),
+			"vultr_vpc2":                   dataSourceVultrVPC2(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
@@ -87,6 +88,7 @@ func Provider() *schema.Provider {
 			"vultr_startup_script":           resourceVultrStartupScript(),
 			"vultr_user":                     resourceVultrUsers(),
 			"vultr_vpc":                      resourceVultrVPC(),
+			"vultr_vpc2":                     resourceVultrVPC2(),
 		},
 
 		ConfigureFunc: providerConfigure,

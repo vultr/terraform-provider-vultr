@@ -14,12 +14,12 @@ import (
 	"github.com/vultr/govultr/v3"
 )
 
-func resourceVultrVPC() *schema.Resource {
+func resourceVultrVPC2() *schema.Resource {
 	return &schema.Resource{
-		CreateContext: resourceVultrVPCCreate,
-		ReadContext:   resourceVultrVPCRead,
-		UpdateContext: resourceVultrVPCUpdate,
-		DeleteContext: resourceVultrVPCDelete,
+		CreateContext: resourceVultrVPC2Create,
+		ReadContext:   resourceVultrVPC2Read,
+		UpdateContext: resourceVultrVPC2Update,
+		DeleteContext: resourceVultrVPC2Delete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -36,14 +36,14 @@ func resourceVultrVPC() *schema.Resource {
 				Optional: true,
 				Default:  "",
 			},
-			"v4_subnet": {
+			"ip_block": {
 				Type:         schema.TypeString,
 				Computed:     true,
 				Optional:     true,
 				ForceNew:     true,
 				ValidateFunc: validation.IsIPv4Address,
 			},
-			"v4_subnet_mask": {
+			"prefix_length": {
 				Type:     schema.TypeInt,
 				Computed: true,
 				Optional: true,
@@ -57,90 +57,91 @@ func resourceVultrVPC() *schema.Resource {
 	}
 }
 
-func resourceVultrVPCCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrVPC2Create(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	vpcReq := &govultr.VPCReq{
+	vpcReq := &govultr.VPC2Req{
 		Region:       d.Get("region").(string),
 		Description:  d.Get("description").(string),
-		V4Subnet:     d.Get("v4_subnet").(string),
-		V4SubnetMask: d.Get("v4_subnet_mask").(int),
+		IPType:       d.Get("ip_type").(string),
+		IPBlock:      d.Get("ip_block").(string),
+		PrefixLength: d.Get("prefix_length").(int),
 	}
 
-	vpc, _, err := client.VPC.Create(ctx, vpcReq)
+	vpc, _, err := client.VPC2.Create(ctx, vpcReq)
 	if err != nil {
-		return diag.Errorf("error creating VPC: %v", err)
+		return diag.Errorf("error creating VPC 2.0: %v", err)
 	}
 
 	d.SetId(vpc.ID)
-	log.Printf("[INFO] VPC ID: %s", d.Id())
+	log.Printf("[INFO] VPC 2.0 ID: %s", d.Id())
 
-	return resourceVultrVPCRead(ctx, d, meta)
+	return resourceVultrVPC2Read(ctx, d, meta)
 }
 
-func resourceVultrVPCRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrVPC2Read(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	vpc, _, err := client.VPC.Get(ctx, d.Id())
+	vpc, _, err := client.VPC2.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Invalid VPC ID") {
-			log.Printf("[WARN] Vultr VPC (%s) not found", d.Id())
+		if strings.Contains(err.Error(), "Invalid VPC 2.0 ID") {
+			log.Printf("[WARN] Vultr VPC 2.0 (%s) not found", d.Id())
 			d.SetId("")
 			return nil
 		}
-		return diag.Errorf("error getting VPC: %v", err)
+		return diag.Errorf("error getting VPC 2.0: %v", err)
 	}
 
 	if err := d.Set("region", vpc.Region); err != nil {
-		return diag.Errorf("unable to set resource vpc `region` read value: %v", err)
+		return diag.Errorf("unable to set resource vpc2 `region` read value: %v", err)
 	}
 	if err := d.Set("description", vpc.Description); err != nil {
-		return diag.Errorf("unable to set resource vpc `description` read value: %v", err)
+		return diag.Errorf("unable to set resource vpc2 `description` read value: %v", err)
 	}
-	if err := d.Set("v4_subnet", vpc.V4Subnet); err != nil {
-		return diag.Errorf("unable to set resource vpc `v4_subnet` read value: %v", err)
+	if err := d.Set("ip_block", vpc.IPBlock); err != nil {
+		return diag.Errorf("unable to set resource vpc2 `ip_block` read value: %v", err)
 	}
-	if err := d.Set("v4_subnet_mask", vpc.V4SubnetMask); err != nil {
-		return diag.Errorf("unable to set resource vpc `v4_subnet_mask` read value: %v", err)
+	if err := d.Set("prefix_length", vpc.PrefixLength); err != nil {
+		return diag.Errorf("unable to set resource vpc2 `prefix_length` read value: %v", err)
 	}
 	if err := d.Set("date_created", vpc.DateCreated); err != nil {
-		return diag.Errorf("unable to set resource vpc `date_created` read value: %v", err)
+		return diag.Errorf("unable to set resource vpc2 `date_created` read value: %v", err)
 	}
 
 	return nil
 }
 
-func resourceVultrVPCUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrVPC2Update(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	if err := client.VPC.Update(ctx, d.Id(), d.Get("description").(string)); err != nil {
-		return diag.Errorf("error updating VPC: %v", err)
+	if err := client.VPC2.Update(ctx, d.Id(), d.Get("description").(string)); err != nil {
+		return diag.Errorf("error updating VPC 2.0: %v", err)
 	}
 
-	return resourceVultrVPCRead(ctx, d, meta)
+	return resourceVultrVPC2Read(ctx, d, meta)
 }
 
-func resourceVultrVPCDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrVPC2Delete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	log.Printf("[INFO] Deleting VPC: %s", d.Id())
+	log.Printf("[INFO] Deleting VPC 2.0: %s", d.Id())
 
 	retryErr := retry.RetryContext(ctx, d.Timeout(schema.TimeoutDelete)-time.Minute, func() *retry.RetryError {
-		err := client.VPC.Delete(ctx, d.Id())
+		err := client.VPC2.Delete(ctx, d.Id())
 
 		if err == nil {
 			return nil
 		}
 
-		if strings.Contains(err.Error(), "VPC is attached") {
-			return retry.RetryableError(fmt.Errorf("cannot remove attached VPC: %s", err.Error()))
+		if strings.Contains(err.Error(), "VPC 2.0 is attached") {
+			return retry.RetryableError(fmt.Errorf("cannot remove attached VPC 2.0: %s", err.Error()))
 		}
 
 		return retry.NonRetryableError(err)
 	})
 
 	if retryErr != nil {
-		return diag.Errorf("error destroying VPC (%s): %v", d.Id(), retryErr)
+		return diag.Errorf("error destroying VPC 2.0 (%s): %v", d.Id(), retryErr)
 	}
 
 	return nil

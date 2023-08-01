@@ -8,39 +8,39 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 )
 
-func TestAccDataSourceVultrVPC(t *testing.T) {
-	rDesc := acctest.RandomWithPrefix("tf-vpc-ds")
+func TestAccDataSourceVultrVPC2(t *testing.T) {
+	rDesc := acctest.RandomWithPrefix("tf-vpc2-ds")
 
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
 		ProviderFactories: testAccProviderFactories,
-		CheckDestroy:      testAccCheckVultrVPCDestroy,
+		CheckDestroy:      testAccCheckVultrVPC2Destroy,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccDataSourceVultrVPCConfig(rDesc),
+				Config: testAccDataSourceVultrVPC2Config(rDesc),
 				Check: resource.ComposeTestCheckFunc(
-					resource.TestCheckResourceAttr("data.vultr_vpc.my_vpc", "description", rDesc),
-					resource.TestCheckResourceAttrSet("data.vultr_vpc.my_vpc", "date_created"),
-					resource.TestCheckResourceAttrSet("data.vultr_vpc.my_vpc", "region"),
-					resource.TestCheckResourceAttrSet("data.vultr_vpc.my_vpc", "v4_subnet"),
-					resource.TestCheckResourceAttrSet("data.vultr_vpc.my_vpc", "v4_subnet_mask"),
+					resource.TestCheckResourceAttr("data.vultr_vpc2.my_vpc2", "description", rDesc),
+					resource.TestCheckResourceAttrSet("data.vultr_vpc2.my_vpc2", "date_created"),
+					resource.TestCheckResourceAttrSet("data.vultr_vpc2.my_vpc2", "region"),
+					resource.TestCheckResourceAttrSet("data.vultr_vpc2.my_vpc2", "ip_block"),
+					resource.TestCheckResourceAttrSet("data.vultr_vpc2.my_vpc2", "prefix_length"),
 				),
 			},
 		},
 	})
 }
 
-func testAccDataSourceVultrVPCConfig(description string) string {
+func testAccDataSourceVultrVPC2Config(description string) string {
 	return fmt.Sprintf(`
-		resource "vultr_vpc" "foo" {
+		resource "vultr_vpc2" "foo" {
 			region   = "ewr"
 			description = "%s"
 		}
 
-		data "vultr_vpc" "my_vpc" {
+		data "vultr_vpc2" "my_vpc2" {
 			filter {
 				name = "description"
-				values = ["${vultr_vpc.foo.description}"]
+				values = ["${vultr_vpc2.foo.description}"]
 			}
 		}`, description)
 }

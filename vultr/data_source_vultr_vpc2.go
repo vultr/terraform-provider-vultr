@@ -8,20 +8,20 @@ import (
 	"github.com/vultr/govultr/v3"
 )
 
-func dataSourceVultrVPC() *schema.Resource {
+func dataSourceVultrVPC2() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceVultrVPCRead,
+		ReadContext: dataSourceVultrVPC2Read,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"region": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"v4_subnet": {
+			"ip_block": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"v4_subnet_mask": {
+			"prefix_length": {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
@@ -37,7 +37,7 @@ func dataSourceVultrVPC() *schema.Resource {
 	}
 }
 
-func dataSourceVultrVPCRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceVultrVPC2Read(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
@@ -46,14 +46,14 @@ func dataSourceVultrVPCRead(ctx context.Context, d *schema.ResourceData, meta in
 		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	var vpcList []govultr.VPC
+	var vpcList []govultr.VPC2
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 
 	for {
-		vpcs, meta, _, err := client.VPC.List(ctx, options)
+		vpcs, meta, _, err := client.VPC2.List(ctx, options)
 		if err != nil {
-			return diag.Errorf("error getting VPCs: %v", err)
+			return diag.Errorf("error getting VPCs 2.0: %v", err)
 		}
 
 		for _, n := range vpcs {
@@ -87,19 +87,19 @@ func dataSourceVultrVPCRead(ctx context.Context, d *schema.ResourceData, meta in
 
 	d.SetId(vpcList[0].ID)
 	if err := d.Set("region", vpcList[0].Region); err != nil {
-		return diag.Errorf("unable to set vpc `region` read value: %v", err)
+		return diag.Errorf("unable to set vpc2 `region` read value: %v", err)
 	}
 	if err := d.Set("description", vpcList[0].Description); err != nil {
-		return diag.Errorf("unable to set vpc `description` read value: %v", err)
+		return diag.Errorf("unable to set vpc2 `description` read value: %v", err)
 	}
 	if err := d.Set("date_created", vpcList[0].DateCreated); err != nil {
-		return diag.Errorf("unable to set vpc `date_created` read value: %v", err)
+		return diag.Errorf("unable to set vpc2 `date_created` read value: %v", err)
 	}
-	if err := d.Set("v4_subnet", vpcList[0].V4Subnet); err != nil {
-		return diag.Errorf("unable to set vpc `v4_subnet` read value: %v", err)
+	if err := d.Set("ip_block", vpcList[0].IPBlock); err != nil {
+		return diag.Errorf("unable to set vpc2 `ip_block` read value: %v", err)
 	}
-	if err := d.Set("v4_subnet_mask", vpcList[0].V4SubnetMask); err != nil {
-		return diag.Errorf("unable to set vpc `v4_subnet_mask` read value: %v", err)
+	if err := d.Set("prefix_length", vpcList[0].PrefixLength); err != nil {
+		return diag.Errorf("unable to set vpc2 `prefix_length` read value: %v", err)
 	}
 
 	return nil
