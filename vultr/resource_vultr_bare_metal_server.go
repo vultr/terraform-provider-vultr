@@ -64,6 +64,12 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
+			"vpc2_ids": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 			"ssh_key_ids": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -222,6 +228,12 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 		}
 	}
 
+	if vpcIDs, vpcOK := d.GetOk("vpc2_ids"); vpcOK {
+		for _, v := range vpcIDs.(*schema.Set).List() {
+			req.AttachVPC2 = append(req.AttachVPC2, v.(string))
+		}
+	}
+
 	client := meta.(*Client).govultrClient()
 
 	bm, _, err := client.BareMetalServer.Create(ctx, req)
@@ -317,6 +329,17 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 		return diag.Errorf("unable to set resource bare_metal_server `v6_network_size` read value: %v", err)
 	}
 
+	vpcs2, err := getBareMetalServerVPCs2(client, d.Id())
+	if err != nil {
+		return diag.Errorf(err.Error())
+	}
+
+	if _, vpcUpdate := d.GetOk("vpc2_ids"); vpcUpdate {
+		if err := d.Set("vpc2_ids", vpcs2); err != nil {
+			return diag.Errorf("unable to set resource instance `vpc2_ids` read value: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -345,6 +368,24 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 		req.OsID = osID
 	}
 
+	if d.HasChange("vpc2_ids") {
+		log.Printf("[INFO] Updating vpc2_ids")
+		oldVPC, newVPC := d.GetChange("vpc2_ids")
+
+		var oldIDs []string
+		for _, v := range oldVPC.(*schema.Set).List() {
+			oldIDs = append(oldIDs, v.(string))
+		}
+
+		var newIDs []string
+		for _, v := range newVPC.(*schema.Set).List() {
+			newIDs = append(newIDs, v.(string))
+		}
+
+		req.AttachVPC2 = append(req.AttachVPC2, diffSlice(oldIDs, newIDs)...)
+		req.DetachVPC2 = append(req.DetachVPC2, diffSlice(newIDs, oldIDs)...)
+	}
+
 	if d.HasChange("tags") {
 		_, newTags := tfChangeToSlices("tags", d)
 		req.Tags = newTags
@@ -361,6 +402,18 @@ func resourceVultrBareMetalServerDelete(ctx context.Context, d *schema.ResourceD
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting bare metal server: %s", d.Id())
+
+	if vpcIDs, vpcOK := d.GetOk("vpc2_ids"); vpcOK {
+		detach := &govultr.InstanceUpdateReq{}
+		for _, v := range vpcIDs.(*schema.Set).List() {
+			detach.DetachVPC2 = append(detach.DetachVPC2, v.(string))
+		}
+
+		if _, _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
+			return diag.Errorf("error detaching VPCs 2.0 prior to deleting instance %s : %v", d.Id(), err)
+		}
+	}
+
 	if err := client.BareMetalServer.Delete(ctx, d.Id()); err != nil {
 		return diag.Errorf("error deleting bare metal server (%s): %v", d.Id(), err)
 	}
