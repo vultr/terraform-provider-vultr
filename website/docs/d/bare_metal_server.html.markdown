@@ -58,3 +58,4 @@ The following attributes are exported:
 * `os_id` - The server's operating system ID.
 * `app_id` - The server's application ID.
 * `image_id` - The Marketplace ID for this application.
+* `vpc2_ids` - A list of VPC 2.0 IDs attached to the server.
