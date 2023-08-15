@@ -36,6 +36,11 @@ func resourceVultrVPC2() *schema.Resource {
 				Optional: true,
 				Default:  "",
 			},
+			"ip_type": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"ip_block": {
 				Type:         schema.TypeString,
 				Computed:     true,
