@@ -124,10 +124,10 @@ github.com/hashicorp/logutils
 ## explicit; go 1.18
 github.com/hashicorp/terraform-exec/internal/version
 github.com/hashicorp/terraform-exec/tfexec
-# github.com/hashicorp/terraform-json v0.17.0
+# github.com/hashicorp/terraform-json v0.17.1
 ## explicit; go 1.18
 github.com/hashicorp/terraform-json
-# github.com/hashicorp/terraform-plugin-go v0.16.0
+# github.com/hashicorp/terraform-plugin-go v0.18.0
 ## explicit; go 1.19
 github.com/hashicorp/terraform-plugin-go/internal/logging
 github.com/hashicorp/terraform-plugin-go/tfprotov5
@@ -152,7 +152,7 @@ github.com/hashicorp/terraform-plugin-log/internal/hclogutils
 github.com/hashicorp/terraform-plugin-log/internal/logging
 github.com/hashicorp/terraform-plugin-log/tflog
 github.com/hashicorp/terraform-plugin-log/tfsdklog
-# github.com/hashicorp/terraform-plugin-sdk/v2 v2.27.0
+# github.com/hashicorp/terraform-plugin-sdk/v2 v2.28.0
 ## explicit; go 1.19
 github.com/hashicorp/terraform-plugin-sdk/v2/diag
 github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest
@@ -240,7 +240,7 @@ github.com/zclconf/go-cty/cty/function/stdlib
 github.com/zclconf/go-cty/cty/gocty
 github.com/zclconf/go-cty/cty/json
 github.com/zclconf/go-cty/cty/set
-# golang.org/x/crypto v0.11.0
+# golang.org/x/crypto v0.12.0
 ## explicit; go 1.17
 golang.org/x/crypto/blowfish
 golang.org/x/crypto/cast5
@@ -273,13 +273,13 @@ golang.org/x/net/trace
 ## explicit; go 1.17
 golang.org/x/oauth2
 golang.org/x/oauth2/internal
-# golang.org/x/sys v0.10.0
+# golang.org/x/sys v0.11.0
 ## explicit; go 1.17
 golang.org/x/sys/cpu
 golang.org/x/sys/internal/unsafeheader
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/text v0.11.0
+# golang.org/x/text v0.12.0
 ## explicit; go 1.17
 golang.org/x/text/secure/bidirule
 golang.org/x/text/transform
@@ -303,7 +303,7 @@ google.golang.org/appengine/urlfetch
 # google.golang.org/genproto v0.0.0-20230410155749-daa745c078e1
 ## explicit; go 1.19
 google.golang.org/genproto/googleapis/rpc/status
-# google.golang.org/grpc v1.56.0
+# google.golang.org/grpc v1.56.1
 ## explicit; go 1.17
 google.golang.org/grpc
 google.golang.org/grpc/attributes
