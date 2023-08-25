@@ -308,7 +308,7 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf(err.Error())
 	}
 
-	vpcs2, err := getVPCs2(client, d.Id())
+	vpc2s, err := getVPC2s(client, d.Id())
 	if err != nil {
 		return diag.Errorf(err.Error())
 	}
@@ -319,7 +319,7 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	if err := d.Set("vpc_ids", vpcs); err != nil {
 		return diag.Errorf("unable to set instance `vpc_ids` read value: %v", err)
 	}
-	if err := d.Set("vpc2_ids", vpcs2); err != nil {
+	if err := d.Set("vpc2_ids", vpc2s); err != nil {
 		return diag.Errorf("unable to set instance `vpc2_ids` read value: %v", err)
 	}
 

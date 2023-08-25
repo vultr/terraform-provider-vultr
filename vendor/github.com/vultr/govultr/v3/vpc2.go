@@ -44,7 +44,7 @@ type VPC2Req struct {
 	PrefixLength int    `json:"prefix_length"`
 }
 
-type vpcs2Base struct {
+type vpc2sBase struct {
 	VPCs []VPC2 `json:"vpcs"`
 	Meta *Meta  `json:"meta"`
 }
@@ -125,7 +125,7 @@ func (n *VPC2ServiceHandler) List(ctx context.Context, options *ListOptions) ([]
 
 	req.URL.RawQuery = newValues.Encode()
 
-	vpcs := new(vpcs2Base)
+	vpcs := new(vpc2sBase)
 	resp, err := n.client.DoWithContext(ctx, req, vpcs)
 	if err != nil {
 		return nil, nil, resp, err

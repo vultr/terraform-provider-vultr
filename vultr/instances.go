@@ -32,7 +32,7 @@ func getVPCs(client *govultr.Client, instanceID string) ([]string, error) {
 	return vpcs, nil
 }
 
-func getVPCs2(client *govultr.Client, instanceID string) ([]string, error) {
+func getVPC2s(client *govultr.Client, instanceID string) ([]string, error) {
 	options := &govultr.ListOptions{}
 	var vpcs []string
 	for {
@@ -57,7 +57,7 @@ func getVPCs2(client *govultr.Client, instanceID string) ([]string, error) {
 	return vpcs, nil
 }
 
-func getBareMetalServerVPCs2(client *govultr.Client, serverID string) ([]string, error) {
+func getBareMetalServerVPC2s(client *govultr.Client, serverID string) ([]string, error) {
 	var vpcs []string
 
 	vpcInfo, _, err := client.BareMetalServer.ListVPC2Info(context.Background(), serverID)

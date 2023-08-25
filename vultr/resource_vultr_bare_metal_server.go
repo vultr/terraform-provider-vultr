@@ -329,13 +329,13 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 		return diag.Errorf("unable to set resource bare_metal_server `v6_network_size` read value: %v", err)
 	}
 
-	vpcs2, err := getBareMetalServerVPCs2(client, d.Id())
+	vpc2s, err := getBareMetalServerVPC2s(client, d.Id())
 	if err != nil {
 		return diag.Errorf(err.Error())
 	}
 
 	if _, vpcUpdate := d.GetOk("vpc2_ids"); vpcUpdate {
-		if err := d.Set("vpc2_ids", vpcs2); err != nil {
+		if err := d.Set("vpc2_ids", vpc2s); err != nil {
 			return diag.Errorf("unable to set resource instance `vpc2_ids` read value: %v", err)
 		}
 	}

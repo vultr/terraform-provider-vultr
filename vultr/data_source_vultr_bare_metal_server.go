@@ -220,12 +220,12 @@ func dataSourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceD
 		return diag.Errorf("unable to set bare_metal_server `features` read value: %v", err)
 	}
 
-	vpcs2, err := getBareMetalServerVPCs2(client, d.Id())
+	vpc2s, err := getBareMetalServerVPC2s(client, d.Id())
 	if err != nil {
 		return diag.Errorf(err.Error())
 	}
 
-	if err := d.Set("vpc2_ids", vpcs2); err != nil {
+	if err := d.Set("vpc2_ids", vpc2s); err != nil {
 		return diag.Errorf("unable to set instance `vpc2_ids` read value: %v", err)
 	}
 
