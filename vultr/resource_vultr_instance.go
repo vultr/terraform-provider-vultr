@@ -85,6 +85,11 @@ func resourceVultrInstance() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
+			"vpc2_ids": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 			"label": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -346,6 +351,12 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
+	if vpcIDs, vpcOK := d.GetOk("vpc2_ids"); vpcOK {
+		for _, v := range vpcIDs.(*schema.Set).List() {
+			req.AttachVPC2 = append(req.AttachVPC2, v.(string))
+		}
+	}
+
 	if sshKeyIDs, sshKeyOK := d.GetOk("ssh_key_ids"); sshKeyOK {
 		for _, v := range sshKeyIDs.([]interface{}) {
 			req.SSHKeys = append(req.SSHKeys, v.(string))
@@ -520,6 +531,11 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf(err.Error())
 	}
 
+	vpc2s, err := getVPC2s(client, d.Id())
+	if err != nil {
+		return diag.Errorf(err.Error())
+	}
+
 	// Manipulate the read state so that, depending on which value was passed,
 	// only one of these values is populated when a VPC or PN is defined for
 	// the instance
@@ -540,6 +556,12 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		}
 		if err := d.Set("private_network_ids", nil); err != nil {
 			return diag.Errorf("unable to set resource instance `private_network_ids` read value: %v", err)
+		}
+	}
+
+	if _, vpcUpdate := d.GetOk("vpc2_ids"); vpcUpdate {
+		if err := d.Set("vpc2_ids", vpc2s); err != nil {
+			return diag.Errorf("unable to set resource instance `vpc2_ids` read value: %v", err)
 		}
 	}
 
@@ -622,6 +644,24 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		req.DetachVPC = append(req.DetachVPC, diffSlice(newIDs, oldIDs)...)
 	}
 
+	if d.HasChange("vpc2_ids") {
+		log.Printf("[INFO] Updating vpc2_ids")
+		oldVPC, newVPC := d.GetChange("vpc2_ids")
+
+		var oldIDs []string
+		for _, v := range oldVPC.(*schema.Set).List() {
+			oldIDs = append(oldIDs, v.(string))
+		}
+
+		var newIDs []string
+		for _, v := range newVPC.(*schema.Set).List() {
+			newIDs = append(newIDs, v.(string))
+		}
+
+		req.AttachVPC2 = append(req.AttachVPC2, diffSlice(oldIDs, newIDs)...)
+		req.DetachVPC2 = append(req.DetachVPC2, diffSlice(newIDs, oldIDs)...)
+	}
+
 	if d.HasChange("tags") {
 		_, newTags := tfChangeToSlices("tags", d)
 		req.Tags = newTags
@@ -695,6 +735,17 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 
 		if _, _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
 			return diag.Errorf("error detaching VPCs prior to deleting instance %s : %v", d.Id(), err)
+		}
+	}
+
+	if vpcIDs, vpcOK := d.GetOk("vpc2_ids"); vpcOK {
+		detach := &govultr.InstanceUpdateReq{}
+		for _, v := range vpcIDs.(*schema.Set).List() {
+			detach.DetachVPC2 = append(detach.DetachVPC2, v.(string))
+		}
+
+		if _, _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
+			return diag.Errorf("error detaching VPCs 2.0 prior to deleting instance %s : %v", d.Id(), err)
 		}
 	}
 

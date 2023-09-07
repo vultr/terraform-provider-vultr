@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	version     = "3.2.0"
+	version     = "3.3.0"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 500 * time.Millisecond
@@ -66,6 +66,7 @@ type Client struct {
 	StartupScript StartupScriptService
 	User          UserService
 	VPC           VPCService
+	VPC2          VPC2Service
 
 	// Optional function called after every successful request made to the Vultr API
 	onRequestCompleted RequestCompletionCallback
@@ -135,6 +136,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.StartupScript = &StartupScriptServiceHandler{client}
 	client.User = &UserServiceHandler{client}
 	client.VPC = &VPCServiceHandler{client}
+	client.VPC2 = &VPC2ServiceHandler{client}
 
 	return client
 }

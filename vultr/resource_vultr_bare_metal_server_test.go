@@ -65,6 +65,7 @@ func TestAccVultrBareMetalServerBasic(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "plan"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "label"),
 					resource.TestCheckResourceAttr("vultr_bare_metal_server.foo", "tags.#", "2"),
+					resource.TestCheckResourceAttr("vultr_bare_metal_server.foo", "vpc2_ids.#", "1"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "os_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "app_id"),
 				),
@@ -139,6 +140,13 @@ func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string
 
 func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) string {
 	return testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + fmt.Sprintf(`
+		resource "vultr_vpc2" "foo" {
+			region        = "ewr"
+			description   = "foo"
+			ip_block      = "10.0.0.0"
+			prefix_length = "24"
+		}
+
 		resource "vultr_bare_metal_server" "foo" {
 			region = "ewr"
 			os_id = 1946
@@ -150,6 +158,7 @@ func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) strin
 			label = "%s-update"
 			hostname = "%s"
 			tags = [ "test tag", "another tag" ]
+			vpc2_ids = ["${vultr_vpc2.foo.id}"]
 		}
 	`, rName, rName)
 }

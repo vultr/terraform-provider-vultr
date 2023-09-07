@@ -168,6 +168,45 @@ func TestAccVultrInstanceUpdateVPCIDs(t *testing.T) {
 	})
 }
 
+func TestAccVultrInstanceUpdateVPC2IDs(t *testing.T) {
+	t.Parallel()
+	rName := acctest.RandomWithPrefix("tf-vps-rs-upnid")
+
+	name := "vultr_instance.test"
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckVultrInstanceDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccVultrInstanceBase(rName),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(name, "label", rName),
+					resource.TestCheckResourceAttr(name, "os", "CentOS 7 x64"),
+					resource.TestCheckResourceAttr(name, "os_id", "167"),
+					resource.TestCheckResourceAttr(name, "status", "active"),
+					resource.TestCheckResourceAttr(name, "power_status", "running"),
+					resource.TestCheckResourceAttr(name, "region", "sea"),
+					resource.TestCheckResourceAttr(name, "tags.#", "2"),
+				),
+			},
+			{
+				Config: testAccVultrInstanceBaseUpdateVPC2IDs(rName),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(name, "label", rName),
+					resource.TestCheckResourceAttr(name, "os", "CentOS 7 x64"),
+					resource.TestCheckResourceAttr(name, "os_id", "167"),
+					resource.TestCheckResourceAttr(name, "status", "active"),
+					resource.TestCheckResourceAttr(name, "power_status", "running"),
+					resource.TestCheckResourceAttr(name, "region", "sea"),
+					resource.TestCheckResourceAttr(name, "tags.#", "2"),
+					resource.TestCheckResourceAttr(name, "vpc2_ids.#", "2"),
+				),
+			},
+		},
+	})
+}
+
 func TestAccVultrInstanceUpdateTags(t *testing.T) {
 	t.Parallel()
 	rName := acctest.RandomWithPrefix("tf-vps-rs-upnid")
@@ -295,6 +334,37 @@ func testAccVultrInstanceBaseUpdateVPCIDs(name string) string {
 		ddos_protection = true
 		tags = [ "test tag", "another test" ]
 		vpc_ids = ["${vultr_vpc.foo.id}","${vultr_vpc.bar.id}"]
+	}
+	`, name)
+}
+
+func testAccVultrInstanceBaseUpdateVPC2IDs(name string) string {
+	return fmt.Sprintf(`
+	resource "vultr_vpc2" "foo" {
+			region        = "sea"
+			description   = "foo"
+			ip_block      = "10.0.0.0"
+			prefix_length = "24"
+		}
+
+	resource "vultr_vpc2" "bar" {
+			region        = "sea"
+			description   = "bar"
+			ip_block      = "10.0.0.0"
+			prefix_length = "24"
+		}
+
+	resource "vultr_instance" "test" {
+		plan             = "vc2-1c-2gb"
+		region           = "sea"
+		os_id            = 167
+		label            = "%s"
+		hostname         = "testing-the-hostname"
+		enable_ipv6      = true
+		activation_email = false
+		ddos_protection  = true
+		tags             = [ "test tag", "another test" ]
+		vpc2_ids         = ["${vultr_vpc2.foo.id}","${vultr_vpc2.bar.id}"]
 	}
 	`, name)
 }
