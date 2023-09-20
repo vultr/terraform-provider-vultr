@@ -13,6 +13,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v3"
+	"golang.org/x/exp/slices"
 )
 
 func resourceVultrBareMetalServer() *schema.Resource {
@@ -394,6 +395,12 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 		return diag.Errorf("error updating bare metal %s : %s", d.Id(), err.Error())
 	}
 
+	if len(req.DetachVPC2) > 0 {
+		if _, vpcErr := waitForBareMetalServerVPC2Detach(ctx, d, req.DetachVPC2, meta); vpcErr != nil {
+			return diag.Errorf("error while waiting for bare metal server (%s) to detach VPC2 network: %s", d.Id(), vpcErr)
+		}
+	}
+
 	return resourceVultrBareMetalServerRead(ctx, d, meta)
 }
 
@@ -466,5 +473,44 @@ func newBareMetalServerStatusStateRefresh(ctx context.Context, d *schema.Resourc
 
 		log.Printf("[INFO] Bare metal server (%s) status: %s", d.Id(), bms.Status)
 		return bms, bms.Status, nil
+	}
+}
+
+func waitForBareMetalServerVPC2Detach(ctx context.Context, d *schema.ResourceData, detached []string, meta interface{}) (interface{}, error) { //nolint:lll
+	log.Printf("[INFO] Waiting for bare metal server (%s) to detach VPC2 network(s)", d.Id())
+
+	stateConf := &resource.StateChangeConf{ //nolint:all
+		Pending:    []string{"pending"},
+		Target:     []string{"complete"},
+		Refresh:    bareMetalServerVPC2DetachStateRefresh(ctx, d, detached, meta),
+		Timeout:    60 * time.Minute,
+		Delay:      10 * time.Second,
+		MinTimeout: 3 * time.Second,
+
+		NotFoundChecks: 60,
+	}
+
+	return stateConf.WaitForStateContext(ctx)
+}
+
+func bareMetalServerVPC2DetachStateRefresh(ctx context.Context, d *schema.ResourceData, detached []string, meta interface{}) resource.StateRefreshFunc { //nolint:all
+	client := meta.(*Client).govultrClient()
+
+	return func() (interface{}, string, error) {
+		vpc2s, err := getBareMetalServerVPC2s(client, d.Id())
+		if err != nil {
+			return nil, "", fmt.Errorf("error retrieving VPC2 information from bare metal server %s : %s", d.Id(), err)
+		}
+
+		var detachStatus = "complete"
+		for _, vpc2ID := range detached {
+			if slices.Contains(vpc2s, vpc2ID) {
+				detachStatus = "pending"
+				break
+			}
+		}
+
+		log.Printf("[INFO] Bare metal server (%s) all VPC2 networks detached: %s", d.Id(), detachStatus)
+		return vpc2s, detachStatus, nil
 	}
 }
