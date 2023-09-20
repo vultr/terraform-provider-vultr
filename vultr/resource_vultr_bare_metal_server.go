@@ -506,6 +506,7 @@ func bareMetalServerVPC2DetachStateRefresh(ctx context.Context, d *schema.Resour
 		for _, vpc2ID := range detached {
 			if slices.Contains(vpc2s, vpc2ID) {
 				detachStatus = "pending"
+				break
 			}
 		}
 
