@@ -139,8 +139,8 @@ github.com/vmihailenco/msgpack/v5 v5.3.5 h1:5gO0H1iULLWGhs2H5tbAHIZTV8/cYafcFOr9
 github.com/vmihailenco/msgpack/v5 v5.3.5/go.mod h1:7xyJ9e+0+9SaZT0Wt1RGleJXzli6Q/V5KbhBonMG9jc=
 github.com/vmihailenco/tagparser/v2 v2.0.0 h1:y09buUbR+b5aycVFQs/g70pqKVZNBmxwAhO7/IwNM9g=
 github.com/vmihailenco/tagparser/v2 v2.0.0/go.mod h1:Wri+At7QHww0WTrCBeu4J6bNtoV6mEfg5OIWRZA9qds=
-github.com/vultr/govultr/v3 v3.3.0 h1:bGbbeHB9ftzrlGgwRKnWzAHYHi4sOD/SpA13nK+1aSc=
-github.com/vultr/govultr/v3 v3.3.0/go.mod h1:7NjuHeQv5vgUWR2H1sPc9D+xffrT5ql+kNi6R3yuwzo=
+github.com/vultr/govultr/v3 v3.3.1 h1:gn46pSL0A3pxBKZklzwtYgSW2Iq7dW1euDRBlOsIzTo=
+github.com/vultr/govultr/v3 v3.3.1/go.mod h1:7NjuHeQv5vgUWR2H1sPc9D+xffrT5ql+kNi6R3yuwzo=
 github.com/xanzy/ssh-agent v0.3.3 h1:+/15pJfg/RsTxqYcX6fHqOXZwwMP+2VyYWJeWM2qQFM=
 github.com/zclconf/go-cty v1.13.2 h1:4GvrUxe/QUDYuJKAav4EYqdM47/kZa672LwmXFmEKT0=
 github.com/zclconf/go-cty v1.13.2/go.mod h1:YKQzy/7pZ7iq2jNFzy5go57xdxdWoLLpaEp4u238AE0=
