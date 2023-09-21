@@ -20,7 +20,7 @@
 * Bump golang.org/x/oauth2 from 0.8.0 to 0.10.0 [PR 376](https://github.com/vultr/terraform-provider-vultr/pull/376)
 * Bump github.com/hashicorp/terraform-plugin-sdk/v2 from 2.26.1 to 2.27.0 [PR 370](https://github.com/vultr/terraform-provider-vultr/pull/370)
 
-### Deployment fixes
+### Automation
 * Update goreleaser-action to v4 and fix `release` args [PR 361](https://github.com/vultr/terraform-provider-vultr/pull/361)
 
 ### New Contributors
