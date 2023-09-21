@@ -23,7 +23,7 @@
 ### Deployment fixes
 * Update goreleaser-action to v4 and fix `release` args [PR 361](https://github.com/vultr/terraform-provider-vultr/pull/361)
 
-## New Contributors
+### New Contributors
 * @tavsec made their first contribution in [PR 365](https://github.com/vultr/terraform-provider-vultr/pull/365)
 * @ogawa0071 made their first contribution in [PR 389](https://github.com/vultr/terraform-provider-vultr/pull/389)
 
