@@ -410,13 +410,13 @@ func resourceVultrBareMetalServerDelete(ctx context.Context, d *schema.ResourceD
 	log.Printf("[INFO] Deleting bare metal server: %s", d.Id())
 
 	if vpcIDs, vpcOK := d.GetOk("vpc2_ids"); vpcOK {
-		detach := &govultr.InstanceUpdateReq{}
+		detach := &govultr.BareMetalUpdate{}
 		for _, v := range vpcIDs.(*schema.Set).List() {
 			detach.DetachVPC2 = append(detach.DetachVPC2, v.(string))
 		}
 
-		if _, _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
-			return diag.Errorf("error detaching VPCs 2.0 prior to deleting instance %s : %v", d.Id(), err)
+		if _, _, err := client.BareMetalServer.Update(ctx, d.Id(), detach); err != nil {
+			return diag.Errorf("error detaching VPC2s prior to deleting bare-metal server %s : %v", d.Id(), err)
 		}
 	}
 
