@@ -1,8 +1,8 @@
 # Changelog
 ## [v2.16.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.16.0...v2.16.1) (2023-09-22)
 ### Bug Fix
-* Fix delete retries and detach errors with VPC2s [PR 399](https://github.com/vultr/terraform-provider-vultr/pull/399)
-* Revert BM update delay for detach VPC2 [PR 400](https://github.com/vultr/terraform-provider-vultr/pull/400)
+* resource/vpc2: Fix delete retries and detach errors with VPC2s [PR 399](https://github.com/vultr/terraform-provider-vultr/pull/399)
+* resource/bare_metal_server: Revert BM update delay for detach VPC2 [PR 400](https://github.com/vultr/terraform-provider-vultr/pull/400)
 
 ### Dependencies
 * Bump github.com/vultr/govultr/v3 from 3.2.0 to 3.3.1 [PR 391](https://github.com/vultr/terraform-provider-vultr/pull/391)
