@@ -136,7 +136,7 @@ func resourceVultrVPC2Delete(ctx context.Context, d *schema.ResourceData, meta i
 			return nil
 		}
 
-		if strings.Contains(err.Error(), "VPC 2.0 is attached") {
+		if strings.Contains(err.Error(), "servers are attached to this VPC 2.0 network:") {
 			return retry.RetryableError(fmt.Errorf("cannot remove attached VPC 2.0: %s", err.Error()))
 		}
 
