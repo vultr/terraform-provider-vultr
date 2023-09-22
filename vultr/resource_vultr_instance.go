@@ -745,7 +745,7 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 		}
 
 		if _, _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
-			return diag.Errorf("error detaching VPCs 2.0 prior to deleting instance %s : %v", d.Id(), err)
+			return diag.Errorf("error detaching VPC2s prior to deleting instance %s : %v", d.Id(), err)
 		}
 	}
 
