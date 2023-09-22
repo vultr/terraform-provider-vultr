@@ -1,5 +1,15 @@
 # Changelog
-## [v2.16.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.15.1...v2.16.0)
+## [v2.16.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.16.0...v2.16.1) (2023-09-22)
+### Bug Fix
+* Fix delete retries and detach errors with VPC2s [PR 399](https://github.com/vultr/terraform-provider-vultr/pull/399)
+* Revert BM update delay for detach VPC2 [PR 400](https://github.com/vultr/terraform-provider-vultr/pull/400)
+
+### Dependencies
+* Bump github.com/vultr/govultr/v3 from 3.2.0 to 3.3.1 [PR 391](https://github.com/vultr/terraform-provider-vultr/pull/391)
+* Bump golang.org/x/oauth2 from 0.10.0 to 0.12.0 [PR 393](https://github.com/vultr/terraform-provider-vultr/pull/393)
+* Bump github.com/hashicorp/terraform-plugin-sdk/v2 from 2.27.0 to 2.29.0 [PR 394](https://github.com/vultr/terraform-provider-vultr/pull/394)
+
+## [v2.16.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.15.1...v2.16.0) (2023-09-21)
 ### Enhancements
 * resource/instance: Add/update retry on create/delete actions [PR 362](https://github.com/vultr/terraform-provider-vultr/pull/362)
 * resource/vpc: Add/update retry on create/delete actions [PR 362](https://github.com/vultr/terraform-provider-vultr/pull/362)
