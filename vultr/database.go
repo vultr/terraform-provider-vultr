@@ -92,6 +92,10 @@ func readReplicaSchema(isReadReplica bool) map[string]*schema.Schema {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
+		"vpc_id": {
+			Type:     schema.TypeString,
+			Computed: true,
+		},
 		"maintenance_dow": {
 			Type:     schema.TypeString,
 			Computed: true,
