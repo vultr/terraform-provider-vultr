@@ -1,4 +1,12 @@
 # Changelog
+## [v2.16.2](https://github.com/vultr/terraform-provider-vultr/compare/v2.16.1...v2.16.2) (2023-09-24)
+# Enhancement
+* data_source/instance: Add a per-page param for instance data source [PR 384](https://github.com/vultr/terraform-provider-vultr/pull/384)
+
+# Bug Fix
+* resource/database: Add missing vpc_id property to managed database read replicas [PR 403](https://github.com/vultr/terraform-provider-vultr/pull/403)
+* data_source/database: Add missing vpc_id property to managed database read replicas [PR 403](https://github.com/vultr/terraform-provider-vultr/pull/403)
+
 ## [v2.16.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.16.0...v2.16.1) (2023-09-22)
 ### Bug Fix
 * resource/vpc2: Fix delete retries and detach errors with VPC2s [PR 399](https://github.com/vultr/terraform-provider-vultr/pull/399)
