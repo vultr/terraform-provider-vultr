@@ -17,7 +17,7 @@ Create a new load balancer:
 ```hcl
 resource "vultr_load_balancer" "lb" {
   region = "ewr"
-  label     = "terraform lb example"
+  label     = "vultr-load-balancer"
   balancing_algorithm = "roundrobin"
 
   forwarding_rules {
