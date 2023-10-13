@@ -17,7 +17,7 @@ Create a new object storage subscription.
 ```hcl
 resource "vultr_object_storage" "tf" {
     cluster_id = 2
-    label = "tf-label"
+    label = "vultr-object-storage"
 }
 ```
 

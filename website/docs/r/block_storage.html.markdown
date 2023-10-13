@@ -16,6 +16,7 @@ Create a new Block Storage
 
 ```hcl
 resource "vultr_block_storage" "my_blockstorage" {
+	label = "vultr-block-storage"
 	size_gb = 10
 	region = "ewr"
 }

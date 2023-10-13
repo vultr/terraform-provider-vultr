@@ -19,13 +19,13 @@ Create a new VKE cluster:
 ```hcl
 resource "vultr_kubernetes" "k8" {
 	region = "ewr"
-	label     = "tf-test"
-	version = "v1.23.5+1"
+	label     = "vke-test"
+	version = "v1.28.2+1"
 
 	node_pools {
 		node_quantity = 1
-		plan = "vc2-2c-4gb"
-		label = "my-label"
+		plan = "vc2-1c-1gb"
+		label = "vke-nodepool"
 		auto_scaler = true
 		min_nodes = 1
 		max_nodes = 2
@@ -38,8 +38,8 @@ A default node pool is required when first creating the resource but it can be r
 ```hcl
 resource "vultr_kubernetes" "k8" {
 	region = "ewr"
-	label     = "tf-test"
-	version = "v1.23.5+1"
+	label     = "vke-test"
+	version = "v1.28.2+1"
 } 
 
 # This resource must be created and attached to the cluster
@@ -47,8 +47,8 @@ resource "vultr_kubernetes" "k8" {
 resource "vultr_kubernetes_node_pools" "np" {
 	cluster_id = vultr_kubernetes.k8.id
 	node_quantity = 1
-	plan = "vc2-2c-4gb"
-	label = "my-label"
+	plan = "vc2-1c-1gb"
+	label = "vke-nodepool"
 	auto_scaler = true
 	min_nodes = 1
 	max_nodes = 2
