@@ -1,6 +1,6 @@
 # Changelog
 ## [v2.16.3](https://github.com/vultr/terraform-provider-vultr/compare/v2.16.2...v2.16.3) (2023-10-13)
-### Documentation
+### Documentation 
 * Update a few of the resource documentation pages [PR 409](https://github.com/vultr/terraform-provider-vultr/pull/409)
 
 ### Dependencies
