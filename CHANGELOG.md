@@ -1,4 +1,15 @@
 # Changelog
+## [v2.16.3](https://github.com/vultr/terraform-provider-vultr/compare/v2.16.2...v2.16.3) (2023-10-13)
+### Documentation
+* Update a few of the resource documentation pages [PR 409](https://github.com/vultr/terraform-provider-vultr/pull/409)
+
+### Dependencies
+* Bump golang.org/x/oauth2 from 0.12.0 to 0.13.0 [PR 407](https://github.com/vultr/terraform-provider-vultr/pull/407)
+* Bump golang.org/x/net from 0.15.0 to 0.17.0 [PR 408](https://github.com/vultr/terraform-provider-vultr/pull/408)
+
+### Automation
+* Extend the nightly acceptance test timeout by one hour [PR 405](https://github.com/vultr/terraform-provider-vultr/pull/405)
+
 ## [v2.16.2](https://github.com/vultr/terraform-provider-vultr/compare/v2.16.1...v2.16.2) (2023-09-25)
 # Enhancement
 * data_source/instance: Add a per-page param for instance data source [PR 384](https://github.com/vultr/terraform-provider-vultr/pull/384)
