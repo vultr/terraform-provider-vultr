@@ -24,7 +24,7 @@ resource "vultr_kubernetes" "k8" {
 
 	node_pools {
 		node_quantity = 1
-		plan = "vc2-1c-1gb"
+		plan = "vc2-1c-2gb"
 		label = "vke-nodepool"
 		auto_scaler = true
 		min_nodes = 1
@@ -47,7 +47,7 @@ resource "vultr_kubernetes" "k8" {
 resource "vultr_kubernetes_node_pools" "np" {
 	cluster_id = vultr_kubernetes.k8.id
 	node_quantity = 1
-	plan = "vc2-1c-1gb"
+	plan = "vc2-1c-2gb"
 	label = "vke-nodepool"
 	auto_scaler = true
 	min_nodes = 1
