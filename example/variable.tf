@@ -8,7 +8,7 @@ variable "docker_centos" {
   default = 17
 }
 
-variable "one_cpu_one_gb_ram" {
-  description = "1024 MB RAM,25 GB SSD,1.00 TB BW"
-  default = "vc2-1c-1gb"
+variable "one_cpu_two_gb_ram" {
+  description = "2048 MB RAM,25 GB SSD,1.00 TB BW"
+  default = "vc2-1c-2gb"
 }

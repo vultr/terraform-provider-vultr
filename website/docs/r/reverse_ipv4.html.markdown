@@ -18,9 +18,9 @@ Create a new reverse DNS record for an IPv4 address:
 
 ```hcl
 resource "vultr_instance" "my_instance" {
-	plan = "vc2-1c-1gb"
+	plan = "vc2-1c-2gb"
 	region = "ewr"
-	os_id = 167
+	os_id = 477
 	enable_ipv6 = true
 }
 

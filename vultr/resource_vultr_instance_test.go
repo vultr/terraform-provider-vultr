@@ -268,9 +268,9 @@ func testAccCheckVultrInstanceDestroy(s *terraform.State) error {
 func testAccVultrInstanceBase(name string) string {
 	return fmt.Sprintf(`
 		resource "vultr_instance" "test" {
-			plan = "vc2-1c-1gb"
+			plan = "vc2-1c-2gb"
 			region = "sea"
-			os_id = "167"
+			os_id = 477
 			label = "%s"
 			hostname = "testing-the-hostname"
 			enable_ipv6 = true
@@ -289,9 +289,9 @@ func testAccVultrInstanceBase(name string) string {
 func testAccVultrInstanceBaseUpdateFirewall(name string) string {
 	return fmt.Sprintf(`
 		resource "vultr_instance" "test" {
-			plan = "vc2-1c-1gb"
+			plan = "vc2-1c-2gb"
 			region = "sea"
-			os_id = "167"
+			os_id = 477
 			label = "%s"
 			hostname = "testing-the-hostname"
 			enable_ipv6 = true
@@ -372,9 +372,9 @@ func testAccVultrInstanceBaseUpdateVPC2IDs(name string) string {
 func testAccVultrInstanceBaseUpdatedRegion(name string) string {
 	return fmt.Sprintf(`
 		resource "vultr_instance" "test" {
-			plan = "vc2-1c-1gb"
+			plan = "vc2-1c-2gb"
 			region = "ewr"
-			os_id = 167
+			os_id = 477
 			label = "%s"
 			hostname = "testing-the-hostname"
 			enable_ipv6 = true
@@ -387,9 +387,9 @@ func testAccVultrInstanceBaseUpdatedRegion(name string) string {
 func testAccVultrInstanceBaseUpdateTags(name string) string {
 	return fmt.Sprintf(`
 		resource "vultr_instance" "test" {
-			plan = "vc2-1c-1gb"
+			plan = "vc2-1c-2gb"
 			region = "sea"
-			os_id = "167"
+			os_id = 477
 			label = "%s"
 			hostname = "testing-the-hostname"
 			enable_ipv6 = true

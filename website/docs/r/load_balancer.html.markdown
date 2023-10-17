@@ -29,7 +29,7 @@ resource "vultr_load_balancer" "lb" {
 
   health_check {
     path = "/test"
-    port = "8080"
+    port = 8080
     protocol = "http"
     response_timeout = 1
     unhealthy_threshold =2 

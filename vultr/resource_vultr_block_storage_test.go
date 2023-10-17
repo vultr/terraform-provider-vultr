@@ -143,7 +143,7 @@ func testAccVultrBlockStorageConfig(label, serverLabel string) string {
 	    resource "vultr_instance" "ip" {
        label = "%s"
        region = "ewr"
-       plan = "vc2-1c-1gb"
+       plan = "vc2-1c-2gb"
        os_id = 167
    }
   `, label, serverLabel)
@@ -161,7 +161,7 @@ func testAccVultrBlockStorageConfigAttach(label, serverLabel string) string {
    resource "vultr_instance" "ip" {
        label = "%s"
        region = "ewr"
-       plan = "vc2-1c-1gb"
+       plan = "vc2-1c-2gb"
        os_id = 167
    }
   `, label, serverLabel)
@@ -179,7 +179,7 @@ func testAccVultrBlockStorageConfigUpdateLabel(label, serverLabel string) string
    resource "vultr_instance" "ip" {
        label = "%s"
        region = "ewr"
-       plan = "vc2-1c-1gb"
+       plan = "vc2-1c-2gb"
        os_id = 167
    }
   `, label, serverLabel)
@@ -196,7 +196,7 @@ func testAccVultrBlockStorageConfigResize(label, serverLabel string) string {
    resource "vultr_instance" "ip" {
        label = "%s"
        region = "ewr"
-       plan = "vc2-1c-1gb"
+       plan = "vc2-1c-2gb"
        os_id = 167
    }
   `, label, serverLabel)
@@ -213,7 +213,7 @@ func testAccVultrBlockStorageConfigDetach(label, serverLabel string) string {
    resource "vultr_instance" "ip" {
        label = "%s"
        region = "ewr"
-       plan = "vc2-1c-1gb"
+       plan = "vc2-1c-2gb"
        os_id = 167
    }
   `, label, serverLabel)

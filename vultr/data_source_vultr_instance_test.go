@@ -51,7 +51,7 @@ func TestAccVultrInstance(t *testing.T) {
 func testAccCheckVultrInstance(label string) string {
 	return fmt.Sprintf(`
 		resource "vultr_instance" "test" {
-			plan = "vc2-1c-1gb"
+			plan = "vc2-1c-2gb"
 			region = "sea"
 			os_id = "167"
 			label = "%s"
