@@ -61,7 +61,7 @@ func testAccCheckvultrInstanceIPV4Exists(n string) resource.TestCheckFunc {
 func testAccVultrInstanceIPV4(serverLabel string) string {
 	return fmt.Sprintf(`
 		resource "vultr_instance" "foo" {
-			plan = "vc2-1c-1gb"
+			plan = "vc2-1c-2gb"
 			region = "sea"
 			os_id = "167"
 			label = "%s"

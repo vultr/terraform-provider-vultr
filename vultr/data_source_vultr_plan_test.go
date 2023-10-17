@@ -13,7 +13,7 @@ func TestAccVultrPlan(t *testing.T) {
 		ProviderFactories: testAccProviderFactories,
 		Steps: []resource.TestStep{
 			{
-				Config: testAccCheckVultrPlan("vc2-1c-1gb"),
+				Config: testAccCheckVultrPlan("vc2-1c-2gb"),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("data.vultr_plan.plan1gb", "vcpu_count", "1"),
 					resource.TestCheckResourceAttr("data.vultr_plan.plan1gb", "ram", "1024"),

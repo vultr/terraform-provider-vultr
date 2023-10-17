@@ -190,7 +190,7 @@ func testAccVultrReservedIPConfig(rServerLabel, label, ipType string) string {
 	resource "vultr_instance" "ip" {
        label       = "%s"
        region      = "ewr"
-       plan        = "vc2-1c-1gb"
+       plan        = "vc2-1c-2gb"
        os_id       = 167
 	   enable_ipv6 = true
    }
@@ -206,7 +206,7 @@ func testAccVultrReservedIPConfigAttach(rServerLabel, label, ipType string) stri
 	resource "vultr_instance" "ip" {
        label = "%s"
        region = "ewr"
-       plan = "vc2-1c-1gb"
+       plan = "vc2-1c-2gb"
        os_id = 167
        enable_ipv6 = true
    }

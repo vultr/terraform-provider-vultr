@@ -81,8 +81,8 @@ func testAccVultrSnapshotConfigBasic(rServerLabel, desc string) string {
 		resource "vultr_instance" "snap" {
 			label = "%s"
 			region = "ewr"
-			plan = "vc2-1c-1gb"
-			os_id = 167
+			plan = "vc2-1c-2gb"
+			os_id = 477
 		}
 		resource "vultr_snapshot" "foo" {
 			instance_id  = "${vultr_instance.snap.id}"

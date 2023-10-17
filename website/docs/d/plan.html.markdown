@@ -18,7 +18,7 @@ Get the information for a plan by `id`:
 data "vultr_plan" "my_plan" {
   filter {
     name   = "id"
-    values = ["vc2-1c-1gb"]
+    values = ["vc2-1c-2gb"]
   }
 }
 ```

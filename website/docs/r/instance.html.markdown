@@ -16,7 +16,7 @@ Create a new instance:
 
 ```hcl
 resource "vultr_instance" "my_instance" {
-	plan = "vc2-1c-1gb"
+	plan = "vc2-1c-2gb"
 	region = "sea"
 	os_id = 1743
 }
@@ -26,7 +26,7 @@ Create a new instance with options:
 
 ```hcl
 resource "vultr_instance" "my_instance" {
-	plan = "vc2-1c-1gb"
+	plan = "vc2-1c-2gb"
 	region = "sea"
 	os_id = 1743
 	label = "my-instance-label"
