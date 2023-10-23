@@ -1,6 +1,9 @@
 # Change Log
 
-## GoVultr v1 changelog is located [here](https://github.com/vultr/govultr/blob/v1/CHANGELOG.md)
+## [v3.3.2](https://github.com/vultr/govultr/compare/v3.3.1...v3.3.2) (2023-10-23)
+### Enhancements
+* General: Remove references to deprecated V1 API [PR 266](https://github.com/vultr/govultr/pull/266)
+* Database: Add support for public/private hostnames [PR 268](https://github.com/vultr/govultr/pull/268)
 
 ## [v3.3.1](https://github.com/vultr/govultr/compare/v3.3.0...v3.3.1) (2023-08-18)
 ### Enhancements

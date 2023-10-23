@@ -17,7 +17,7 @@ import (
 )
 
 const (
-	version     = "3.3.1"
+	version     = "3.3.2"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 500 * time.Millisecond
@@ -27,9 +27,9 @@ const (
 // RequestBody is used to create JSON bodies for one off calls
 type RequestBody map[string]interface{}
 
-// Client manages interaction with the Vultr V1 API
+// Client manages interaction with the Vultr API
 type Client struct {
-	// Http Client used to interact with the Vultr V1 API
+	// Http Client used to interact with the Vultr API
 	client *retryablehttp.Client
 
 	// BASE URL for APIs
