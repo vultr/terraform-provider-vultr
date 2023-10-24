@@ -73,6 +73,10 @@ func dataSourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"public_host": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"user": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -240,6 +244,12 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set resource database `host` read value: %v", err)
 	}
 
+	if databaseList[0].PublicHost != "" {
+		if err := d.Set("public_host", databaseList[0].PublicHost); err != nil {
+			return diag.Errorf("unable to set resource database `public_host` read value: %v", err)
+		}
+	}
+
 	if err := d.Set("user", databaseList[0].User); err != nil {
 		return diag.Errorf("unable to set resource database `user` read value: %v", err)
 	}
@@ -325,6 +335,7 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 			"tag":                       db.ReadReplicas[v].Tag,
 			"dbname":                    db.ReadReplicas[v].DBName,
 			"host":                      db.ReadReplicas[v].Host,
+			"public_host":               db.ReadReplicas[v].PublicHost,
 			"user":                      db.ReadReplicas[v].User,
 			"password":                  db.ReadReplicas[v].Password,
 			"port":                      db.ReadReplicas[v].Port,
@@ -338,6 +349,10 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 			"mysql_long_query_time":     db.ReadReplicas[v].MySQLLongQueryTime,
 			"redis_eviction_policy":     db.ReadReplicas[v].RedisEvictionPolicy,
 			"cluster_time_zone":         db.ReadReplicas[v].ClusterTimeZone,
+		}
+
+		if db.PublicHost == "" {
+			delete(r, "public_host")
 		}
 
 		if db.DatabaseEngine != "mysql" {

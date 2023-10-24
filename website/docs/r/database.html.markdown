@@ -52,6 +52,7 @@ The following arguments are supported:
 * `database_engine` - (Required) The database engine of the new managed database.
 * `database_engine_version` - (Required) The database engine version of the new managed database.
 * `label` - (Required) A label for the managed database.
+* `vpc_id` - (Optional) The ID of the VPC Network to attach to the Managed Database.
 * `tag` - (Optional) The tag to assign to the managed database.
 * `maintenance_dow` - (Optional) The preferred maintenance day of week for the managed database.
 * `maintenance_time` - (Optional) The preferred maintenance time for the managed database.
@@ -82,8 +83,10 @@ The following attributes are exported:
 * `tag` - The managed database's tag.
 * `database_engine` - The database engine of the managed database.
 * `database_engine_version` - The database engine version of the managed database.
+* `vpc_id` - The ID of the VPC Network attached to the Managed Database.
 * `dbname` - The managed database's default logical database.
 * `host` - The hostname assigned to the managed database.
+* `public_host` - The public hostname assigned to the managed database (VPC-attached only).
 * `user` - The primary admin user for the managed database.
 * `password` - The password for the managed database's primary admin user.
 * `port` - The connection port for the managed database.
