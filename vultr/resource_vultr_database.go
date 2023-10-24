@@ -59,14 +59,17 @@ func resourceVultrDatabase() *schema.Resource {
 			},
 			"maintenance_dow": {
 				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"maintenance_time": {
 				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"cluster_time_zone": {
 				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
 			},
 			"trusted_ips": {
