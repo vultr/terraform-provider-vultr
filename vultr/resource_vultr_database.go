@@ -411,7 +411,7 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 		log.Printf("[INFO] Updating VPC ID")
 		_, newVal := d.GetChange("vpc_id")
 		vpc := newVal.(string)
-		req.VPCID = vpc
+		req.VPCID = govultr.StringToStringPtr(vpc)
 	}
 
 	if d.HasChange("maintenance_dow") {
