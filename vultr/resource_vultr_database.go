@@ -134,6 +134,11 @@ func resourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"public_host": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
 			"user": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -313,6 +318,12 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 
 	if err := d.Set("host", database.Host); err != nil {
 		return diag.Errorf("unable to set resource database `host` read value: %v", err)
+	}
+
+	if database.PublicHost != "" {
+		if err := d.Set("public_host", database.PublicHost); err != nil {
+			return diag.Errorf("unable to set resource database `public_host` read value: %v", err)
+		}
 	}
 
 	if err := d.Set("user", database.User); err != nil {
@@ -555,7 +566,7 @@ func resourceVultrDatabaseDelete(ctx context.Context, d *schema.ResourceData, me
 	return nil
 }
 
-func waitForDatabaseAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+func waitForDatabaseAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) { // nolint:dupl,lll
 	log.Printf(
 		"[INFO] Waiting for Managed Database (%s) to have %s of %s",
 		d.Id(), attribute, target)
