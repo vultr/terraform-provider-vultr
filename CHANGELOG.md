@@ -1,4 +1,15 @@
 # Changelog
+## [v2.17.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.16.4...v2.17.0) (2023-10-25)
+### Enhancement
+* Database: Add support for public/private hostnames [PR 416](https://github.com/vultr/terraform-provider-vultr/pull/416)
+
+### Documentation
+* Update some invalid plans in documentation [PR 414](https://github.com/vultr/terraform-provider-vultr/pull/414)
+
+### Dependencies
+* Update govultr to v3.3.2 [PR 415](https://github.com/vultr/terraform-provider-vultr/pull/415)
+* Update govultr to v3.3.3 [PR 417](https://github.com/vultr/terraform-provider-vultr/pull/417)
+
 ## [v2.16.4](https://github.com/vultr/terraform-provider-vultr/compare/v2.16.3...v2.16.4) (2023-10-16)
 ### Documentation 
 * kubernetes: fix typo in VKE plan example [PR 412](https://github.com/vultr/terraform-provider-vultr/pull/412)
