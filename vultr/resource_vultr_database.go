@@ -133,6 +133,12 @@ func resourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"ferretdb_credentials": {
+				Type:     schema.TypeMap,
+				Computed: true,
+				Optional: true,
+				Elem:     schema.TypeString,
+			},
 			"host": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -217,7 +223,7 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 
 	d.SetId(database.ID)
 
-	if _, err = waitForDatabaseAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Error"}, "status", meta); err != nil {
+	if _, err = waitForDatabaseAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Configuring", "Error"}, "status", meta); err != nil { //nolint:lll
 		return diag.Errorf("error while waiting for Managed Database %s to be in an active state : %s", d.Id(), err)
 	}
 
@@ -317,6 +323,12 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 
 	if err := d.Set("dbname", database.DBName); err != nil {
 		return diag.Errorf("unable to set resource database `dbname` read value: %v", err)
+	}
+
+	if database.DatabaseEngine == "ferretpg" {
+		if err := d.Set("ferretdb_credentials", flattenFerretDBCredentials(database)); err != nil {
+			return diag.Errorf("unable to set resource database `ferretdb_credentials` read value: %v", err)
+		}
 	}
 
 	if err := d.Set("host", database.Host); err != nil {
@@ -506,7 +518,7 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	if d.HasChange("region") || d.HasChange("plan") || d.HasChange("vpc_id") {
-		if _, err := waitForDatabaseAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Error"}, "status", meta); err != nil {
+		if _, err := waitForDatabaseAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Configuring", "Error"}, "status", meta); err != nil { //nolint:lll
 			return diag.Errorf("error while waiting for Managed Database %s to be in an active state : %s", d.Id(), err)
 		}
 	}
@@ -549,7 +561,7 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 		}
 
 		// Wait for running state
-		if _, err := waitForDatabaseAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Error"}, "status", meta); err != nil {
+		if _, err := waitForDatabaseAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Configuring", "Error"}, "status", meta); err != nil { //nolint:lll
 			return diag.Errorf("error while waiting for Managed Database %s to be in an active state : %s", d.Id(), err)
 		}
 	}
