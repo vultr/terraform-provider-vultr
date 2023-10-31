@@ -1,4 +1,18 @@
 # Changelog
+## [v2.17.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.17.0...v2.17.1) (2023-10-31)
+### Enhancements
+* resource/database: Add FerretDB Support [PR 422](https://github.com/vultr/terraform-provider-vultr/pull/422)
+* data_source/database: Add FerretDB Support [PR 422](https://github.com/vultr/terraform-provider-vultr/pull/422)
+* resource/kubernetes: Add support for the VKE HA control plane option [PR 423](https://github.com/vultr/terraform-provider-vultr/pull/423)
+* data_source/kubernetes: Add support for the VKE HA control plane option [PR 423](https://github.com/vultr/terraform-provider-vultr/pull/423)
+
+### Bug Fixes
+* resource/vpc2: Fix ForceNew when optional fields not set [PR 424](https://github.com/vultr/terraform-provider-vultr/pull/424)
+
+### Dependencies
+* Update govultr to v3.3.4 [PR 421](https://github.com/vultr/terraform-provider-vultr/pull/421)
+* Bump google.golang.org/grpc from 1.57.0 to 1.57.1 [PR 419](https://github.com/vultr/terraform-provider-vultr/pull/419)
+
 ## [v2.17.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.16.4...v2.17.0) (2023-10-25)
 ### Enhancement
 * Database: Add support for public/private hostnames [PR 416](https://github.com/vultr/terraform-provider-vultr/pull/416)
