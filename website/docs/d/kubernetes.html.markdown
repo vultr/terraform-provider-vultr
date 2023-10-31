@@ -42,6 +42,7 @@ The following attributes are exported:
 * `label` - The VKE clusters label.
 * `region` - The region your VKE cluster is deployed in.
 * `version` - The current kubernetes version your VKE cluster is running on.
+* `ha_controlplanes` - Boolean indicating whether or not the cluster has multiple, highly available controlplanes.
 * `status` - The overall status of the cluster.
 * `service_subnet` - IP range that services will run on this cluster.
 * `cluster_subnet` - IP range that your pods will run on in this cluster.

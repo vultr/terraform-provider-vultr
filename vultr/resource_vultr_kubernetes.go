@@ -39,6 +39,12 @@ func resourceVultrKubernetes() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"ha_controlplanes": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+				ForceNew: true,
+			},
 
 			"node_pools": {
 				Type:     schema.TypeList,
@@ -112,10 +118,11 @@ func resourceVultrKubernetesCreate(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	req := &govultr.ClusterReq{
-		Label:     d.Get("label").(string),
-		Region:    d.Get("region").(string),
-		Version:   d.Get("version").(string),
-		NodePools: nodePoolReq,
+		Label:           d.Get("label").(string),
+		Region:          d.Get("region").(string),
+		Version:         d.Get("version").(string),
+		HAControlPlanes: d.Get("ha_controlplanes").(bool),
+		NodePools:       nodePoolReq,
 	}
 
 	cluster, _, err := client.Kubernetes.CreateCluster(ctx, req)
@@ -203,6 +210,9 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 	}
 	if err := d.Set("version", vke.Version); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `version` read value: %v", err)
+	}
+	if err := d.Set("ha_controlplanes", vke.HAControlPlanes); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `ha_controlplanes` read value: %v", err)
 	}
 
 	return nil

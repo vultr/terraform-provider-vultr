@@ -18,17 +18,17 @@ Create a new VKE cluster:
 
 ```hcl
 resource "vultr_kubernetes" "k8" {
-	region = "ewr"
-	label     = "vke-test"
+	region  = "ewr"
+	label   = "vke-test"
 	version = "v1.28.2+1"
 
 	node_pools {
 		node_quantity = 1
-		plan = "vc2-1c-2gb"
-		label = "vke-nodepool"
-		auto_scaler = true
-		min_nodes = 1
-		max_nodes = 2
+		plan          = "vc2-1c-2gb"
+		label         = "vke-nodepool"
+		auto_scaler   = true
+		min_nodes     = 1
+		max_nodes     = 2
 	}
 } 
 ```
@@ -37,21 +37,21 @@ A default node pool is required when first creating the resource but it can be r
 
 ```hcl
 resource "vultr_kubernetes" "k8" {
-	region = "ewr"
-	label     = "vke-test"
+	region  = "ewr"
+	label   = "vke-test"
 	version = "v1.28.2+1"
 } 
 
 # This resource must be created and attached to the cluster
 # before removing the default node from the vultr_kubernetes resource
 resource "vultr_kubernetes_node_pools" "np" {
-	cluster_id = vultr_kubernetes.k8.id
+	cluster_id    = vultr_kubernetes.k8.id
 	node_quantity = 1
-	plan = "vc2-1c-2gb"
-	label = "vke-nodepool"
-	auto_scaler = true
-	min_nodes = 1
-	max_nodes = 2
+	plan          = "vc2-1c-2gb"
+	label         = "vke-nodepool"
+	auto_scaler   = true
+	min_nodes     = 1
+	max_nodes     = 2
 }
 ```
 
@@ -64,6 +64,7 @@ The follow arguments are supported:
 * `region` - (Required) The region your VKE cluster will be deployed in.
 * `version` - (Required) The version your VKE cluster you want deployed. [See Available Version](https://www.vultr.com/api/#operation/get-kubernetes-versions)
 * `label` - (Optional) The VKE clusters label.
+* `ha_controlplanes` - (Optional, Default to False) Boolean indicating if the cluster should be created with multiple, highly available controlplanes.
 
 `node_pools` (Optional) **NOTE** There must be 1 node pool when the kubernetes resource is first created (see explanation above). It supports the following fields
 
@@ -80,6 +81,7 @@ The following attributes are exported:
 * `id` - The VKE cluster ID.
 * `label` - The VKE clusters label.
 * `region` - The region your VKE cluster is deployed in.
+* `ha_controlplanes` - Boolean indicating whether or not the cluster has multiple, highly available controlplanes.
 * `version` - The current kubernetes version your VKE cluster is running on.
 * `status` - The overall status of the cluster.
 * `service_subnet` - IP range that services will run on this cluster.
