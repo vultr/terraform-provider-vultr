@@ -138,6 +138,9 @@ func resourceVultrDatabase() *schema.Resource {
 				Computed: true,
 				Optional: true,
 				Elem:     schema.TypeString,
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					return d.Get("database_engine") != "ferretpg"
+				},
 			},
 			"host": {
 				Type:     schema.TypeString,

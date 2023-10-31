@@ -363,7 +363,7 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 			"label":                     db.ReadReplicas[v].Label,
 			"tag":                       db.ReadReplicas[v].Tag,
 			"dbname":                    db.ReadReplicas[v].DBName,
-			"ferretdb_credentials":      db.ReadReplicas[v].FerretDBCredentials,
+			"ferretdb_credentials":      flattenFerretDBCredentials(&db.ReadReplicas[v]),
 			"host":                      db.ReadReplicas[v].Host,
 			"public_host":               db.ReadReplicas[v].PublicHost,
 			"user":                      db.ReadReplicas[v].User,
