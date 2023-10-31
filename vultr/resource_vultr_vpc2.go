@@ -40,17 +40,20 @@ func resourceVultrVPC2() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
+				Computed: true,
 			},
 			"ip_block": {
 				Type:         schema.TypeString,
 				Optional:     true,
 				ForceNew:     true,
+				Computed:     true,
 				ValidateFunc: validation.IsIPv4Address,
 			},
 			"prefix_length": {
 				Type:     schema.TypeInt,
 				Optional: true,
 				ForceNew: true,
+				Computed: true,
 			},
 			"date_created": {
 				Type:     schema.TypeString,
