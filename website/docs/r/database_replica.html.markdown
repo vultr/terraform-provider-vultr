@@ -48,13 +48,16 @@ The following attributes are exported:
 * `plan_vcpus` - The number of virtual CPUs available on the managed database read replica.
 * `plan_replicas` - The number of standby nodes available on the managed database read replica.
 * `region` - The region ID of the managed database read replica.
-* `status` - The current status of the managed database read replica (poweroff, rebuilding, rebalancing, running).
+* `status` - The current status of the managed database read replica (poweroff, rebuilding, rebalancing, configuring, running).
 * `label` - The managed database read replica's label.
 * `tag` - The managed database read replica's tag.
 * `database_engine` - The database engine of the managed database read replica.
 * `database_engine_version` - The database engine version of the managed database read replica.
+* `vpc_id` - The ID of the VPC Network attached to the managed database read replica.
 * `dbname` - The managed database read replica's default logical database.
+* `ferretdb_credentials` - An associated list of FerretDB connection credentials (FerretDB + PostgreSQL engine types only).
 * `host` - The hostname assigned to the managed database read replica.
+* `public_host` - The public hostname assigned to the managed database read replica (VPC-attached only).
 * `user` - The primary admin user for the managed database read replica.
 * `password` - The password for the managed database read replica's primary admin user.
 * `port` - The connection port for the managed database read replica.

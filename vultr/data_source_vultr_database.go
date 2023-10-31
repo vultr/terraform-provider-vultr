@@ -2,6 +2,7 @@ package vultr
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -68,6 +69,11 @@ func dataSourceVultrDatabase() *schema.Resource {
 			"dbname": {
 				Type:     schema.TypeString,
 				Computed: true,
+			},
+			"ferretdb_credentials": {
+				Type:     schema.TypeMap,
+				Computed: true,
+				Elem:     schema.TypeString,
 			},
 			"host": {
 				Type:     schema.TypeString,
@@ -244,6 +250,12 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set resource database `host` read value: %v", err)
 	}
 
+	if databaseList[0].DatabaseEngine == "ferretpg" {
+		if err := d.Set("ferretdb_credentials", flattenFerretDBCredentials(&databaseList[0])); err != nil {
+			return diag.Errorf("unable to set resource database `ferretdb_credentials` read value: %v", err)
+		}
+	}
+
 	if databaseList[0].PublicHost != "" {
 		if err := d.Set("public_host", databaseList[0].PublicHost); err != nil {
 			return diag.Errorf("unable to set resource database `public_host` read value: %v", err)
@@ -315,6 +327,23 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 	return nil
 }
 
+func flattenFerretDBCredentials(db *govultr.Database) map[string]interface{} {
+	f := map[string]interface{}{
+		"host":       db.FerretDBCredentials.Host,
+		"port":       strconv.Itoa(db.FerretDBCredentials.Port),
+		"user":       db.FerretDBCredentials.User,
+		"password":   db.FerretDBCredentials.Password,
+		"public_ip":  db.FerretDBCredentials.PublicIP,
+		"private_ip": db.FerretDBCredentials.PrivateIP,
+	}
+
+	if db.FerretDBCredentials.PrivateIP == "" {
+		delete(f, "private_ip")
+	}
+
+	return f
+}
+
 func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 	var replicas []map[string]interface{}
 	for v := range db.ReadReplicas {
@@ -334,6 +363,7 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 			"label":                     db.ReadReplicas[v].Label,
 			"tag":                       db.ReadReplicas[v].Tag,
 			"dbname":                    db.ReadReplicas[v].DBName,
+			"ferretdb_credentials":      flattenFerretDBCredentials(&db.ReadReplicas[v]),
 			"host":                      db.ReadReplicas[v].Host,
 			"public_host":               db.ReadReplicas[v].PublicHost,
 			"user":                      db.ReadReplicas[v].User,
@@ -349,6 +379,10 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 			"mysql_long_query_time":     db.ReadReplicas[v].MySQLLongQueryTime,
 			"redis_eviction_policy":     db.ReadReplicas[v].RedisEvictionPolicy,
 			"cluster_time_zone":         db.ReadReplicas[v].ClusterTimeZone,
+		}
+
+		if db.DatabaseEngine != "ferretpg" {
+			delete(r, "ferretdb_credentials")
 		}
 
 		if db.PublicHost == "" {

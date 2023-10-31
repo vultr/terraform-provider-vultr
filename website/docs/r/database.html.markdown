@@ -78,13 +78,14 @@ The following attributes are exported:
 * `plan_vcpus` - The number of virtual CPUs available on the managed database.
 * `plan_replicas` - The number of standby nodes available on the managed database.
 * `region` - The region ID of the managed database.
-* `status` - The current status of the managed database (poweroff, rebuilding, rebalancing, running).
+* `status` - The current status of the managed database (poweroff, rebuilding, rebalancing, configuring, running).
 * `label` - The managed database's label.
 * `tag` - The managed database's tag.
 * `database_engine` - The database engine of the managed database.
 * `database_engine_version` - The database engine version of the managed database.
 * `vpc_id` - The ID of the VPC Network attached to the Managed Database.
 * `dbname` - The managed database's default logical database.
+* `ferretdb_credentials` - An associated list of FerretDB connection credentials (FerretDB + PostgreSQL engine types only).
 * `host` - The hostname assigned to the managed database.
 * `public_host` - The public hostname assigned to the managed database (VPC-attached only).
 * `user` - The primary admin user for the managed database.
