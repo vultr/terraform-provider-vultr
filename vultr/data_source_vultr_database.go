@@ -363,7 +363,6 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 			"label":                     db.ReadReplicas[v].Label,
 			"tag":                       db.ReadReplicas[v].Tag,
 			"dbname":                    db.ReadReplicas[v].DBName,
-			"ferretdb_credentials":      flattenFerretDBCredentials(&db.ReadReplicas[v]),
 			"host":                      db.ReadReplicas[v].Host,
 			"public_host":               db.ReadReplicas[v].PublicHost,
 			"user":                      db.ReadReplicas[v].User,
@@ -381,8 +380,8 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 			"cluster_time_zone":         db.ReadReplicas[v].ClusterTimeZone,
 		}
 
-		if db.DatabaseEngine != "ferretpg" {
-			delete(r, "ferretdb_credentials")
+		if db.DatabaseEngine == "ferretpg" {
+			r["ferretdb_credentials"] = flattenFerretDBCredentials(&db.ReadReplicas[v])
 		}
 
 		if db.PublicHost == "" {
