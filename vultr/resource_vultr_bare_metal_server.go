@@ -54,6 +54,11 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				ForceNew: true,
 				Default:  "",
 			},
+			"persistent_pxe": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: false,
+			},
 			"snapshot_id": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -208,6 +213,7 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 		ActivationEmail: govultr.BoolToBoolPtr(d.Get("activation_email").(bool)),
 		Hostname:        d.Get("hostname").(string),
 		ReservedIPv4:    d.Get("reserved_ipv4").(string),
+		PersistentPXE:   govultr.BoolToBoolPtr(d.Get("persistent").(bool)),
 	}
 
 	switch osOption {
@@ -346,9 +352,10 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 	client := meta.(*Client).govultrClient()
 
 	req := &govultr.BareMetalUpdate{
-		Label:      d.Get("label").(string),
-		Tags:       []string{},
-		EnableIPv6: govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
+		Label:         d.Get("label").(string),
+		Tags:          []string{},
+		EnableIPv6:    govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
+		PersistentPXE: govultr.BoolToBoolPtr(d.Get("persistent_pxe").(bool)),
 	}
 
 	if d.HasChange("app_id") {

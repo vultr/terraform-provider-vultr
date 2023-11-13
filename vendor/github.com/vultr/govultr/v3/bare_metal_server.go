@@ -94,7 +94,7 @@ type BareMetalCreate struct {
 	// Deprecated: Tag should no longer be used. Instead, use Tags.
 	Tag           string   `json:"tag,omitempty"`
 	ReservedIPv4  string   `json:"reserved_ipv4,omitempty"`
-	PersistentPxe *bool    `json:"persistent_pxe,omitempty"`
+	PersistentPXE *bool    `json:"persistent_pxe,omitempty"`
 	Tags          []string `json:"tags"`
 	AttachVPC2    []string `json:"attach_vpc2,omitempty"`
 	DetachVPC2    []string `json:"detach_vpc2,omitempty"`
@@ -103,12 +103,14 @@ type BareMetalCreate struct {
 
 // BareMetalUpdate represents the optional parameters that can be set when updating a Bare Metal server
 type BareMetalUpdate struct {
-	OsID       int    `json:"os_id,omitempty"`
-	EnableIPv6 *bool  `json:"enable_ipv6,omitempty"`
-	Label      string `json:"label,omitempty"`
-	AppID      int    `json:"app_id,omitempty"`
-	ImageID    string `json:"image_id,omitempty"`
-	UserData   string `json:"user_data,omitempty"`
+	OsID          int    `json:"os_id,omitempty"`
+	EnableIPv6    *bool  `json:"enable_ipv6,omitempty"`
+	Label         string `json:"label,omitempty"`
+	AppID         int    `json:"app_id,omitempty"`
+	ImageID       string `json:"image_id,omitempty"`
+	UserData      string `json:"user_data,omitempty"`
+	PersistentPXE *bool  `json:"persistent_pxe,omitempty"`
+
 	// Deprecated: Tag should no longer be used. Instead, use Tags.
 	Tag        *string  `json:"tag,omitempty"`
 	Tags       []string `json:"tags"`
