@@ -54,6 +54,7 @@ type Cluster struct {
 	Region          string     `json:"region"`
 	Status          string     `json:"status"`
 	HAControlPlanes bool       `json:"ha_controlplanes"`
+	FirewallGroupID string     `json:"firewall_group_id"`
 	NodePools       []NodePool `json:"node_pools"`
 }
 
@@ -92,6 +93,7 @@ type ClusterReq struct {
 	Region          string        `json:"region"`
 	Version         string        `json:"version"`
 	HAControlPlanes bool          `json:"ha_controlplanes,omitempty"`
+	EnableFirewall  bool          `json:"enable_firewall,omitempty"`
 	NodePools       []NodePoolReq `json:"node_pools"`
 }
 
@@ -256,7 +258,7 @@ func (k *KubernetesHandler) CreateNodePool(ctx context.Context, vkeID string, no
 }
 
 // ListNodePools will return all nodepools for a given VKE cluster
-func (k *KubernetesHandler) ListNodePools(ctx context.Context, vkeID string, options *ListOptions) ([]NodePool, *Meta, *http.Response, error) { //nolint:lll
+func (k *KubernetesHandler) ListNodePools(ctx context.Context, vkeID string, options *ListOptions) ([]NodePool, *Meta, *http.Response, error) { //nolint:lll,dupl
 	req, err := k.client.NewRequest(ctx, http.MethodGet, fmt.Sprintf("%s/%s/node-pools", vkePath, vkeID), nil)
 	if err != nil {
 		return nil, nil, nil, err
