@@ -38,6 +38,7 @@ The `filter` block supports the following:
 
 The following attributes are exported:
 
+* `id` - The ID of the SSH key.
 * `name` - The name of the SSH key.
 * `ssh_key` - The public SSH key.
 * `date_created` - The date the SSH key was added to your Vultr account.

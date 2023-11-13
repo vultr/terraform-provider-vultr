@@ -13,6 +13,10 @@ func dataSourceVultrSSHKey() *schema.Resource {
 		ReadContext: dataSourceVultrSSHKeyRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
+			"id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"name": {
 				Type:     schema.TypeString,
 				Computed: true,
