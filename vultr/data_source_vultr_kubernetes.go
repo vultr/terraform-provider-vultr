@@ -49,6 +49,10 @@ func dataSourceVultrKubernetes() *schema.Resource {
 				Type:     schema.TypeBool,
 				Computed: true,
 			},
+			"firewall_group_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"region": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -165,6 +169,9 @@ func dataSourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, 
 	}
 	if err := d.Set("ha_controlplanes", k8List[0].HAControlPlanes); err != nil {
 		return diag.Errorf("unable to set kubernetes `ha_controlplanes` read value: %v", err)
+	}
+	if err := d.Set("firewall_group_id", k8List[0].FirewallGroupID); err != nil {
+		return diag.Errorf("unable to set kubernetes `firewall_group_id` read value: %v", err)
 	}
 	if err := d.Set("region", k8List[0].Region); err != nil {
 		return diag.Errorf("unable to set kubernetes `region` read value: %v", err)
