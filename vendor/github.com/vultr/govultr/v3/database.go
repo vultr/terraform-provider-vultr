@@ -21,11 +21,14 @@ type DatabaseService interface {
 	Update(ctx context.Context, databaseID string, databaseReq *DatabaseUpdateReq) (*Database, *http.Response, error)
 	Delete(ctx context.Context, databaseID string) error
 
+	GetUsage(ctx context.Context, databaseID string) (*DatabaseUsage, *http.Response, error)
+
 	ListUsers(ctx context.Context, databaseID string) ([]DatabaseUser, *Meta, *http.Response, error)
 	CreateUser(ctx context.Context, databaseID string, databaseUserReq *DatabaseUserCreateReq) (*DatabaseUser, *http.Response, error)
 	GetUser(ctx context.Context, databaseID string, username string) (*DatabaseUser, *http.Response, error)
 	UpdateUser(ctx context.Context, databaseID string, username string, databaseUserReq *DatabaseUserUpdateReq) (*DatabaseUser, *http.Response, error) //nolint:lll
 	DeleteUser(ctx context.Context, databaseID string, username string) error
+	UpdateUserACL(ctx context.Context, databaseID string, username string, databaseUserACLReq *DatabaseUserACLReq) (*DatabaseUser, *http.Response, error) //nolint:lll
 
 	ListDBs(ctx context.Context, databaseID string) ([]DatabaseDB, *Meta, *http.Response, error)
 	CreateDB(ctx context.Context, databaseID string, databaseDBReq *DatabaseDBCreateReq) (*DatabaseDB, *http.Response, error)
@@ -214,11 +217,59 @@ type DatabaseUpdateReq struct {
 	RedisEvictionPolicy    string   `json:"redis_eviction_policy,omitempty"`
 }
 
+// DatabaseUsage represents disk, memory, and CPU usage for a Managed Database
+type DatabaseUsage struct {
+	Disk   DatabaseDiskUsage   `json:"disk"`
+	Memory DatabaseMemoryUsage `json:"memory"`
+	CPU    DatabaseCPUUsage    `json:"cpu"`
+}
+
+// DatabaseDiskUsage represents disk usage details for a Managed Database
+type DatabaseDiskUsage struct {
+	CurrentGB  float32 `json:"current_gb"`
+	MaxGB      int     `json:"max_gb"`
+	Percentage float32 `json:"percentage"`
+}
+
+// DatabaseMemoryUsage represents memory usage details for a Managed Database
+type DatabaseMemoryUsage struct {
+	CurrentMB  float32 `json:"current_mb"`
+	MaxMB      int     `json:"max_mb"`
+	Percentage float32 `json:"percentage"`
+}
+
+// DatabaseCPUUsage represents average CPU usage for a Managed Database
+type DatabaseCPUUsage struct {
+	Percentage float32 `json:"percentage"`
+}
+
+// databaseUsageBase represents a migration status object API response for a Managed Database
+type databaseUsageBase struct {
+	Usage *DatabaseUsage `json:"usage"`
+}
+
 // DatabaseUser represents a user within a Managed Database cluster
 type DatabaseUser struct {
-	Username   string `json:"username"`
-	Password   string `json:"password"`
-	Encryption string `json:"encryption,omitempty"`
+	Username      string           `json:"username"`
+	Password      string           `json:"password"`
+	Encryption    string           `json:"encryption,omitempty"`
+	AccessControl *DatabaseUserACL `json:"access_control,omitempty"`
+}
+
+// DatabaseUserACL represents an access control configuration for a user within a Redis Managed Database cluster
+type DatabaseUserACL struct {
+	RedisACLCategories []string `json:"redis_acl_categories"`
+	RedisACLChannels   []string `json:"redis_acl_channels"`
+	RedisACLCommands   []string `json:"redis_acl_commands"`
+	RedisACLKeys       []string `json:"redis_acl_keys"`
+}
+
+// DatabaseUserACLReq represents input for updating a user's access control within a Redis Managed Database cluster
+type DatabaseUserACLReq struct {
+	RedisACLCategories *[]string `json:"redis_acl_categories,omitempty"`
+	RedisACLChannels   *[]string `json:"redis_acl_channels,omitempty"`
+	RedisACLCommands   *[]string `json:"redis_acl_commands,omitempty"`
+	RedisACLKeys       *[]string `json:"redis_acl_keys,omitempty"`
 }
 
 // databaseUserBase holds the API response for retrieving a single database user within a Managed Database
@@ -600,6 +651,24 @@ func (d *DatabaseServiceHandler) Delete(ctx context.Context, databaseID string) 
 	return err
 }
 
+// GetUsage retrieves disk, memory, and CPU usage information for your Managed Database.
+func (d *DatabaseServiceHandler) GetUsage(ctx context.Context, databaseID string) (*DatabaseUsage, *http.Response, error) {
+	uri := fmt.Sprintf("%s/%s/usage", databasePath, databaseID)
+
+	req, err := d.client.NewRequest(ctx, http.MethodGet, uri, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseUsage := new(databaseUsageBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseUsage)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseUsage.Usage, resp, nil
+}
+
 // ListUsers retrieves all database users on your Managed Database.
 func (d *DatabaseServiceHandler) ListUsers(ctx context.Context, databaseID string) ([]DatabaseUser, *Meta, *http.Response, error) { //nolint:dupl,lll
 	uri := fmt.Sprintf("%s/%s/users", databasePath, databaseID)
@@ -683,6 +752,24 @@ func (d *DatabaseServiceHandler) DeleteUser(ctx context.Context, databaseID, use
 
 	_, err = d.client.DoWithContext(ctx, req, nil)
 	return err
+}
+
+// UpdateUserACL will update a user's access control within the Redis Managed Database
+func (d *DatabaseServiceHandler) UpdateUserACL(ctx context.Context, databaseID, username string, databaseUserACLReq *DatabaseUserACLReq) (*DatabaseUser, *http.Response, error) { //nolint:lll,dupl
+	uri := fmt.Sprintf("%s/%s/users/%s/access-control", databasePath, databaseID, username)
+
+	req, err := d.client.NewRequest(ctx, http.MethodPut, uri, databaseUserACLReq)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	databaseUser := new(databaseUserBase)
+	resp, err := d.client.DoWithContext(ctx, req, databaseUser)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return databaseUser.DatabaseUser, resp, nil
 }
 
 // ListDBs retrieves all logical databases on your Managed Database.
