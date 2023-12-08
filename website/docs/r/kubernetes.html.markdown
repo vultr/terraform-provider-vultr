@@ -65,6 +65,7 @@ The follow arguments are supported:
 * `version` - (Required) The version your VKE cluster you want deployed. [See Available Version](https://www.vultr.com/api/#operation/get-kubernetes-versions)
 * `label` - (Optional) The VKE clusters label.
 * `ha_controlplanes` - (Optional, Default to False) Boolean indicating if the cluster should be created with multiple, highly available controlplanes.
+* `enable_firewall` - (Optional, Default to False) Boolean indicating if the cluster should be created with a managed firewall.
 
 `node_pools` (Optional) **NOTE** There must be 1 node pool when the kubernetes resource is first created (see explanation above). It supports the following fields
 
@@ -82,6 +83,7 @@ The following attributes are exported:
 * `label` - The VKE clusters label.
 * `region` - The region your VKE cluster is deployed in.
 * `ha_controlplanes` - Boolean indicating whether or not the cluster has multiple, highly available controlplanes.
+* `firewall_group_id` - The ID of the firewall group managed by this cluster.
 * `version` - The current kubernetes version your VKE cluster is running on.
 * `status` - The overall status of the cluster.
 * `service_subnet` - IP range that services will run on this cluster.
