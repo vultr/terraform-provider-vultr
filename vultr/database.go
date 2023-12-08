@@ -5,6 +5,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	"github.com/vultr/govultr/v3"
 )
 
 const defaultTimeout = 60 * time.Minute
@@ -166,4 +167,43 @@ func readReplicaSchema(isReadReplica bool) map[string]*schema.Schema {
 	}
 
 	return s
+}
+
+func redisACLSchema() map[string]*schema.Schema {
+	s := map[string]*schema.Schema{
+		"redis_acl_categories": {
+			Type:     schema.TypeSet,
+			Required: true,
+			Elem:     &schema.Schema{Type: schema.TypeString},
+		},
+		"redis_acl_channels": {
+			Type:     schema.TypeSet,
+			Required: true,
+			Elem:     &schema.Schema{Type: schema.TypeString},
+		},
+		"redis_acl_commands": {
+			Type:     schema.TypeSet,
+			Required: true,
+			Elem:     &schema.Schema{Type: schema.TypeString},
+		},
+		"redis_acl_keys": {
+			Type:     schema.TypeSet,
+			Required: true,
+			Elem:     &schema.Schema{Type: schema.TypeString},
+		},
+	}
+
+	return s
+}
+
+func flattenRedisACL(dbUser *govultr.DatabaseUser) []map[string]interface{} {
+	f := []map[string]interface{}{
+		{
+			"redis_acl_categories": dbUser.AccessControl.RedisACLCategories,
+			"redis_acl_channels":   dbUser.AccessControl.RedisACLChannels,
+			"redis_acl_commands":   dbUser.AccessControl.RedisACLCommands,
+			"redis_acl_keys":       dbUser.AccessControl.RedisACLKeys,
+		},
+	}
+	return f
 }

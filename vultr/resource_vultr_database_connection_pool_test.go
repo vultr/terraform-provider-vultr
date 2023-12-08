@@ -114,7 +114,7 @@ func testAccCheckVultrDatabaseConnectionPoolDestroy(s *terraform.State) error {
 		client := testAccProvider.Meta().(*Client).govultrClient()
 		_, _, err := client.Database.GetConnectionPool(context.Background(), rs.Primary.Attributes["database_id"], rs.Primary.ID)
 		if err != nil {
-			if strings.Contains(err.Error(), "Not a valid connection pool") || strings.Contains(err.Error(), "Not a valid DBaaS Subscription UUID") {
+			if strings.Contains(err.Error(), "Not a valid connection pool") || strings.Contains(err.Error(), "Not a valid Database Subscription UUID") {
 				return nil
 			}
 			return fmt.Errorf("error getting database connection pool: %s", err)

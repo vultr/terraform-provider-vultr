@@ -41,6 +41,15 @@ func resourceVultrDatabaseUser() *schema.Resource {
 				Optional: true,
 				Computed: true,
 			},
+			"access_control": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Computed: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: redisACLSchema(),
+				},
+			},
 		},
 	}
 }
@@ -63,6 +72,13 @@ func resourceVultrDatabaseUserCreate(ctx context.Context, d *schema.ResourceData
 	}
 
 	d.SetId(databaseUser.Username)
+
+	// Redis user access control can only be updated after creation
+	if accessControl, accessControlOK := d.GetOk("access_control"); accessControlOK {
+		if err := updateRedisACL(ctx, client, databaseID, d, accessControl); err != nil {
+			return diag.Errorf("error updating user access control: %v", err)
+		}
+	}
 
 	return resourceVultrDatabaseUserRead(ctx, d, meta)
 }
@@ -98,6 +114,12 @@ func resourceVultrDatabaseUserRead(ctx context.Context, d *schema.ResourceData, 
 		}
 	}
 
+	if databaseUser.AccessControl != nil {
+		if err := d.Set("access_control", flattenRedisACL(databaseUser)); err != nil {
+			return diag.Errorf("unable to set resource database user `access_control` read value: %v", err)
+		}
+	}
+
 	return nil
 }
 
@@ -118,6 +140,13 @@ func resourceVultrDatabaseUserUpdate(ctx context.Context, d *schema.ResourceData
 		}
 	}
 
+	if d.HasChange("access_control") {
+		_, accessControl := d.GetChange("access_control")
+		if err := updateRedisACL(ctx, client, databaseID, d, accessControl); err != nil {
+			return diag.Errorf("error updating user access control: %v", err)
+		}
+	}
+
 	return resourceVultrDatabaseUserRead(ctx, d, meta)
 }
 
@@ -130,6 +159,42 @@ func resourceVultrDatabaseUserDelete(ctx context.Context, d *schema.ResourceData
 
 	if err := client.Database.DeleteUser(ctx, databaseID, d.Id()); err != nil {
 		return diag.Errorf("error destroying database user %s : %v", d.Id(), err)
+	}
+
+	return nil
+}
+
+func updateRedisACL(ctx context.Context, client *govultr.Client, databaseID string, d *schema.ResourceData, accessControl interface{}) error { //nolint:lll
+	// This should only loop once due to MaxItems: 1 in the resource definition
+	for _, v := range accessControl.(*schema.Set).List() {
+		var req2 = &govultr.DatabaseUserACLReq{}
+		var aclCategories, aclChannels, aclCommands, aclKeys []string
+		obj := v.(map[string]interface{})
+
+		for _, r := range obj["redis_acl_categories"].(*schema.Set).List() {
+			aclCategories = append(aclCategories, r.(string))
+		}
+		req2.RedisACLCategories = &aclCategories
+
+		for _, r := range obj["redis_acl_channels"].(*schema.Set).List() {
+			aclChannels = append(aclChannels, r.(string))
+		}
+		req2.RedisACLChannels = &aclChannels
+
+		for _, r := range obj["redis_acl_commands"].(*schema.Set).List() {
+			aclCommands = append(aclCommands, r.(string))
+		}
+		req2.RedisACLCommands = &aclCommands
+
+		for _, r := range obj["redis_acl_keys"].(*schema.Set).List() {
+			aclKeys = append(aclKeys, r.(string))
+		}
+		req2.RedisACLKeys = &aclKeys
+
+		log.Printf("[INFO] Updating user access control")
+		if _, _, err := client.Database.UpdateUserACL(ctx, databaseID, d.Id(), req2); err != nil {
+			return err
+		}
 	}
 
 	return nil
