@@ -45,6 +45,12 @@ func resourceVultrKubernetes() *schema.Resource {
 				Default:  false,
 				ForceNew: true,
 			},
+			"enable_firewall": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+				ForceNew: true,
+			},
 
 			"node_pools": {
 				Type:     schema.TypeList,
@@ -77,6 +83,10 @@ func resourceVultrKubernetes() *schema.Resource {
 				Computed: true,
 			},
 			"status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"firewall_group_id": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -122,6 +132,7 @@ func resourceVultrKubernetesCreate(ctx context.Context, d *schema.ResourceData, 
 		Region:          d.Get("region").(string),
 		Version:         d.Get("version").(string),
 		HAControlPlanes: d.Get("ha_controlplanes").(bool),
+		EnableFirewall:  d.Get("enable_firewall").(bool),
 		NodePools:       nodePoolReq,
 	}
 
@@ -213,6 +224,9 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 	}
 	if err := d.Set("ha_controlplanes", vke.HAControlPlanes); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `ha_controlplanes` read value: %v", err)
+	}
+	if err := d.Set("firewall_group_id", vke.FirewallGroupID); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `firewall_group_id` read value: %v", err)
 	}
 
 	return nil
