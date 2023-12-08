@@ -33,6 +33,7 @@ The following arguments are supported:
 * `username` - (Required) The username of the new managed database user.
 * `password` - (Required) The password of the new managed database user.
 * `encryption` - (Optional) The encryption type of the new managed database user's password (MySQL engine types only - `caching_sha2_password`, `mysql_native_password`).
+* `access_control` - (Optional) The access control configuration for the new managed database user (Redis engine types only).
 
 ## Attributes Reference
 
@@ -41,4 +42,5 @@ The following attributes are exported:
 * `database_id` - The managed database ID.
 * `username` - The username of the managed database user.
 * `password` - The password of the managed database user.
-* `encryption` - The encryption type for the new managed database user's password (MySQL engine types only).
+* `encryption` - The encryption type for the managed database user's password (MySQL engine types only).
+* `access_control` - The access control configuration for the managed database user (Redis engine types only).
