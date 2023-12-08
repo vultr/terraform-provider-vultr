@@ -34,6 +34,13 @@ The following arguments are supported:
 * `password` - (Required) The password of the new managed database user.
 * `encryption` - (Optional) The encryption type of the new managed database user's password (MySQL engine types only - `caching_sha2_password`, `mysql_native_password`).
 
+`access_control` - (Optional) The access control configuration for the new managed database user (Redis engine types only). It supports the following fields:
+
+* `redis_acl_categories` - (Required) The list of command category rules for this managed database user.
+* `redis_acl_channels` - (Required) The list of publish/subscribe channel patterns for this managed database user.
+* `redis_acl_commands` - (Required) The list of individual command rules for this managed database user.
+* `redis_acl_keys` - (Required) The list of access rules for this managed database user.
+
 ## Attributes Reference
 
 The following attributes are exported:
@@ -41,4 +48,11 @@ The following attributes are exported:
 * `database_id` - The managed database ID.
 * `username` - The username of the managed database user.
 * `password` - The password of the managed database user.
-* `encryption` - The encryption type for the new managed database user's password (MySQL engine types only).
+* `encryption` - The encryption type for the managed database user's password (MySQL engine types only).
+
+`access_control`
+
+* `redis_acl_categories` - List of command category rules for this managed database user (Redis engine types only).
+* `redis_acl_channels` - List of publish/subscribe channel patterns for this managed database user (Redis engine types only).
+* `redis_acl_commands` - List of individual command rules for this managed database user (Redis engine types only).
+* `redis_acl_keys` - List of access rules for this managed database user (Redis engine types only).

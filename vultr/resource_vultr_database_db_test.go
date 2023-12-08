@@ -41,7 +41,7 @@ func testAccCheckVultrDatabaseDBDestroy(s *terraform.State) error {
 		client := testAccProvider.Meta().(*Client).govultrClient()
 		_, _, err := client.Database.GetDB(context.Background(), rs.Primary.Attributes["database_id"], rs.Primary.ID)
 		if err != nil {
-			if strings.Contains(err.Error(), "Not a valid database db") || strings.Contains(err.Error(), "Not a valid DBaaS Subscription UUID") {
+			if strings.Contains(err.Error(), "Not a valid database db") || strings.Contains(err.Error(), "NNot a valid Database Subscription UUID") {
 				return nil
 			}
 			return fmt.Errorf("error getting database db: %s", err)
