@@ -22,7 +22,7 @@
 * Update govultr from v3.4.0 to v3.5.0 [PR 438](https://github.com/vultr/terraform-provider-vultr/pull/438)
 * Bump golang.org/x/oauth2 from 0.14.0 to 0.15.0 [PR 435](https://github.com/vultr/terraform-provider-vultr/pull/435)
 
-## New Contributors
+### New Contributors
 * @neilmock made their first contribution in [PR 368](https://github.com/vultr/terraform-provider-vultr/pull/368)
 * @aarani made their first contribution in [PR 296](https://github.com/vultr/terraform-provider-vultr/pull/296)
 * @Byteflux made their first contribution in [PR 434](https://github.com/vultr/terraform-provider-vultr/pull/434)
