@@ -10,7 +10,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
 )
 
-func TestAccVultrContainerRegistryDBBasic(t *testing.T) {
+func TestAccVultrContainerRegistry(t *testing.T) {
 	crName := acctest.RandomWithPrefix("tf-cr-cr")
 
 	name := "vultr_container_registry.foo"
@@ -47,27 +47,6 @@ func testAccCheckVultrContainerRegistryDestroy(s *terraform.State) error {
 		}
 	}
 	return nil
-}
-
-func testAccCheckVultrContainerRegistryExist(n string) resource.TestCheckFunc {
-	return func(s *terraform.State) error {
-		rs, ok := s.RootModule().Resources[n]
-		if !ok {
-			return fmt.Errorf("not found: %s", n)
-		}
-
-		if rs.Primary.ID == "" {
-			return fmt.Errorf("Container Registry ID is not set")
-		}
-
-		crId := rs.Primary.ID
-		client := testAccProvider.Meta().(*Client).govultrClient()
-		_, _, err := client.ContainerRegistry.Get(context.Background(), crId)
-		if err != nil {
-			return fmt.Errorf("Container Registry does not exist: %s", crId)
-		}
-		return nil
-	}
 }
 
 func testAccVultrContainerRegistryBase(name string) string {

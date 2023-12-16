@@ -1,7 +1,7 @@
 terraform {
   required_providers {
     vultr = {
-      source = "vultr/vultr"
+      source  = "vultr/vultr"
       version = "2.18.0"
     }
   }
@@ -43,8 +43,8 @@ resource "vultr_firewall_rule" "tcp" {
 }
 
 resource "vultr_dns_domain" "my_domain" {
-  domain    = "tf-domain.com"
-  ip        = vultr_instance.my_instance.main_ip
+  domain = "tf-domain.com"
+  ip     = vultr_instance.my_instance.main_ip
 }
 
 resource "vultr_dns_record" "a-record" {
@@ -77,4 +77,11 @@ resource "vultr_load_balancer" "lb" {
     healthy_threshold   = 5
   }
 
+}
+
+resource "vultr_container_registry" "vcr1" {
+  name   = "im6hvcr1"
+  region = "sjc"
+  plan   = "start_up"
+  public = false
 }

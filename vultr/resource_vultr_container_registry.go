@@ -2,7 +2,9 @@ package vultr
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"strconv"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -24,28 +26,33 @@ func resourceVultrContainerRegistry() *schema.Resource {
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
 			},
-			"urn": {
+			"plan": {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			"region": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"public": {
+				Type:     schema.TypeBool,
+				Required: true,
+			},
+			"urn": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
 			"storage": {
 				Type:     schema.TypeMap,
-				Optional: true,
 				Computed: true,
-				ForceNew: true,
+				Optional: true,
 			},
 			"root_user": {
 				Type:     schema.TypeMap,
 				Computed: true,
 				Optional: true,
-				ForceNew: true,
-			},
-			"public": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  true,
 			},
 			"date_created": {
 				Type:     schema.TypeString,
@@ -96,15 +103,17 @@ func resourceVultrContainerRegistryRead(ctx context.Context, d *schema.ResourceD
 	if err := d.Set("urn", cr.URN); err != nil {
 		return diag.Errorf("unable to set resource container registry `urn` read value: %v", err)
 	}
-
-	if err := d.Set("storage", cr.Storage); err != nil {
+	if err := d.Set("storage", flattenCRStorage(cr)); err != nil {
 		return diag.Errorf("unable to set resource container registry `storage` read value: %v", err)
 	}
-	if err := d.Set("root_user", cr.RootUser); err != nil {
+	if err := d.Set("root_user", flattenCRRootUser(cr)); err != nil {
 		return diag.Errorf("unable to set resource container registry `root_user` read value: %v", err)
 	}
 	if err := d.Set("public", cr.Public); err != nil {
 		return diag.Errorf("unable to set resource container `public` read value: %v", err)
+	}
+	if err := d.Set("date_created", cr.DateCreated); err != nil {
+		return diag.Errorf("unable to set resource container `date_created` read value: %v", err)
 	}
 
 	return nil
@@ -147,4 +156,24 @@ func resourceVultrContainerRegistryDelete(ctx context.Context, d *schema.Resourc
 	}
 
 	return nil
+}
+
+func flattenCRStorage(cr *govultr.ContainerRegistry) map[string]interface{} {
+	f := map[string]interface{}{
+		"allowed": fmt.Sprintf("%.2f GB", cr.Storage.Allowed.GigaBytes),
+		"used":    fmt.Sprintf("%.2f GB", cr.Storage.Used.GigaBytes),
+	}
+	return f
+}
+
+func flattenCRRootUser(cr *govultr.ContainerRegistry) map[string]interface{} {
+	f := map[string]interface{}{
+		"id":            strconv.Itoa(cr.RootUser.ID),
+		"username":      cr.RootUser.UserName,
+		"password":      cr.RootUser.Password,
+		"root":          strconv.FormatBool(cr.RootUser.Root),
+		"date_created":  cr.RootUser.DateCreated,
+		"date_modified": cr.RootUser.DateModified,
+	}
+	return f
 }
