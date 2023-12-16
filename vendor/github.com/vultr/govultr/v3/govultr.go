@@ -19,7 +19,7 @@ import (
 )
 
 const (
-	version     = "3.4.0"
+	version     = "3.6.0"
 	defaultBase = "https://api.vultr.com"
 	userAgent   = "govultr/" + version
 	rateLimit   = 500 * time.Millisecond
@@ -57,6 +57,7 @@ type Client struct {
 	ISO               ISOService
 	Kubernetes        KubernetesService
 	LoadBalancer      LoadBalancerService
+	Marketplace       MarketplaceService
 	// Deprecated: Network should no longer be used. Instead, use VPC.
 	Network       NetworkService
 	ObjectStorage ObjectStorageService
@@ -129,6 +130,7 @@ func NewClient(httpClient *http.Client) *Client {
 	client.ISO = &ISOServiceHandler{client}
 	client.Kubernetes = &KubernetesHandler{client}
 	client.LoadBalancer = &LoadBalancerHandler{client}
+	client.Marketplace = &MarketplaceServiceHandler{client}
 	client.Network = &NetworkServiceHandler{client}
 	client.ObjectStorage = &ObjectStorageServiceHandler{client}
 	client.OS = &OSServiceHandler{client}

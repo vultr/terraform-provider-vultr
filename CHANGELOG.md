@@ -1,4 +1,32 @@
 # Changelog
+##[v2.18.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.17.1...v2.18.0) (2023-12-11)
+### Enhancements
+* resource/bare_metal_server: Add Persistent PXE field [PR 368](https://github.com/vultr/terraform-provider-vultr/pull/368)
+* data_source/instances: Add instances data source [PR 296](https://github.com/vultr/terraform-provider-vultr/pull/296)
+* data_source/ssh_key: Export the key ID [PR 338](https://github.com/vultr/terraform-provider-vultr/pull/338)
+* resource/kubernetes: Add firewall field [PR 434](https://github.com/vultr/terraform-provider-vultr/pull/434)
+* data_source/kubernetes: Add firewall field [PR 434](https://github.com/vultr/terraform-provider-vultr/pull/434)
+* resource/database: Add redis user access control [PR 439](https://github.com/vultr/terraform-provider-vultr/pull/439)
+
+### Bug Fixes
+* Remove deprecated SDK meta version function usage [PR 432](https://github.com/vultr/terraform-provider-vultr/pull/432)
+* data_source/database: Fix bug with flattening non-FerretDB replicas [PR 427](https://github.com/vultr/terraform-provider-vultr/pull/427)
+
+### Documentation
+* Add documentation for the instances data source [PR 431](https://github.com/vultr/terraform-provider-vultr/pull/431)
+
+### Dependencies
+* Bump github.com/vultr/govultr/v3 from 3.3.4 to 3.4.0 [PR 430](https://github.com/vultr/terraform-provider-vultr/pull/430)
+* Bump golang.org/x/oauth2 from 0.13.0 to 0.14.0 [PR 429](https://github.com/vultr/terraform-provider-vultr/pull/429)
+* Bump github.com/hashicorp/terraform-plugin-sdk/v2 from 2.29.0 to 2.30.0 [PR 428](https://github.com/vultr/terraform-provider-vultr/pull/428)
+* Update govultr from v3.4.0 to v3.5.0 [PR 438](https://github.com/vultr/terraform-provider-vultr/pull/438)
+* Bump golang.org/x/oauth2 from 0.14.0 to 0.15.0 [PR 435](https://github.com/vultr/terraform-provider-vultr/pull/435)
+
+### New Contributors
+* @neilmock made their first contribution in [PR 368](https://github.com/vultr/terraform-provider-vultr/pull/368)
+* @aarani made their first contribution in [PR 296](https://github.com/vultr/terraform-provider-vultr/pull/296)
+* @Byteflux made their first contribution in [PR 434](https://github.com/vultr/terraform-provider-vultr/pull/434)
+
 ## [v2.17.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.17.0...v2.17.1) (2023-10-31)
 ### Enhancements
 * resource/database: Add FerretDB Support [PR 422](https://github.com/vultr/terraform-provider-vultr/pull/422)

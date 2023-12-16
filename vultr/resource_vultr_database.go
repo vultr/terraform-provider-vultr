@@ -97,6 +97,7 @@ func resourceVultrDatabase() *schema.Resource {
 			"redis_eviction_policy": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"password": {
 				Type:     schema.TypeString,
