@@ -181,6 +181,12 @@ func resourceVultrInstance() *schema.Resource {
 					},
 				},
 			},
+			"app_variables": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				ForceNew: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 			// Computed
 			"os": {
 				Type:     schema.TypeString,
@@ -305,6 +311,14 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		ReservedIPv4:    d.Get("reserved_ip_id").(string),
 		Region:          d.Get("region").(string),
 		Plan:            d.Get("plan").(string),
+	}
+
+	if appVariables, appVariablesOK := d.GetOk("app_variables"); appVariablesOK {
+		appVariablesMap := make(map[string]string)
+		for k, v := range appVariables.(map[string]interface{}) {
+			appVariablesMap[k] = v.(string)
+		}
+		req.AppVariables = appVariablesMap
 	}
 
 	// If no osOptions where selected and osID has a real value then set the osOptions to osID
