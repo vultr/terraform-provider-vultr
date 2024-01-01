@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -551,8 +552,21 @@ func resourceVultrLoadBalancerDelete(ctx context.Context, d *schema.ResourceData
 		return diag.Errorf("error detaching VPC from load balancer before deletion (%v): %v", d.Id(), err)
 	}
 
-	if err := client.LoadBalancer.Delete(ctx, d.Id()); err != nil {
-		return diag.Errorf("error deleting load balancer %v : %v", d.Id(), err)
+	//It seems the API does not reporting a completely accurate ready/active status.
+	//So we retry the delete until it succeeds.
+	log.Println("[INFO] Waiting for load balancer reource to be destroyed...")
+	const MAX_DELETE_RETRIES = 40
+	for i := 0; i < MAX_DELETE_RETRIES; i++ {
+		if err := client.LoadBalancer.Delete(ctx, d.Id()); err != nil {
+			log.Println("[INFO] Deleting load balancer failed. Retrying...")
+			if strings.Contains(err.Error(), "Load balancer is not ready.") && i != MAX_DELETE_RETRIES-1 {
+				time.Sleep(5 * time.Second)
+				continue
+			}
+			return diag.Errorf("error deleting load balancer %v : %v", d.Id(), err)
+		} else {
+			break
+		}
 	}
 
 	return nil
@@ -580,7 +594,7 @@ func newLBStateRefresh(ctx context.Context, d *schema.ResourceData, meta interfa
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 
-		log.Printf("[INFO] Creating load balancer")
+		log.Printf("[INFO] Refreshing load balancer state")
 
 		lb, _, err := client.LoadBalancer.Get(ctx, d.Id())
 		if err != nil {
