@@ -9,6 +9,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v3"
@@ -554,21 +555,19 @@ func resourceVultrLoadBalancerDelete(ctx context.Context, d *schema.ResourceData
 
 	//It seems the API does not reporting a completely accurate ready/active status.
 	//So we retry the delete until it succeeds.
-	log.Println("[INFO] Waiting for load balancer reource to be destroyed...")
-	const MAX_DELETE_RETRIES = 40
-	for i := 0; i < MAX_DELETE_RETRIES; i++ {
-		if err := client.LoadBalancer.Delete(ctx, d.Id()); err != nil {
-			log.Println("[INFO] Deleting load balancer failed. Retrying...")
-			if strings.Contains(err.Error(), "Load balancer is not ready.") && i != MAX_DELETE_RETRIES-1 {
-				time.Sleep(5 * time.Second)
-				continue
+	if err := retry.RetryContext(ctx, d.Timeout(schema.TimeoutCreate)-time.Minute, func() *retry.RetryError {
+		err := client.LoadBalancer.Delete(ctx, d.Id())
+		if err != nil {
+			if strings.Contains(err.Error(), "Load balancer is not ready.") {
+				return retry.RetryableError(fmt.Errorf("Deleting load balancer failed with error: %s. Retrying...", err))
+			} else {
+				return retry.NonRetryableError(fmt.Errorf("Deleting load balancer failed with non-retryable error: %s", err))
 			}
-			return diag.Errorf("error deleting load balancer %v : %v", d.Id(), err)
-		} else {
-			break
 		}
+		return nil
+	}); err != nil {
+		return diag.Errorf("error deleting load balancer %v : %v", d.Id(), err)
 	}
-
 	return nil
 }
 
@@ -577,7 +576,7 @@ func waitForLBAvailable(ctx context.Context, d *schema.ResourceData, target stri
 		"[INFO] Waiting for load balancer (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &resource.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{ // nolint:all
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newLBStateRefresh(ctx, d, meta, attribute),
