@@ -72,6 +72,7 @@ The following arguments are supported:
 * `tags` - (Optional) A list of tags to apply to the instance.
 * `label` - (Optional) A label for the server.
 * `reserved_ip_id` - (Optional) ID of the floating IP to use as the main IP of this server.
+* `app_variables` - (Optional) A map of user-supplied variable keys and values for Vultr Marketplace apps. [See List Marketplace App Variables](https://www.vultr.com/api/#tag/marketplace/operation/list-marketplace-app-variables)
 * `backups_schedule` - (Optional) A block that defines the way backups should be scheduled. While this is an optional field if `backups` are `enabled` this field is mandatory. The configuration of a `backups_schedule` is listed below.
 
 `backups_schedule` supports the following:
