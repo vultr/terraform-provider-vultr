@@ -4,10 +4,11 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v3"
@@ -551,10 +552,21 @@ func resourceVultrLoadBalancerDelete(ctx context.Context, d *schema.ResourceData
 		return diag.Errorf("error detaching VPC from load balancer before deletion (%v): %v", d.Id(), err)
 	}
 
-	if err := client.LoadBalancer.Delete(ctx, d.Id()); err != nil {
+	//It seems the API does not reporting a completely accurate ready/active status.
+	//So we retry the delete until it succeeds.
+	if err := retry.RetryContext(ctx, d.Timeout(schema.TimeoutCreate)-time.Minute, func() *retry.RetryError {
+		err := client.LoadBalancer.Delete(ctx, d.Id())
+		if err != nil {
+			if strings.Contains(err.Error(), "Load balancer is not ready.") {
+				return retry.RetryableError(fmt.Errorf("Deleting load balancer failed with error: %s. Retrying...", err))
+			} else {
+				return retry.NonRetryableError(fmt.Errorf("Deleting load balancer failed with non-retryable error: %s", err))
+			}
+		}
+		return nil
+	}); err != nil {
 		return diag.Errorf("error deleting load balancer %v : %v", d.Id(), err)
 	}
-
 	return nil
 }
 
@@ -563,7 +575,7 @@ func waitForLBAvailable(ctx context.Context, d *schema.ResourceData, target stri
 		"[INFO] Waiting for load balancer (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &resource.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{ // nolint:all
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newLBStateRefresh(ctx, d, meta, attribute),
@@ -576,11 +588,11 @@ func waitForLBAvailable(ctx context.Context, d *schema.ResourceData, target stri
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newLBStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc { // nolint:all
+func newLBStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { // nolint:all
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 
-		log.Printf("[INFO] Creating load balancer")
+		log.Printf("[INFO] Refreshing load balancer state")
 
 		lb, _, err := client.LoadBalancer.Get(ctx, d.Id())
 		if err != nil {
