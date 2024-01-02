@@ -57,7 +57,7 @@ func resourceVultrBareMetalServer() *schema.Resource {
 			"persistent_pxe": {
 				Type:     schema.TypeBool,
 				Optional: true,
-				ForceNew: false,
+				ForceNew: true,
 			},
 			"snapshot_id": {
 				Type:     schema.TypeString,
@@ -213,7 +213,7 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 		ActivationEmail: govultr.BoolToBoolPtr(d.Get("activation_email").(bool)),
 		Hostname:        d.Get("hostname").(string),
 		ReservedIPv4:    d.Get("reserved_ipv4").(string),
-		PersistentPxe:   govultr.BoolToBoolPtr(d.Get("persistent").(bool)),
+		PersistentPxe:   govultr.BoolToBoolPtr(d.Get("persistent_pxe").(bool)),
 	}
 
 	switch osOption {
