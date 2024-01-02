@@ -33,6 +33,7 @@ resource "vultr_instance" "my_instance" {
 	tags = ["my-instance-tag"]
 	hostname = "my-instance-hostname"
 	enable_ipv6 = true
+	disable_public_ipv4 = true
 	backups = "enabled"
 	backups_schedule {
 	        type = "daily"
@@ -65,6 +66,7 @@ The following arguments are supported:
 * `user_data` - (Optional) Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
 * `backups` - (Optional) Whether automatic backups will be enabled for this server (these have an extra charge associated with them). Values can be enabled or disabled.
 * `enable_ipv6` - (Optional) Whether the server has IPv6 networking activated.
+* `disable_public_ipv4` - (Optional) Whether the server has a public IPv4 address assigned (only possible with `enable_ipv6` set to `true`)
 * `activation_email` - (Optional) Whether an activation email will be sent when the server is ready.
 * `ddos_protection` - (Optional) Whether DDOS protection will be enabled on the server (there is an additional charge for this).
 * `hostname` - (Optional) The hostname to assign to the server.
