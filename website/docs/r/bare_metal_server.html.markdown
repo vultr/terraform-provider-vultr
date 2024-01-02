@@ -59,6 +59,7 @@ The following arguments are supported:
 * `tags` - (Optional) A list of tags to apply to the servier.
 * `label` - (Optional) A label for the server.
 * `reserved_ipv4` - (Optional) The ID of the floating IP to use as the main IP of this server. [See Reserved IPs](https://www.vultr.com/api/#operation/list-reserved-ips)
+* `app_variables` - (Optional) A map of user-supplied variable keys and values for Vultr Marketplace apps. [See List Marketplace App Variables](https://www.vultr.com/api/#tag/marketplace/operation/list-marketplace-app-variables)
 
 ## Attributes Reference
 
