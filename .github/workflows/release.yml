@@ -19,7 +19,7 @@ jobs:
         run: |
           pattern="^Release v[0-9]+.[0-9]+.[0-9]+ #(minor|major|patch)$"
           if [[ "${{ github.event.head_commit.message }}" =~ ${pattern} ]]; then
-              echo ::set-output name=match::true
+              echo match=true >> $GITHUB_OUTPUT
           fi
   create-tag:
     runs-on: ubuntu-latest
@@ -28,42 +28,37 @@ jobs:
     outputs:
       new_tag: ${{ steps.tagger.outputs.new_tag }}
     steps:
-    - uses: actions/checkout@v2
-      with:
-        fetch-depth: '0'
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: "0"
 
-    - name: Bump version and push tag
-      id: tagger
-      uses: anothrNick/github-tag-action@1.36.0
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        WITH_V: true
-        DEFAULT_BUMP: "none"
+      - name: Bump version and push tag
+        id: tagger
+        uses: anothrNick/github-tag-action@1.36.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: true
+          DEFAULT_BUMP: "none"
 
   goreleaser:
     runs-on: ubuntu-latest
     needs: create-tag
     steps:
-      -
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v2
-      -
-        name: Unshallow
+      - name: Unshallow
         run: git fetch --prune --unshallow
-      -
-        name: Set up Go
+      - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: "1.20"
-      -
-        name: Import GPG key
+      - name: Import GPG key
         id: import_gpg
         uses: paultyng/ghaction-import-gpg@v2.1.0
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           PASSPHRASE: ${{ secrets.PASSPHRASE }}
-      -
-        name: Run GoReleaser
+      - name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
         with:
           version: latest
