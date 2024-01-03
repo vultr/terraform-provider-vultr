@@ -1,5 +1,5 @@
 # Changelog
-##[v2.19.0]() (2024-01-03)
+##[v2.19.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.18.0...v2.19.0) (2024-01-03)
 ### Enhancements
 * resource/instances: Allow creation without public IP [PR 450](https://github.com/vultr/terraform-provider-vultr/pull/450)
 * resource/instances: Add marketplace app variables support [PR 448](https://github.com/vultr/terraform-provider-vultr/pull/448)
@@ -24,7 +24,6 @@
 * @OpenGLShaders made their first contribution in [PR 450](https://github.com/vultr/terraform-provider-vultr/pull/450)
 * @arunsathiya made their first contribution in [PR 449](https://github.com/vultr/terraform-provider-vultr/pull/449)
 
-**Full Changelog**: https://github.com/vultr/terraform-provider-vultr/compare/v2.18.0...v2.19.0
 ##[v2.18.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.17.1...v2.18.0) (2023-12-11)
 ### Enhancements
 * resource/bare_metal_server: Add Persistent PXE field [PR 368](https://github.com/vultr/terraform-provider-vultr/pull/368)
