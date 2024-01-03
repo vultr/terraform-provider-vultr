@@ -1,4 +1,30 @@
 # Changelog
+##[v2.19.0]() (2024-01-03)
+### Enhancements
+* resource/instances: Allow creation without public IP [PR 450](https://github.com/vultr/terraform-provider-vultr/pull/450)
+* resource/instances: Add marketplace app variables support [PR 448](https://github.com/vultr/terraform-provider-vultr/pull/448)
+* resource/bare_metal_server: Add marketplace app variables support [PR 448](https://github.com/vultr/terraform-provider-vultr/pull/448)
+* resource/load_balancers: Add retry to delete [PR 451](https://github.com/vultr/terraform-provider-vultr/pull/451)
+
+### Bug Fixes
+* resource/bare_metal_server: Fix nil interface panic on creation [PR 452](https://github.com/vultr/terraform-provider-vultr/pull/452)
+
+### Documentation
+* resource/instances: Add disable_public_ipv4 field to webdocs [PR 453](https://github.com/vultr/terraform-provider-vultr/pull/453)
+
+### Dependencies
+* Update govultr from v3.5.0 to v3.6.0 [PR 444](https://github.com/vultr/terraform-provider-vultr/pull/444)
+* Bump github.com/hashicorp/terraform-plugin-sdk/v2 from 2.30.0 to 2.31.0 [PR 442](https://github.com/vultr/terraform-provider-vultr/pull/442)
+* Bump golang.org/x/crypto from 0.16.0 to 0.17.0 [PR 447](https://github.com/vultr/terraform-provider-vultr/pull/447)
+
+### Automation
+* Use GITHUB_OUTPUT envvar instead of set-output command [PR 449](https://github.com/vultr/terraform-provider-vultr/pull/449)
+
+### New Contributors
+* @OpenGLShaders made their first contribution in [PR 450](https://github.com/vultr/terraform-provider-vultr/pull/450)
+* @arunsathiya made their first contribution in [PR 449](https://github.com/vultr/terraform-provider-vultr/pull/449)
+
+**Full Changelog**: https://github.com/vultr/terraform-provider-vultr/compare/v2.18.0...v2.19.0
 ##[v2.18.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.17.1...v2.18.0) (2023-12-11)
 ### Enhancements
 * resource/bare_metal_server: Add Persistent PXE field [PR 368](https://github.com/vultr/terraform-provider-vultr/pull/368)
