@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v3"
 )
@@ -279,7 +279,7 @@ func waitForDatabaseReplicaAvailable(ctx context.Context, d *schema.ResourceData
 		"[INFO] Waiting for Managed Database read replica (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &resource.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{ // nolint:all
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newDatabaseReplicaStateRefresh(ctx, d, meta, attribute),
@@ -292,7 +292,7 @@ func waitForDatabaseReplicaAvailable(ctx context.Context, d *schema.ResourceData
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newDatabaseReplicaStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc { // nolint:all
+func newDatabaseReplicaStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { // nolint:all
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Creating Database read replica")
@@ -316,7 +316,7 @@ func waitForParentBackupAvailable(ctx context.Context, d *schema.ResourceData, t
 		"[INFO] Waiting for parent Managed Database (%s) to have %s of %s",
 		d.Get("database_id").(string), attribute, target)
 
-	stateConf := &resource.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{ // nolint:all
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        parentDatabaseRefresh(ctx, d, meta, attribute),
@@ -329,7 +329,7 @@ func waitForParentBackupAvailable(ctx context.Context, d *schema.ResourceData, t
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func parentDatabaseRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc { // nolint:all
+func parentDatabaseRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { // nolint:all
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Waiting for parent Managed Database backup status")

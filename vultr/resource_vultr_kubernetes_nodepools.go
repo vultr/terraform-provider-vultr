@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v3"
 )
@@ -159,7 +159,7 @@ func waitForNodePoolAvailable(ctx context.Context, d *schema.ResourceData, targe
 		"[INFO] Waiting for node pool (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &resource.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{ // nolint:all
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newNodePoolStateRefresh(ctx, d, meta, attribute),
@@ -172,7 +172,7 @@ func waitForNodePoolAvailable(ctx context.Context, d *schema.ResourceData, targe
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newNodePoolStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc { // nolint:all
+func newNodePoolStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { // nolint:all
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 
