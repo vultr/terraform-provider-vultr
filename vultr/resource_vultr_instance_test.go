@@ -26,8 +26,8 @@ func TestAccVultrInstanceBasic(t *testing.T) {
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr(name, "label", rName),
 					resource.TestCheckResourceAttr(name, "os", "CentOS 7 x64"),
-					resource.TestCheckResourceAttr(name, "ram", "1024"),
-					resource.TestCheckResourceAttr(name, "disk", "25"),
+					resource.TestCheckResourceAttr(name, "ram", "2048"),
+					resource.TestCheckResourceAttr(name, "disk", "55"),
 					resource.TestCheckResourceAttr(name, "region", "sea"),
 					resource.TestCheckResourceAttr(name, "os_id", "167"),
 					resource.TestCheckResourceAttr(name, "status", "active"),
@@ -270,7 +270,7 @@ func testAccVultrInstanceBase(name string) string {
 		resource "vultr_instance" "test" {
 			plan = "vc2-1c-2gb"
 			region = "sea"
-			os_id = 477
+			os_id = 167
 			label = "%s"
 			hostname = "testing-the-hostname"
 			enable_ipv6 = true
@@ -291,7 +291,7 @@ func testAccVultrInstanceBaseUpdateFirewall(name string) string {
 		resource "vultr_instance" "test" {
 			plan = "vc2-1c-2gb"
 			region = "sea"
-			os_id = 477
+			os_id = 167
 			label = "%s"
 			hostname = "testing-the-hostname"
 			enable_ipv6 = true
@@ -374,7 +374,7 @@ func testAccVultrInstanceBaseUpdatedRegion(name string) string {
 		resource "vultr_instance" "test" {
 			plan = "vc2-1c-2gb"
 			region = "ewr"
-			os_id = 477
+			os_id = 167
 			label = "%s"
 			hostname = "testing-the-hostname"
 			enable_ipv6 = true
@@ -389,7 +389,7 @@ func testAccVultrInstanceBaseUpdateTags(name string) string {
 		resource "vultr_instance" "test" {
 			plan = "vc2-1c-2gb"
 			region = "sea"
-			os_id = 477
+			os_id = 167
 			label = "%s"
 			hostname = "testing-the-hostname"
 			enable_ipv6 = true

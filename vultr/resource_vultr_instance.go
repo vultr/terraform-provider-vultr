@@ -72,6 +72,12 @@ func resourceVultrInstance() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 			},
+			"disable_public_ipv4": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				ForceNew:    true,
+				Description: "Don't set up a public IPv4 address when IPv6 is enabled. Will not do anything unless enable_ipv6 is also true.",
+			},
 			"private_network_ids": {
 				Type:       schema.TypeSet,
 				Optional:   true,
@@ -180,6 +186,12 @@ func resourceVultrInstance() *schema.Resource {
 						},
 					},
 				},
+			},
+			"app_variables": {
+				Type:     schema.TypeMap,
+				Optional: true,
+				ForceNew: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			// Computed
 			"os": {
@@ -293,18 +305,27 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 	client := meta.(*Client).govultrClient()
 
 	req := &govultr.InstanceCreateReq{
-		EnableIPv6:      govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
-		Label:           d.Get("label").(string),
-		Backups:         backups,
-		UserData:        base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string))),
-		ActivationEmail: govultr.BoolToBoolPtr(d.Get("activation_email").(bool)),
-		DDOSProtection:  govultr.BoolToBoolPtr(d.Get("ddos_protection").(bool)),
-		Hostname:        d.Get("hostname").(string),
-		FirewallGroupID: d.Get("firewall_group_id").(string),
-		ScriptID:        d.Get("script_id").(string),
-		ReservedIPv4:    d.Get("reserved_ip_id").(string),
-		Region:          d.Get("region").(string),
-		Plan:            d.Get("plan").(string),
+		EnableIPv6:        govultr.BoolToBoolPtr(d.Get("enable_ipv6").(bool)),
+		DisablePublicIPv4: govultr.BoolToBoolPtr(d.Get("disable_public_ipv4").(bool)),
+		Label:             d.Get("label").(string),
+		Backups:           backups,
+		UserData:          base64.StdEncoding.EncodeToString([]byte(d.Get("user_data").(string))),
+		ActivationEmail:   govultr.BoolToBoolPtr(d.Get("activation_email").(bool)),
+		DDOSProtection:    govultr.BoolToBoolPtr(d.Get("ddos_protection").(bool)),
+		Hostname:          d.Get("hostname").(string),
+		FirewallGroupID:   d.Get("firewall_group_id").(string),
+		ScriptID:          d.Get("script_id").(string),
+		ReservedIPv4:      d.Get("reserved_ip_id").(string),
+		Region:            d.Get("region").(string),
+		Plan:              d.Get("plan").(string),
+	}
+
+	if appVariables, appVariablesOK := d.GetOk("app_variables"); appVariablesOK {
+		appVariablesMap := make(map[string]string)
+		for k, v := range appVariables.(map[string]interface{}) {
+			appVariablesMap[k] = v.(string)
+		}
+		req.AppVariables = appVariablesMap
 	}
 
 	// If no osOptions where selected and osID has a real value then set the osOptions to osID

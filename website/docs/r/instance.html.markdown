@@ -33,6 +33,7 @@ resource "vultr_instance" "my_instance" {
 	tags = ["my-instance-tag"]
 	hostname = "my-instance-hostname"
 	enable_ipv6 = true
+	disable_public_ipv4 = true
 	backups = "enabled"
 	backups_schedule {
 	        type = "daily"
@@ -65,6 +66,7 @@ The following arguments are supported:
 * `user_data` - (Optional) Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
 * `backups` - (Optional) Whether automatic backups will be enabled for this server (these have an extra charge associated with them). Values can be enabled or disabled.
 * `enable_ipv6` - (Optional) Whether the server has IPv6 networking activated.
+* `disable_public_ipv4` - (Optional) Whether the server has a public IPv4 address assigned (only possible with `enable_ipv6` set to `true`)
 * `activation_email` - (Optional) Whether an activation email will be sent when the server is ready.
 * `ddos_protection` - (Optional) Whether DDOS protection will be enabled on the server (there is an additional charge for this).
 * `hostname` - (Optional) The hostname to assign to the server.
@@ -72,6 +74,7 @@ The following arguments are supported:
 * `tags` - (Optional) A list of tags to apply to the instance.
 * `label` - (Optional) A label for the server.
 * `reserved_ip_id` - (Optional) ID of the floating IP to use as the main IP of this server.
+* `app_variables` - (Optional) A map of user-supplied variable keys and values for Vultr Marketplace apps. [See List Marketplace App Variables](https://www.vultr.com/api/#tag/marketplace/operation/list-marketplace-app-variables)
 * `backups_schedule` - (Optional) A block that defines the way backups should be scheduled. While this is an optional field if `backups` are `enabled` this field is mandatory. The configuration of a `backups_schedule` is listed below.
 
 `backups_schedule` supports the following:
