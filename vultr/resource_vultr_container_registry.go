@@ -9,6 +9,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v3"
 )
 
@@ -28,8 +29,9 @@ func resourceVultrContainerRegistry() *schema.Resource {
 				Required: true,
 			},
 			"plan": {
-				Type:     schema.TypeString,
-				Required: true,
+				Type:         schema.TypeString,
+				Required:     true,
+				ValidateFunc: validation.StringInSlice([]string{"start_up", "business", "premium", "enterprise"}, false),
 			},
 			"region": {
 				Type:     schema.TypeString,
@@ -67,7 +69,7 @@ func resourceVultrContainerRegistryCreate(ctx context.Context, d *schema.Resourc
 	client := meta.(*Client).govultrClient()
 
 	crReq := &govultr.ContainerRegistryReq{
-		Name:   d.Get("name").(string),
+		Name:   strings.ToLower(d.Get("name").(string)),
 		Region: d.Get("region").(string),
 		Public: d.Get("public").(bool),
 		Plan:   d.Get("plan").(string),
