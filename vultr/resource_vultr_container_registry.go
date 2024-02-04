@@ -42,22 +42,22 @@ func resourceVultrContainerRegistry() *schema.Resource {
 			"urn": {
 				Type:     schema.TypeString,
 				Computed: true,
-				Optional: true,
+				Optional: false,
 			},
 			"storage": {
 				Type:     schema.TypeMap,
 				Computed: true,
-				Optional: true,
+				Optional: false,
 			},
 			"root_user": {
 				Type:     schema.TypeMap,
 				Computed: true,
-				Optional: true,
+				Optional: false,
 			},
 			"date_created": {
 				Type:     schema.TypeString,
 				Computed: true,
-				Optional: true,
+				Optional: false,
 			},
 		},
 	}
