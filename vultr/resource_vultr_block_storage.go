@@ -9,7 +9,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v3"
@@ -248,7 +248,7 @@ func waitForBlockAvailable(ctx context.Context, d *schema.ResourceData, target s
 		"[INFO] Waiting for Server (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &resource.StateChangeConf{ //nolint:all
+	stateConf := &retry.StateChangeConf{ //nolint:all
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newBlockStateRefresh(ctx, d, meta, attribute),
@@ -261,7 +261,7 @@ func waitForBlockAvailable(ctx context.Context, d *schema.ResourceData, target s
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newBlockStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) resource.StateRefreshFunc { //nolint:all
+func newBlockStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:all
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 

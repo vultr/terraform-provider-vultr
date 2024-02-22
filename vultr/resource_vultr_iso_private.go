@@ -12,7 +12,7 @@ import (
 	"github.com/vultr/govultr/v3"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -183,7 +183,7 @@ func waitForIsoAvailable(ctx context.Context, d *schema.ResourceData, target str
 		"[INFO] Waiting for ISO (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &resource.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{ // nolint:all
 		Pending:    pending,
 		Target:     []string{target},
 		Refresh:    newIsoStateRefresh(ctx, d, meta),
@@ -198,7 +198,7 @@ func waitForIsoAvailable(ctx context.Context, d *schema.ResourceData, target str
 }
 
 func newIsoStateRefresh(ctx context.Context,
-	d *schema.ResourceData, meta interface{}) resource.StateRefreshFunc { // nolint:all
+	d *schema.ResourceData, meta interface{}) retry.StateRefreshFunc { // nolint:all
 	client := meta.(*Client).govultrClient()
 
 	return func() (interface{}, string, error) {
@@ -219,7 +219,7 @@ func waitForIsoDetached(ctx context.Context, instanceID string, target string, p
 		"[INFO] Waiting for ISO to detach from %s",
 		instanceID)
 
-	stateConf := &resource.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{ // nolint:all
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        isoDetachStateRefresh(ctx, instanceID, meta, attribute),
@@ -232,7 +232,7 @@ func waitForIsoDetached(ctx context.Context, instanceID string, target string, p
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func isoDetachStateRefresh(ctx context.Context, instanceID string, meta interface{}, attr string) resource.StateRefreshFunc { // nolint:all
+func isoDetachStateRefresh(ctx context.Context, instanceID string, meta interface{}, attr string) retry.StateRefreshFunc { // nolint:all
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 
