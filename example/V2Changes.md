@@ -16,6 +16,7 @@ The v2 Vultr Terraform plugin is backed by our new [V2 API](https://www.vultr.co
 - Startup Scripts
 - SSH Keys
 - Firewall Groups
+- Container Registry
 
 #### 2. Newly created resources will return a uuid and you must use uuids to interact with the v2 plugin
 - Data Sources, when filtered by ID or any other resource ID, must use the uuid of the resource
