@@ -10,7 +10,7 @@ jobs:
       - run: |
           echo "{\"text\":\"Terraform : PR https://github.com/vultr/terraform-provider-vultr/pull/${{ github.event.number }} \"}" > mattermost.json
       - uses: mattermost/action-mattermost-notify@master
-        env:
+        with:
           MATTERMOST_WEBHOOK_URL: ${{ secrets.MATTERMOST_WEBHOOK_URL }}
           MATTERMOST_USERNAME: ${{ secrets.MATTERMOST_USERNAME}}
           MATTERMOST_ICON: ${{ secrets.MATTERMOST_ICON }}
