@@ -45,6 +45,7 @@ func TestAccVultrBareMetalServerBasic(t *testing.T) {
 					resource.TestCheckResourceAttr("vultr_bare_metal_server.foo", "tags.#", "1"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "os_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "app_id"),
+					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "mdisk_mode"),
 				),
 			},
 			{
@@ -68,6 +69,7 @@ func TestAccVultrBareMetalServerBasic(t *testing.T) {
 					resource.TestCheckResourceAttr("vultr_bare_metal_server.foo", "vpc2_ids.#", "1"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "os_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "app_id"),
+					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "mdisk_mode"),
 				),
 			},
 		},
@@ -135,6 +137,7 @@ func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string
 			label = "%s"
 			hostname = "%s"
 			tags = [ "test tag" ]
+			mdisk_mode = "none"
 		}
 	`, rName, rName)
 }
@@ -161,6 +164,7 @@ func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) strin
 			hostname = "%s"
 			tags = [ "test tag", "another tag" ]
 			vpc2_ids = ["${vultr_vpc2.foo.id}"]
+			mdisk_mode = "raid1"
 		}
 	`, rName, rName)
 }
