@@ -1,4 +1,37 @@
 # Changelog
+## [v2.20.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.19.0...v2.20.0) (2024-05-29)
+
+### Enhancements
+* resource/bare_metal_server: add support for mdisk_mode option [PR 489](https://github.com/vultr/terraform-provider-vultr/pull/489)
+
+### Bug Fixes
+* Stop using deprecated terraform helper resource for retries [PR 456](https://github.com/vultr/terraform-provider-vultr/pull/456)
+
+### Dependencies
+* Bump github.com/cloudflare/circl from 1.3.3 to 1.3.7 [PR 457](https://github.com/vultr/terraform-provider-vultr/pull/457)
+* Bump github.com/vultr/govultr/v3 from 3.6.0 to 3.6.2 [PR 465](https://github.com/vultr/terraform-provider-vultr/pull/465)
+* Bump golang.org/x/oauth2 from 0.15.0 to 0.17.0 [PR 464](https://github.com/vultr/terraform-provider-vultr/pull/464)
+* Bump github.com/hashicorp/terraform-plugin-sdk/v2 from 2.31.0 to 2.32.0 [PR 461](https://github.com/vultr/terraform-provider-vultr/pull/461)
+* Bump github.com/hashicorp/terraform-plugin-sdk/v2 from 2.32.0 to 2.33.0 [PR 466](https://github.com/vultr/terraform-provider-vultr/pull/466)
+* Bump github.com/vultr/govultr/v3 from 3.6.2 to 3.6.3 [PR 467](https://github.com/vultr/terraform-provider-vultr/pull/467)
+* Bump github.com/vultr/govultr/v3 from 3.6.3 to 3.6.4 [PR 471](https://github.com/vultr/terraform-provider-vultr/pull/471)
+* Bump golang.org/x/net from 0.21.0 to 0.23.0 [PR 478](https://github.com/vultr/terraform-provider-vultr/pull/478)
+* Bump golang.org/x/oauth2 from 0.17.0 to 0.19.0 [PR 475](https://github.com/vultr/terraform-provider-vultr/pull/475)
+* Bump google.golang.org/protobuf from 1.32.0 to 1.33.0 [PR 473](https://github.com/vultr/terraform-provider-vultr/pull/473)
+* Bump golang.org/x/oauth2 from 0.19.0 to 0.20.0 [PR 483](https://github.com/vultr/terraform-provider-vultr/pull/483)
+* Bump github.com/vultr/govultr/v3 from 3.6.4 to 3.7.0 [PR 488](https://github.com/vultr/terraform-provider-vultr/pull/488)
+* Bump github.com/hashicorp/terraform-plugin-sdk/v2 from 2.33.0 to 2.34.0 [PR 485](https://github.com/vultr/terraform-provider-vultr/pull/485)
+* Update go from v1.20 to v1.21 [PR 486](https://github.com/vultr/terraform-provider-vultr/pull/486)
+
+### Automation
+* Update notify-pr.yml [PR 481](https://github.com/vultr/terraform-provider-vultr/pull/481)
+* Fix missing step on go-checks action [PR 480](https://github.com/vultr/terraform-provider-vultr/pull/480)
+* Fix mattermost notifications [PR 484](https://github.com/vultr/terraform-provider-vultr/pull/484)
+* CI & automation actions updates [PR 479](https://github.com/vultr/terraform-provider-vultr/pull/479)
+
+### New Contributors
+* @fjoenichols made their first contribution in [PR 489](https://github.com/vultr/terraform-provider-vultr/pull/489)
+
 ##[v2.19.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.18.0...v2.19.0) (2024-01-03)
 ### Enhancements
 * resource/instances: Allow creation without public IP [PR 450](https://github.com/vultr/terraform-provider-vultr/pull/450)
