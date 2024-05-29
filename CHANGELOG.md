@@ -1,4 +1,8 @@
 # Changelog
+## [v2.20.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.20.0...v2.20.1) (2024-05-29)
+### Automation
+* Update GPG import github action [PR 491](https://github.com/vultr/terraform-provider-vultr/pull/491)
+
 ## [v2.20.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.19.0...v2.20.0) (2024-05-29)
 
 ### Enhancements
