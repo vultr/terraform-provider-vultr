@@ -394,14 +394,6 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 		req.OsID = osID
 	}
 
-	if d.HasChange("mdisk_mode") {
-		log.Printf(`[INFO] Changing bare metal server (%s) RAID configuration (mdisk_mode)`, d.Id())
-		_, newVal := d.GetChange("mdisk_mode")
-
-		mdiskMode := newVal.(string)
-		req.MdiskMode = mdiskMode
-	}
-
 	if d.HasChange("vpc2_ids") {
 		log.Printf("[INFO] Updating vpc2_ids")
 		oldVPC, newVPC := d.GetChange("vpc2_ids")
