@@ -124,6 +124,12 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				ForceNew: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
+			"mdisk_mode": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Default:  "",
+			},
 			// computed
 			"os": {
 				Type:     schema.TypeString,
@@ -220,6 +226,7 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 		Hostname:        d.Get("hostname").(string),
 		ReservedIPv4:    d.Get("reserved_ipv4").(string),
 		PersistentPxe:   govultr.BoolToBoolPtr(d.Get("persistent_pxe").(bool)),
+		MdiskMode:       d.Get("mdisk_mode").(string),
 	}
 
 	if appVariables, appVariablesOK := d.GetOk("app_variables"); appVariablesOK {
@@ -385,6 +392,14 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 
 		osID := newVal.(int)
 		req.OsID = osID
+	}
+
+	if d.HasChange("mdisk_mode") {
+		log.Printf(`[INFO] Changing bare metal server (%s) RAID configuration (mdisk_mode)`, d.Id())
+		_, newVal := d.GetChange("mdisk_mode")
+
+		mdiskMode := newVal.(string)
+		req.MdiskMode = mdiskMode
 	}
 
 	if d.HasChange("vpc2_ids") {
