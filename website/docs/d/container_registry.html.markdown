@@ -45,6 +45,19 @@ The following attributes are exported:
 * `date_created` - A date-time denoting when the container registry was created.
 * `repositories` - Listing of the repositories created within the registry and their metadata.
 
+`storage`
+
+* `used` - Amount of storage space used in gigabytes.
+* `allowed` - Amount of storage space available in gigabytes.
+
+`root_user`
+
+* `id` - The ID of the root user.
+* `username` - The username used to login as the root user.
+* `password` - The password used to login as the root user.
+* `date_created` - A date-time of when the root user was created.
+* `date_modified` - A date-time of when the root user was last modified.
+
 `repositories`
 
 * `name` - The name of the repository.
