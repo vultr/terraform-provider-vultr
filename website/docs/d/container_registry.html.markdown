@@ -1,0 +1,45 @@
+---
+layout: "vultr"
+page_title: "Vultr: vultr_container_registry"
+sidebar_current: "docs-vultr-datasource-container-registry"
+description: |-
+Get information about a Vultr container registry resource. 
+---
+
+# vultr_container_registry
+
+Get information about a Vultr container registry.
+
+## Example Usage
+
+```hcl
+data "vultr_container_registry" "vcr-ds" {
+  filter {
+    name = "name"
+    values = ["examplecontainerregistry"]
+  }
+}
+```
+
+## Argument Reference
+
+The following arguments are supported:
+
+* `filter` - (Required) Query parameters for finding the container registry.
+
+The `filter` block supports the following:
+
+* `name` - Attribute name to filter with.
+* `values` - One or more values filter with.
+
+
+## Attributes Reference
+
+The following attributes are exported:
+* `id` - The container registry ID.
+* `name` - The name of the container registry.
+* `public` - Boolean indicating whether or not the requires login credentials.
+* `urn` - The URN of the container registry.
+* `storage` - A listing of current storage usage relevant to the container registry.
+* `root_user` - The user associated with the container registry.
+* `date_created` - A date-time denoting when the container registry was created.
