@@ -76,13 +76,14 @@ func resourceVultrContainerRegistryCreate(ctx context.Context, d *schema.Resourc
 		Plan:   d.Get("plan").(string),
 	}
 
+	log.Print("[INFO] Creating container registry")
 	cr, _, err := client.ContainerRegistry.Create(ctx, crReq)
 	if err != nil {
 		return diag.Errorf("error creating container registry: %v", err)
 	}
 
 	d.SetId(cr.ID)
-	log.Printf("[INFO] Container Registry ID: %s", d.Id())
+	log.Printf("[INFO] Created container registry with ID: %s", d.Id())
 
 	return resourceVultrContainerRegistryRead(ctx, d, meta)
 }
@@ -93,7 +94,7 @@ func resourceVultrContainerRegistryRead(ctx context.Context, d *schema.ResourceD
 	cr, _, err := client.ContainerRegistry.Get(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid container registry ID") {
-			log.Printf("[WARN] Vultr container registry (%s) not found", d.Id())
+			log.Printf("[WARN] Container registry (%s) not found and will be removed", d.Id())
 			d.SetId("")
 			return nil
 		}
@@ -126,16 +127,17 @@ func resourceVultrContainerRegistryUpdate(ctx context.Context, d *schema.Resourc
 	client := meta.(*Client).govultrClient()
 
 	vcr := &govultr.ContainerRegistryUpdateReq{}
+	log.Printf("[INFO] Updating container registry: %s", d.Id())
 
 	if d.HasChange("plan") {
+		log.Print("[INFO] Updating `plan`")
 		vcr.Plan = govultr.StringToStringPtr(d.Get("plan").(string))
 	}
 
 	if d.HasChange("public") {
+		log.Print("[INFO] Updating `public`")
 		vcr.Public = govultr.BoolToBoolPtr(d.Get("public").(bool))
 	}
-
-	log.Printf("[INFO] Updating container registry: %s", d.Id())
 
 	cr, _, err := client.ContainerRegistry.Update(ctx, d.Id(), vcr)
 	if err != nil {
@@ -143,34 +145,32 @@ func resourceVultrContainerRegistryUpdate(ctx context.Context, d *schema.Resourc
 	}
 
 	d.SetId(cr.ID)
-	log.Printf("[INFO] Container Registry ID: %s", d.Id())
 
 	return resourceVultrContainerRegistryRead(ctx, d, meta)
 }
 
 func resourceVultrContainerRegistryDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
-	log.Printf("[INFO] Deleting container: %s", d.Id())
+	log.Printf("[INFO] Deleting container registry: %s", d.Id())
 
 	err := client.ContainerRegistry.Delete(ctx, d.Id())
 
 	if err != nil {
-		return diag.Errorf("error destroying Container Registry (%s): %v", d.Id(), err)
+		return diag.Errorf("error deleting container registry (%s): %v", d.Id(), err)
 	}
 
 	return nil
 }
 
 func flattenCRStorage(cr *govultr.ContainerRegistry) map[string]interface{} {
-	f := map[string]interface{}{
+	return map[string]interface{}{
 		"allowed": fmt.Sprintf("%.2f GB", cr.Storage.Allowed.GigaBytes),
 		"used":    fmt.Sprintf("%.2f GB", cr.Storage.Used.GigaBytes),
 	}
-	return f
 }
 
 func flattenCRRootUser(cr *govultr.ContainerRegistry) map[string]interface{} {
-	f := map[string]interface{}{
+	return map[string]interface{}{
 		"id":            strconv.Itoa(cr.RootUser.ID),
 		"username":      cr.RootUser.UserName,
 		"password":      cr.RootUser.Password,
@@ -178,5 +178,4 @@ func flattenCRRootUser(cr *govultr.ContainerRegistry) map[string]interface{} {
 		"date_created":  cr.RootUser.DateCreated,
 		"date_modified": cr.RootUser.DateModified,
 	}
-	return f
 }
