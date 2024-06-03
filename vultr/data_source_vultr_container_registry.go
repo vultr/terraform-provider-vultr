@@ -37,6 +37,13 @@ func dataSourceVultrContainerRegistry() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"repositories": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: repositorySchema(),
+				},
+			},
 		},
 	}
 }
@@ -106,5 +113,68 @@ func dataSourceVultrContainerRegistryRead(ctx context.Context, d *schema.Resourc
 	if err := d.Set("date_created", crList[0].DateCreated); err != nil {
 		return diag.Errorf("unable to set container registry `date_created` read value: %v", err)
 	}
+
+	repos, _, _, err := client.ContainerRegistry.ListRepositories(ctx, crList[0].ID, nil)
+	if err != nil {
+		return diag.Errorf("unable to retrieve container registry repositories: %v", err)
+	}
+
+	if err := d.Set("repositories", flattenCRRepositories(repos)); err != nil {
+		return diag.Errorf("unable to set container registry `repositories` read value: %v", err)
+	}
 	return nil
+}
+
+func repositorySchema() map[string]*schema.Schema {
+	return map[string]*schema.Schema{
+		"name": {
+			Type:     schema.TypeString,
+			Computed: true,
+		},
+		"image": {
+			Type:     schema.TypeString,
+			Computed: true,
+		},
+		"description": {
+			Type:     schema.TypeString,
+			Computed: true,
+		},
+		"date_created": {
+			Type:     schema.TypeString,
+			Computed: true,
+		},
+		"date_modified": {
+			Type:     schema.TypeString,
+			Computed: true,
+		},
+		"pull_count": {
+			Type:     schema.TypeInt,
+			Computed: true,
+		},
+		"artifact_count": {
+			Type:     schema.TypeInt,
+			Computed: true,
+		},
+	}
+}
+
+func flattenCRRepositories(repos []govultr.ContainerRegistryRepo) []map[string]interface{} {
+	var allRepos []map[string]interface{}
+
+	for i := range repos {
+
+		repo := map[string]interface{}{
+			"name":           repos[i].Name,
+			"image":          repos[i].Image,
+			"description":    repos[i].Description,
+			"date_created":   repos[i].DateCreated,
+			"date_modified":  repos[i].DateModified,
+			"pull_count":     repos[i].PullCount,
+			"artifact_count": repos[i].ArtifactCount,
+		}
+
+		allRepos = append(allRepos, repo)
+	}
+
+	return allRepos
 }

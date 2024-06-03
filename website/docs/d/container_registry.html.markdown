@@ -43,3 +43,14 @@ The following attributes are exported:
 * `storage` - A listing of current storage usage relevant to the container registry.
 * `root_user` - The user associated with the container registry.
 * `date_created` - A date-time denoting when the container registry was created.
+* `repositories` - Listing of the repositories created within the registry and their metadata.
+
+`repositories`
+
+* `name` - The name of the repository.
+* `image` - The image name in the repository.
+* `description` - A description of the repo, if set.
+* `date_create` - The date-time when the repository was created.
+* `date_modified` - The date-time that the repository was last updated.
+* `pull_count` - A count of the number of pulls against the repository.
+* `artifact_count` - A count of the artifacts in the repository.
