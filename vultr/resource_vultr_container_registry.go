@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -27,6 +28,10 @@ func resourceVultrContainerRegistry() *schema.Resource {
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
+				ValidateFunc: validation.StringMatch(
+					regexp.MustCompile(`^[a-z0-9]+$`),
+					"must be lowercase and contain only alpha-numeric characters",
+				),
 			},
 			"plan": {
 				Type:         schema.TypeString,
