@@ -90,6 +90,7 @@ func Provider() *schema.Provider {
 			"vultr_user":                     resourceVultrUsers(),
 			"vultr_vpc":                      resourceVultrVPC(),
 			"vultr_vpc2":                     resourceVultrVPC2(),
+			"vultr_container_registry":       resourceVultrContainerRegistry(),
 		},
 
 		ConfigureFunc: providerConfigure,
