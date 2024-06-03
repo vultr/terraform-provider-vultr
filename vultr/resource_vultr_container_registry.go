@@ -70,7 +70,7 @@ func resourceVultrContainerRegistryCreate(ctx context.Context, d *schema.Resourc
 	client := meta.(*Client).govultrClient()
 
 	crReq := &govultr.ContainerRegistryReq{
-		Name:   strings.ToLower(d.Get("name").(string)),
+		Name:   d.Get("name").(string),
 		Region: d.Get("region").(string),
 		Public: d.Get("public").(bool),
 		Plan:   d.Get("plan").(string),
