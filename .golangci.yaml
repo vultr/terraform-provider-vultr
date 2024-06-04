@@ -23,9 +23,9 @@ linters-settings:
     min-complexity: 15
   goimports:
     local-prefixes: github.com/golangci/golangci-lint
-  gomnd:
-    # don't include the "operation" and "assign"
+  mnd:
     checks:
+      # don't include the "operation" and "assign"
       - argument
       - case
       - condition
@@ -35,9 +35,6 @@ linters-settings:
       - '1'
       - '2'
       - '3'
-    ignored-functions:
-      - strings.SplitN
-
   govet:
     settings:
       printf:
@@ -70,7 +67,7 @@ linters:
     - gocyclo
     - gofmt
     - goimports
-    - gomnd
+    - mnd
     - goprintffuncname
     - gosec
     - gosimple
