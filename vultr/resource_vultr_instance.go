@@ -568,7 +568,7 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		}
 	}
 
-	// Since VPC is last, if an instance read invloves both vpc_ids &
+	// Since VPC is last, if an instance read involves both vpc_ids &
 	// private_network_ids, only the vpc_ids will be preserved
 	if _, vpcUpdate := d.GetOk("vpc_ids"); vpcUpdate {
 		if err := d.Set("vpc_ids", vpcs); err != nil {
