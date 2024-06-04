@@ -52,7 +52,7 @@ func dataSourceVultrPrivateNetworkRead(ctx context.Context, d *schema.ResourceDa
 	options := &govultr.ListOptions{}
 
 	for {
-		networks, meta, _, err := client.Network.List(ctx, options) // nolint
+		networks, meta, _, err := client.Network.List(ctx, options)
 		if err != nil {
 			return diag.Errorf("error getting networks: %v", err)
 		}

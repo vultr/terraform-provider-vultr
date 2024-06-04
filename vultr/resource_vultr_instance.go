@@ -642,8 +642,8 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 			newIDs = append(newIDs, v.(string))
 		}
 
-		req.AttachPrivateNetwork = append(req.AttachPrivateNetwork, diffSlice(oldIDs, newIDs)...) // nolint
-		req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, diffSlice(newIDs, oldIDs)...) // nolint
+		req.AttachPrivateNetwork = append(req.AttachPrivateNetwork, diffSlice(oldIDs, newIDs)...)
+		req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, diffSlice(newIDs, oldIDs)...)
 	}
 
 	if d.HasChange("vpc_ids") {
@@ -739,7 +739,7 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
 		detach := &govultr.InstanceUpdateReq{}
 		for _, v := range networkIDs.(*schema.Set).List() {
-			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string)) // nolint
+			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string))
 		}
 
 		if _, _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
@@ -808,7 +808,7 @@ func waitForServerAvailable(ctx context.Context, d *schema.ResourceData, target 
 		"[INFO] Waiting for Server (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &retry.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newServerStateRefresh(ctx, d, meta, attribute),
@@ -821,7 +821,7 @@ func waitForServerAvailable(ctx context.Context, d *schema.ResourceData, target 
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { // nolint:all
+func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 
@@ -848,7 +848,7 @@ func waitForUpgrade(ctx context.Context, d *schema.ResourceData, target string, 
 		"[INFO] Waiting for instance (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &retry.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newInstancePlanRefresh(ctx, d, meta, attribute),
@@ -861,7 +861,7 @@ func waitForUpgrade(ctx context.Context, d *schema.ResourceData, target string, 
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newInstancePlanRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { // nolint:all
+func newInstancePlanRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Upgrading instance")

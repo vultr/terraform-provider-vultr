@@ -159,7 +159,7 @@ func waitForNodePoolAvailable(ctx context.Context, d *schema.ResourceData, targe
 		"[INFO] Waiting for node pool (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &retry.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{ 
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newNodePoolStateRefresh(ctx, d, meta, attribute),
@@ -172,7 +172,7 @@ func waitForNodePoolAvailable(ctx context.Context, d *schema.ResourceData, targe
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newNodePoolStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { // nolint:all
+func newNodePoolStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { 
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 

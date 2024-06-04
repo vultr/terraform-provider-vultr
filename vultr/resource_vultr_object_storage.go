@@ -153,7 +153,7 @@ func waitForObjAvailable(ctx context.Context, d *schema.ResourceData, target str
 		"[INFO] Waiting for Object Storage (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &retry.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{ 
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newServerObjRefresh(ctx, d, meta, attribute),
@@ -166,7 +166,7 @@ func waitForObjAvailable(ctx context.Context, d *schema.ResourceData, target str
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newServerObjRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { // nolint:all
+func newServerObjRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { 
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Creating Object Storage")
