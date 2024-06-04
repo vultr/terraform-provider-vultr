@@ -41,7 +41,7 @@ func resourceVultrUsers() *schema.Resource {
 				Default:  true,
 			},
 			"acl": {
-				Type:     schema.TypeList,
+				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 			},
@@ -64,7 +64,7 @@ func resourceVultrUsersCreate(ctx context.Context, d *schema.ResourceData, meta 
 	}
 
 	acl, aclOK := d.GetOk("acl")
-	a := acl.([]interface{})
+	a := acl.(*schema.Set).List()
 	var aclMap []string
 	if aclOK {
 		for _, v := range a {
@@ -138,7 +138,7 @@ func resourceVultrUsersUpdate(ctx context.Context, d *schema.ResourceData, meta 
 	}
 
 	acl, aclOK := d.GetOk("acl")
-	a := acl.([]interface{})
+	a := acl.(*schema.Set).List()
 	var aclMap []string
 	if aclOK {
 		for _, v := range a {
