@@ -126,5 +126,6 @@ issues:
         - lll
         - goconst
         - dogsled
+        - unparam
 run:
   timeout: 5m
