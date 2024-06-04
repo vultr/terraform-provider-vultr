@@ -200,7 +200,9 @@ func resourceVultrBlockStorageUpdate(ctx context.Context, d *schema.ResourceData
 		old, newVal := d.GetChange("attached_to_instance")
 
 		if old.(string) != "" {
-			// The following check is necessary so we do not erroneously detach after a formerly attached server has been tainted and/or destroyed.
+			// The following check is necessary so we do not erroneously detach
+			// after a formerly attached server has been tainted and/or
+			// destroyed.
 			bs, _, err := client.BlockStorage.Get(ctx, d.Id())
 			if err != nil {
 				return diag.Errorf("error getting block storage: %v", err)
@@ -243,7 +245,7 @@ func resourceVultrBlockStorageDelete(ctx context.Context, d *schema.ResourceData
 	return nil
 }
 
-func waitForBlockAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+func waitForBlockAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) { //nolint:lll
 	log.Printf(
 		"[INFO] Waiting for Server (%s) to have %s of %s",
 		d.Id(), attribute, target)

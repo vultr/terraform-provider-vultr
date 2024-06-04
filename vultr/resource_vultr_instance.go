@@ -128,11 +128,13 @@ func resourceVultrInstance() *schema.Resource {
 				Default:  false,
 			},
 			"hostname": {
-				Type:        schema.TypeString,
-				ForceNew:    true,
-				Computed:    true,
-				Optional:    true,
-				Description: "The hostname of the instance. Updating the hostname will cause a force new. This behavior is in place to prevent accidental reinstalls. Issuing an update to the hostname on UI or API issues a reinstall of the OS.",
+				Type:     schema.TypeString,
+				ForceNew: true,
+				Computed: true,
+				Optional: true,
+				Description: `The hostname of the instance. Updating the
+hostname will cause a force new. This behavior is in place to prevent accidental reinstalls. Issuing an update to the
+hostname on UI or API issues a reinstall of the OS.`,
 			},
 			"tags": {
 				Type:     schema.TypeSet,
@@ -164,9 +166,18 @@ func resourceVultrInstance() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
-							Type:         schema.TypeString,
-							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"daily", "weekly", "monthly", "daily_alt_even", "daily_alt_odd"}, false),
+							Type:     schema.TypeString,
+							Required: true,
+							ValidateFunc: validation.StringInSlice(
+								[]string{
+									"daily",
+									"weekly",
+									"monthly",
+									"daily_alt_even",
+									"daily_alt_odd",
+								},
+								false,
+							),
 						},
 						"hour": {
 							Type:     schema.TypeInt,
@@ -801,7 +812,7 @@ func optionCheck(options map[string]bool) (string, error) {
 	return result[0], nil
 }
 
-func waitForServerAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+func waitForServerAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) { //nolint:lll
 	log.Printf(
 		"[INFO] Waiting for Server (%s) to have %s of %s",
 		d.Id(), attribute, target)
@@ -840,7 +851,7 @@ func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta int
 	}
 }
 
-func waitForPlanUpgrade(ctx context.Context, d *schema.ResourceData, target string, pending []string, meta interface{}) (interface{}, error) {
+func waitForPlanUpgrade(ctx context.Context, d *schema.ResourceData, target string, pending []string, meta interface{}) (interface{}, error) { //nolint:lll
 	log.Printf(
 		"[INFO] Waiting for instance (%s) to have plan of %s",
 		d.Id(), target)

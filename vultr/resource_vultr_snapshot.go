@@ -130,7 +130,7 @@ func resourceVultrSnapshotDelete(ctx context.Context, d *schema.ResourceData, me
 	return nil
 }
 
-func waitForSnapshot(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+func waitForSnapshot(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) { //nolint:lll
 	log.Printf(
 		"[INFO] Waiting for Snapshot (%s) to have %s of %s",
 		d.Id(), attribute, target)
