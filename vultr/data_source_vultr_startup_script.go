@@ -38,7 +38,6 @@ func dataSourceVultrStartupScript() *schema.Resource {
 }
 
 func dataSourceVultrStartupScriptRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
