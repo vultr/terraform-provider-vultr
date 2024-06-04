@@ -274,12 +274,12 @@ func resourceVultrDatabaseReplicaDelete(ctx context.Context, d *schema.ResourceD
 	return nil
 }
 
-func waitForDatabaseReplicaAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) { //nolint:lll,dupl
+func waitForDatabaseReplicaAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) { //nolint:lll
 	log.Printf(
 		"[INFO] Waiting for Managed Database read replica (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &retry.StateChangeConf{ 
+	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newDatabaseReplicaStateRefresh(ctx, d, meta, attribute),
@@ -292,7 +292,7 @@ func waitForDatabaseReplicaAvailable(ctx context.Context, d *schema.ResourceData
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newDatabaseReplicaStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { 
+func newDatabaseReplicaStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Creating Database read replica")
@@ -316,7 +316,7 @@ func waitForParentBackupAvailable(ctx context.Context, d *schema.ResourceData, t
 		"[INFO] Waiting for parent Managed Database (%s) to have %s of %s",
 		d.Get("database_id").(string), attribute, target)
 
-	stateConf := &retry.StateChangeConf{ 
+	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        parentDatabaseRefresh(ctx, d, meta, attribute),
@@ -329,7 +329,7 @@ func waitForParentBackupAvailable(ctx context.Context, d *schema.ResourceData, t
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func parentDatabaseRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { 
+func parentDatabaseRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Waiting for parent Managed Database backup status")
