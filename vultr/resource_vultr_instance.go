@@ -723,7 +723,7 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 	// This will wait until the plan has been updated before going to the read call
 	if d.HasChange("plan") {
 		oldP, newP := d.GetChange("plan")
-		if _, err := waitForUpgrade(ctx, d, newP.(string), []string{oldP.(string)}, "plan", meta); err != nil {
+		if _, err := waitForPlanUpgrade(ctx, d, newP.(string), []string{oldP.(string)}, meta); err != nil {
 			return diag.Errorf("error while waiting for instance %s to have updated plan : %s", d.Id(), err)
 		}
 	}
@@ -840,15 +840,15 @@ func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta int
 	}
 }
 
-func waitForUpgrade(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+func waitForPlanUpgrade(ctx context.Context, d *schema.ResourceData, target string, pending []string, meta interface{}) (interface{}, error) {
 	log.Printf(
-		"[INFO] Waiting for instance (%s) to have %s of %s",
-		d.Id(), attribute, target)
+		"[INFO] Waiting for instance (%s) to have plan of %s",
+		d.Id(), target)
 
 	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
-		Refresh:        newInstancePlanRefresh(ctx, d, meta, attribute),
+		Refresh:        newInstancePlanRefresh(ctx, d, meta),
 		Timeout:        60 * time.Minute,
 		Delay:          10 * time.Second,
 		MinTimeout:     3 * time.Second,
@@ -858,7 +858,7 @@ func waitForUpgrade(ctx context.Context, d *schema.ResourceData, target string, 
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newInstancePlanRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc {
+func newInstancePlanRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Upgrading instance")
