@@ -84,30 +84,30 @@ func resourceVultrLoadBalancer() *schema.Resource {
 						"port": {
 							Type:         schema.TypeInt,
 							Required:     true,
-							ValidateFunc: validation.IntBetween(1, 65535),
+							ValidateFunc: validation.IntBetween(1, 65535), //nolint:mnd
 						},
 						"check_interval": {
 							Type:         schema.TypeInt,
 							Optional:     true,
-							ValidateFunc: validation.IntBetween(1, 300),
+							ValidateFunc: validation.IntBetween(1, 300), //nolint:mnd
 							Default:      15,
 						},
 						"response_timeout": {
 							Type:         schema.TypeInt,
 							Optional:     true,
-							ValidateFunc: validation.IntBetween(1, 300),
+							ValidateFunc: validation.IntBetween(1, 300), //nolint:mnd
 							Default:      5,
 						},
 						"unhealthy_threshold": {
 							Type:         schema.TypeInt,
 							Optional:     true,
-							ValidateFunc: validation.IntBetween(1, 300),
+							ValidateFunc: validation.IntBetween(1, 300), //nolint:mnd
 							Default:      5,
 						},
 						"healthy_threshold": {
 							Type:         schema.TypeInt,
 							Optional:     true,
-							ValidateFunc: validation.IntBetween(1, 300),
+							ValidateFunc: validation.IntBetween(1, 300), //nolint:mnd
 							Default:      5,
 						},
 					},
@@ -128,7 +128,7 @@ func resourceVultrLoadBalancer() *schema.Resource {
 						"frontend_port": {
 							Type:         schema.TypeInt,
 							Required:     true,
-							ValidateFunc: validation.IntBetween(1, 65535),
+							ValidateFunc: validation.IntBetween(1, 65535), //nolint:mnd
 						},
 						"backend_protocol": {
 							Type:         schema.TypeString,
@@ -138,7 +138,7 @@ func resourceVultrLoadBalancer() *schema.Resource {
 						"backend_port": {
 							Type:         schema.TypeInt,
 							Required:     true,
-							ValidateFunc: validation.IntBetween(1, 65535),
+							ValidateFunc: validation.IntBetween(1, 65535), //nolint:mnd
 						},
 						"rule_id": {
 							Type:     schema.TypeString,
@@ -181,7 +181,7 @@ func resourceVultrLoadBalancer() *schema.Resource {
 						"port": {
 							Type:         schema.TypeInt,
 							Required:     true,
-							ValidateFunc: validation.IntBetween(1, 65535),
+							ValidateFunc: validation.IntBetween(1, 65535), //nolint:mnd
 						},
 						"ip_type": {
 							Type:         schema.TypeString,
