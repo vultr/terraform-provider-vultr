@@ -52,7 +52,7 @@ func resourceVultrDatabaseConnectionPool() *schema.Resource {
 	}
 }
 
-func resourceVultrDatabaseConnectionPoolCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrDatabaseConnectionPoolCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	databaseID := d.Get("database_id").(string)
@@ -76,7 +76,7 @@ func resourceVultrDatabaseConnectionPoolCreate(ctx context.Context, d *schema.Re
 	return resourceVultrDatabaseConnectionPoolRead(ctx, d, meta)
 }
 
-func resourceVultrDatabaseConnectionPoolRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrDatabaseConnectionPoolRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	databaseID := d.Get("database_id").(string)
@@ -109,7 +109,7 @@ func resourceVultrDatabaseConnectionPoolRead(ctx context.Context, d *schema.Reso
 	return nil
 }
 
-func resourceVultrDatabaseConnectionPoolUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrDatabaseConnectionPoolUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	databaseID := d.Get("database_id").(string)
@@ -154,7 +154,7 @@ func resourceVultrDatabaseConnectionPoolUpdate(ctx context.Context, d *schema.Re
 	return resourceVultrDatabaseConnectionPoolRead(ctx, d, meta)
 }
 
-func resourceVultrDatabaseConnectionPoolDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrDatabaseConnectionPoolDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting database connection pool (%s)", d.Id())
 

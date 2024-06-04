@@ -82,7 +82,10 @@ func dataSourceVultrApplicationRead(ctx context.Context, d *schema.ResourceData,
 		}
 	}
 	if len(appList) > 1 {
-		return diag.Errorf("your search returned too many results : %d. Please refine your search to be more specific", len(appList))
+		return diag.Errorf(
+			"your search returned too many results : %d. Please refine your search to be more specific",
+			len(appList),
+		)
 	}
 
 	if len(appList) < 1 {

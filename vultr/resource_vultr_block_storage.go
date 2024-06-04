@@ -263,7 +263,7 @@ func waitForBlockAvailable(ctx context.Context, d *schema.ResourceData, target s
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newBlockStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc {
+func newBlockStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Creating Block")

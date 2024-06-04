@@ -30,14 +30,15 @@ func resourceVultrDatabaseReplica() *schema.Resource {
 	}
 }
 
-func resourceVultrDatabaseReplicaCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrDatabaseReplicaCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	// Wait for at least one backup on the parent database to be available
-	if _, err := waitForParentBackupAvailable(ctx, d, "yes", []string{"yes", "no"}, "latest_backup", meta); err != nil {
+	_, errBackup := waitForParentBackupAvailable(ctx, d, "yes", []string{"yes", "no"}, "latest_backup", meta)
+	if errBackup != nil {
 		return diag.Errorf(
 			"error while waiting for parent Managed Database %s to have at least one backup : %s",
-			d.Get("database_id").(string), err)
+			d.Get("database_id").(string), errBackup)
 	}
 
 	databaseID := d.Get("database_id").(string)
@@ -55,8 +56,14 @@ func resourceVultrDatabaseReplicaCreate(ctx context.Context, d *schema.ResourceD
 
 	d.SetId(database.ID)
 
-	if _, err = waitForDatabaseReplicaAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Configuring", "Error"}, "status", meta); err != nil { //nolint:lll
-		return diag.Errorf("error while waiting for Managed Database read replica %s to be in an active state : %s", d.Id(), err)
+	pendStatuses := []string{"Rebalancing", "Rebuilding", "Configuring", "Error"}
+	_, errAvail := waitForDatabaseReplicaAvailable(ctx, d, "Running", pendStatuses, "status", meta)
+	if errAvail != nil {
+		return diag.Errorf(
+			"error while waiting for Managed Database read replica %s to be in an active state : %s",
+			d.Id(),
+			errAvail,
+		)
 	}
 
 	// Tags for read replicas can only be changed after creation
@@ -138,7 +145,10 @@ func resourceVultrDatabaseReplicaRead(ctx context.Context, d *schema.ResourceDat
 	}
 
 	if err := d.Set("database_engine_version", database.DatabaseEngineVersion); err != nil {
-		return diag.Errorf("unable to set resource database read replica `database_engine_version` read value: %v", err)
+		return diag.Errorf(
+			"unable to set resource database read replica `database_engine_version` read value: %v",
+			err,
+		)
 	}
 
 	if err := d.Set("dbname", database.DBName); err != nil {
@@ -147,7 +157,10 @@ func resourceVultrDatabaseReplicaRead(ctx context.Context, d *schema.ResourceDat
 
 	if database.DatabaseEngine == "ferretpg" {
 		if err := d.Set("ferretdb_credentials", flattenFerretDBCredentials(database)); err != nil {
-			return diag.Errorf("unable to set resource database read replica `ferretdb_credentials` read value: %v", err)
+			return diag.Errorf(
+				"unable to set resource database read replica `ferretdb_credentials` read value: %v",
+				err,
+			)
 		}
 	}
 
@@ -195,21 +208,33 @@ func resourceVultrDatabaseReplicaRead(ctx context.Context, d *schema.ResourceDat
 		}
 
 		if err := d.Set("mysql_require_primary_key", database.MySQLRequirePrimaryKey); err != nil {
-			return diag.Errorf("unable to set resource database read replica `mysql_require_primary_key` read value: %v", err)
+			return diag.Errorf(
+				"unable to set resource database read replica `mysql_require_primary_key` read value: %v",
+				err,
+			)
 		}
 
 		if err := d.Set("mysql_slow_query_log", database.MySQLSlowQueryLog); err != nil {
-			return diag.Errorf("unable to set resource database read replica `mysql_slow_query_log` read value: %v", err)
+			return diag.Errorf(
+				"unable to set resource database read replica `mysql_slow_query_log` read value: %v",
+				err,
+			)
 		}
 
 		if err := d.Set("mysql_long_query_time", database.MySQLLongQueryTime); err != nil {
-			return diag.Errorf("unable to set resource database read replica `mysql_long_query_time` read value: %v", err)
+			return diag.Errorf(
+				"unable to set resource database read replica `mysql_long_query_time` read value: %v",
+				err,
+			)
 		}
 	}
 
 	if database.DatabaseEngine == "redis" {
 		if err := d.Set("redis_eviction_policy", database.RedisEvictionPolicy); err != nil {
-			return diag.Errorf("unable to set resource database read replica `redis_eviction_policy` read value: %v", err)
+			return diag.Errorf(
+				"unable to set resource database read replica `redis_eviction_policy` read value: %v",
+				err,
+			)
 		}
 	}
 
@@ -221,7 +246,7 @@ func resourceVultrDatabaseReplicaRead(ctx context.Context, d *schema.ResourceDat
 
 	return nil
 }
-func resourceVultrDatabaseReplicaUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrDatabaseReplicaUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	req := &govultr.DatabaseUpdateReq{
@@ -254,15 +279,21 @@ func resourceVultrDatabaseReplicaUpdate(ctx context.Context, d *schema.ResourceD
 	}
 
 	if d.HasChange("region") || d.HasChange("vpc_id") {
-		if _, err := waitForDatabaseReplicaAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Configuring", "Error"}, "status", meta); err != nil { //nolint:lll
-			return diag.Errorf("error while waiting for Managed Database read replica %s to be in an active state : %s", d.Id(), err)
+		pendStatuses := []string{"Rebalancing", "Rebuilding", "Configuring", "Error"}
+		_, errAvail := waitForDatabaseReplicaAvailable(ctx, d, "Running", pendStatuses, "status", meta)
+		if errAvail != nil {
+			return diag.Errorf(
+				"error while waiting for Managed Database read replica %s to be in an active state : %s",
+				d.Id(),
+				errAvail,
+			)
 		}
 	}
 
 	return resourceVultrDatabaseReplicaRead(ctx, d, meta)
 }
 
-func resourceVultrDatabaseReplicaDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrDatabaseReplicaDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting database read replica (%s)", d.Id())
 
@@ -291,7 +322,7 @@ func waitForDatabaseReplicaAvailable(ctx context.Context, d *schema.ResourceData
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newDatabaseReplicaStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc {
+func newDatabaseReplicaStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Creating Database read replica")
@@ -328,7 +359,7 @@ func waitForParentBackupAvailable(ctx context.Context, d *schema.ResourceData, t
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func parentDatabaseRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc {
+func parentDatabaseRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Waiting for parent Managed Database backup status")

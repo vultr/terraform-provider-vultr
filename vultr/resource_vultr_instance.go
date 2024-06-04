@@ -72,10 +72,11 @@ func resourceVultrInstance() *schema.Resource {
 				Optional: true,
 			},
 			"disable_public_ipv4": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				ForceNew:    true,
-				Description: "Don't set up a public IPv4 address when IPv6 is enabled. Will not do anything unless enable_ipv6 is also true.",
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				Description: `Don't set up a public IPv4 address when IPv6 is enabled. 
+Will not do anything unless enable_ipv6 is also true.`,
 			},
 			"private_network_ids": {
 				Type:       schema.TypeSet,
@@ -422,7 +423,8 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set resource instance `default_password` create value: %v", err)
 	}
 
-	if _, err = waitForServerAvailable(ctx, d, "active", []string{"pending", "installing"}, "status", meta); err != nil {
+	_, err = waitForServerAvailable(ctx, d, "active", []string{"pending", "installing"}, "status", meta)
+	if err != nil {
 		return diag.Errorf("error while waiting for Server %s to be completed: %s", d.Id(), err)
 	}
 
@@ -830,7 +832,7 @@ func waitForServerAvailable(ctx context.Context, d *schema.ResourceData, target 
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc {
+func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Creating Server")

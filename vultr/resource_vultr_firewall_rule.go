@@ -114,7 +114,14 @@ func resourceVultrFirewallRuleRead(ctx context.Context, d *schema.ResourceData, 
 	fw, _, err := client.FirewallRule.Get(ctx, d.Get("firewall_group_id").(string), ruleID)
 	if err != nil {
 		if strings.Contains(err.Error(), "Firewall rule ID not found") {
-			tflog.Warn(ctx, fmt.Sprintf("Removing firewall rule ID (%s) in group (%s) because it is gone", d.Id(), d.Get("firewall_group_id")))
+			tflog.Warn(ctx,
+				fmt.Sprintf(
+					"Removing firewall rule ID (%s) in group (%s) because it is gone",
+					d.Id(),
+					d.Get("firewall_group_id"),
+				),
+			)
+
 			d.SetId("")
 			return nil
 		}
@@ -161,7 +168,7 @@ func resourceVultrFirewallRuleDelete(ctx context.Context, d *schema.ResourceData
 	return nil
 }
 
-func resourceVultrFirewallRuleImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceVultrFirewallRuleImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	importID := d.Id()
