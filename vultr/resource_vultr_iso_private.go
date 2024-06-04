@@ -155,7 +155,7 @@ func resourceVultrIsoDelete(ctx context.Context, d *schema.ResourceData, meta in
 					if _, err := client.Instance.DetachISO(ctx, instance.ID); err != nil {
 						return diag.Errorf("error deleting ISO %s : failed to detach from instances %s : %v", d.Id(), instance.ID, err)
 					}
-					_, err := waitForIsoDetached(ctx, instance.ID, "ready", []string{"isomounted"}, "status", meta)
+					_, err := waitForIsoDetached(ctx, instance.ID, "ready", []string{"isomounted"}, meta)
 					if err != nil {
 						return diag.Errorf("error deleting ISO %s: failed to wait for ISO to detach from instance %s: %s", d.Id(), instance.ID, err)
 					}
@@ -213,7 +213,7 @@ func newIsoStateRefresh(ctx context.Context,
 	}
 }
 
-func waitForIsoDetached(ctx context.Context, instanceID string, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+func waitForIsoDetached(ctx context.Context, instanceID string, target string, pending []string, meta interface{}) (interface{}, error) {
 	log.Printf(
 		"[INFO] Waiting for ISO to detach from %s",
 		instanceID)
@@ -221,7 +221,7 @@ func waitForIsoDetached(ctx context.Context, instanceID string, target string, p
 	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
-		Refresh:        isoDetachStateRefresh(ctx, instanceID, meta, attribute),
+		Refresh:        isoDetachStateRefresh(ctx, instanceID, meta),
 		Timeout:        60 * time.Minute,
 		Delay:          10 * time.Second,
 		MinTimeout:     3 * time.Second,
@@ -231,7 +231,7 @@ func waitForIsoDetached(ctx context.Context, instanceID string, target string, p
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func isoDetachStateRefresh(ctx context.Context, instanceID string, meta interface{}, attr string) retry.StateRefreshFunc {
+func isoDetachStateRefresh(ctx context.Context, instanceID string, meta interface{}) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Detaching ISO")
