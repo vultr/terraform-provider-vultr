@@ -93,8 +93,8 @@ func dataSourceVultrReverseIPV6Read(ctx context.Context, d *schema.ResourceData,
 			return diag.Errorf("error getting reverse IPv6s: %v", err)
 		}
 
-		for _, reverseIPV6 := range reverseIPV6s {
-			m, err := structToMap(reverseIPV6)
+		for i := range reverseIPV6s {
+			m, err := structToMap(reverseIPV6s[i])
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -104,7 +104,7 @@ func dataSourceVultrReverseIPV6Read(ctx context.Context, d *schema.ResourceData,
 					return diag.Errorf("your search returned too many results - please refine your search to be more specific")
 				}
 
-				result = &reverseIPV6
+				result = &reverseIPV6s[i]
 				resultInstanceID = instanceID
 			}
 		}

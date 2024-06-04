@@ -169,9 +169,9 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	// Look for the node pool with the tag `tf-vke-default`
-	for _, v := range vke.NodePools {
-		if tfVKEDefault == v.Tag {
-			if err := d.Set("node_pools", flattenNodePool(&v)); err != nil {
+	for i := range vke.NodePools {
+		if tfVKEDefault == vke.NodePools[i].Tag {
+			if err := d.Set("node_pools", flattenNodePool(&vke.NodePools[i])); err != nil {
 				return diag.Errorf("unable to set resource kubernetes `node_pool` read value: %v", err)
 			}
 			break
