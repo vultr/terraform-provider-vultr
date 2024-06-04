@@ -732,7 +732,6 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 }
 
 func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting instance (%s)", d.Id())
 
@@ -783,7 +782,6 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 }
 
 func optionCheck(options map[string]bool) (string, error) {
-
 	var result []string
 	for k, v := range options {
 		if v {
@@ -824,7 +822,6 @@ func waitForServerAvailable(ctx context.Context, d *schema.ResourceData, target 
 func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-
 		log.Printf("[INFO] Creating Server")
 		server, _, err := client.Instance.Get(ctx, d.Id())
 		if err != nil {

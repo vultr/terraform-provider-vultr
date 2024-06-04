@@ -116,7 +116,6 @@ func resourceVultrDNSDomainDelete(ctx context.Context, d *schema.ResourceData, m
 	log.Printf("[INFO] Deleting domain (%s)", d.Id())
 	if err := client.Domain.Delete(ctx, d.Id()); err != nil {
 		return diag.Errorf("error destroying domain %s: %v", d.Id(), err)
-
 	}
 
 	return nil

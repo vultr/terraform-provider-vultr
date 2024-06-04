@@ -263,7 +263,6 @@ func resourceVultrDatabaseReplicaUpdate(ctx context.Context, d *schema.ResourceD
 }
 
 func resourceVultrDatabaseReplicaDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting database read replica (%s)", d.Id())
 

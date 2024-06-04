@@ -248,7 +248,7 @@ func waitForBlockAvailable(ctx context.Context, d *schema.ResourceData, target s
 		"[INFO] Waiting for Server (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &retry.StateChangeConf{ 
+	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newBlockStateRefresh(ctx, d, meta, attribute),
@@ -261,10 +261,9 @@ func waitForBlockAvailable(ctx context.Context, d *schema.ResourceData, target s
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newBlockStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { 
+func newBlockStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-
 		log.Printf("[INFO] Creating Block")
 		block, _, err := client.BlockStorage.Get(ctx, d.Id())
 		if err != nil {

@@ -11,7 +11,6 @@ import (
 )
 
 func TestAccVultrFirewallRuleBasic(t *testing.T) {
-
 	rString := acctest.RandString(13)
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -32,7 +31,6 @@ func TestAccVultrFirewallRuleBasic(t *testing.T) {
 }
 
 func TestAccVultrFirewallRuleIcmp(t *testing.T) {
-
 	rString := acctest.RandString(13)
 	resource.Test(t, resource.TestCase{
 		PreCheck:          func() { testAccPreCheck(t) },
@@ -82,7 +80,6 @@ func TestAccVultrFirewallRuleUpdate(t *testing.T) {
 }
 
 func TestAccVultrFirewallRuleImportBasic(t *testing.T) {
-
 	rString := acctest.RandString(13)
 
 	resource.Test(t, resource.TestCase{
@@ -116,7 +113,6 @@ func testAccCheckVultrFirewallRuleDestroy(s *terraform.State) error {
 		// If the group exists, something went wrong, probably
 		_, _, groupErr := client.FirewallGroup.Get(context.Background(), groupID)
 		if groupErr == nil {
-
 			// group and rules don't throw an error from the api so the resources still exist
 			_, _, _, rulesErr := client.FirewallRule.List(context.Background(), groupID, nil)
 			if rulesErr == nil {

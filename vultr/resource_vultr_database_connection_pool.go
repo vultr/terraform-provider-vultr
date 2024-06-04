@@ -155,7 +155,6 @@ func resourceVultrDatabaseConnectionPoolUpdate(ctx context.Context, d *schema.Re
 }
 
 func resourceVultrDatabaseConnectionPoolDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting database connection pool (%s)", d.Id())
 

@@ -83,7 +83,6 @@ func resourceVultrReverseIPV4Read(ctx context.Context, d *schema.ResourceData, m
 		}
 
 		for _, v := range ReverseIPV4s {
-
 			if v.IP == d.Id() {
 				ReverseIPV4 = &v
 				break

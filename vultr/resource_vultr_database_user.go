@@ -151,7 +151,6 @@ func resourceVultrDatabaseUserUpdate(ctx context.Context, d *schema.ResourceData
 }
 
 func resourceVultrDatabaseUserDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting database user (%s)", d.Id())
 

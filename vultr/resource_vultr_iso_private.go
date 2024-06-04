@@ -183,7 +183,7 @@ func waitForIsoAvailable(ctx context.Context, d *schema.ResourceData, target str
 		"[INFO] Waiting for ISO (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &retry.StateChangeConf{ 
+	stateConf := &retry.StateChangeConf{
 		Pending:    pending,
 		Target:     []string{target},
 		Refresh:    newIsoStateRefresh(ctx, d, meta),
@@ -198,11 +198,10 @@ func waitForIsoAvailable(ctx context.Context, d *schema.ResourceData, target str
 }
 
 func newIsoStateRefresh(ctx context.Context,
-	d *schema.ResourceData, meta interface{}) retry.StateRefreshFunc { 
+	d *schema.ResourceData, meta interface{}) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 
 	return func() (interface{}, string, error) {
-
 		log.Printf("[INFO] Creating Private ISO")
 		iso, _, err := client.ISO.Get(ctx, d.Id())
 		if err != nil {
@@ -219,7 +218,7 @@ func waitForIsoDetached(ctx context.Context, instanceID string, target string, p
 		"[INFO] Waiting for ISO to detach from %s",
 		instanceID)
 
-	stateConf := &retry.StateChangeConf{ 
+	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        isoDetachStateRefresh(ctx, instanceID, meta, attribute),
@@ -232,10 +231,9 @@ func waitForIsoDetached(ctx context.Context, instanceID string, target string, p
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func isoDetachStateRefresh(ctx context.Context, instanceID string, meta interface{}, attr string) retry.StateRefreshFunc { 
+func isoDetachStateRefresh(ctx context.Context, instanceID string, meta interface{}, attr string) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-
 		log.Printf("[INFO] Detaching ISO")
 		iso, _, err := client.Instance.ISOStatus(ctx, instanceID)
 		if err != nil {

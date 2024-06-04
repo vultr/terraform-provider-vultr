@@ -9,7 +9,6 @@ import (
 )
 
 func TestAccVultrStartupScript(t *testing.T) {
-
 	rName := acctest.RandomWithPrefix("tf-startup-ds")
 	name := "data.vultr_startup_script.my_script"
 

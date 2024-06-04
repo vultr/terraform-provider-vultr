@@ -12,7 +12,6 @@ import (
 )
 
 func TestAccVultrDNSDomainBasic(t *testing.T) {
-
 	rString := acctest.RandString(6) + ".com"
 	name := "vultr_dns_domain.my-site"
 	resource.Test(t, resource.TestCase{
@@ -82,8 +81,8 @@ func testAccCheckVultrDNSDomainDestroy(s *terraform.State) error {
 		if err == nil {
 			return fmt.Errorf("domain still exists : %s", rs.Primary.ID)
 		}
-
 	}
+
 	return nil
 }
 

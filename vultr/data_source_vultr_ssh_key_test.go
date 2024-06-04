@@ -9,7 +9,6 @@ import (
 )
 
 func TestAccVultrSSHKey(t *testing.T) {
-
 	rName := fmt.Sprintf("%s-%d-terraform", acctest.RandString(3), acctest.RandInt())
 	rSSH, _, err := acctest.RandSSHKeyPair("foobar")
 	name := "data.vultr_ssh_key.my_key"

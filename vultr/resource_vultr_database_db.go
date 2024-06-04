@@ -73,7 +73,6 @@ func resourceVultrDatabaseDBRead(ctx context.Context, d *schema.ResourceData, me
 }
 
 func resourceVultrDatabaseDBDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting database logical DB (%s)", d.Id())
 

@@ -245,11 +245,9 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	if d.HasChange("node_pools") {
-
 		oldNP, newNP := d.GetChange("node_pools")
 
 		if len(newNP.([]interface{})) != 0 && len(oldNP.([]interface{})) != 0 {
-
 			n := newNP.([]interface{})[0].(map[string]interface{})
 
 			req := &govultr.NodePoolReqUpdate{
@@ -275,7 +273,6 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 		} else if len(newNP.([]interface{})) != 0 && len(oldNP.([]interface{})) == 0 {
 			// if we don't have an old node pool state but have a new node pool state
 			// we can safely assume this is a new node pool creation
-
 			n := newNP.([]interface{})[0].(map[string]interface{})
 
 			req := &govultr.NodePoolReq{
@@ -334,6 +331,7 @@ func generateNodePool(pools interface{}) []govultr.NodePoolReq {
 
 		npr = append(npr, t)
 	}
+
 	return npr
 }
 
@@ -342,7 +340,7 @@ func waitForVKEAvailable(ctx context.Context, d *schema.ResourceData, target str
 		"[INFO] Waiting for kubernetes cluster (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &retry.StateChangeConf{ 
+	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newVKEStateRefresh(ctx, d, meta, attribute),
@@ -355,10 +353,9 @@ func waitForVKEAvailable(ctx context.Context, d *schema.ResourceData, target str
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newVKEStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { 
+func newVKEStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-
 		log.Printf("[INFO] Creating kubernetes cluster")
 
 		vke, _, err := client.Kubernetes.GetCluster(ctx, d.Id())

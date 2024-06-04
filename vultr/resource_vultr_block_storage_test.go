@@ -104,8 +104,8 @@ func testAccCheckVultrBlockStorageDestroy(s *terraform.State) error {
 		if _, _, err := client.BlockStorage.Get(context.Background(), bsID); err == nil {
 			return fmt.Errorf("block storage still exists: %s", bsID)
 		}
-
 	}
+
 	return nil
 }
 

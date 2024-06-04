@@ -9,7 +9,6 @@ import (
 )
 
 func TestAccVultrFirewallGroup(t *testing.T) {
-
 	rDesc := acctest.RandomWithPrefix("tf-fwg-ds")
 
 	resource.Test(t, resource.TestCase{

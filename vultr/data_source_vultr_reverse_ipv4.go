@@ -86,7 +86,6 @@ func dataSourceVultrReverseIPV4Read(ctx context.Context, d *schema.ResourceData,
 				continue
 			}
 		}
-
 	}
 
 	filter := buildVultrDataSourceFilter(filters.(*schema.Set))

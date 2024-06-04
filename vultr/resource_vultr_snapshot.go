@@ -135,7 +135,7 @@ func waitForSnapshot(ctx context.Context, d *schema.ResourceData, target string,
 		"[INFO] Waiting for Snapshot (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &retry.StateChangeConf{ 
+	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newSnapStateRefresh(d, meta),
@@ -148,10 +148,9 @@ func waitForSnapshot(ctx context.Context, d *schema.ResourceData, target string,
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newSnapStateRefresh(d *schema.ResourceData, meta interface{}) retry.StateRefreshFunc { 
+func newSnapStateRefresh(d *schema.ResourceData, meta interface{}) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-
 		log.Printf("[INFO] Creating Snapshot")
 		snap, _, err := client.Snapshot.Get(context.Background(), d.Id())
 		if err != nil {

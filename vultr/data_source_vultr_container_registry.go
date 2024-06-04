@@ -162,7 +162,6 @@ func flattenCRRepositories(repos []govultr.ContainerRegistryRepo) []map[string]i
 	var allRepos []map[string]interface{}
 
 	for i := range repos {
-
 		repo := map[string]interface{}{
 			"name":           repos[i].Name,
 			"image":          repos[i].Image,

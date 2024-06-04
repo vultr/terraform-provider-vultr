@@ -271,7 +271,6 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 	var fwrMap []govultr.LBFirewallRule
 	if firewallRules, firewallRulesOk := d.GetOk("firewall_rules"); firewallRulesOk {
 		fwrMap = generateFirewallRules(firewallRules)
-
 	} else {
 		fwrMap = nil
 	}
@@ -471,7 +470,6 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 				BackendPort:      t["backend_port"].(int),
 			}
 			rules = append(rules, rule)
-
 		}
 		req.ForwardingRules = rules
 	}
@@ -591,7 +589,6 @@ func waitForLBAvailable(ctx context.Context, d *schema.ResourceData, target stri
 func newLBStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-
 		log.Printf("[INFO] Refreshing load balancer state")
 
 		lb, _, err := client.LoadBalancer.Get(ctx, d.Id())
