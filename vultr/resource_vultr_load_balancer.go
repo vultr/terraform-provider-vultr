@@ -41,11 +41,6 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				Computed:     true,
 				ValidateFunc: validation.StringInSlice([]string{"leastconn", "roundrobin"}, false),
 			},
-			"private_network": {
-				Type:       schema.TypeString,
-				Optional:   true,
-				Deprecated: "private_network is deprecated and should no longer be used. Instead, use vpc",
-			},
 			"vpc": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -289,14 +284,6 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		FirewallRules:      fwrMap,
 	}
 
-	if d.Get("private_network") != "" && d.Get("vpc") != "" {
-		return diag.Errorf("private_network and vpc cannot be used together. Use only vpc instead.")
-	}
-
-	if d.Get("private_network") != "" {
-		req.VPC = govultr.StringToStringPtr(d.Get("private_network").(string))
-	}
-
 	if d.Get("vpc") != "" {
 		req.VPC = govultr.StringToStringPtr(d.Get("vpc").(string))
 	}
@@ -407,24 +394,8 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	if err := d.Set("ssl_redirect", lb.GenericInfo.SSLRedirect); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `ssl_redirect` read value: %v", err)
 	}
-
-	// Manipulate the read state so that only one of these two values is
-	// returned based on which is passed in. Needed since both private_network
-	// and vpc are set to the same value after creation
-	if d.Get("private_network") == "" && d.Get("vpc") != "" {
-		if err := d.Set("private_network", ""); err != nil {
-			return diag.Errorf("unable to set resource load_balancer `private_network` read value: %v", err)
-		}
-		if err := d.Set("vpc", lb.GenericInfo.VPC); err != nil {
-			return diag.Errorf("unable to set resource load_balancer `vpc` read value: %v", err)
-		}
-	} else if d.Get("private_network") != "" && d.Get("vpc") == "" {
-		if err := d.Set("private_network", lb.GenericInfo.VPC); err != nil {
-			return diag.Errorf("unable to set resource load_balancer `private_network` read value: %v", err)
-		}
-		if err := d.Set("vpc", ""); err != nil {
-			return diag.Errorf("unable to set resource load_balancer `vpc` read value: %v", err)
-		}
+	if err := d.Set("vpc", lb.GenericInfo.VPC); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `vpc` read value: %v", err)
 	}
 
 	return nil
@@ -511,14 +482,6 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 
 		stickySessions.CookieName = cookieName.(string)
 		req.StickySessions = stickySessions
-	}
-
-	if d.Get("private_network") != "" && d.Get("vpc") != "" {
-		return diag.Errorf("private_network and vpc cannot be used together. Use only vpc instead.")
-	}
-
-	if d.HasChange("private_network") {
-		req.VPC = govultr.StringToStringPtr(d.Get("private_network").(string))
 	}
 
 	if d.HasChange("vpc") {

@@ -78,13 +78,6 @@ func resourceVultrInstance() *schema.Resource {
 				Description: `Don't set up a public IPv4 address when IPv6 is enabled. 
 Will not do anything unless enable_ipv6 is also true.`,
 			},
-			"private_network_ids": {
-				Type:       schema.TypeSet,
-				Optional:   true,
-				Computed:   true,
-				Elem:       &schema.Schema{Type: schema.TypeString},
-				Deprecated: "private_network_ids has been deprecated and should no longer be used. Instead, use vpc_ids",
-			},
 			"vpc_ids": {
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -367,16 +360,6 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
-	if len(d.Get("private_network_ids").(*schema.Set).List()) != 0 && len(d.Get("vpc_ids").(*schema.Set).List()) != 0 {
-		return diag.Errorf("private_network_ids cannot be used along with vpc_ids. Use only vpc_ids instead.")
-	}
-
-	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
-		for _, v := range networkIDs.(*schema.Set).List() {
-			req.AttachVPC = append(req.AttachVPC, v.(string))
-		}
-	}
-
 	if vpcIDs, vpcOK := d.GetOk("vpc_ids"); vpcOK {
 		for _, v := range vpcIDs.(*schema.Set).List() {
 			req.AttachVPC = append(req.AttachVPC, v.(string))
@@ -569,30 +552,13 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf(err.Error())
 	}
 
-	// Manipulate the read state so that, depending on which value was passed,
-	// only one of these values is populated when a VPC or PN is defined for
-	// the instance
-	if _, pnUpdate := d.GetOk("private_network_ids"); pnUpdate {
-		if err := d.Set("private_network_ids", vpcs); err != nil {
-			return diag.Errorf("unable to set resource instance `private_network_ids` read value: %v", err)
-		}
-		if err := d.Set("vpc_ids", nil); err != nil {
-			return diag.Errorf("unable to set resource instance `vpc_ids` read value: %v", err)
-		}
-	}
-
-	// Since VPC is last, if an instance read involves both vpc_ids &
-	// private_network_ids, only the vpc_ids will be preserved
 	if _, vpcUpdate := d.GetOk("vpc_ids"); vpcUpdate {
 		if err := d.Set("vpc_ids", vpcs); err != nil {
 			return diag.Errorf("unable to set resource instance `vpc_ids` read value: %v", err)
 		}
-		if err := d.Set("private_network_ids", nil); err != nil {
-			return diag.Errorf("unable to set resource instance `private_network_ids` read value: %v", err)
-		}
 	}
 
-	if _, vpcUpdate := d.GetOk("vpc2_ids"); vpcUpdate {
+	if _, vpc2Update := d.GetOk("vpc2_ids"); vpc2Update {
 		if err := d.Set("vpc2_ids", vpc2s); err != nil {
 			return diag.Errorf("unable to set resource instance `vpc2_ids` read value: %v", err)
 		}
@@ -635,28 +601,6 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		} else if backups == "enabled" && !bsOK {
 			return diag.Errorf("Backups are being set to enabled please add backups_schedule")
 		}
-	}
-
-	if len(d.Get("private_network_ids").(*schema.Set).List()) != 0 && len(d.Get("vpc_ids").(*schema.Set).List()) != 0 {
-		return diag.Errorf("private_network_ids cannot be used along with vpc_ids. Use only vpc_ids instead.")
-	}
-
-	if d.HasChange("private_network_ids") {
-		log.Printf("[INFO] Updating private_network_ids")
-		oldNetwork, newNetwork := d.GetChange("private_network_ids")
-
-		var oldIDs []string
-		for _, v := range oldNetwork.(*schema.Set).List() {
-			oldIDs = append(oldIDs, v.(string))
-		}
-
-		var newIDs []string
-		for _, v := range newNetwork.(*schema.Set).List() {
-			newIDs = append(newIDs, v.(string))
-		}
-
-		req.AttachPrivateNetwork = append(req.AttachPrivateNetwork, diffSlice(oldIDs, newIDs)...)
-		req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, diffSlice(newIDs, oldIDs)...)
 	}
 
 	if d.HasChange("vpc_ids") {
@@ -747,17 +691,6 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting instance (%s)", d.Id())
-
-	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
-		detach := &govultr.InstanceUpdateReq{}
-		for _, v := range networkIDs.(*schema.Set).List() {
-			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string))
-		}
-
-		if _, _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
-			return diag.Errorf("error detaching private networks prior to deleting instance %s : %v", d.Id(), err)
-		}
-	}
 
 	if vpcIDs, vpcOK := d.GetOk("vpc_ids"); vpcOK {
 		detach := &govultr.InstanceUpdateReq{}
