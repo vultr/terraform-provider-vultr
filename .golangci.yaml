@@ -1,9 +1,6 @@
 linters-settings:
   dupl:
     threshold: 300
-  funlen:
-    lines: -1 # the number of lines (code + empty lines) is not a right metric and leads to code without empty line or one-liner.
-    statements: 50
   goconst:
     min-len: 2
     min-occurrences: 3
@@ -19,8 +16,6 @@ linters-settings:
       - ifElseChain
       - octalLiteral
       - whyNoLint
-  gocyclo:
-    min-complexity: 25
   goimports:
     local-prefixes: github.com/golangci/golangci-lint
   mnd:
@@ -63,8 +58,6 @@ linters:
     - dupl
     - errcheck
     - exportloopref
-    - funlen
-    - gocyclo
     - gofmt
     - goimports
     - mnd
@@ -88,13 +81,14 @@ linters:
     - whitespace
 
   # don't enable:
+  # - asciicheck
   # - bodyclose
   # - depguard
-  # - asciicheck
-  # - scopelint
+  # - funlen
   # - gochecknoglobals
   # - gocognit
   # - gocritic
+  # - gocyclo
   # - godot
   # - godox
   # - goerr113
@@ -102,6 +96,7 @@ linters:
   # - maligned
   # - nestif
   # - prealloc
+  # - scopelint
   # - testpackage
   # - wsl
 
