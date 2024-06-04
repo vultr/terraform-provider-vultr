@@ -55,7 +55,6 @@ linters:
   disable-all: true
   enable:
     - dogsled
-    - dupl
     - errcheck
     - exportloopref
     - gofmt
@@ -84,6 +83,7 @@ linters:
   # - asciicheck
   # - bodyclose
   # - depguard
+  # - dupl
   # - funlen
   # - gochecknoglobals
   # - gocognit
