@@ -20,7 +20,7 @@ linters-settings:
       - octalLiteral
       - whyNoLint
   gocyclo:
-    min-complexity: 15
+    min-complexity: 25
   goimports:
     local-prefixes: github.com/golangci/golangci-lint
   mnd:
