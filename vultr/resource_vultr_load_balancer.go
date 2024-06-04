@@ -558,9 +558,9 @@ func resourceVultrLoadBalancerDelete(ctx context.Context, d *schema.ResourceData
 		err := client.LoadBalancer.Delete(ctx, d.Id())
 		if err != nil {
 			if strings.Contains(err.Error(), "Load balancer is not ready.") {
-				return retry.RetryableError(fmt.Errorf("Deleting load balancer failed with error: %s. Retrying...", err))
+				return retry.RetryableError(fmt.Errorf("deleting load balancer failed with retryable error: %s", err))
 			} else {
-				return retry.NonRetryableError(fmt.Errorf("Deleting load balancer failed with non-retryable error: %s", err))
+				return retry.NonRetryableError(fmt.Errorf("deleting load balancer failed with non-retryable error: %s", err))
 			}
 		}
 		return nil
@@ -575,7 +575,7 @@ func waitForLBAvailable(ctx context.Context, d *schema.ResourceData, target stri
 		"[INFO] Waiting for load balancer (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &retry.StateChangeConf{ 
+	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newLBStateRefresh(ctx, d, meta, attribute),
@@ -588,7 +588,7 @@ func waitForLBAvailable(ctx context.Context, d *schema.ResourceData, target stri
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newLBStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { 
+func newLBStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 
