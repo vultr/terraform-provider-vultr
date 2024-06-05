@@ -136,11 +136,6 @@ func dataSourceVultrInstance() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"private_network_ids": {
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
 			"vpc_ids": {
 				Type:     schema.TypeList,
 				Computed: true,
@@ -313,9 +308,6 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf(err.Error())
 	}
 
-	if err := d.Set("private_network_ids", vpcs); err != nil {
-		return diag.Errorf("unable to set instance `private_network_ids` read value: %v", err)
-	}
 	if err := d.Set("vpc_ids", vpcs); err != nil {
 		return diag.Errorf("unable to set instance `vpc_ids` read value: %v", err)
 	}

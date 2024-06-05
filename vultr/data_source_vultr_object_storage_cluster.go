@@ -34,7 +34,7 @@ func dataSourceVultrObjectStorageClusters() *schema.Resource {
 	}
 }
 
-func dataSourceVultrObjectStorageClustersRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceVultrObjectStorageClustersRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")

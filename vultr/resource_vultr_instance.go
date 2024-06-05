@@ -72,17 +72,11 @@ func resourceVultrInstance() *schema.Resource {
 				Optional: true,
 			},
 			"disable_public_ipv4": {
-				Type:        schema.TypeBool,
-				Optional:    true,
-				ForceNew:    true,
-				Description: "Don't set up a public IPv4 address when IPv6 is enabled. Will not do anything unless enable_ipv6 is also true.",
-			},
-			"private_network_ids": {
-				Type:       schema.TypeSet,
-				Optional:   true,
-				Computed:   true,
-				Elem:       &schema.Schema{Type: schema.TypeString},
-				Deprecated: "private_network_ids has been deprecated and should no longer be used. Instead, use vpc_ids",
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+				Description: `Don't set up a public IPv4 address when IPv6 is enabled. 
+Will not do anything unless enable_ipv6 is also true.`,
 			},
 			"vpc_ids": {
 				Type:     schema.TypeSet,
@@ -128,11 +122,13 @@ func resourceVultrInstance() *schema.Resource {
 				Default:  false,
 			},
 			"hostname": {
-				Type:        schema.TypeString,
-				ForceNew:    true,
-				Computed:    true,
-				Optional:    true,
-				Description: "The hostname of the instance. Updating the hostname will cause a force new. This behavior is in place to prevent accidental reinstalls. Issuing an update to the hostname on UI or API issues a reinstall of the OS.",
+				Type:     schema.TypeString,
+				ForceNew: true,
+				Computed: true,
+				Optional: true,
+				Description: `The hostname of the instance. Updating the
+hostname will cause a force new. This behavior is in place to prevent accidental reinstalls. Issuing an update to the
+hostname on UI or API issues a reinstall of the OS.`,
 			},
 			"tags": {
 				Type:     schema.TypeSet,
@@ -164,9 +160,18 @@ func resourceVultrInstance() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"type": {
-							Type:         schema.TypeString,
-							Required:     true,
-							ValidateFunc: validation.StringInSlice([]string{"daily", "weekly", "monthly", "daily_alt_even", "daily_alt_odd"}, false),
+							Type:     schema.TypeString,
+							Required: true,
+							ValidateFunc: validation.StringInSlice(
+								[]string{
+									"daily",
+									"weekly",
+									"monthly",
+									"daily_alt_even",
+									"daily_alt_odd",
+								},
+								false,
+							),
 						},
 						"hour": {
 							Type:     schema.TypeInt,
@@ -273,8 +278,8 @@ func resourceVultrInstance() *schema.Resource {
 			},
 		},
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(60 * time.Minute),
-			Update: schema.DefaultTimeout(60 * time.Minute),
+			Create: schema.DefaultTimeout(1 * time.Hour),
+			Update: schema.DefaultTimeout(1 * time.Hour),
 		},
 	}
 }
@@ -355,16 +360,6 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
-	if len(d.Get("private_network_ids").(*schema.Set).List()) != 0 && len(d.Get("vpc_ids").(*schema.Set).List()) != 0 {
-		return diag.Errorf("private_network_ids cannot be used along with vpc_ids. Use only vpc_ids instead.")
-	}
-
-	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
-		for _, v := range networkIDs.(*schema.Set).List() {
-			req.AttachVPC = append(req.AttachVPC, v.(string))
-		}
-	}
-
 	if vpcIDs, vpcOK := d.GetOk("vpc_ids"); vpcOK {
 		for _, v := range vpcIDs.(*schema.Set).List() {
 			req.AttachVPC = append(req.AttachVPC, v.(string))
@@ -411,7 +406,8 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set resource instance `default_password` create value: %v", err)
 	}
 
-	if _, err = waitForServerAvailable(ctx, d, "active", []string{"pending", "installing"}, "status", meta); err != nil {
+	_, err = waitForServerAvailable(ctx, d, "active", []string{"pending", "installing"}, "status", meta)
+	if err != nil {
 		return diag.Errorf("error while waiting for Server %s to be completed: %s", d.Id(), err)
 	}
 
@@ -556,30 +552,13 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf(err.Error())
 	}
 
-	// Manipulate the read state so that, depending on which value was passed,
-	// only one of these values is populated when a VPC or PN is defined for
-	// the instance
-	if _, pnUpdate := d.GetOk("private_network_ids"); pnUpdate {
-		if err := d.Set("private_network_ids", vpcs); err != nil {
-			return diag.Errorf("unable to set resource instance `private_network_ids` read value: %v", err)
-		}
-		if err := d.Set("vpc_ids", nil); err != nil {
-			return diag.Errorf("unable to set resource instance `vpc_ids` read value: %v", err)
-		}
-	}
-
-	// Since VPC is last, if an instance read invloves both vpc_ids &
-	// private_network_ids, only the vpc_ids will be preserved
 	if _, vpcUpdate := d.GetOk("vpc_ids"); vpcUpdate {
 		if err := d.Set("vpc_ids", vpcs); err != nil {
 			return diag.Errorf("unable to set resource instance `vpc_ids` read value: %v", err)
 		}
-		if err := d.Set("private_network_ids", nil); err != nil {
-			return diag.Errorf("unable to set resource instance `private_network_ids` read value: %v", err)
-		}
 	}
 
-	if _, vpcUpdate := d.GetOk("vpc2_ids"); vpcUpdate {
+	if _, vpc2Update := d.GetOk("vpc2_ids"); vpc2Update {
 		if err := d.Set("vpc2_ids", vpc2s); err != nil {
 			return diag.Errorf("unable to set resource instance `vpc2_ids` read value: %v", err)
 		}
@@ -622,28 +601,6 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		} else if backups == "enabled" && !bsOK {
 			return diag.Errorf("Backups are being set to enabled please add backups_schedule")
 		}
-	}
-
-	if len(d.Get("private_network_ids").(*schema.Set).List()) != 0 && len(d.Get("vpc_ids").(*schema.Set).List()) != 0 {
-		return diag.Errorf("private_network_ids cannot be used along with vpc_ids. Use only vpc_ids instead.")
-	}
-
-	if d.HasChange("private_network_ids") {
-		log.Printf("[INFO] Updating private_network_ids")
-		oldNetwork, newNetwork := d.GetChange("private_network_ids")
-
-		var oldIDs []string
-		for _, v := range oldNetwork.(*schema.Set).List() {
-			oldIDs = append(oldIDs, v.(string))
-		}
-
-		var newIDs []string
-		for _, v := range newNetwork.(*schema.Set).List() {
-			newIDs = append(newIDs, v.(string))
-		}
-
-		req.AttachPrivateNetwork = append(req.AttachPrivateNetwork, diffSlice(oldIDs, newIDs)...) // nolint
-		req.DetachPrivateNetwork = append(req.DetachPrivateNetwork, diffSlice(newIDs, oldIDs)...) // nolint
 	}
 
 	if d.HasChange("vpc_ids") {
@@ -723,7 +680,7 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 	// This will wait until the plan has been updated before going to the read call
 	if d.HasChange("plan") {
 		oldP, newP := d.GetChange("plan")
-		if _, err := waitForUpgrade(ctx, d, newP.(string), []string{oldP.(string)}, "plan", meta); err != nil {
+		if _, err := waitForPlanUpgrade(ctx, d, newP.(string), []string{oldP.(string)}, meta); err != nil {
 			return diag.Errorf("error while waiting for instance %s to have updated plan : %s", d.Id(), err)
 		}
 	}
@@ -732,20 +689,8 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 }
 
 func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting instance (%s)", d.Id())
-
-	if networkIDs, networkOK := d.GetOk("private_network_ids"); networkOK {
-		detach := &govultr.InstanceUpdateReq{}
-		for _, v := range networkIDs.(*schema.Set).List() {
-			detach.DetachPrivateNetwork = append(detach.DetachPrivateNetwork, v.(string)) // nolint
-		}
-
-		if _, _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
-			return diag.Errorf("error detaching private networks prior to deleting instance %s : %v", d.Id(), err)
-		}
-	}
 
 	if vpcIDs, vpcOK := d.GetOk("vpc_ids"); vpcOK {
 		detach := &govultr.InstanceUpdateReq{}
@@ -783,7 +728,6 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 }
 
 func optionCheck(options map[string]bool) (string, error) {
-
 	var result []string
 	for k, v := range options {
 		if v {
@@ -803,12 +747,12 @@ func optionCheck(options map[string]bool) (string, error) {
 	return result[0], nil
 }
 
-func waitForServerAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+func waitForServerAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) { //nolint:lll
 	log.Printf(
 		"[INFO] Waiting for Server (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &retry.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newServerStateRefresh(ctx, d, meta, attribute),
@@ -821,10 +765,9 @@ func waitForServerAvailable(ctx context.Context, d *schema.ResourceData, target 
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { // nolint:all
+func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-
 		log.Printf("[INFO] Creating Server")
 		server, _, err := client.Instance.Get(ctx, d.Id())
 		if err != nil {
@@ -843,15 +786,15 @@ func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta int
 	}
 }
 
-func waitForUpgrade(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+func waitForPlanUpgrade(ctx context.Context, d *schema.ResourceData, target string, pending []string, meta interface{}) (interface{}, error) { //nolint:lll
 	log.Printf(
-		"[INFO] Waiting for instance (%s) to have %s of %s",
-		d.Id(), attribute, target)
+		"[INFO] Waiting for instance (%s) to have plan of %s",
+		d.Id(), target)
 
-	stateConf := &retry.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
-		Refresh:        newInstancePlanRefresh(ctx, d, meta, attribute),
+		Refresh:        newInstancePlanRefresh(ctx, d, meta),
 		Timeout:        60 * time.Minute,
 		Delay:          10 * time.Second,
 		MinTimeout:     3 * time.Second,
@@ -861,7 +804,7 @@ func waitForUpgrade(ctx context.Context, d *schema.ResourceData, target string, 
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newInstancePlanRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { // nolint:all
+func newInstancePlanRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Upgrading instance")

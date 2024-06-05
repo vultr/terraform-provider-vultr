@@ -111,7 +111,6 @@ func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 			Type:     schema.TypeString,
 			Optional: true,
 		}
-
 	} else {
 		// Make tags unmodifiable for the vultr_kubernetes resource
 		// This lets us know which node pool was part of the vultr_kubernetes resource
@@ -138,5 +137,4 @@ func getCertsFromKubeConfig(kubeconfig string) (ca string, cert string, key stri
 	}
 
 	return kc.Clusters[0].Cluster.CaCert, kc.Users[0].User.ClientCert, kc.Users[0].User.ClientKey, nil
-
 }

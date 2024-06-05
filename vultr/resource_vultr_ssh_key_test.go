@@ -58,8 +58,8 @@ func testAccCheckVultrSSHKeyDestroy(s *terraform.State) error {
 		if err == nil {
 			return fmt.Errorf("SSH Key still exists: %s", keyID)
 		}
-
 	}
+
 	return nil
 }
 

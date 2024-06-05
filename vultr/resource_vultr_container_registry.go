@@ -34,9 +34,17 @@ func resourceVultrContainerRegistry() *schema.Resource {
 				),
 			},
 			"plan": {
-				Type:         schema.TypeString,
-				Required:     true,
-				ValidateFunc: validation.StringInSlice([]string{"start_up", "business", "premium", "enterprise"}, false),
+				Type:     schema.TypeString,
+				Required: true,
+				ValidateFunc: validation.StringInSlice(
+					[]string{
+						"start_up",
+						"business",
+						"premium",
+						"enterprise",
+					},
+					false,
+				),
 			},
 			"region": {
 				Type:     schema.TypeString,
@@ -66,7 +74,7 @@ func resourceVultrContainerRegistry() *schema.Resource {
 	}
 }
 
-func resourceVultrContainerRegistryCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrContainerRegistryCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	crReq := &govultr.ContainerRegistryReq{
@@ -88,7 +96,7 @@ func resourceVultrContainerRegistryCreate(ctx context.Context, d *schema.Resourc
 	return resourceVultrContainerRegistryRead(ctx, d, meta)
 }
 
-func resourceVultrContainerRegistryRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrContainerRegistryRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	cr, _, err := client.ContainerRegistry.Get(ctx, d.Id())
@@ -123,7 +131,7 @@ func resourceVultrContainerRegistryRead(ctx context.Context, d *schema.ResourceD
 	return nil
 }
 
-func resourceVultrContainerRegistryUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrContainerRegistryUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	vcr := &govultr.ContainerRegistryUpdateReq{}
@@ -149,7 +157,7 @@ func resourceVultrContainerRegistryUpdate(ctx context.Context, d *schema.Resourc
 	return resourceVultrContainerRegistryRead(ctx, d, meta)
 }
 
-func resourceVultrContainerRegistryDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrContainerRegistryDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting container registry: %s", d.Id())
 

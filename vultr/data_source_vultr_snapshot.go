@@ -42,7 +42,6 @@ func dataSourceVultrSnapshot() *schema.Resource {
 }
 
 func dataSourceVultrSnapshotRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")

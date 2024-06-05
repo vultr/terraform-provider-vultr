@@ -11,7 +11,6 @@ import (
 )
 
 func TestAccVultrFirewallGroupBasic(t *testing.T) {
-
 	rString := acctest.RandString(10)
 	updatedString := acctest.RandString(12)
 
@@ -41,7 +40,6 @@ func TestAccVultrFirewallGroupBasic(t *testing.T) {
 }
 
 func testAccCheckVultrFirewallGroupDestroy(s *terraform.State) error {
-
 	client := testAccProvider.Meta().(*Client).govultrClient()
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "vultr_firewall_group" {

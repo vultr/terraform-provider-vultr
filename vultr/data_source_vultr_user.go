@@ -73,7 +73,10 @@ func dataSourceVultrUserRead(ctx context.Context, d *schema.ResourceData, meta i
 	}
 
 	if len(userList) > 1 {
-		return diag.Errorf("your search returned too many results : %d. Please refine your search to be more specific", len(userList))
+		return diag.Errorf(
+			"your search returned too many results : %d. Please refine your search to be more specific",
+			len(userList),
+		)
 	}
 	if len(userList) < 1 {
 		return diag.Errorf("no results were found")

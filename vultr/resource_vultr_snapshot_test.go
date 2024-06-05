@@ -49,8 +49,8 @@ func testAccCheckVultrSnapshotDestroy(s *terraform.State) error {
 		if _, _, err := client.Snapshot.Get(context.Background(), snapshotID); err == nil {
 			return fmt.Errorf("snapshot still exists: %s", snapshotID)
 		}
-
 	}
+
 	return nil
 }
 

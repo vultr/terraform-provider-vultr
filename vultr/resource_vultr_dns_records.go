@@ -36,10 +36,13 @@ func resourceVultrDNSRecord() *schema.Resource {
 				Required: true,
 			},
 			"type": {
-				Type:         schema.TypeString,
-				Required:     true,
-				ForceNew:     true,
-				ValidateFunc: validation.StringInSlice([]string{"A", "AAAA", "CNAME", "NS", "MX", "SRV", "TXT", "CAA", "SSHFP"}, false),
+				Type:     schema.TypeString,
+				Required: true,
+				ForceNew: true,
+				ValidateFunc: validation.StringInSlice(
+					[]string{"A", "AAAA", "CNAME", "NS", "MX", "SRV", "TXT", "CAA", "SSHFP"},
+					false,
+				),
 			},
 			"priority": {
 				Type:     schema.TypeInt,
@@ -136,7 +139,7 @@ func resourceVultrDNSRecordDelete(ctx context.Context, d *schema.ResourceData, m
 	return nil
 }
 
-func resourceVultrDNSRecordImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+func resourceVultrDNSRecordImport(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	importID := d.Id()

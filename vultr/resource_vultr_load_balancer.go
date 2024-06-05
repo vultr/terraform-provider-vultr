@@ -41,11 +41,6 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				Computed:     true,
 				ValidateFunc: validation.StringInSlice([]string{"leastconn", "roundrobin"}, false),
 			},
-			"private_network": {
-				Type:       schema.TypeString,
-				Optional:   true,
-				Deprecated: "private_network is deprecated and should no longer be used. Instead, use vpc",
-			},
 			"vpc": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -84,30 +79,30 @@ func resourceVultrLoadBalancer() *schema.Resource {
 						"port": {
 							Type:         schema.TypeInt,
 							Required:     true,
-							ValidateFunc: validation.IntBetween(1, 65535),
+							ValidateFunc: validation.IntBetween(1, 65535), //nolint:mnd
 						},
 						"check_interval": {
 							Type:         schema.TypeInt,
 							Optional:     true,
-							ValidateFunc: validation.IntBetween(1, 300),
+							ValidateFunc: validation.IntBetween(1, 300), //nolint:mnd
 							Default:      15,
 						},
 						"response_timeout": {
 							Type:         schema.TypeInt,
 							Optional:     true,
-							ValidateFunc: validation.IntBetween(1, 300),
+							ValidateFunc: validation.IntBetween(1, 300), //nolint:mnd
 							Default:      5,
 						},
 						"unhealthy_threshold": {
 							Type:         schema.TypeInt,
 							Optional:     true,
-							ValidateFunc: validation.IntBetween(1, 300),
+							ValidateFunc: validation.IntBetween(1, 300), //nolint:mnd
 							Default:      5,
 						},
 						"healthy_threshold": {
 							Type:         schema.TypeInt,
 							Optional:     true,
-							ValidateFunc: validation.IntBetween(1, 300),
+							ValidateFunc: validation.IntBetween(1, 300), //nolint:mnd
 							Default:      5,
 						},
 					},
@@ -128,7 +123,7 @@ func resourceVultrLoadBalancer() *schema.Resource {
 						"frontend_port": {
 							Type:         schema.TypeInt,
 							Required:     true,
-							ValidateFunc: validation.IntBetween(1, 65535),
+							ValidateFunc: validation.IntBetween(1, 65535), //nolint:mnd
 						},
 						"backend_protocol": {
 							Type:         schema.TypeString,
@@ -138,7 +133,7 @@ func resourceVultrLoadBalancer() *schema.Resource {
 						"backend_port": {
 							Type:         schema.TypeInt,
 							Required:     true,
-							ValidateFunc: validation.IntBetween(1, 65535),
+							ValidateFunc: validation.IntBetween(1, 65535), //nolint:mnd
 						},
 						"rule_id": {
 							Type:     schema.TypeString,
@@ -181,7 +176,7 @@ func resourceVultrLoadBalancer() *schema.Resource {
 						"port": {
 							Type:         schema.TypeInt,
 							Required:     true,
-							ValidateFunc: validation.IntBetween(1, 65535),
+							ValidateFunc: validation.IntBetween(1, 65535), //nolint:mnd
 						},
 						"ip_type": {
 							Type:         schema.TypeString,
@@ -271,7 +266,6 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 	var fwrMap []govultr.LBFirewallRule
 	if firewallRules, firewallRulesOk := d.GetOk("firewall_rules"); firewallRulesOk {
 		fwrMap = generateFirewallRules(firewallRules)
-
 	} else {
 		fwrMap = nil
 	}
@@ -288,14 +282,6 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		ProxyProtocol:      govultr.BoolToBoolPtr(d.Get("proxy_protocol").(bool)),
 		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
 		FirewallRules:      fwrMap,
-	}
-
-	if d.Get("private_network") != "" && d.Get("vpc") != "" {
-		return diag.Errorf("private_network and vpc cannot be used together. Use only vpc instead.")
-	}
-
-	if d.Get("private_network") != "" {
-		req.VPC = govultr.StringToStringPtr(d.Get("private_network").(string))
 	}
 
 	if d.Get("vpc") != "" {
@@ -408,24 +394,8 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	if err := d.Set("ssl_redirect", lb.GenericInfo.SSLRedirect); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `ssl_redirect` read value: %v", err)
 	}
-
-	// Manipulate the read state so that only one of these two values is
-	// returned based on which is passed in. Needed since both private_network
-	// and vpc are set to the same value after creation
-	if d.Get("private_network") == "" && d.Get("vpc") != "" {
-		if err := d.Set("private_network", ""); err != nil {
-			return diag.Errorf("unable to set resource load_balancer `private_network` read value: %v", err)
-		}
-		if err := d.Set("vpc", lb.GenericInfo.VPC); err != nil {
-			return diag.Errorf("unable to set resource load_balancer `vpc` read value: %v", err)
-		}
-	} else if d.Get("private_network") != "" && d.Get("vpc") == "" {
-		if err := d.Set("private_network", lb.GenericInfo.VPC); err != nil {
-			return diag.Errorf("unable to set resource load_balancer `private_network` read value: %v", err)
-		}
-		if err := d.Set("vpc", ""); err != nil {
-			return diag.Errorf("unable to set resource load_balancer `vpc` read value: %v", err)
-		}
+	if err := d.Set("vpc", lb.GenericInfo.VPC); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `vpc` read value: %v", err)
 	}
 
 	return nil
@@ -471,7 +441,6 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 				BackendPort:      t["backend_port"].(int),
 			}
 			rules = append(rules, rule)
-
 		}
 		req.ForwardingRules = rules
 	}
@@ -515,14 +484,6 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 		req.StickySessions = stickySessions
 	}
 
-	if d.Get("private_network") != "" && d.Get("vpc") != "" {
-		return diag.Errorf("private_network and vpc cannot be used together. Use only vpc instead.")
-	}
-
-	if d.HasChange("private_network") {
-		req.VPC = govultr.StringToStringPtr(d.Get("private_network").(string))
-	}
-
 	if d.HasChange("vpc") {
 		req.VPC = govultr.StringToStringPtr(d.Get("vpc").(string))
 	}
@@ -558,9 +519,9 @@ func resourceVultrLoadBalancerDelete(ctx context.Context, d *schema.ResourceData
 		err := client.LoadBalancer.Delete(ctx, d.Id())
 		if err != nil {
 			if strings.Contains(err.Error(), "Load balancer is not ready.") {
-				return retry.RetryableError(fmt.Errorf("Deleting load balancer failed with error: %s. Retrying...", err))
+				return retry.RetryableError(fmt.Errorf("deleting load balancer failed with retryable error: %s", err))
 			} else {
-				return retry.NonRetryableError(fmt.Errorf("Deleting load balancer failed with non-retryable error: %s", err))
+				return retry.NonRetryableError(fmt.Errorf("deleting load balancer failed with non-retryable error: %s", err))
 			}
 		}
 		return nil
@@ -570,12 +531,12 @@ func resourceVultrLoadBalancerDelete(ctx context.Context, d *schema.ResourceData
 	return nil
 }
 
-func waitForLBAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+func waitForLBAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) { //nolint:lll
 	log.Printf(
 		"[INFO] Waiting for load balancer (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &retry.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newLBStateRefresh(ctx, d, meta, attribute),
@@ -588,10 +549,9 @@ func waitForLBAvailable(ctx context.Context, d *schema.ResourceData, target stri
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newLBStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { // nolint:all
+func newLBStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-
 		log.Printf("[INFO] Refreshing load balancer state")
 
 		lb, _, err := client.LoadBalancer.Get(ctx, d.Id())

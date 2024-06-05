@@ -86,7 +86,6 @@ func dataSourceVultrReverseIPV4Read(ctx context.Context, d *schema.ResourceData,
 				continue
 			}
 		}
-
 	}
 
 	filter := buildVultrDataSourceFilter(filters.(*schema.Set))
@@ -99,8 +98,8 @@ func dataSourceVultrReverseIPV4Read(ctx context.Context, d *schema.ResourceData,
 			return diag.Errorf("error getting IPv4s: %v", err)
 		}
 
-		for _, ipv4 := range ipv4s {
-			m, err := structToMap(ipv4)
+		for i := range ipv4s {
+			m, err := structToMap(ipv4s[i])
 			if err != nil {
 				return diag.FromErr(err)
 			}
@@ -110,7 +109,7 @@ func dataSourceVultrReverseIPV4Read(ctx context.Context, d *schema.ResourceData,
 					return diag.Errorf("your search returned too many results - please refine your search to be more specific")
 				}
 
-				result = &ipv4
+				result = &ipv4s[i]
 				resultInstanceID = instanceID
 			}
 		}

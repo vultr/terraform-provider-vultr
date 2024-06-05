@@ -82,10 +82,9 @@ func resourceVultrReverseIPV4Read(ctx context.Context, d *schema.ResourceData, m
 			return diag.Errorf("error getting reverse IPv4s: %v, %v", err, instanceID)
 		}
 
-		for _, v := range ReverseIPV4s {
-
-			if v.IP == d.Id() {
-				ReverseIPV4 = &v
+		for i := range ReverseIPV4s {
+			if ReverseIPV4s[i].IP == d.Id() {
+				ReverseIPV4 = &ReverseIPV4s[i]
 				break
 			}
 		}

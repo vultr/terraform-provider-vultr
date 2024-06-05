@@ -191,13 +191,13 @@ func resourceVultrBareMetalServer() *schema.Resource {
 		},
 
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(60 * time.Minute),
-			Update: schema.DefaultTimeout(60 * time.Minute),
+			Create: schema.DefaultTimeout(1 * time.Hour),
+			Update: schema.DefaultTimeout(1 * time.Hour),
 		},
 	}
 }
 
-func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	appID, appOK := d.GetOk("app_id")
 	osID, osOK := d.GetOk("os_id")
 	imageID, imageOK := d.GetOk("image_id")
@@ -369,7 +369,7 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 	return nil
 }
 
-func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	req := &govultr.BareMetalUpdate{
@@ -424,7 +424,7 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 	return resourceVultrBareMetalServerRead(ctx, d, meta)
 }
 
-func resourceVultrBareMetalServerDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrBareMetalServerDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting bare metal server: %s", d.Id())
@@ -465,10 +465,10 @@ func bareMetalServerOSCheck(options map[string]bool) (string, error) {
 	return result[0], nil
 }
 
-func waitForBareMetalServerActiveStatus(ctx context.Context, d *schema.ResourceData, meta interface{}) (interface{}, error) {
+func waitForBareMetalServerActiveStatus(ctx context.Context, d *schema.ResourceData, meta interface{}) (interface{}, error) { //nolint:lll
 	log.Printf("[INFO] Waiting for bare metal server (%s) to have status of active", d.Id())
 
-	stateConf := &retry.StateChangeConf{ //nolint:all
+	stateConf := &retry.StateChangeConf{
 		Pending:    []string{"pending"},
 		Target:     []string{"active"},
 		Refresh:    newBareMetalServerStatusStateRefresh(ctx, d, meta),
@@ -482,7 +482,7 @@ func waitForBareMetalServerActiveStatus(ctx context.Context, d *schema.ResourceD
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newBareMetalServerStatusStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}) retry.StateRefreshFunc { //nolint:all
+func newBareMetalServerStatusStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	return func() (interface{}, string, error) {

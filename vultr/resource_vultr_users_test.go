@@ -92,7 +92,6 @@ func TestAccVultrUserBase(t *testing.T) {
 }
 
 func testAccCheckVultrUsersDestroy(s *terraform.State) error {
-
 	client := testAccProvider.Meta().(*Client).govultrClient()
 	for _, rs := range s.RootModule().Resources {
 		if rs.Type != "vultr_user" {
@@ -102,8 +101,8 @@ func testAccCheckVultrUsersDestroy(s *terraform.State) error {
 		if _, _, err := client.User.Get(context.Background(), rs.Primary.ID); err == nil {
 			return fmt.Errorf("user still exists : %s", rs.Primary.ID)
 		}
-
 	}
+
 	return nil
 }
 

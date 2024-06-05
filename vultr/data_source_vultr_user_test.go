@@ -9,7 +9,6 @@ import (
 )
 
 func TestAccVultrUserDataBase(t *testing.T) {
-
 	rEmail := fmt.Sprintf("terraform-%s@vultr.com", acctest.RandString(4))
 	name := "data.vultr_user.admin"
 

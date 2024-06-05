@@ -202,7 +202,6 @@ func flattenNodePools(np []govultr.NodePool) []map[string]interface{} {
 	var nodePools []map[string]interface{}
 
 	for _, n := range np {
-
 		var instances []map[string]interface{}
 
 		for _, v := range n.Nodes {

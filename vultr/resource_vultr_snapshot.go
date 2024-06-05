@@ -130,12 +130,12 @@ func resourceVultrSnapshotDelete(ctx context.Context, d *schema.ResourceData, me
 	return nil
 }
 
-func waitForSnapshot(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) {
+func waitForSnapshot(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) { //nolint:lll
 	log.Printf(
 		"[INFO] Waiting for Snapshot (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &retry.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newSnapStateRefresh(d, meta),
@@ -148,10 +148,9 @@ func waitForSnapshot(ctx context.Context, d *schema.ResourceData, target string,
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newSnapStateRefresh(d *schema.ResourceData, meta interface{}) retry.StateRefreshFunc { // nolint:all
+func newSnapStateRefresh(d *schema.ResourceData, meta interface{}) retry.StateRefreshFunc {
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-
 		log.Printf("[INFO] Creating Snapshot")
 		snap, _, err := client.Snapshot.Get(context.Background(), d.Id())
 		if err != nil {

@@ -48,7 +48,7 @@ func dataSourceVultrContainerRegistry() *schema.Resource {
 	}
 }
 
-func dataSourceVultrContainerRegistryRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceVultrContainerRegistryRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
@@ -88,7 +88,10 @@ func dataSourceVultrContainerRegistryRead(ctx context.Context, d *schema.Resourc
 	}
 
 	if len(crList) > 1 {
-		return diag.Errorf("your search returned too many results : %d. Please refine your search to be more specific", len(crList))
+		return diag.Errorf(
+			"your search returned too many results : %d. Please refine your search to be more specific",
+			len(crList),
+		)
 	}
 	if len(crList) < 1 {
 		return diag.Errorf("no results were found")
@@ -162,7 +165,6 @@ func flattenCRRepositories(repos []govultr.ContainerRegistryRepo) []map[string]i
 	var allRepos []map[string]interface{}
 
 	for i := range repos {
-
 		repo := map[string]interface{}{
 			"name":           repos[i].Name,
 			"image":          repos[i].Image,

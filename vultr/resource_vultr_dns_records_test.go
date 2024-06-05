@@ -13,7 +13,6 @@ import (
 )
 
 func TestAccVultrDNSRecordBasic(t *testing.T) {
-
 	rString := acctest.RandString(6) + ".com"
 	rSub := acctest.RandString(4) + rString
 	name := "vultr_dns_record.a-record"

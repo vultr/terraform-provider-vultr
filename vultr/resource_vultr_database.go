@@ -211,7 +211,8 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
-	if mysqlRequirePrimaryKey, mysqlRequirePrimaryKeyOK := d.GetOk("mysql_require_primary_key"); mysqlRequirePrimaryKeyOK {
+	mysqlRequirePrimaryKey, mysqlRequirePrimaryKeyOK := d.GetOk("mysql_require_primary_key")
+	if mysqlRequirePrimaryKeyOK {
 		req.MySQLRequirePrimaryKey = govultr.BoolToBoolPtr(mysqlRequirePrimaryKey.(bool))
 	}
 
@@ -226,8 +227,9 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	d.SetId(database.ID)
-
-	if _, err = waitForDatabaseAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Configuring", "Error"}, "status", meta); err != nil { //nolint:lll
+	pendStatuses := []string{"Rebalancing", "Rebuilding", "Configuring", "Error"}
+	_, errWait := waitForDatabaseAvailable(ctx, d, "Running", pendStatuses, "status", meta)
+	if errWait != nil {
 		return diag.Errorf("error while waiting for Managed Database %s to be in an active state : %s", d.Id(), err)
 	}
 
@@ -522,8 +524,14 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	if d.HasChange("region") || d.HasChange("plan") || d.HasChange("vpc_id") {
-		if _, err := waitForDatabaseAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Configuring", "Error"}, "status", meta); err != nil { //nolint:lll
-			return diag.Errorf("error while waiting for Managed Database %s to be in an active state : %s", d.Id(), err)
+		pendStatuses := []string{"Rebalancing", "Rebuilding", "Configuring", "Error"}
+		_, errAvail := waitForDatabaseAvailable(ctx, d, "Running", pendStatuses, "status", meta)
+		if errAvail != nil {
+			return diag.Errorf(
+				"error while waiting for Managed Database %s to be in an active state : %s",
+				d.Id(),
+				errAvail,
+			)
 		}
 	}
 
@@ -565,8 +573,14 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 		}
 
 		// Wait for running state
-		if _, err := waitForDatabaseAvailable(ctx, d, "Running", []string{"Rebalancing", "Rebuilding", "Configuring", "Error"}, "status", meta); err != nil { //nolint:lll
-			return diag.Errorf("error while waiting for Managed Database %s to be in an active state : %s", d.Id(), err)
+		pendStatuses := []string{"Rebalancing", "Rebuilding", "Configuring", "Error"}
+		_, errAvail := waitForDatabaseAvailable(ctx, d, "Running", pendStatuses, "status", meta)
+		if errAvail != nil {
+			return diag.Errorf(
+				"error while waiting for Managed Database %s to be in an active state : %s",
+				d.Id(),
+				errAvail,
+			)
 		}
 	}
 
@@ -574,7 +588,6 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 }
 
 func resourceVultrDatabaseDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting database (%s)", d.Id())
 
@@ -585,12 +598,12 @@ func resourceVultrDatabaseDelete(ctx context.Context, d *schema.ResourceData, me
 	return nil
 }
 
-func waitForDatabaseAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) { // nolint:dupl,lll
+func waitForDatabaseAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) { //nolint:lll
 	log.Printf(
 		"[INFO] Waiting for Managed Database (%s) to have %s of %s",
 		d.Id(), attribute, target)
 
-	stateConf := &retry.StateChangeConf{ // nolint:all
+	stateConf := &retry.StateChangeConf{
 		Pending:        pending,
 		Target:         []string{target},
 		Refresh:        newDatabaseStateRefresh(ctx, d, meta, attribute),
@@ -603,7 +616,7 @@ func waitForDatabaseAvailable(ctx context.Context, d *schema.ResourceData, targe
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newDatabaseStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { // nolint:all
+func newDatabaseStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Creating Database")
