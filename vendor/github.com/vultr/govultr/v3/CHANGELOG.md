@@ -1,4 +1,18 @@
 # Change Log
+## [3.8.1](https://github.com/vultr/govultr/compare/v3.8.0...v3.8.1) (2023-06-06)
+### Automation
+* Update goreleaser github action from v2 to v6 [PR 317](https://github.com/vultr/govultr/pull/317)
+
+## [3.8.0](https://github.com/vultr/govultr/compare/v3.7.0...v3.8.0) (2023-06-06)
+### Enhancements
+* Inference: add support for serverless inference endpoints [PR 315](https://github.com/vultr/govultr/pull/315)
+
+### Dependencies
+* Bump github.com/hashicorp/go-retryablehttp from 0.7.6 to 0.7.7 [PR 312](https://github.com/vultr/govultr/pull/312)
+
+### Automation
+* Update golangci-lint and enable most go-vet checks [PR 314](https://github.com/vultr/govultr/pull/314)
+
 ## [3.7.0](https://github.com/vultr/govultr/compare/v3.6.4...v3.7.0) (2024-05-28)
 ### Enhancements
 * Bare Metal: Add MdiskMode to BareMetalCreate and BareMetalUpdate structs [PR 310](https://github.com/vultr/govultr/pull/310)
