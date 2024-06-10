@@ -9,8 +9,8 @@
 * data_source/inference: add data source [PR 501](https://github.com/vultr/terraform-provider-vultr/pull/501)
 
 ### Deprecations
-* resource/private_network: removed from provider[PR 496](https://github.com/vultr/terraform-provider-vultr/pull/496)
-* data_source/private_network: removed from provider[PR 496](https://github.com/vultr/terraform-provider-vultr/pull/496)
+* resource/private_network: removed from provider [PR 496](https://github.com/vultr/terraform-provider-vultr/pull/496)
+* data_source/private_network: removed from provider [PR 496](https://github.com/vultr/terraform-provider-vultr/pull/496)
 
 ### Dependencies
 * Bump golang.org/x/oauth2 from 0.20.0 to 0.21.0 [PR 497](https://github.com/vultr/terraform-provider-vultr/pull/497)
