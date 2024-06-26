@@ -28,7 +28,9 @@ func resourceVultrKubernetesNodePools() *schema.Resource {
 				}
 
 				d.SetId(ids[1])
-				d.Set("cluster_id", ids[0])
+				if err := d.Set("cluster_id", ids[0]); err != nil {
+					return nil, fmt.Errorf("unable to set cluster ID for import state function")
+				}
 
 				return []*schema.ResourceData{d}, nil
 			},
