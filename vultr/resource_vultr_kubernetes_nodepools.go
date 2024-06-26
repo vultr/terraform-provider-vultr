@@ -19,7 +19,21 @@ func resourceVultrKubernetesNodePools() *schema.Resource {
 		ReadContext:   resourceVultrKubernetesNodePoolsRead,
 		UpdateContext: resourceVultrKubernetesNodePoolsUpdate,
 		DeleteContext: resourceVultrKubernetesNodePoolsDelete,
-		Schema:        nodePoolSchema(true),
+		Importer: &schema.ResourceImporter{
+			State: func(d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
+				ids := strings.SplitN(d.Id(), " ", 2)
+				if len(ids) != 2 || ids[0] == "" || ids[1] == "" {
+					err := fmt.Errorf("unexpected format of node pool import IDs (%s): expected 'clusterID nodePoolID'", d.Id())
+					return nil, err
+				}
+
+				d.SetId(ids[1])
+				d.Set("cluster_id", ids[0])
+
+				return []*schema.ResourceData{d}, nil
+			},
+		},
+		Schema: nodePoolSchema(true),
 	}
 }
 
