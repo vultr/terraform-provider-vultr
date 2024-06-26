@@ -117,3 +117,14 @@ The following attributes are exported:
 * `id` - ID of node.
 * `label` - Label of node.
 * `status` - Status of node.
+
+## Import
+
+A kubernetes cluster created outside of terraform can be imported into the
+terraform state using the UUID.  One thing to note is that all kubernetes
+resources have a default node pool with a tag of `tf-vke-default`. In order to
+avoid errors, ensure that there is a node pool with that tag set.
+
+```sh
+terraform import vultr_kubernetes.my-k8s 7365a98b-5a43-450f-bd27-d768827100e5
+```
