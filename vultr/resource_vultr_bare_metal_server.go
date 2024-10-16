@@ -357,7 +357,7 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 
 	vpc2s, err := getBareMetalServerVPC2s(client, d.Id())
 	if err != nil {
-		return diag.Errorf(err.Error())
+		return diag.Errorf("%s", err.Error())
 	}
 
 	if _, vpcUpdate := d.GetOk("vpc2_ids"); vpcUpdate {

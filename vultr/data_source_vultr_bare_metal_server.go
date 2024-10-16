@@ -222,7 +222,7 @@ func dataSourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceD
 
 	vpc2s, err := getBareMetalServerVPC2s(client, d.Id())
 	if err != nil {
-		return diag.Errorf(err.Error())
+		return diag.Errorf("%s", err.Error())
 	}
 
 	if err := d.Set("vpc2_ids", vpc2s); err != nil {

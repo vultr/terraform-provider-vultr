@@ -336,7 +336,7 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 	if osOption == "" && osID.(int) != 0 {
 		osOption = "os_id"
 	} else if osOption != "" && osID.(int) != 0 {
-		return diag.Errorf(fmt.Sprintf("Please do not set %s with os_id", osOption))
+		return diag.Errorf("Please do not set %s with os_id", osOption)
 	}
 
 	switch osOption {
@@ -544,12 +544,12 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 
 	vpcs, err := getVPCs(client, d.Id())
 	if err != nil {
-		return diag.Errorf(err.Error())
+		return diag.Errorf("%s", err.Error())
 	}
 
 	vpc2s, err := getVPC2s(client, d.Id())
 	if err != nil {
-		return diag.Errorf(err.Error())
+		return diag.Errorf("%s", err.Error())
 	}
 
 	if _, vpcUpdate := d.GetOk("vpc_ids"); vpcUpdate {

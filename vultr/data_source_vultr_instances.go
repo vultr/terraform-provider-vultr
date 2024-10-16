@@ -203,7 +203,7 @@ func dataSourceVultrInstancesRead(ctx context.Context, d *schema.ResourceData, m
 
 				vpcs, err := getVPCs(client, server.ID)
 				if err != nil {
-					return diag.Errorf(err.Error())
+					return diag.Errorf("%s", err.Error())
 				}
 
 				serverList = append(serverList, map[string]interface{}{
