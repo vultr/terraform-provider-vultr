@@ -231,8 +231,8 @@ github.com/vmihailenco/msgpack/v5/msgpcode
 github.com/vmihailenco/tagparser/v2
 github.com/vmihailenco/tagparser/v2/internal
 github.com/vmihailenco/tagparser/v2/internal/parser
-# github.com/vultr/govultr/v3 v3.9.0
-## explicit; go 1.21
+# github.com/vultr/govultr/v3 v3.10.0
+## explicit; go 1.23
 github.com/vultr/govultr/v3
 # github.com/zclconf/go-cty v1.14.4
 ## explicit; go 1.18
