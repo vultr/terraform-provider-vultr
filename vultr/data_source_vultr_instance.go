@@ -300,12 +300,12 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 
 	vpcs, err := getVPCs(client, d.Id())
 	if err != nil {
-		return diag.Errorf(err.Error())
+		return diag.Errorf("%s", err.Error())
 	}
 
 	vpc2s, err := getVPC2s(client, d.Id())
 	if err != nil {
-		return diag.Errorf(err.Error())
+		return diag.Errorf("%s", err.Error())
 	}
 
 	if err := d.Set("vpc_ids", vpcs); err != nil {
