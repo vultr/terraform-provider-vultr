@@ -104,6 +104,10 @@ func dataSourceVultrBareMetalServer() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
+			"user_scheme": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -218,6 +222,9 @@ func dataSourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceD
 	}
 	if err := d.Set("features", serverList[0].Features); err != nil {
 		return diag.Errorf("unable to set bare_metal_server `features` read value: %v", err)
+	}
+	if err := d.Set("user_scheme", serverList[0].UserScheme); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `user_scheme` read value: %v", err)
 	}
 
 	vpc2s, err := getBareMetalServerVPC2s(client, d.Id())

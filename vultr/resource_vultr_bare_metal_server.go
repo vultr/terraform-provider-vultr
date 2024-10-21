@@ -26,6 +26,7 @@ func resourceVultrBareMetalServer() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
+			// Required
 			"region": {
 				Type:             schema.TypeString,
 				Required:         true,
@@ -37,6 +38,7 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
+			// Optional
 			"label": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -118,6 +120,11 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Computed: true,
 				Optional: true,
 			},
+			"user_scheme": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"app_variables": {
 				Type:     schema.TypeMap,
 				Optional: true,
@@ -130,7 +137,7 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				ForceNew: true,
 				Default:  "",
 			},
-			// computed
+			// Computed
 			"os": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -227,6 +234,7 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 		ReservedIPv4:    d.Get("reserved_ipv4").(string),
 		PersistentPxe:   govultr.BoolToBoolPtr(d.Get("persistent_pxe").(bool)),
 		MdiskMode:       d.Get("mdisk_mode").(string),
+		UserScheme:      d.Get("user_scheme").(string),
 	}
 
 	if appVariables, appVariablesOK := d.GetOk("app_variables"); appVariablesOK {
@@ -354,6 +362,9 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 	if err := d.Set("v6_network_size", bms.V6NetworkSize); err != nil {
 		return diag.Errorf("unable to set resource bare_metal_server `v6_network_size` read value: %v", err)
 	}
+	if err := d.Set("user_scheme", bms.UserScheme); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `user_scheme` read value: %v", err)
+	}
 
 	vpc2s, err := getBareMetalServerVPC2s(client, d.Id())
 	if err != nil {
@@ -415,6 +426,12 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 	if d.HasChange("tags") {
 		_, newTags := tfChangeToSlices("tags", d)
 		req.Tags = newTags
+	}
+
+	if d.HasChange("user_scheme") {
+		_, newVal := d.GetChange("user_scheme")
+		uScheme := newVal.(string)
+		req.UserScheme = uScheme
 	}
 
 	if _, _, err := client.BareMetalServer.Update(ctx, d.Id(), req); err != nil {
