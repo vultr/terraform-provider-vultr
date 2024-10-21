@@ -66,6 +66,7 @@ The following attributes are exported:
   * `kvm` - The server's current KVM URL. This URL will change periodically. It is not advised to cache this value.
   * `tag` - The server's tag.
   * `tags` - A list of tags applied to the instance.
+  * `user_scheme` - The scheme used for the default user (linux servers only). 
   * `os_id` - The server's operating system ID.
   * `app_id` - The server's application ID.
   * `image_id` - The Marketplace ID for this application.
