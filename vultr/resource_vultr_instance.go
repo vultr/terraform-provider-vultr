@@ -26,7 +26,7 @@ func resourceVultrInstance() *schema.Resource {
 		},
 
 		Schema: map[string]*schema.Schema{
-			//Required
+			// Required
 			"region": {
 				Type:             schema.TypeString,
 				Required:         true,
@@ -38,6 +38,7 @@ func resourceVultrInstance() *schema.Resource {
 				Required:     true,
 				ValidateFunc: validation.NoZeroValues,
 			},
+			// Optional
 			"iso_id": {
 				Type:     schema.TypeString,
 				Default:  "",
@@ -191,6 +192,11 @@ hostname on UI or API issues a reinstall of the OS.`,
 					},
 				},
 			},
+			"user_scheme": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"app_variables": {
 				Type:     schema.TypeMap,
 				Optional: true,
@@ -322,6 +328,7 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		ReservedIPv4:      d.Get("reserved_ip_id").(string),
 		Region:            d.Get("region").(string),
 		Plan:              d.Get("plan").(string),
+		UserScheme:        d.Get("user_scheme").(string),
 	}
 
 	if appVariables, appVariablesOK := d.GetOk("app_variables"); appVariablesOK {
@@ -513,6 +520,9 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 	if err := d.Set("hostname", instance.Hostname); err != nil {
 		return diag.Errorf("unable to set resource instance `hostname` read value: %v", err)
 	}
+	if err := d.Set("user_scheme", instance.UserScheme); err != nil {
+		return diag.Errorf("unable to set resource instance `user_scheme` read value: %v", err)
+	}
 
 	backup, _, err := client.Instance.GetBackupSchedule(ctx, d.Id())
 	if err != nil {
@@ -566,6 +576,7 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 
 	return nil
 }
+
 func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
@@ -683,6 +694,13 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		if _, err := waitForPlanUpgrade(ctx, d, newP.(string), []string{oldP.(string)}, meta); err != nil {
 			return diag.Errorf("error while waiting for instance %s to have updated plan : %s", d.Id(), err)
 		}
+	}
+
+	if d.HasChange("user_scheme") {
+		log.Printf("[INFO] Updating UserScheme")
+		_, newVal := d.GetChange("user_scheme")
+		uScheme := newVal.(string)
+		req.UserScheme = uScheme
 	}
 
 	return resourceVultrInstanceRead(ctx, d, meta)
