@@ -177,7 +177,9 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 			break
 		} else {
 			// no node pool with the default tag was found. mostly only relevant to importing
-			return diag.Errorf("unable to set resource kubernetes default node pool with tag %s for %v", tfVKEDefault, d.Id())
+			return diag.Errorf(`unable to set resource kubernetes default node pool with tag %s for %v. 
+You must set the default tag on one node pool before importing.`,
+				tfVKEDefault, d.Id())
 		}
 	}
 
