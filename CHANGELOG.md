@@ -1,4 +1,28 @@
 # Changelog
+## [v2.21.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.20.1...v2.21.0) (2024-06-10)
+### Enhancements
+* resource/container_registry: add resource support [PR 445](https://github.com/vultr/terraform-provider-vultr/pull/445)
+* resource/container_registry: add registry name validation [PR 493](https://github.com/vultr/terraform-provider-vultr/pull/493)
+* data_source/container_registry: add data source support [PR 493](https://github.com/vultr/terraform-provider-vultr/pull/493)
+* resource/user: change ACL schema to set to state drift [PR 495](https://github.com/vultr/terraform-provider-vultr/pull/495)
+* resource/inference: add resource [PR 501](https://github.com/vultr/terraform-provider-vultr/pull/501)
+* data_source/inference: add data source [PR 501](https://github.com/vultr/terraform-provider-vultr/pull/501)
+
+### Deprecations
+* resource/private_network: removed from provider [PR 496](https://github.com/vultr/terraform-provider-vultr/pull/496)
+* data_source/private_network: removed from provider [PR 496](https://github.com/vultr/terraform-provider-vultr/pull/496)
+
+### Dependencies
+* Bump golang.org/x/oauth2 from 0.20.0 to 0.21.0 [PR 497](https://github.com/vultr/terraform-provider-vultr/pull/497)
+* Update govultr from v2.7.0 to v2.8.1 [PR 500](https://github.com/vultr/terraform-provider-vultr/pull/500)
+
+### Automation
+* Lint fixes; add an updated lint configuration [PR 498](https://github.com/vultr/terraform-provider-vultr/pull/498)
+
+### New Contributors
+* @im6h made their first contribution in [PR 445](https://github.com/vultr/terraform-provider-vultr/pull/445)
+* @F21 made their first contribution in [PR 495](https://github.com/vultr/terraform-provider-vultr/pull/495)
+
 ## [v2.20.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.20.0...v2.20.1) (2024-05-29)
 ### Automation
 * Update GPG import github action [PR 491](https://github.com/vultr/terraform-provider-vultr/pull/491)

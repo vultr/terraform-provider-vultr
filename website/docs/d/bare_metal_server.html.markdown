@@ -55,6 +55,7 @@ The following attributes are exported:
 * `label` - The server's label.
 * `tag` - The server's tag.
 * `tags` - A list of tags applied to the server.
+* `user_scheme` - The scheme used for the default user (linux servers only). 
 * `os_id` - The server's operating system ID.
 * `app_id` - The server's application ID.
 * `image_id` - The Marketplace ID for this application.

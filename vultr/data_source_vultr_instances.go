@@ -116,6 +116,10 @@ func dataSourceVultrInstances() *schema.Resource {
 							Elem:     &schema.Schema{Type: schema.TypeString},
 							Computed: true,
 						},
+						"user_scheme": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
 						"os_id": {
 							Type:     schema.TypeInt,
 							Computed: true,
@@ -203,7 +207,7 @@ func dataSourceVultrInstancesRead(ctx context.Context, d *schema.ResourceData, m
 
 				vpcs, err := getVPCs(client, server.ID)
 				if err != nil {
-					return diag.Errorf(err.Error())
+					return diag.Errorf("%s", err.Error())
 				}
 
 				serverList = append(serverList, map[string]interface{}{
@@ -235,6 +239,7 @@ func dataSourceVultrInstancesRead(ctx context.Context, d *schema.ResourceData, m
 					"v6_network_size":     server.V6NetworkSize,
 					"features":            server.Features,
 					"hostname":            server.Hostname,
+					"user_scheme":         server.UserScheme,
 					"backups":             backupStatus(schedule.Enabled),
 					"backups_schedule":    bsInfo,
 					"private_network_ids": vpcs,

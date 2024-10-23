@@ -72,6 +72,7 @@ The following arguments are supported:
 * `hostname` - (Optional) The hostname to assign to the server.
 * `tag` - (Deprecated: use `tags` instead) (Optional) The tag to assign to the server.
 * `tags` - (Optional) A list of tags to apply to the instance.
+* `user_scheme` - (Optional) The scheme used for the default user. Possible values are `root` or `limited` (linux servers only). 
 * `label` - (Optional) A label for the server.
 * `reserved_ip_id` - (Optional) ID of the floating IP to use as the main IP of this server.
 * `app_variables` - (Optional) A map of user-supplied variable keys and values for Vultr Marketplace apps. [See List Marketplace App Variables](https://www.vultr.com/api/#tag/marketplace/operation/list-marketplace-app-variables)
@@ -128,6 +129,7 @@ The following attributes are exported:
 * `hostname` - The hostname assigned to the server.
 * `tag` - (Deprecated: use `tags` instead) The tag assigned to the server.
 * `tags` - A list of tags to apply to the instance.
+* `user_scheme` - The scheme used for the default user (linux servers only). 
 * `label` - A label for the server.
 * `features` - Array of which features are enabled.
 * `backups_schedule` - (Optional) A block that defines the way backups should be scheduled.
