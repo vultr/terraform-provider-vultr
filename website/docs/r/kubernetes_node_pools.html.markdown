@@ -66,3 +66,16 @@ The following attributes are exported:
 * `id` - ID of node.
 * `label` - Label of node.
 * `status` - Status of node.
+
+## Import
+Node pool resources are able to be imported into terraform state like other
+resources, however, since they rely on a kubernetes cluster, the import state
+requires the UUID of the cluster as well. With that in mind, format the second
+argument to the `terraform import` command as a space delimited string of
+UUIDs, the first is the cluster ID, the second is the node pool ID. It will
+look like this:
+
+```sh
+# "clusterID nodePoolID"
+terraform import vultr_kubernetes_node_pools.my-k8s-np "7365a98b-5a43-450f-bd27-d768827100e5 ec330340-4f50-4526-858f-a39199f568ac"
+```

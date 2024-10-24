@@ -172,12 +172,23 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 	for i := range vke.NodePools {
 		if tfVKEDefault == vke.NodePools[i].Tag {
 			if err := d.Set("node_pools", flattenNodePool(&vke.NodePools[i])); err != nil {
-				return diag.Errorf("unable to set resource kubernetes `node_pool` read value: %v", err)
+				return diag.Errorf("unable to set resource kubernetes `node_pools` read value: %v", err)
 			}
 			break
+		} else {
+			// no node pool with the default tag was found. mostly only relevant to importing
+			return diag.Errorf(`unable to set resource kubernetes default node pool with tag %s for %v. 
+You must set the default tag on one node pool before importing.`,
+				tfVKEDefault, d.Id())
 		}
 	}
 
+	if err := d.Set("region", vke.Region); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `region` read value: %v", err)
+	}
+	if err := d.Set("label", vke.Label); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `label` read value: %v", err)
+	}
 	if err := d.Set("date_created", vke.DateCreated); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `date_created` read value: %v", err)
 	}
@@ -224,6 +235,9 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 	}
 	if err := d.Set("ha_controlplanes", vke.HAControlPlanes); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `ha_controlplanes` read value: %v", err)
+	}
+	if err := d.Set("enable_firewall", nil); err != nil {
+		return diag.Errorf("unable to unset resource kubernetes `enable_firewall` read value: %v", err)
 	}
 	if err := d.Set("firewall_group_id", vke.FirewallGroupID); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `firewall_group_id` read value: %v", err)
