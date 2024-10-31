@@ -38,6 +38,10 @@ func dataSourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
+			"plan_brokers": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
 			"region": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -83,6 +87,14 @@ func dataSourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"port": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"sasl_port": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"user": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -91,7 +103,11 @@ func dataSourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"port": {
+			"access_key": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"access_cert": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -210,8 +226,14 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set resource database `plan_vcpus` read value: %v", err)
 	}
 
-	if err := d.Set("plan_replicas", databaseList[0].PlanReplicas); err != nil {
-		return diag.Errorf("unable to set resource database `plan_replicas` read value: %v", err)
+	if databaseList[0].DatabaseEngine != "kafka" {
+		if err := d.Set("plan_replicas", databaseList[0].PlanReplicas); err != nil {
+			return diag.Errorf("unable to set resource database `plan_replicas` read value: %v", err)
+		}
+	} else {
+		if err := d.Set("plan_brokers", databaseList[0].PlanBrokers); err != nil {
+			return diag.Errorf("unable to set resource database `plan_brokers` read value: %v", err)
+		}
 	}
 
 	if err := d.Set("region", databaseList[0].Region); err != nil {
@@ -262,6 +284,16 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
+	if err := d.Set("port", databaseList[0].Port); err != nil {
+		return diag.Errorf("unable to set resource database `port` read value: %v", err)
+	}
+
+	if databaseList[0].DatabaseEngine == "kafka" {
+		if err := d.Set("sasl_port", databaseList[0].SASLPort); err != nil {
+			return diag.Errorf("unable to set resource database `sasl_port` read value: %v", err)
+		}
+	}
+
 	if err := d.Set("user", databaseList[0].User); err != nil {
 		return diag.Errorf("unable to set resource database `user` read value: %v", err)
 	}
@@ -270,8 +302,14 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set resource database `password` read value: %v", err)
 	}
 
-	if err := d.Set("port", databaseList[0].Port); err != nil {
-		return diag.Errorf("unable to set resource database `port` read value: %v", err)
+	if databaseList[0].DatabaseEngine == "kafka" {
+		if err := d.Set("access_key", databaseList[0].AccessKey); err != nil {
+			return diag.Errorf("unable to set resource database `access_key` read value: %v", err)
+		}
+
+		if err := d.Set("access_cert", databaseList[0].AccessCert); err != nil {
+			return diag.Errorf("unable to set resource database `access_cert` read value: %v", err)
+		}
 	}
 
 	if err := d.Set("maintenance_dow", databaseList[0].MaintenanceDOW); err != nil {
@@ -365,9 +403,9 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 			"dbname":                    db.ReadReplicas[v].DBName,
 			"host":                      db.ReadReplicas[v].Host,
 			"public_host":               db.ReadReplicas[v].PublicHost,
+			"port":                      db.ReadReplicas[v].Port,
 			"user":                      db.ReadReplicas[v].User,
 			"password":                  db.ReadReplicas[v].Password,
-			"port":                      db.ReadReplicas[v].Port,
 			"maintenance_dow":           db.ReadReplicas[v].MaintenanceDOW,
 			"maintenance_time":          db.ReadReplicas[v].MaintenanceTime,
 			"latest_backup":             db.ReadReplicas[v].LatestBackup,
