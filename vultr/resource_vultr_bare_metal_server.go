@@ -124,6 +124,7 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
+				Default:  "root",
 			},
 			"app_variables": {
 				Type:     schema.TypeMap,

@@ -196,6 +196,7 @@ hostname on UI or API issues a reinstall of the OS.`,
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
+				Default:  "root",
 			},
 			"app_variables": {
 				Type:     schema.TypeMap,
