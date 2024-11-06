@@ -204,3 +204,15 @@ func testAccVultrDatabaseBaseUpdatePlan(name string) string {
 			maintenance_time = "01:00"
 		} `, name)
 }
+
+func testAccVultrDatabaseKafkaBase(name string) string {
+	return fmt.Sprintf(`
+		resource "vultr_database" "test" {
+			database_engine = "kafka"
+			database_engine_version = "3.7"
+			region = "sea"
+			plan = "vultr-dbaas-startup-3x-occ-so-2-30-2"
+			label = "%s"
+			tag = "test tag"
+		} `, name)
+}

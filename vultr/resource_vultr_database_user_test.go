@@ -99,3 +99,13 @@ func testAccVultrDatabaseUserBaseUpdatedPassword(name string) string {
 			password = "someNewPW8385@x"
 		} `, name)
 }
+
+func testAccVultrDatabaseUserKafkaBase(name string) string {
+	return fmt.Sprintf(`
+		resource "vultr_database_user" "test_user" {
+			database_id = vultr_database.test.id
+			username = "%s"
+			password = "someRandomPW4928!z"
+			permission = "readwrite"
+		} `, name)
+}

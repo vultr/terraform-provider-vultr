@@ -31,12 +31,18 @@ func resourceVultrDatabaseUser() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
+			// Optional
 			"password": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
 			},
 			"encryption": {
+				Type:     schema.TypeString,
+				Optional: true,
+				Computed: true,
+			},
+			"permission": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -49,6 +55,15 @@ func resourceVultrDatabaseUser() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: redisACLSchema(),
 				},
+			},
+			// Computed
+			"access_key": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"access_cert": {
+				Type:     schema.TypeString,
+				Computed: true,
 			},
 		},
 	}
@@ -63,6 +78,7 @@ func resourceVultrDatabaseUserCreate(ctx context.Context, d *schema.ResourceData
 		Username:   d.Get("username").(string),
 		Password:   d.Get("password").(string),
 		Encryption: d.Get("encryption").(string),
+		Permission: d.Get("permission").(string),
 	}
 
 	log.Printf("[INFO] Creating database user")
@@ -114,6 +130,18 @@ func resourceVultrDatabaseUserRead(ctx context.Context, d *schema.ResourceData, 
 		}
 	}
 
+	if err := d.Set("permission", databaseUser.Permission); err != nil {
+		return diag.Errorf("unable to set resource database user `permission` read value: %v", err)
+	}
+
+	if err := d.Set("access_key", databaseUser.AccessKey); err != nil {
+		return diag.Errorf("unable to set resource database user `access_key` read value: %v", err)
+	}
+
+	if err := d.Set("access_cert", databaseUser.AccessCert); err != nil {
+		return diag.Errorf("unable to set resource database user `access_cert` read value: %v", err)
+	}
+
 	if databaseUser.AccessControl != nil {
 		if err := d.Set("access_control", flattenRedisACL(databaseUser)); err != nil {
 			return diag.Errorf("unable to set resource database user `access_control` read value: %v", err)
@@ -147,6 +175,18 @@ func resourceVultrDatabaseUserUpdate(ctx context.Context, d *schema.ResourceData
 		}
 	}
 
+	if d.HasChange("permission") {
+		log.Printf("[INFO] Updating Permission")
+		_, newVal := d.GetChange("permission")
+		permission := newVal.(string)
+		req2 := &govultr.DatabaseUserACLReq{
+			Permission: permission,
+		}
+		if _, _, err := client.Database.UpdateUserACL(ctx, databaseID, d.Id(), req2); err != nil {
+			return diag.Errorf("error updating user permission %s : %s", d.Id(), err.Error())
+		}
+	}
+
 	return resourceVultrDatabaseUserRead(ctx, d, meta)
 }
 
@@ -166,32 +206,32 @@ func resourceVultrDatabaseUserDelete(ctx context.Context, d *schema.ResourceData
 func updateRedisACL(ctx context.Context, client *govultr.Client, databaseID string, d *schema.ResourceData, accessControl interface{}) error { //nolint:lll
 	// This should only loop once due to MaxItems: 1 in the resource definition
 	for _, v := range accessControl.(*schema.Set).List() {
-		var req2 = &govultr.DatabaseUserACLReq{}
+		var req = &govultr.DatabaseUserACLReq{}
 		var aclCategories, aclChannels, aclCommands, aclKeys []string
 		obj := v.(map[string]interface{})
 
 		for _, r := range obj["redis_acl_categories"].(*schema.Set).List() {
 			aclCategories = append(aclCategories, r.(string))
 		}
-		req2.RedisACLCategories = &aclCategories
+		req.RedisACLCategories = &aclCategories
 
 		for _, r := range obj["redis_acl_channels"].(*schema.Set).List() {
 			aclChannels = append(aclChannels, r.(string))
 		}
-		req2.RedisACLChannels = &aclChannels
+		req.RedisACLChannels = &aclChannels
 
 		for _, r := range obj["redis_acl_commands"].(*schema.Set).List() {
 			aclCommands = append(aclCommands, r.(string))
 		}
-		req2.RedisACLCommands = &aclCommands
+		req.RedisACLCommands = &aclCommands
 
 		for _, r := range obj["redis_acl_keys"].(*schema.Set).List() {
 			aclKeys = append(aclKeys, r.(string))
 		}
-		req2.RedisACLKeys = &aclKeys
+		req.RedisACLKeys = &aclKeys
 
 		log.Printf("[INFO] Updating user access control")
-		if _, _, err := client.Database.UpdateUserACL(ctx, databaseID, d.Id(), req2); err != nil {
+		if _, _, err := client.Database.UpdateUserACL(ctx, databaseID, d.Id(), req); err != nil {
 			return err
 		}
 	}

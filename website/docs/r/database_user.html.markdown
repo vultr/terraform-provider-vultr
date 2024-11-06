@@ -25,7 +25,7 @@ resource "vultr_database_user" "my_database_user" {
 ## Argument Reference
 
 
-~> Updating the database ID will cause a `force new`. This behavior is in place because a database user canno tbe moved from one managed database to another.
+~> Updating the database ID will cause a `force new`. This behavior is in place because a database user cannot be moved from one managed database to another.
 
 The following arguments are supported:
 
@@ -33,6 +33,7 @@ The following arguments are supported:
 * `username` - (Required) The username of the new managed database user.
 * `password` - (Required) The password of the new managed database user.
 * `encryption` - (Optional) The encryption type of the new managed database user's password (MySQL engine types only - `caching_sha2_password`, `mysql_native_password`).
+* `permission` - (Optional) The permission level for the database user (Kafka engine types only - `admin`, `read`, `write`, `readwrite`).
 
 `access_control` - (Optional) The access control configuration for the new managed database user (Redis engine types only). It supports the following fields:
 
@@ -48,7 +49,8 @@ The following attributes are exported:
 * `database_id` - The managed database ID.
 * `username` - The username of the managed database user.
 * `password` - The password of the managed database user.
-* `encryption` - The encryption type for the managed database user's password (MySQL engine types only).
+* `encryption` - The encryption type of the managed database user's password (MySQL engine types only).
+* `permission` - The permission level of the database user (Kafka engine types only).
 
 `access_control`
 

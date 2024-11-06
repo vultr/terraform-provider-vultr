@@ -55,9 +55,12 @@ The following attributes are exported:
 * `ferretdb_credentials` - An associated list of FerretDB connection credentials (FerretDB + PostgreSQL engine types only).
 * `host` - The hostname assigned to the managed database.
 * `public_host` - The public hostname assigned to the managed database (VPC-attached only).
+* `port` - The connection port for the managed database.
+* `sasl_port` - The SASL connection port for the managed database (Kafka engine types only).
 * `user` - The primary admin user for the managed database.
 * `password` - The password for the managed database's primary admin user.
-* `port` - The connection port for the managed database.
+* `access_key` - The private key to authenticate the default user (Kafka engine types only).
+* `access_cert` - The certificate to authenticate the default user (Kafka engine types only).
 * `maintenance_dow` - The preferred maintenance day of week for the managed database.
 * `maintenance_time` - The preferred maintenance time for the managed database.
 * `latest_backup` - The date of the latest backup available on the managed database.

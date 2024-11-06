@@ -83,15 +83,15 @@ func readReplicaSchema(isReadReplica bool) map[string]*schema.Schema {
 			Computed: true,
 			Optional: true,
 		},
+		"port": {
+			Type:     schema.TypeString,
+			Computed: true,
+		},
 		"user": {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
 		"password": {
-			Type:     schema.TypeString,
-			Computed: true,
-		},
-		"port": {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
