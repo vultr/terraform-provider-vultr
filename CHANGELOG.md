@@ -1,4 +1,34 @@
 # Changelog
+## [v2.22.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.21.0...v2.22.0) (2024-11-06)
+### Enhancements
+* resource/bare_metal_server: Add `user_scheme` options [PR 514](https://github.com/vultr/terraform-provider-vultr/pull/514)
+* data_source/bare_metal_server: Add `user_scheme` options [PR 514](https://github.com/vultr/terraform-provider-vultr/pull/514)
+* resource/instance: Add `user_scheme` options [PR 514](https://github.com/vultr/terraform-provider-vultr/pull/514)
+* data_source/instance: Add `user_scheme` options [PR 514](https://github.com/vultr/terraform-provider-vultr/pull/514)
+* resource/kubernetes: Add/improve existing resource import [PR 503](https://github.com/vultr/terraform-provider-vultr/pull/503)
+* resource/database: Add support for Kafka [PR 522](https://github.com/vultr/terraform-provider-vultr/pull/522)
+* data_source/database: Add support for Kafka [PR 522](https://github.com/vultr/terraform-provider-vultr/pull/522)
+
+### Dependencies
+* Update govultr from v3.8.1 to v3.9.0 [PR 504](https://github.com/vultr/terraform-provider-vultr/pull/504)
+* Bump github.com/vultr/govultr/v3 from 3.9.0 to 3.10.0 [PR 511](https://github.com/vultr/terraform-provider-vultr/pull/511)
+* Bump golang.org/x/oauth2 from 0.21.0 to 0.23.0 [PR 510](https://github.com/vultr/terraform-provider-vultr/pull/510)
+* Update go from 1.21 to 1.23 [PR 513](https://github.com/vultr/terraform-provider-vultr/pull/513)
+* Bump github.com/vultr/govultr/v3 from 3.10.0 to 3.11.0 [PR 516](https://github.com/vultr/terraform-provider-vultr/pull/516)
+* Update govultr from v3.11.0 to v3.11.1 [PR 518](https://github.com/vultr/terraform-provider-vultr/pull/518)
+* Bump github.com/vultr/govultr/v3 from 3.11.1 to 3.11.2 [PR 519](https://github.com/vultr/terraform-provider-vultr/pull/519)
+* Bump github.com/hashicorp/terraform-plugin-sdk/v2 from 2.34.0 to 2.35.0 [PR 521](https://github.com/vultr/terraform-provider-vultr/pull/521)
+
+### Bug Fixes
+* Ensure format strings for TF diag errors [PR 512](https://github.com/vultr/terraform-provider-vultr/pull/512)
+
+### Clean up
+* Remove unused travis CI config [PR 515](https://github.com/vultr/terraform-provider-vultr/pull/515)
+* Remove vendored code [PR 520](https://github.com/vultr/terraform-provider-vultr/pull/520)
+
+### Automation
+* Add github CODEOWNERS file [PR 517](https://github.com/vultr/terraform-provider-vultr/pull/517)
+
 ## [v2.21.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.20.1...v2.21.0) (2024-06-10)
 ### Enhancements
 * resource/container_registry: add resource support [PR 445](https://github.com/vultr/terraform-provider-vultr/pull/445)
