@@ -1,4 +1,9 @@
 # Changelog
+## [v2.22.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.22.0...v2.22.1) (2024-11-07)
+### Bug Fixes
+* resource/bare_metal_server: Set default value for user_scheme [PR 525](https://github.com/vultr/terraform-provider-vultr/pull/525)
+* resource/instance: Set default value for user_scheme [PR 525](https://github.com/vultr/terraform-provider-vultr/pull/525)
+
 ## [v2.22.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.21.0...v2.22.0) (2024-11-06)
 ### Enhancements
 * resource/bare_metal_server: Add `user_scheme` options [PR 514](https://github.com/vultr/terraform-provider-vultr/pull/514)
