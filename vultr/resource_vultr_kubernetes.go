@@ -169,18 +169,20 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	// Look for the node pool with the tag `tf-vke-default`
+	found := false
 	for i := range vke.NodePools {
 		if tfVKEDefault == vke.NodePools[i].Tag {
 			if err := d.Set("node_pools", flattenNodePool(&vke.NodePools[i])); err != nil {
 				return diag.Errorf("unable to set resource kubernetes `node_pools` read value: %v", err)
 			}
+			found = true
 			break
-		} else {
-			// no node pool with the default tag was found. mostly only relevant to importing
-			return diag.Errorf(`unable to set resource kubernetes default node pool with tag %s for %v. 
-You must set the default tag on one node pool before importing.`,
-				tfVKEDefault, d.Id())
 		}
+	}
+	if !found {
+		return diag.Errorf(`unable to set resource kubernetes default node pool with tag %s for %v. 
+	You must set the default tag on one node pool before importing.`,
+			tfVKEDefault, d.Id())
 	}
 
 	if err := d.Set("region", vke.Region); err != nil {
