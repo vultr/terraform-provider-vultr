@@ -236,7 +236,7 @@ You must set the default tag on one node pool before importing.`,
 	if err := d.Set("ha_controlplanes", vke.HAControlPlanes); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `ha_controlplanes` read value: %v", err)
 	}
-	if err := d.Set("enable_firewall", nil); err != nil {
+	if err := d.Set("enable_firewall", vke.FirewallGroupID != ""); err != nil {
 		return diag.Errorf("unable to unset resource kubernetes `enable_firewall` read value: %v", err)
 	}
 	if err := d.Set("firewall_group_id", vke.FirewallGroupID); err != nil {
