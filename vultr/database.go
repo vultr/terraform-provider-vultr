@@ -150,7 +150,7 @@ func readReplicaSchema(isReadReplica bool) map[string]*schema.Schema {
 			Computed: true,
 			Optional: true,
 		},
-		"redis_eviction_policy": {
+		"eviction_policy": {
 			Type:     schema.TypeString,
 			Computed: true,
 			Optional: true,
@@ -169,24 +169,24 @@ func readReplicaSchema(isReadReplica bool) map[string]*schema.Schema {
 	return s
 }
 
-func redisACLSchema() map[string]*schema.Schema {
+func userACLSchema() map[string]*schema.Schema {
 	s := map[string]*schema.Schema{
-		"redis_acl_categories": {
+		"acl_categories": {
 			Type:     schema.TypeSet,
 			Required: true,
 			Elem:     &schema.Schema{Type: schema.TypeString},
 		},
-		"redis_acl_channels": {
+		"acl_channels": {
 			Type:     schema.TypeSet,
 			Required: true,
 			Elem:     &schema.Schema{Type: schema.TypeString},
 		},
-		"redis_acl_commands": {
+		"acl_commands": {
 			Type:     schema.TypeSet,
 			Required: true,
 			Elem:     &schema.Schema{Type: schema.TypeString},
 		},
-		"redis_acl_keys": {
+		"acl_keys": {
 			Type:     schema.TypeSet,
 			Required: true,
 			Elem:     &schema.Schema{Type: schema.TypeString},
@@ -196,13 +196,13 @@ func redisACLSchema() map[string]*schema.Schema {
 	return s
 }
 
-func flattenRedisACL(dbUser *govultr.DatabaseUser) []map[string]interface{} {
+func flattenUserACL(dbUser *govultr.DatabaseUser) []map[string]interface{} {
 	f := []map[string]interface{}{
 		{
-			"redis_acl_categories": dbUser.AccessControl.RedisACLCategories,
-			"redis_acl_channels":   dbUser.AccessControl.RedisACLChannels,
-			"redis_acl_commands":   dbUser.AccessControl.RedisACLCommands,
-			"redis_acl_keys":       dbUser.AccessControl.RedisACLKeys,
+			"acl_categories": dbUser.AccessControl.ACLCategories,
+			"acl_channels":   dbUser.AccessControl.ACLChannels,
+			"acl_commands":   dbUser.AccessControl.ACLCommands,
+			"acl_keys":       dbUser.AccessControl.ACLKeys,
 		},
 	}
 	return f

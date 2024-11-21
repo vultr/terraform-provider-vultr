@@ -145,7 +145,7 @@ func dataSourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
-			"redis_eviction_policy": {
+			"eviction_policy": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -212,7 +212,7 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set resource database `plan` read value: %v", err)
 	}
 
-	if databaseList[0].DatabaseEngine != "redis" {
+	if databaseList[0].DatabaseEngine != "redis" && databaseList[0].DatabaseEngine != "valkey" {
 		if err := d.Set("plan_disk", databaseList[0].PlanDisk); err != nil {
 			return diag.Errorf("unable to set resource database `plan_disk` read value: %v", err)
 		}
@@ -346,13 +346,13 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
-	if databaseList[0].DatabaseEngine == "redis" {
-		if err := d.Set("redis_eviction_policy", databaseList[0].RedisEvictionPolicy); err != nil {
-			return diag.Errorf("unable to set resource database `redis_eviction_policy` read value: %v", err)
+	if databaseList[0].DatabaseEngine == "redis" || databaseList[0].DatabaseEngine == "valkey" {
+		if err := d.Set("eviction_policy", databaseList[0].EvictionPolicy); err != nil {
+			return diag.Errorf("unable to set resource database `eviction_policy` read value: %v", err)
 		}
 	}
 
-	if databaseList[0].DatabaseEngine != "redis" {
+	if databaseList[0].DatabaseEngine != "redis" && databaseList[0].DatabaseEngine != "valkey" {
 		if err := d.Set("cluster_time_zone", databaseList[0].ClusterTimeZone); err != nil {
 			return diag.Errorf("unable to set resource database `cluster_time_zone` read value: %v", err)
 		}
@@ -414,7 +414,7 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 			"mysql_require_primary_key": db.ReadReplicas[v].MySQLRequirePrimaryKey,
 			"mysql_slow_query_log":      db.ReadReplicas[v].MySQLSlowQueryLog,
 			"mysql_long_query_time":     db.ReadReplicas[v].MySQLLongQueryTime,
-			"redis_eviction_policy":     db.ReadReplicas[v].RedisEvictionPolicy,
+			"eviction_policy":           db.ReadReplicas[v].EvictionPolicy,
 			"cluster_time_zone":         db.ReadReplicas[v].ClusterTimeZone,
 		}
 
@@ -433,11 +433,11 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 			delete(r, "mysql_sql_long_query_time")
 		}
 
-		if db.DatabaseEngine != "redis" {
-			delete(r, "redis_eviction_policy")
+		if db.DatabaseEngine != "redis" && db.DatabaseEngine != "valkey" {
+			delete(r, "eviction_policy")
 		}
 
-		if db.DatabaseEngine == "redis" {
+		if db.DatabaseEngine == "redis" || db.DatabaseEngine == "valkey" {
 			delete(r, "cluster_time_zone")
 		}
 

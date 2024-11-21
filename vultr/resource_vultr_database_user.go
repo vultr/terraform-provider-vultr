@@ -53,7 +53,7 @@ func resourceVultrDatabaseUser() *schema.Resource {
 				Computed: true,
 				MaxItems: 1,
 				Elem: &schema.Resource{
-					Schema: redisACLSchema(),
+					Schema: userACLSchema(),
 				},
 			},
 			// Computed
@@ -89,9 +89,9 @@ func resourceVultrDatabaseUserCreate(ctx context.Context, d *schema.ResourceData
 
 	d.SetId(databaseUser.Username)
 
-	// Redis user access control can only be updated after creation
+	// Redis/Valkey user access control can only be updated after creation
 	if accessControl, accessControlOK := d.GetOk("access_control"); accessControlOK {
-		if err := updateRedisACL(ctx, client, databaseID, d, accessControl); err != nil {
+		if err := updateUserACL(ctx, client, databaseID, d, accessControl); err != nil {
 			return diag.Errorf("error updating user access control: %v", err)
 		}
 	}
@@ -143,7 +143,7 @@ func resourceVultrDatabaseUserRead(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	if databaseUser.AccessControl != nil {
-		if err := d.Set("access_control", flattenRedisACL(databaseUser)); err != nil {
+		if err := d.Set("access_control", flattenUserACL(databaseUser)); err != nil {
 			return diag.Errorf("unable to set resource database user `access_control` read value: %v", err)
 		}
 	}
@@ -170,7 +170,7 @@ func resourceVultrDatabaseUserUpdate(ctx context.Context, d *schema.ResourceData
 
 	if d.HasChange("access_control") {
 		_, accessControl := d.GetChange("access_control")
-		if err := updateRedisACL(ctx, client, databaseID, d, accessControl); err != nil {
+		if err := updateUserACL(ctx, client, databaseID, d, accessControl); err != nil {
 			return diag.Errorf("error updating user access control: %v", err)
 		}
 	}
@@ -203,32 +203,32 @@ func resourceVultrDatabaseUserDelete(ctx context.Context, d *schema.ResourceData
 	return nil
 }
 
-func updateRedisACL(ctx context.Context, client *govultr.Client, databaseID string, d *schema.ResourceData, accessControl interface{}) error { //nolint:lll
+func updateUserACL(ctx context.Context, client *govultr.Client, databaseID string, d *schema.ResourceData, accessControl interface{}) error { //nolint:lll
 	// This should only loop once due to MaxItems: 1 in the resource definition
 	for _, v := range accessControl.(*schema.Set).List() {
 		var req = &govultr.DatabaseUserACLReq{}
 		var aclCategories, aclChannels, aclCommands, aclKeys []string
 		obj := v.(map[string]interface{})
 
-		for _, r := range obj["redis_acl_categories"].(*schema.Set).List() {
+		for _, r := range obj["acl_categories"].(*schema.Set).List() {
 			aclCategories = append(aclCategories, r.(string))
 		}
-		req.RedisACLCategories = &aclCategories
+		req.ACLCategories = &aclCategories
 
-		for _, r := range obj["redis_acl_channels"].(*schema.Set).List() {
+		for _, r := range obj["acl_channels"].(*schema.Set).List() {
 			aclChannels = append(aclChannels, r.(string))
 		}
-		req.RedisACLChannels = &aclChannels
+		req.ACLChannels = &aclChannels
 
-		for _, r := range obj["redis_acl_commands"].(*schema.Set).List() {
+		for _, r := range obj["acl_commands"].(*schema.Set).List() {
 			aclCommands = append(aclCommands, r.(string))
 		}
-		req.RedisACLCommands = &aclCommands
+		req.ACLCommands = &aclCommands
 
-		for _, r := range obj["redis_acl_keys"].(*schema.Set).List() {
+		for _, r := range obj["acl_keys"].(*schema.Set).List() {
 			aclKeys = append(aclKeys, r.(string))
 		}
-		req.RedisACLKeys = &aclKeys
+		req.ACLKeys = &aclKeys
 
 		log.Printf("[INFO] Updating user access control")
 		if _, _, err := client.Database.UpdateUserACL(ctx, databaseID, d.Id(), req); err != nil {

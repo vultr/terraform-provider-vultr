@@ -54,7 +54,11 @@ The following attributes are exported:
 
 `access_control`
 
-* `redis_acl_categories` - List of command category rules for this managed database user (Redis engine types only).
-* `redis_acl_channels` - List of publish/subscribe channel patterns for this managed database user (Redis engine types only).
-* `redis_acl_commands` - List of individual command rules for this managed database user (Redis engine types only).
-* `redis_acl_keys` - List of access rules for this managed database user (Redis engine types only).
+* `redis_acl_categories` - (Deprecated: use `acl_categories` instead) List of command category rules for this managed database user (Redis engine types only).
+* `redis_acl_channels` - (Deprecated: use `acl_channels` instead) List of publish/subscribe channel patterns for this managed database user (Redis engine types only).
+* `redis_acl_commands` - (Deprecated: use `acl_commands` instead) List of individual command rules for this managed database user (Redis engine types only).
+* `redis_acl_keys` - (Deprecated: use `acl_keys` instead) List of access rules for this managed database user (Redis engine types only).
+* `acl_categories` - List of command category rules for this managed database user (Redis engine types only).
+* `acl_channels` - List of publish/subscribe channel patterns for this managed database user (Redis engine types only).
+* `acl_commands` - List of individual command rules for this managed database user (Redis engine types only).
+* `acl_keys` - List of access rules for this managed database user (Redis engine types only).
