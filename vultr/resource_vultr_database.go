@@ -269,7 +269,7 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	// Default user (vultradmin) password can only be changed after creation
-	if password, passwordOK := d.GetOk("password"); passwordOK && d.Get("database_engine").(string) != "redis" && d.Get("database_engine").(string) != "valkey" {
+	if password, passwordOK := d.GetOk("password"); passwordOK && d.Get("database_engine").(string) != "redis" && d.Get("database_engine").(string) != "valkey" { //nolint:lll
 		req3 := &govultr.DatabaseUserUpdateReq{
 			Password: password.(string),
 		}
@@ -581,7 +581,7 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	// Updating the default user password requires a separate API call
-	if d.HasChange("password") && d.Get("database_engine").(string) != "redis" && d.Get("database_engine").(string) != "valkey" {
+	if d.HasChange("password") && d.Get("database_engine").(string) != "redis" && d.Get("database_engine").(string) != "valkey" { //nolint:lll
 		_, newVal := d.GetChange("password")
 		password := newVal.(string)
 		reqP := &govultr.DatabaseUserUpdateReq{
