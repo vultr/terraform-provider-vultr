@@ -96,7 +96,7 @@ func resourceVultrDatabase() *schema.Resource {
 				Computed: true,
 				Optional: true,
 			},
-			"redis_eviction_policy": {
+			"eviction_policy": {
 				Type:     schema.TypeString,
 				Optional: true,
 				Computed: true,
@@ -219,7 +219,7 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 		MySQLRequirePrimaryKey: govultr.BoolToBoolPtr(true),
 		MySQLSlowQueryLog:      govultr.BoolToBoolPtr(false),
 		MySQLLongQueryTime:     d.Get("mysql_long_query_time").(int),
-		RedisEvictionPolicy:    d.Get("redis_eviction_policy").(string),
+		EvictionPolicy:         d.Get("eviction_policy").(string),
 	}
 
 	if trustedIPs, trustedIPsOK := d.GetOk("trusted_ips"); trustedIPsOK {
@@ -269,7 +269,7 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	// Default user (vultradmin) password can only be changed after creation
-	if password, passwordOK := d.GetOk("password"); passwordOK && d.Get("database_engine").(string) != "redis" {
+	if password, passwordOK := d.GetOk("password"); passwordOK && d.Get("database_engine").(string) != "redis" && d.Get("database_engine").(string) != "valkey" { //nolint:lll
 		req3 := &govultr.DatabaseUserUpdateReq{
 			Password: password.(string),
 		}
@@ -304,7 +304,7 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("unable to set resource database `plan` read value: %v", err)
 	}
 
-	if database.DatabaseEngine != "redis" {
+	if database.DatabaseEngine != "redis" && database.DatabaseEngine != "valkey" {
 		if err := d.Set("plan_disk", database.PlanDisk); err != nil {
 			return diag.Errorf("unable to set resource database `plan_disk` read value: %v", err)
 		}
@@ -438,13 +438,13 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 		}
 	}
 
-	if database.DatabaseEngine == "redis" {
-		if err := d.Set("redis_eviction_policy", database.RedisEvictionPolicy); err != nil {
-			return diag.Errorf("unable to set resource database `redis_eviction_policy` read value: %v", err)
+	if database.DatabaseEngine == "redis" || database.DatabaseEngine == "valkey" {
+		if err := d.Set("eviction_policy", database.EvictionPolicy); err != nil {
+			return diag.Errorf("unable to set resource database `eviction_policy` read value: %v", err)
 		}
 	}
 
-	if database.DatabaseEngine != "redis" {
+	if database.DatabaseEngine != "redis" && database.DatabaseEngine != "valkey" {
 		if err := d.Set("cluster_time_zone", database.ClusterTimeZone); err != nil {
 			return diag.Errorf("unable to set resource database `cluster_time_zone` read value: %v", err)
 		}
@@ -557,11 +557,11 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 		req.MySQLLongQueryTime = mysqlLongQueryTime
 	}
 
-	if d.HasChange("redis_eviction_policy") {
-		log.Printf("[INFO] Updating Redis Eviction Policy")
-		_, newVal := d.GetChange("redis_eviction_policy")
-		redisEvictionPolicy := newVal.(string)
-		req.RedisEvictionPolicy = redisEvictionPolicy
+	if d.HasChange("eviction_policy") {
+		log.Printf("[INFO] Updating Eviction Policy")
+		_, newVal := d.GetChange("eviction_policy")
+		evictionPolicy := newVal.(string)
+		req.EvictionPolicy = evictionPolicy
 	}
 
 	if _, _, err := client.Database.Update(ctx, d.Id(), req); err != nil {
@@ -581,7 +581,7 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	// Updating the default user password requires a separate API call
-	if d.HasChange("password") && d.Get("database_engine").(string) != "redis" {
+	if d.HasChange("password") && d.Get("database_engine").(string) != "redis" && d.Get("database_engine").(string) != "valkey" { //nolint:lll
 		_, newVal := d.GetChange("password")
 		password := newVal.(string)
 		reqP := &govultr.DatabaseUserUpdateReq{
