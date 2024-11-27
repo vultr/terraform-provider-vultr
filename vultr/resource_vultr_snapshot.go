@@ -56,7 +56,7 @@ func resourceVultrSnapshot() *schema.Resource {
 			},
 		},
 		Timeouts: &schema.ResourceTimeout{
-			Create: schema.DefaultTimeout(30 * time.Minute),
+			Create: schema.DefaultTimeout(30 * time.Minute), //nolint:mnd
 		},
 	}
 }
