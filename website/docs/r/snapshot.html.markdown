@@ -34,6 +34,23 @@ The following arguments are supported:
 * `instance_id` - (Required) ID of a given instance that you want to create a snapshot from.
 * `description` - (Optional) The description for the given snapshot.
 
+Snapshots often exceed the default timeout built in to all create requests in
+the provider. In order to customize that, you may specify a custome value in a
+`timeouts` block of the resource definition
+
+* `timeouts` - (Optional) The create timeout value can be manually set
+
+``` hcl
+resource "vultr_snapshot" "sn" {
+  instance_id = resource.vultr_instance.test-inst.id
+  description = "terraform timeout test"
+
+  timeouts {
+    create = "60m"
+  }
+}
+```
+
 ## Attributes Reference
 
 The following attributes are exported:
