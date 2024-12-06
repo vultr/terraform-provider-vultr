@@ -1,4 +1,9 @@
 # Changelog
+## [v2.23.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.23.0...v2.23.1) (2024-12-06)
+### Automation
+* Update github workflows from go 1.22 to 1.23 [PR 538](https://github.com/vultr/terraform-provider-vultr/pull/538)
+* Update goreleaser action from v5 to v6 [PR 539](https://github.com/vultr/terraform-provider-vultr/pull/539)
+
 ## [v2.23.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.22.1...v2.23.0) (2024-12-06)
 ### Enhancements
 * resource/snapshot: Add default timeout on create [PR 536](https://github.com/vultr/terraform-provider-vultr/pull/536)
