@@ -1,4 +1,29 @@
 # Changelog
+## [v2.23.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.22.1...v2.23.0) (2024-12-06)
+### Enhancements
+* resource/snapshot: Add default timeout on create [PR 536](https://github.com/vultr/terraform-provider-vultr/pull/536)
+
+### Bug Fixes
+* resource/kubernetes: Remove the set on enable_firewall [PR 531](https://github.com/vultr/terraform-provider-vultr/pull/531)
+* resource/kubernetes: Fix node pool default tag lookup [PR 528](https://github.com/vultr/terraform-provider-vultr/pull/528)
+
+### Deprecations
+* resource/database: Deprecate Redis-named fields [PR 533](https://github.com/vultr/terraform-provider-vultr/pull/533)
+* data_source/database: Deprecate Redis-named fields [PR 533](https://github.com/vultr/terraform-provider-vultr/pull/533)
+
+### Dependencies
+* Update govultr from v3.11.2 to v3.12.0 [PR 532](https://github.com/vultr/terraform-provider-vultr/pull/532)
+* Bump golang.org/x/oauth2 from 0.23.0 to 0.24.0 [PR 527](https://github.com/vultr/terraform-provider-vultr/pull/527)
+
+### Documentation
+* Add provider installation instructions to README [PR 535](https://github.com/vultr/terraform-provider-vultr/pull/535)
+
+### Automation
+* Add goreleaser config version for v2 [PR 534](https://github.com/vultr/terraform-provider-vultr/pull/534)
+
+### New Contributors
+* @timurbabs made their first contribution in [PR 528](https://github.com/vultr/terraform-provider-vultr/pull/528)
+
 ## [v2.22.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.22.0...v2.22.1) (2024-11-07)
 ### Bug Fixes
 * resource/bare_metal_server: Set default value for user_scheme [PR 525](https://github.com/vultr/terraform-provider-vultr/pull/525)
