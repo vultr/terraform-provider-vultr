@@ -35,12 +35,12 @@ The following arguments are supported:
 * `encryption` - (Optional) The encryption type of the new managed database user's password (MySQL engine types only - `caching_sha2_password`, `mysql_native_password`).
 * `permission` - (Optional) The permission level for the database user (Kafka engine types only - `admin`, `read`, `write`, `readwrite`).
 
-`access_control` - (Optional) The access control configuration for the new managed database user (Redis engine types only). It supports the following fields:
+`access_control` - (Optional) The access control configuration for the new managed database user (Valkey engine types only). It supports the following fields:
 
-* `redis_acl_categories` - (Required) The list of command category rules for this managed database user.
-* `redis_acl_channels` - (Required) The list of publish/subscribe channel patterns for this managed database user.
-* `redis_acl_commands` - (Required) The list of individual command rules for this managed database user.
-* `redis_acl_keys` - (Required) The list of access rules for this managed database user.
+* `acl_categories` - (Required) The list of command category rules for this managed database user.
+* `acl_channels` - (Required) The list of publish/subscribe channel patterns for this managed database user.
+* `acl_commands` - (Required) The list of individual command rules for this managed database user.
+* `acl_keys` - (Required) The list of access rules for this managed database user.
 
 ## Attributes Reference
 
@@ -54,11 +54,7 @@ The following attributes are exported:
 
 `access_control`
 
-* `redis_acl_categories` - (Deprecated: use `acl_categories` instead) List of command category rules for this managed database user (Redis engine types only).
-* `redis_acl_channels` - (Deprecated: use `acl_channels` instead) List of publish/subscribe channel patterns for this managed database user (Redis engine types only).
-* `redis_acl_commands` - (Deprecated: use `acl_commands` instead) List of individual command rules for this managed database user (Redis engine types only).
-* `redis_acl_keys` - (Deprecated: use `acl_keys` instead) List of access rules for this managed database user (Redis engine types only).
-* `acl_categories` - List of command category rules for this managed database user (Redis engine types only).
-* `acl_channels` - List of publish/subscribe channel patterns for this managed database user (Redis engine types only).
-* `acl_commands` - List of individual command rules for this managed database user (Redis engine types only).
-* `acl_keys` - List of access rules for this managed database user (Redis engine types only).
+* `acl_categories` - List of command category rules for this managed database user (Valkey engine types only).
+* `acl_channels` - List of publish/subscribe channel patterns for this managed database user (Valkey engine types only).
+* `acl_commands` - List of individual command rules for this managed database user (Valkey engine types only).
+* `acl_keys` - List of access rules for this managed database user (Valkey engine types only).

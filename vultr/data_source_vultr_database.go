@@ -212,7 +212,7 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set resource database `plan` read value: %v", err)
 	}
 
-	if databaseList[0].DatabaseEngine != "redis" && databaseList[0].DatabaseEngine != "valkey" {
+	if databaseList[0].DatabaseEngine != "valkey" {
 		if err := d.Set("plan_disk", databaseList[0].PlanDisk); err != nil {
 			return diag.Errorf("unable to set resource database `plan_disk` read value: %v", err)
 		}
@@ -346,13 +346,13 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
-	if databaseList[0].DatabaseEngine == "redis" || databaseList[0].DatabaseEngine == "valkey" {
+	if databaseList[0].DatabaseEngine == "valkey" {
 		if err := d.Set("eviction_policy", databaseList[0].EvictionPolicy); err != nil {
 			return diag.Errorf("unable to set resource database `eviction_policy` read value: %v", err)
 		}
 	}
 
-	if databaseList[0].DatabaseEngine != "redis" && databaseList[0].DatabaseEngine != "valkey" {
+	if databaseList[0].DatabaseEngine != "valkey" {
 		if err := d.Set("cluster_time_zone", databaseList[0].ClusterTimeZone); err != nil {
 			return diag.Errorf("unable to set resource database `cluster_time_zone` read value: %v", err)
 		}
@@ -433,11 +433,11 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 			delete(r, "mysql_sql_long_query_time")
 		}
 
-		if db.DatabaseEngine != "redis" && db.DatabaseEngine != "valkey" {
+		if db.DatabaseEngine != "valkey" {
 			delete(r, "eviction_policy")
 		}
 
-		if db.DatabaseEngine == "redis" || db.DatabaseEngine == "valkey" {
+		if db.DatabaseEngine == "valkey" {
 			delete(r, "cluster_time_zone")
 		}
 

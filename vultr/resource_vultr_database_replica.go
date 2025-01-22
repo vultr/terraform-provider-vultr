@@ -102,7 +102,7 @@ func resourceVultrDatabaseReplicaRead(ctx context.Context, d *schema.ResourceDat
 		return diag.Errorf("unable to set resource database read replica `plan` read value: %v", err)
 	}
 
-	if database.DatabaseEngine != "redis" && database.DatabaseEngine != "valkey" {
+	if database.DatabaseEngine != "valkey" {
 		if err := d.Set("plan_disk", database.PlanDisk); err != nil {
 			return diag.Errorf("unable to set resource database read replica `plan_disk` read value: %v", err)
 		}
@@ -229,7 +229,7 @@ func resourceVultrDatabaseReplicaRead(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if database.DatabaseEngine == "redis" || database.DatabaseEngine == "valkey" {
+	if database.DatabaseEngine == "valkey" {
 		if err := d.Set("eviction_policy", database.EvictionPolicy); err != nil {
 			return diag.Errorf(
 				"unable to set resource database read replica `eviction_policy` read value: %v",
@@ -238,7 +238,7 @@ func resourceVultrDatabaseReplicaRead(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if database.DatabaseEngine != "redis" && database.DatabaseEngine != "valkey" {
+	if database.DatabaseEngine != "valkey" {
 		if err := d.Set("cluster_time_zone", database.ClusterTimeZone); err != nil {
 			return diag.Errorf("unable to set resource database read replica `cluster_time_zone` read value: %v", err)
 		}

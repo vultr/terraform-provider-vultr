@@ -69,6 +69,5 @@ The following attributes are exported:
 * `mysql_require_primary_key` - The configuration value for whether primary keys are required on the managed database read replica (MySQL engine types only).
 * `mysql_slow_query_log` - The configuration value for slow query logging on the managed database read replica (MySQL engine types only).
 * `mysql_long_query_time` - The configuration value for the long query time (in seconds) on the managed database read replica (MySQL engine types only).
-* `redis_eviction_policy` - (Deprecated: use `eviction_policy` instead) The configuration value for the data eviction policy on the managed database read replica (Redis engine types only).
-* `eviction_policy` - The configuration value for the data eviction policy on the managed database read replica (Redis engine types only).
+* `eviction_policy` - The configuration value for the data eviction policy on the managed database read replica (Valkey engine types only).
 * `cluster_time_zone` - The configured time zone for the managed database read replica in TZ database format.

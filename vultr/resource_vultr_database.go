@@ -269,7 +269,7 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	// Default user (vultradmin) password can only be changed after creation
-	if password, passwordOK := d.GetOk("password"); passwordOK && d.Get("database_engine").(string) != "redis" && d.Get("database_engine").(string) != "valkey" { //nolint:lll
+	if password, passwordOK := d.GetOk("password"); passwordOK && d.Get("database_engine").(string) != "valkey" { //nolint:lll
 		req3 := &govultr.DatabaseUserUpdateReq{
 			Password: password.(string),
 		}
@@ -304,7 +304,7 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("unable to set resource database `plan` read value: %v", err)
 	}
 
-	if database.DatabaseEngine != "redis" && database.DatabaseEngine != "valkey" {
+	if database.DatabaseEngine != "valkey" {
 		if err := d.Set("plan_disk", database.PlanDisk); err != nil {
 			return diag.Errorf("unable to set resource database `plan_disk` read value: %v", err)
 		}
@@ -438,13 +438,13 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 		}
 	}
 
-	if database.DatabaseEngine == "redis" || database.DatabaseEngine == "valkey" {
+	if database.DatabaseEngine == "valkey" {
 		if err := d.Set("eviction_policy", database.EvictionPolicy); err != nil {
 			return diag.Errorf("unable to set resource database `eviction_policy` read value: %v", err)
 		}
 	}
 
-	if database.DatabaseEngine != "redis" && database.DatabaseEngine != "valkey" {
+	if database.DatabaseEngine != "valkey" {
 		if err := d.Set("cluster_time_zone", database.ClusterTimeZone); err != nil {
 			return diag.Errorf("unable to set resource database `cluster_time_zone` read value: %v", err)
 		}
@@ -581,7 +581,7 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	// Updating the default user password requires a separate API call
-	if d.HasChange("password") && d.Get("database_engine").(string) != "redis" && d.Get("database_engine").(string) != "valkey" { //nolint:lll
+	if d.HasChange("password") && d.Get("database_engine").(string) != "valkey" {
 		_, newVal := d.GetChange("password")
 		password := newVal.(string)
 		reqP := &govultr.DatabaseUserUpdateReq{

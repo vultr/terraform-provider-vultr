@@ -89,7 +89,7 @@ func resourceVultrDatabaseUserCreate(ctx context.Context, d *schema.ResourceData
 
 	d.SetId(databaseUser.Username)
 
-	// Redis/Valkey user access control can only be updated after creation
+	// Valkey user access control can only be updated after creation
 	if accessControl, accessControlOK := d.GetOk("access_control"); accessControlOK {
 		if err := updateUserACL(ctx, client, databaseID, d, accessControl); err != nil {
 			return diag.Errorf("error updating user access control: %v", err)
