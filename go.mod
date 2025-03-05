@@ -1,11 +1,12 @@
 module github.com/vultr/terraform-provider-vultr
 
 go 1.23
+toolchain go1.24.1
 
 require (
 	github.com/hashicorp/terraform-plugin-log v0.9.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.35.0
-	github.com/vultr/govultr/v3 v3.14.1
+	github.com/vultr/govultr/v3 v3.15.0
 	golang.org/x/oauth2 v0.25.0
 )
 
