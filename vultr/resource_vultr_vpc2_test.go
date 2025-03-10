@@ -61,7 +61,7 @@ func testAccCheckVultrVPC2Destroy(s *terraform.State) error {
 		vpc2ID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		_, _, err := client.VPC2.Get(context.Background(), vpc2ID)
+		_, _, err := client.VPC2.Get(context.Background(), vpc2ID) //nolint:staticcheck
 		if err == nil {
 			return fmt.Errorf("vpc 2.0 still exists: %s", vpc2ID)
 		}
@@ -83,7 +83,7 @@ func testAccCheckVultrVPC2Exists(n string) resource.TestCheckFunc {
 		vpc2ID := rs.Primary.ID
 		client := testAccProvider.Meta().(*Client).govultrClient()
 
-		_, _, err := client.VPC2.Get(context.Background(), vpc2ID)
+		_, _, err := client.VPC2.Get(context.Background(), vpc2ID) //nolint:staticcheck
 		if err != nil {
 			return fmt.Errorf("VPC 2.0 does not exist: %s", vpc2ID)
 		}

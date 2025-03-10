@@ -74,7 +74,7 @@ func resourceVultrVPC2Create(ctx context.Context, d *schema.ResourceData, meta i
 		PrefixLength: d.Get("prefix_length").(int),
 	}
 
-	vpc, _, err := client.VPC2.Create(ctx, vpcReq)
+	vpc, _, err := client.VPC2.Create(ctx, vpcReq) //nolint:staticcheck
 	if err != nil {
 		return diag.Errorf("error creating VPC 2.0: %v", err)
 	}
@@ -88,7 +88,7 @@ func resourceVultrVPC2Create(ctx context.Context, d *schema.ResourceData, meta i
 func resourceVultrVPC2Read(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	vpc, _, err := client.VPC2.Get(ctx, d.Id())
+	vpc, _, err := client.VPC2.Get(ctx, d.Id()) //nolint:staticcheck
 	if err != nil {
 		if strings.Contains(err.Error(), "Invalid VPC 2.0 ID") {
 			log.Printf("[WARN] Vultr VPC 2.0 (%s) not found", d.Id())
@@ -120,7 +120,7 @@ func resourceVultrVPC2Read(ctx context.Context, d *schema.ResourceData, meta int
 func resourceVultrVPC2Update(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	if err := client.VPC2.Update(ctx, d.Id(), d.Get("description").(string)); err != nil {
+	if err := client.VPC2.Update(ctx, d.Id(), d.Get("description").(string)); err != nil { //nolint:staticcheck
 		return diag.Errorf("error updating VPC 2.0: %v", err)
 	}
 
@@ -133,7 +133,7 @@ func resourceVultrVPC2Delete(ctx context.Context, d *schema.ResourceData, meta i
 	log.Printf("[INFO] Deleting VPC 2.0: %s", d.Id())
 
 	retryErr := retry.RetryContext(ctx, d.Timeout(schema.TimeoutDelete)-time.Minute, func() *retry.RetryError {
-		err := client.VPC2.Delete(ctx, d.Id())
+		err := client.VPC2.Delete(ctx, d.Id()) //nolint:staticcheck
 
 		if err == nil {
 			return nil

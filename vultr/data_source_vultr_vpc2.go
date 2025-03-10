@@ -51,7 +51,7 @@ func dataSourceVultrVPC2Read(ctx context.Context, d *schema.ResourceData, meta i
 	options := &govultr.ListOptions{}
 
 	for {
-		vpcs, meta, _, err := client.VPC2.List(ctx, options)
+		vpcs, meta, _, err := client.VPC2.List(ctx, options) //nolint:staticcheck
 		if err != nil {
 			return diag.Errorf("error getting VPCs 2.0: %v", err)
 		}
