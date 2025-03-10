@@ -56,7 +56,6 @@ linters:
   enable:
     - dogsled
     - errcheck
-    - exportloopref
     - gofmt
     - goimports
     - mnd
