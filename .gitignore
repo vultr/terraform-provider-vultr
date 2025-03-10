@@ -6,6 +6,7 @@ bin
 ./*.tfstate
 terraform.tfplan
 terraform.tfstate
+main.tf
 
 .DS_STORE
 .vscode/
