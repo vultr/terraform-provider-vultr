@@ -58,7 +58,8 @@ func TestAccVultrObjectStorageUpdateLabel(t *testing.T) {
 func testAccVultrObjectStorageBase(label string) string {
 	return fmt.Sprintf(`
 		resource "vultr_object_storage" "test" {
-			cluster_id = 2
+			cluster_id = 9
+			tier_id = 5
 			label = "%s"
 		}`, label)
 }
@@ -66,7 +67,8 @@ func testAccVultrObjectStorageBase(label string) string {
 func testAccVultrObjectStorageUpdated(label string) string {
 	return fmt.Sprintf(`
 		resource "vultr_object_storage" "test" {
-			cluster_id = 2
+			cluster_id = 9
+			tier_id = 5
 			label = "%s"
 		}`, label)
 }

@@ -44,6 +44,7 @@ func Provider() *schema.Provider {
 			"vultr_load_balancer":          dataSourceVultrLoadBalancer(),
 			"vultr_object_storage":         dataSourceVultrObjectStorage(),
 			"vultr_object_storage_cluster": dataSourceVultrObjectStorageClusters(),
+			"vultr_object_storage_tier":    dataSourceVultrObjectStorageTier(),
 			"vultr_os":                     dataSourceVultrOS(),
 			"vultr_plan":                   dataSourceVultrPlan(),
 			"vultr_region":                 dataSourceVultrRegion(),

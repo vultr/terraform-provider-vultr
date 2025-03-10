@@ -27,6 +27,11 @@ func resourceVultrObjectStorage() *schema.Resource {
 				ForceNew: true,
 				Required: true,
 			},
+			"tier_id": {
+				Type:     schema.TypeInt,
+				ForceNew: true,
+				Required: true,
+			},
 			"label": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -69,10 +74,12 @@ func resourceVultrObjectStorage() *schema.Resource {
 func resourceVultrObjectStorageCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	objStoreCluster := d.Get("cluster_id").(int)
-	label := d.Get("label").(string)
+	objReq := &govultr.ObjectStorageReq{
+		ClusterID: d.Get("cluster_id").(int),
+		TierID:    d.Get("tier_id").(int),
+		Label:     d.Get("label").(string),
+	}
 
-	objReq := &govultr.ObjectStorageReq{ClusterID: objStoreCluster, Label: label}
 	obj, _, err := client.ObjectStorage.Create(ctx, objReq)
 	if err != nil {
 		return diag.Errorf("error creating object storage: %v", err)
