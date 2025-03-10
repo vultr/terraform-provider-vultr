@@ -16,7 +16,8 @@ Create a new object storage subscription.
 
 ```hcl
 resource "vultr_object_storage" "tf" {
-    cluster_id = 2
+    cluster_id = 9
+    tier_id = 4
     label = "vultr-object-storage"
 }
 ```
@@ -25,8 +26,9 @@ resource "vultr_object_storage" "tf" {
 
 The following arguments are supported:
 
-* `cluster_id` - (Required) The region ID that you want the network to be created in.
-* `label` - (Optional) The description you want to give your network.
+* `cluster_id` - (Required) The ID of the region that you want the object storage to be deployed in.
+* `tier_id` - (Required) The ID of the tier to deploy the storage under.
+* `label` - (Optional) The description you want to give your object storage.
 
 ## Attributes Reference
 
