@@ -36,7 +36,7 @@ func getVPC2s(client *govultr.Client, instanceID string) ([]string, error) {
 	options := &govultr.ListOptions{}
 	var vpcs []string
 	for {
-		vpcInfo, meta, _, err := client.Instance.ListVPC2Info(context.Background(), instanceID, options)
+		vpcInfo, meta, _, err := client.Instance.ListVPC2Info(context.Background(), instanceID, options) //nolint:staticcheck
 		if err != nil {
 			return nil, fmt.Errorf("error getting list of attached VPCs 2.0: %v", err)
 		}
@@ -60,7 +60,7 @@ func getVPC2s(client *govultr.Client, instanceID string) ([]string, error) {
 func getBareMetalServerVPC2s(client *govultr.Client, serverID string) ([]string, error) {
 	var vpcs []string
 
-	vpcInfo, _, err := client.BareMetalServer.ListVPC2Info(context.Background(), serverID)
+	vpcInfo, _, err := client.BareMetalServer.ListVPC2Info(context.Background(), serverID) //nolint:staticcheck
 	if err != nil {
 		return nil, fmt.Errorf("error getting list of attached VPCs 2.0: %v", err)
 	}

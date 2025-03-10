@@ -376,7 +376,7 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 
 	if vpcIDs, vpcOK := d.GetOk("vpc2_ids"); vpcOK {
 		for _, v := range vpcIDs.(*schema.Set).List() {
-			req.AttachVPC2 = append(req.AttachVPC2, v.(string))
+			req.AttachVPC2 = append(req.AttachVPC2, v.(string)) //nolint:staticcheck
 		}
 	}
 
@@ -647,8 +647,8 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 			newIDs = append(newIDs, v.(string))
 		}
 
-		req.AttachVPC2 = append(req.AttachVPC2, diffSlice(oldIDs, newIDs)...)
-		req.DetachVPC2 = append(req.DetachVPC2, diffSlice(newIDs, oldIDs)...)
+		req.AttachVPC2 = append(req.AttachVPC2, diffSlice(oldIDs, newIDs)...) //nolint:staticcheck
+		req.DetachVPC2 = append(req.DetachVPC2, diffSlice(newIDs, oldIDs)...) //nolint:staticcheck
 	}
 
 	if d.HasChange("tags") {
@@ -725,7 +725,7 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 	if vpcIDs, vpcOK := d.GetOk("vpc2_ids"); vpcOK {
 		detach := &govultr.InstanceUpdateReq{}
 		for _, v := range vpcIDs.(*schema.Set).List() {
-			detach.DetachVPC2 = append(detach.DetachVPC2, v.(string))
+			detach.DetachVPC2 = append(detach.DetachVPC2, v.(string)) //nolint:staticcheck
 		}
 
 		if _, _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
