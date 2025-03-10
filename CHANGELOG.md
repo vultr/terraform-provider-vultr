@@ -1,4 +1,25 @@
 # Changelog
+## [v2.24.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.23.1...v2.24.0) (2025-03-10)
+### Enhancements/Bug Fixes
+* Object Storage: Add tier param and data source [PR 565](https://github.com/vultr/terraform-provider-vultr/pull/565)
+
+### Documentation
+* Object Storage: Add docs for the tier changes [PR 566](https://github.com/vultr/terraform-provider-vultr/pull/566)
+
+### Clean Up
+* Database: Remove managed Redis references [PR 549](https://github.com/vultr/terraform-provider-vultr/pull/549)
+* Add terraform config to gitignore [PR 563](https://github.com/vultr/terraform-provider-vultr/pull/563)
+
+### Dependencies
+* Update govultr from v3.12.0 to v3.14.1 [PR 546](https://github.com/vultr/terraform-provider-vultr/pull/546)
+* Update govultr from v3.14.1 to v3.16.0 [PR 561](https://github.com/vultr/terraform-provider-vultr/pull/561)
+* Update govultr from v3.16.0 to v3.16.1 [PR 564](https://github.com/vultr/terraform-provider-vultr/pull/564)
+* Bump golang.org/x/oauth2 from 0.24.0 to 0.25.0 [PR 542](https://github.com/vultr/terraform-provider-vultr/pull/542)
+* Bump golang.org/x/net from 0.28.0 to 0.33.0 [PR 547](https://github.com/vultr/terraform-provider-vultr/pull/547)
+* Bump golang.org/x/oauth2 from 0.25.0 to 0.28.0 [PR 558](https://github.com/vultr/terraform-provider-vultr/pull/558)
+* Bump github.com/hashicorp/terraform-plugin-sdk/v2 from 2.35.0 to 2.36.1 [PR 554](https://github.com/vultr/terraform-provider-vultr/pull/554)
+* Update Go from v1.23 to v1.24 [PR 559](https://github.com/vultr/terraform-provider-vultr/pull/559)
+
 ## [v2.23.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.23.0...v2.23.1) (2024-12-06)
 ### Automation
 * Update github workflows from go 1.22 to 1.23 [PR 538](https://github.com/vultr/terraform-provider-vultr/pull/538)
