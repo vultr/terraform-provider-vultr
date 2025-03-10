@@ -9,6 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/vultr/govultr/v3"
 )
 
 func resourceVultrObjectStorage() *schema.Resource {
@@ -71,7 +72,8 @@ func resourceVultrObjectStorageCreate(ctx context.Context, d *schema.ResourceDat
 	objStoreCluster := d.Get("cluster_id").(int)
 	label := d.Get("label").(string)
 
-	obj, _, err := client.ObjectStorage.Create(ctx, objStoreCluster, label)
+	objReq := &govultr.ObjectStorageReq{ClusterID: objStoreCluster, Label: label}
+	obj, _, err := client.ObjectStorage.Create(ctx, objReq)
 	if err != nil {
 		return diag.Errorf("error creating object storage: %v", err)
 	}
@@ -127,9 +129,9 @@ func resourceVultrObjectStorageRead(ctx context.Context, d *schema.ResourceData,
 func resourceVultrObjectStorageUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	label := d.Get("label").(string)
+	objReq := &govultr.ObjectStorageReq{Label: d.Get("label").(string)}
 
-	if err := client.ObjectStorage.Update(ctx, d.Id(), label); err != nil {
+	if err := client.ObjectStorage.Update(ctx, d.Id(), objReq); err != nil {
 		return diag.Errorf("error updating object storage %s label : %v", d.Id(), err)
 	}
 
