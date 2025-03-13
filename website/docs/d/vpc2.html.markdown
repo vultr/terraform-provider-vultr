@@ -6,6 +6,8 @@ description: |-
   Get information about a Vultr VPC 2.0.
 ---
 
+** Deprecated: Use `vultr_vpc` instead **
+
 # vultr_vpc2
 
 Get information about a Vultr VPC 2.0.
