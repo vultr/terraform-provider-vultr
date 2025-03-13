@@ -74,4 +74,4 @@ The following attributes are exported:
   * `features` - Array of which features are enabled.
   * `backups_schedule` - The current configuration for backups 
   * `hostname` - The hostname assigned to the server.
-  * `vpc2_ids` - A list of VPC 2.0 IDs attached to the server.
+  * `vpc2_ids` - (Deprecated) A list of VPC 2.0 IDs attached to the server.

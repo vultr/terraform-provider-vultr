@@ -6,6 +6,8 @@ description: |-
   Provides a Vultr VPC 2.0 resource. This can be used to create, read, and delete VPCs 2.0 on your Vultr account.
 ---
 
+** Deprecated: Use `vultr_vpc` instead **
+
 # vultr_vpc2
 
 Provides a Vultr VPC 2.0 resource. This can be used to create, read, and delete VPCs 2.0 on your Vultr account.

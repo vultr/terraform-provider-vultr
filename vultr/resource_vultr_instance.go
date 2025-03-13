@@ -86,9 +86,10 @@ Will not do anything unless enable_ipv6 is also true.`,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"vpc2_ids": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+				Type:       schema.TypeSet,
+				Optional:   true,
+				Elem:       &schema.Schema{Type: schema.TypeString},
+				Deprecated: "VPC2 is deprecated and will not be supported in a future release.  Use VPC instead",
 			},
 			"label": {
 				Type:     schema.TypeString,

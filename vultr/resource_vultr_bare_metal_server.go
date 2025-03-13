@@ -72,9 +72,10 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				ForceNew: true,
 			},
 			"vpc2_ids": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+				Type:       schema.TypeSet,
+				Optional:   true,
+				Elem:       &schema.Schema{Type: schema.TypeString},
+				Deprecated: "VPC2 is deprecated and will be removed in a future release. Use VPC instead",
 			},
 			"ssh_key_ids": {
 				Type:     schema.TypeList,

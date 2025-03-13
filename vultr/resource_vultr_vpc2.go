@@ -60,6 +60,7 @@ func resourceVultrVPC2() *schema.Resource {
 				Computed: true,
 			},
 		},
+		DeprecationMessage: "VPC2 is deprecated and will not be supported in a future release.  Use VPC instead",
 	}
 }
 
