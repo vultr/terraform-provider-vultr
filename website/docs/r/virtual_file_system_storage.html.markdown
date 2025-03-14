@@ -16,7 +16,7 @@ Define a virtual file system storage resource:
 
 ```hcl
 resource "vultr_virtual_file_system_storage" "my_vfs_storage" {
-  label = "vultr-block-storage"
+  label = "vultr-vfs-storage"
   size_gb = 10
   region = "ewr"
   tags = ["terraform", "important"]

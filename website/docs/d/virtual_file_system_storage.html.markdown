@@ -27,7 +27,7 @@ data "vultr_virtual_file_system_storage" "my_vfs_storage" {
 
 The following arguments are supported:
 
-* `filter` - (Required) Query parameters for finding block storage subscriptions.
+* `filter` - (Required) Query parameters for finding virtual file system storage subscriptions.
 
 The `filter` block supports the following:
 
