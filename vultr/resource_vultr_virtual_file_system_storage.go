@@ -46,25 +46,10 @@ func resourceVultrVirtualFileSystemStorage() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Default:  nil,
 			},
-			"attachments": {
-				Type:     schema.TypeList,
+			"attached_instances": {
+				Type:     schema.TypeSet,
 				Optional: true,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"target": {
-							Type:     schema.TypeString,
-							Required: true,
-						},
-						"state": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-						"mount": {
-							Type:     schema.TypeString,
-							Computed: true,
-						},
-					},
-				},
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"disk_type": {
 				Type:     schema.TypeString,
@@ -88,6 +73,26 @@ func resourceVultrVirtualFileSystemStorage() *schema.Resource {
 				Type:     schema.TypeFloat,
 				Computed: true,
 			},
+			"attachments": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"instance_id": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"state": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"mount": {
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+					},
+				},
+			},
 		},
 	}
 }
@@ -103,6 +108,13 @@ func resourceVultrVirtualFileSystemStorageCreate(ctx context.Context, d *schema.
 		},
 	}
 
+	if tagsData, tagsOK := d.GetOk("tags"); tagsOK {
+		tags := tagsData.(*schema.Set).List()
+		for i := range tags {
+			req.Tags = append(req.Tags, tags[i].(string))
+		}
+	}
+
 	storage, _, err := client.VirtualFileSystemStorage.Create(ctx, &req)
 	if err != nil {
 		return diag.Errorf("error creating virtual file system storage: %v", err)
@@ -115,13 +127,12 @@ func resourceVultrVirtualFileSystemStorageCreate(ctx context.Context, d *schema.
 		return diag.Errorf("error while waiting for virtual file system storage %s to be completed: %s", d.Id(), err)
 	}
 
-	if attachments, ok := d.GetOk("attachments"); ok {
-		att := attachments.([]interface{})
-		for i := range att {
-			elem := att[i].(map[string]interface{})
-			log.Printf("[INFO] Attaching virtual file system storage %s to instance %s", d.Id(), elem["target"].(string))
-			if _, _, err := client.VirtualFileSystemStorage.Attach(ctx, d.Id(), elem["target"].(string)); err != nil {
-				return diag.Errorf("error attaching virtual file storage %s to instance %s", d.Id(), elem["target"].(string))
+	if attached, ok := d.GetOk("attached_instances"); ok {
+		ids := attached.(*schema.Set).List()
+		for i := range ids {
+			log.Printf("[INFO] Attaching virtual file system storage %s to instance %s", d.Id(), ids[i].(string))
+			if _, _, err := client.VirtualFileSystemStorage.Attach(ctx, d.Id(), ids[i].(string)); err != nil {
+				return diag.Errorf("error attaching virtual file system storage %s to instance %s : %v", d.Id(), ids[i].(string), err)
 			}
 		}
 	}
@@ -178,16 +189,23 @@ func resourceVultrVirtualFileSystemStorageRead(ctx context.Context, d *schema.Re
 		return diag.Errorf("unable to retrieve attachments for virtual file system storage %s", d.Id())
 	}
 
-	var attElems []map[string]interface{}
-	for i := range attachments {
-		attElems = append(attElems, map[string]interface{}{
-			"target": attachments[i].TargetID,
-			"state":  attachments[i].State,
-			"mount":  attachments[i].MountTag,
-		})
+	var attInstIDs []string
+	var attStates []map[string]interface{}
+	if len(attachments) != 0 {
+		for i := range attachments {
+			attInstIDs = append(attInstIDs, attachments[i].TargetID)
+			attStates = append(attStates, map[string]interface{}{
+				"instance_id": attachments[i].TargetID,
+				"state":       attachments[i].State,
+				"mount":       attachments[i].MountTag,
+			})
+		}
 	}
 
-	if err := d.Set("attachments", attElems); err != nil {
+	if err := d.Set("attached_instances", attInstIDs); err != nil {
+		return diag.Errorf("unable to set resource virtual_file_system_storage `attached_instances` read value: %v", err)
+	}
+	if err := d.Set("attachments", attStates); err != nil {
 		return diag.Errorf("unable to set resource virtual_file_system_storage `attachments` read value: %v", err)
 	}
 
@@ -210,18 +228,18 @@ func resourceVultrVirtualFileSystemStorageUpdate(ctx context.Context, d *schema.
 		return diag.Errorf("error updating virtual file system storage : %v", err)
 	}
 
-	if d.HasChange("attachments") {
-		attOld, attNew := d.GetChange("attachments")
+	if d.HasChange("attached_instances") {
+		attOld, attNew := d.GetChange("attached_instances")
 		elemsOld := attOld.(*schema.Set).List()
 		elemsNew := attNew.(*schema.Set).List()
 
 		var idOld, idNew, idDetach, idAttach []string
 		for i := range elemsOld {
-			idOld = append(idOld, elemsOld[i].(map[string]interface{})["target"].(string))
+			idOld = append(idOld, elemsOld[i].(string))
 		}
 
 		for i := range elemsNew {
-			idNew = append(idNew, elemsNew[i].(map[string]interface{})["target"].(string))
+			idNew = append(idNew, elemsNew[i].(string))
 		}
 
 		idDetach = append(idDetach, diffSlice(idNew, idOld)...)
@@ -249,8 +267,35 @@ func resourceVultrVirtualFileSystemStorageDelete(ctx context.Context, d *schema.
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting virtual file system storage: %s", d.Id())
-	if err := client.VirtualFileSystemStorage.Delete(ctx, d.Id()); err != nil {
-		return diag.Errorf("error deleting virtual file system storage (%s): %v", d.Id(), err)
+
+	attachments, _, err := client.VirtualFileSystemStorage.AttachmentList(ctx, d.Id())
+	if err != nil {
+		return diag.Errorf("unable to retrieve attachments for virtual file system storage %s during deletion", d.Id())
+	}
+
+	if len(attachments) != 0 {
+		for i := range attachments {
+			if err := client.VirtualFileSystemStorage.Detach(ctx, d.Id(), attachments[i].TargetID); err != nil {
+				return diag.Errorf("error detaching instance %s from virtual file system storage %s during deletion: %v", attachments[i].TargetID, d.Id(), err)
+			}
+		}
+	}
+
+	retryErr := retry.RetryContext(ctx, d.Timeout(schema.TimeoutDelete)-time.Minute, func() *retry.RetryError {
+		err := client.VirtualFileSystemStorage.Delete(ctx, d.Id())
+		if err == nil {
+			return nil
+		}
+
+		if strings.Contains(err.Error(), "Can not delete this subscription until it is detatched from all machines") {
+			return retry.RetryableError(fmt.Errorf("virtual file system storage is still attached: %s", err.Error()))
+		}
+
+		return retry.NonRetryableError(err)
+	})
+
+	if retryErr != nil {
+		return diag.Errorf("error destroying virtual file system storage %s: %v", d.Id(), retryErr)
 	}
 
 	return nil
