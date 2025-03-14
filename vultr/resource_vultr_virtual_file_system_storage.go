@@ -132,7 +132,12 @@ func resourceVultrVirtualFileSystemStorageCreate(ctx context.Context, d *schema.
 		for i := range ids {
 			log.Printf("[INFO] Attaching virtual file system storage %s to instance %s", d.Id(), ids[i].(string))
 			if _, _, err := client.VirtualFileSystemStorage.Attach(ctx, d.Id(), ids[i].(string)); err != nil {
-				return diag.Errorf("error attaching virtual file system storage %s to instance %s : %v", d.Id(), ids[i].(string), err)
+				return diag.Errorf(
+					"error attaching virtual file system storage %s to instance %s : %v",
+					d.Id(),
+					ids[i].(string),
+					err,
+				)
 			}
 		}
 	}
@@ -276,7 +281,12 @@ func resourceVultrVirtualFileSystemStorageDelete(ctx context.Context, d *schema.
 	if len(attachments) != 0 {
 		for i := range attachments {
 			if err := client.VirtualFileSystemStorage.Detach(ctx, d.Id(), attachments[i].TargetID); err != nil {
-				return diag.Errorf("error detaching instance %s from virtual file system storage %s during deletion: %v", attachments[i].TargetID, d.Id(), err)
+				return diag.Errorf(
+					"error detaching instance %s from virtual file system storage %s during deletion: %v",
+					attachments[i].TargetID,
+					d.Id(),
+					err,
+				)
 			}
 		}
 	}
@@ -287,7 +297,7 @@ func resourceVultrVirtualFileSystemStorageDelete(ctx context.Context, d *schema.
 			return nil
 		}
 
-		if strings.Contains(err.Error(), "Can not delete this subscription until it is detatched from all machines") {
+		if strings.Contains(err.Error(), "Can not delete this subscription until it is detatched from all machines") { //nolint:misspell,lll
 			return retry.RetryableError(fmt.Errorf("virtual file system storage is still attached: %s", err.Error()))
 		}
 

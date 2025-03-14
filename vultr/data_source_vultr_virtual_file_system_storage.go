@@ -79,7 +79,7 @@ func dataSourceVultrVirtualFileSystemStorage() *schema.Resource {
 	}
 }
 
-func dataSourceVultrVirtualFileSystemStorageRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceVultrVirtualFileSystemStorageRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
