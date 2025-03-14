@@ -1,4 +1,20 @@
 # Changelog
+## [v2.25.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.24.0...v2.25.0) (2025-03-14)
+### Enhancements
+* Add support for virtual file system storages [PR 571](https://github.com/vultr/terraform-provider-vultr/pull/571)
+
+### Dependencies
+* Update govultr from v3.16.1 to v3.17.0 [PR 569](https://github.com/vultr/terraform-provider-vultr/pull/569)
+* Bump golang.org/x/net from 0.34.0 to 0.36.0 [PR 568](https://github.com/vultr/terraform-provider-vultr/pull/568)
+
+### Documentation
+* resource/vpc2: Add deprecation notice for all VPC2 elements [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
+* resource/instance: Add deprecation notice for all VPC2 fields [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
+* resource/bare_metal_server: Add deprecation notice for all VPC2 fields [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
+* data_source/vpc2: Add deprecation notice for all VPC2 elements [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
+* data_source/instance: Add deprecation notice for all VPC2 fields [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
+* data_source/bare_metal_server: Add deprecation notice for all VPC2 fields [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
+
 ## [v2.24.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.23.1...v2.24.0) (2025-03-10)
 ### Enhancements/Bug Fixes
 * Object Storage: Add tier param and data source [PR 565](https://github.com/vultr/terraform-provider-vultr/pull/565)
