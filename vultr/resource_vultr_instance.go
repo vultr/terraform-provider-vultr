@@ -68,6 +68,11 @@ func resourceVultrInstance() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 			},
+			"ipxe_chain_url": {
+				Type:     schema.TypeString,
+				ForceNew: true,
+				Optional: true,
+			},
 			"enable_ipv6": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -327,6 +332,7 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		Hostname:          d.Get("hostname").(string),
 		FirewallGroupID:   d.Get("firewall_group_id").(string),
 		ScriptID:          d.Get("script_id").(string),
+		IPXEChainURL:      d.Get("ipxe_chain_url").(string),
 		ReservedIPv4:      d.Get("reserved_ip_id").(string),
 		Region:            d.Get("region").(string),
 		Plan:              d.Get("plan").(string),

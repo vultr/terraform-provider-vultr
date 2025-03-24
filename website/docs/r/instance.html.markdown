@@ -58,6 +58,7 @@ The following arguments are supported:
 * `image_id` - (Optional) The ID of the Vultr marketplace application to be installed on the server. [See List Applications](https://www.vultr.com/api/#operation/list-applications) Note marketplace applications are denoted by type: `marketplace` and you must use the `image_id` not the id.
 * `snapshot_id` - (Optional) The ID of the Vultr snapshot that the server will restore for the initial installation. [See List Snapshots](https://www.vultr.com/api/#operation/list-snapshots) 
 * `script_id` - (Optional) The ID of the startup script you want added to the server.
+* `ipxe_chain_url` - (Optional) The URL location of the iPXE chainloader.
 * `firewall_group_id` - (Optional) The ID of the firewall group to assign to the server.
 * `private_network_ids` - (Optional) (Deprecated: use `vpc_ids` instead) A list of private network IDs to be attached to the server.
 * `vpc_ids` - (Optional) A list of VPC IDs to be attached to the server.
