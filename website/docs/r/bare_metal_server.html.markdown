@@ -49,6 +49,7 @@ The following arguments are supported:
 * `image_id` - (Optional) The ID of the Vultr marketplace application to be installed on the server. [See List Applications](https://www.vultr.com/api/#operation/list-applications) Note marketplace applications are denoted by type: `marketplace` and you must use the `image_id` not the id.
 * `snapshot_id` - (Optional) The ID of the Vultr snapshot that the server will restore for the initial installation. [See List Snapshots](https://www.vultr.com/api/#operation/list-snapshots)
 * `script_id` - (Optional) The ID of the startup script you want added to the server.
+* `vpc_id` - (Optional) The VPC ID to use when creating the server.
 * `vpc2_ids` - (Deprecated) A list of VPC 2.0 IDs to be attached to the server.
 * `ssh_key_ids` - (Optional) A list of SSH key IDs to apply to the server on install (only valid for Linux/FreeBSD).
 * `user_data` - (Optional) Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
@@ -87,6 +88,7 @@ The following attributes are exported:
 * `app_id` - The ID of the Vultr marketplace application installed on the server.
 * `snapshot_id` - The ID of the Vultr snapshot that the server was restored from.
 * `script_id` - The ID of the startup script that was added to the server.
+* `vpc_id` - The ID of the VPC used by the server.
 * `vpc2_ids` - (Deprecated) A list of VPC 2.0 IDs to be attached to the server.
 * `ssh_key_ids` - A list of SSH key IDs applied to the server on install.
 * `user_data` - Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
