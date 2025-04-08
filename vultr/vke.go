@@ -98,6 +98,36 @@ func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 				},
 			},
 		},
+		"labels": {
+			Type:     schema.TypeMap,
+			Optional: true,
+			Elem:     &schema.Schema{Type: schema.TypeString},
+		},
+		"taints": {
+			Type:     schema.TypeList,
+			Optional: true,
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"key": {
+						Type:     schema.TypeString,
+						Required: true,
+					},
+					"value": {
+						Type:     schema.TypeString,
+						Required: true,
+					},
+					"effect": {
+						Type:     schema.TypeString,
+						Required: true,
+						ValidateFunc: validation.StringInSlice([]string{
+							"NoSchedule",
+							"PreferNoSchedule",
+							"NoExecute",
+						}, false),
+					},
+				},
+			},
+		},
 	}
 
 	if isNodePool {

@@ -51,7 +51,11 @@ func resourceVultrKubernetes() *schema.Resource {
 				Default:  false,
 				ForceNew: true,
 			},
-
+			"vpc_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
 			"node_pools": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -136,6 +140,11 @@ func resourceVultrKubernetesCreate(ctx context.Context, d *schema.ResourceData, 
 		NodePools:       nodePoolReq,
 	}
 
+	// Set VPC ID if provided
+	if vpcID, ok := d.GetOk("vpc_id"); ok {
+		req.VpcID = vpcID.(string)
+	}
+
 	cluster, _, err := client.Kubernetes.CreateCluster(ctx, req)
 	if err != nil {
 		return diag.Errorf("error creating kubernetes cluster: %v", err)
@@ -180,7 +189,7 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 	if !found {
-		return diag.Errorf(`unable to set resource kubernetes default node pool with tag %s for %v. 
+		return diag.Errorf(`unable to set resource kubernetes default node pool with tag %s for %v.
 	You must set the default tag on one node pool before importing.`,
 			tfVKEDefault, d.Id())
 	}
@@ -208,6 +217,9 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 	}
 	if err := d.Set("status", vke.Status); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `status` read value: %v", err)
+	}
+	if err := d.Set("vpc_id", vke.VpcID); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `vpc_id` read value: %v", err)
 	}
 
 	config, _, err := client.Kubernetes.GetKubeConfig(ctx, d.Id())
@@ -342,6 +354,31 @@ func generateNodePool(pools interface{}) []govultr.NodePoolReq {
 			MaxNodes:     r["max_nodes"].(int),
 		}
 
+		// Handle Labels if provided
+		if labels, ok := r["labels"]; ok && labels != nil {
+			labelMap := make(map[string]string)
+			for k, v := range labels.(map[string]interface{}) {
+				labelMap[k] = v.(string)
+			}
+			t.Labels = labelMap
+		}
+
+		// Handle Taints if provided
+		if taints, ok := r["taints"]; ok && taints != nil {
+			taintsList := taints.([]interface{})
+			reqTaints := make([]govultr.Taint, 0, len(taintsList))
+
+			for _, taint := range taintsList {
+				taintMap := taint.(map[string]interface{})
+				reqTaints = append(reqTaints, govultr.Taint{
+					Key:    taintMap["key"].(string),
+					Value:  taintMap["value"].(string),
+					Effect: taintMap["effect"].(string),
+				})
+			}
+			t.Taints = reqTaints
+		}
+
 		npr = append(npr, t)
 	}
 
@@ -399,6 +436,16 @@ func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 		instances = append(instances, n)
 	}
 
+	// Flatten Taints
+	var taints []map[string]interface{}
+	for _, t := range np.Taints {
+		taints = append(taints, map[string]interface{}{
+			"key":    t.Key,
+			"value":  t.Value,
+			"effect": t.Effect,
+		})
+	}
+
 	pool := map[string]interface{}{
 		"label":         np.Label,
 		"plan":          np.Plan,
@@ -412,6 +459,8 @@ func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 		"auto_scaler":   np.AutoScaler,
 		"min_nodes":     np.MinNodes,
 		"max_nodes":     np.MaxNodes,
+		"labels":        np.Labels,
+		"taints":        taints,
 	}
 
 	nodePools = append(nodePools, pool)
