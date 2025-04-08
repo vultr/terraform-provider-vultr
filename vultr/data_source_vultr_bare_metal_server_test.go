@@ -35,6 +35,7 @@ func TestAccDataSourceVultrBareMetalServer(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "v6_main_ip"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "v6_network_size"),
 					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "mac_address"),
+					resource.TestCheckResourceAttrSet("data.vultr_bare_metal_server.server", "vpc_id"),
 				),
 			},
 		},
@@ -43,13 +44,21 @@ func TestAccDataSourceVultrBareMetalServer(t *testing.T) {
 
 func testAccCheckVultrBareMetalServer(label string) string {
 	return fmt.Sprintf(`
+		resource "vultr_vpc" "foo" {
+			region = "ewr"
+			description = "foo"
+			v4_subnet = "10.11.0.0"
+			v4_subnet_mask = 16
+		}
+
 		resource "vultr_bare_metal_server" "foo" {
 			region = "ams"
 			os_id = 270
-			plan = "vbm-4c-32gb"
+			plan = "vbm-6c-32gb"
 			enable_ipv6 = true
 			activation_email = false
 			label = "%s"
+			vpc_id = "${vultr_vpc.foo.id}"
 		}
 
 		data "vultr_bare_metal_server" "server" {

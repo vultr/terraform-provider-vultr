@@ -66,7 +66,7 @@ func TestAccVultrBareMetalServerBasic(t *testing.T) {
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "plan"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "label"),
 					resource.TestCheckResourceAttr("vultr_bare_metal_server.foo", "tags.#", "2"),
-					resource.TestCheckResourceAttr("vultr_bare_metal_server.foo", "vpc2_ids.#", "1"),
+					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "vpc_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "os_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "app_id"),
 					resource.TestCheckResourceAttrSet("vultr_bare_metal_server.foo", "mdisk_mode"),
@@ -127,7 +127,7 @@ func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string
 		resource "vultr_bare_metal_server" "foo" {
 			region = "ewr"
 			os_id = 1946
-			plan = "vbm-4c-32gb"
+			plan = "vbm-6c-32gb"
 			enable_ipv6 = true
 			activation_email = false
 			ssh_key_ids = ["${vultr_ssh_key.foo.id}"]
@@ -137,24 +137,23 @@ func testAccVultrBareMetalServerConfigBasic(rInt int, rSSH, rName string) string
 			label = "%s"
 			hostname = "%s"
 			tags = [ "test tag" ]
-			mdisk_mode = none
 		}
 	`, rName, rName)
 }
 
 func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) string {
 	return testAccVultrSSHKeyConfigBasic(rInt, rSSH) + testAccVultrStartupScriptConfigBasic(rName) + fmt.Sprintf(`
-		resource "vultr_vpc2" "foo" {
-			region        = "ewr"
-			description   = "foo"
-			ip_block      = "10.0.0.0"
-			prefix_length = "24"
+		resource "vultr_vpc" "foo" {
+			region = "ewr"
+			description = "foo"
+			v4_subnet = "10.11.0.0"
+			v4_subnet_mask = 16
 		}
 
 		resource "vultr_bare_metal_server" "foo" {
 			region = "ewr"
 			os_id = 1946
-			plan = "vbm-4c-32gb"
+			plan = "vbm-6c-32gb"
 			activation_email = false
 			ssh_key_ids = ["${vultr_ssh_key.foo.id}"]
 			script_id = "${vultr_startup_script.foo.id}"
@@ -163,8 +162,8 @@ func testAccVultrBareMetalServerConfigUpdate(rInt int, rSSH, rName string) strin
 			label = "%s-update"
 			hostname = "%s"
 			tags = [ "test tag", "another tag" ]
-			vpc2_ids = ["${vultr_vpc2.foo.id}"]
-			mdisk_mode = raid1
+			vpc_id = "${vultr_vpc.foo.id}"
+			mdisk_mode = "raid1"
 		}
 	`, rName, rName)
 }
