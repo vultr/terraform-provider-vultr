@@ -468,6 +468,7 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 
 		var vpcCount int = len(vpcInfo)
 		var vpcUpdateRetries int = 10
+		var vpcUpdateDelayDuration time.Duration = 10 * time.Second
 		if vpcCount != 0 {
 			if err := client.BareMetalServer.DetachVPC(ctx, d.Id(), oldVPC.(string)); err != nil {
 				return diag.Errorf("error updating bare metal server vpc detachment : %v", err)
@@ -485,7 +486,7 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 					return diag.Errorf("error refreshing vpc info while updating bare metal server attchment : %v", err)
 				}
 
-				time.Sleep(10 * time.Second)
+				time.Sleep(vpcUpdateDelayDuration)
 
 				if len(refreshInfo) != 0 {
 					continue
