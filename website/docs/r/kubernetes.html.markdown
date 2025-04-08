@@ -66,6 +66,7 @@ The follow arguments are supported:
 * `label` - (Optional) The VKE clusters label.
 * `ha_controlplanes` - (Optional, Default to False) Boolean indicating if the cluster should be created with multiple, highly available controlplanes.
 * `enable_firewall` - (Optional, Default to False) Boolean indicating if the cluster should be created with a managed firewall.
+* `vpc_id` - (Optional) The ID of the VPC to use when creating the cluster. If not provided a new VPC will be created instead.
 
 `node_pools` (Optional) **NOTE** There must be 1 node pool when the kubernetes resource is first created (see explanation above). It supports the following fields
 
