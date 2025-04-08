@@ -496,8 +496,10 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 			}
 		}
 
-		if err := client.BareMetalServer.AttachVPC(ctx, d.Id(), newVPC.(string)); err != nil {
-			return diag.Errorf("error updating bare metal server vpc attachment : %v", err)
+		if newVPC.(string) != "" {
+			if err := client.BareMetalServer.AttachVPC(ctx, d.Id(), newVPC.(string)); err != nil {
+				return diag.Errorf("error updating bare metal server vpc attachment : %v", err)
+			}
 		}
 	}
 
