@@ -132,7 +132,7 @@ func resourceVultrVPCDelete(ctx context.Context, d *schema.ResourceData, meta in
 			return nil
 		}
 
-		if strings.Contains(err.Error(), "VPC is attached") {
+		if strings.Contains(err.Error(), "attached to this VPC network") {
 			return retry.RetryableError(fmt.Errorf("cannot remove attached VPC: %s", err.Error()))
 		}
 
