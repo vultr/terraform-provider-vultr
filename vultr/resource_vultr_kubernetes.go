@@ -269,12 +269,18 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 		if len(newNP.([]interface{})) != 0 && len(oldNP.([]interface{})) != 0 {
 			n := newNP.([]interface{})[0].(map[string]interface{})
 
+			labels := make(map[string]string)
+			for k, v := range n["labels"].(map[string]interface{}) {
+				labels[k] = v.(string)
+			}
+
 			req := &govultr.NodePoolReqUpdate{
 				NodeQuantity: n["node_quantity"].(int),
 				AutoScaler:   govultr.BoolToBoolPtr(n["auto_scaler"].(bool)),
 				MinNodes:     n["min_nodes"].(int),
 				MaxNodes:     n["max_nodes"].(int),
 				// Not updating tag for default node pool since it's needed to lookup in terraform
+				Labels: labels,
 			}
 
 			if _, _, err := client.Kubernetes.UpdateNodePool(ctx, d.Id(), n["id"].(string), req); err != nil {
@@ -294,11 +300,17 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 			// we can safely assume this is a new node pool creation
 			n := newNP.([]interface{})[0].(map[string]interface{})
 
+			labels := make(map[string]string)
+			for k, v := range n["labels"].(map[string]interface{}) {
+				labels[k] = v.(string)
+			}
+
 			req := &govultr.NodePoolReq{
 				NodeQuantity: n["node_quantity"].(int),
 				Tag:          tfVKEDefault,
 				Plan:         n["plan"].(string),
 				Label:        n["label"].(string),
+				Labels:       labels,
 			}
 
 			if _, _, err := client.Kubernetes.CreateNodePool(ctx, d.Id(), req); err != nil {
@@ -338,6 +350,11 @@ func generateNodePool(pools interface{}) []govultr.NodePoolReq {
 	for _, p := range pool {
 		r := p.(map[string]interface{})
 
+		labels := make(map[string]string)
+		for k, v := range r["labels"].(map[string]interface{}) {
+			labels[k] = v.(string)
+		}
+
 		t := govultr.NodePoolReq{
 			NodeQuantity: r["node_quantity"].(int),
 			Label:        r["label"].(string),
@@ -346,6 +363,7 @@ func generateNodePool(pools interface{}) []govultr.NodePoolReq {
 			AutoScaler:   govultr.BoolToBoolPtr(r["auto_scaler"].(bool)),
 			MinNodes:     r["min_nodes"].(int),
 			MaxNodes:     r["max_nodes"].(int),
+			Labels:       labels,
 		}
 
 		npr = append(npr, t)
@@ -405,6 +423,11 @@ func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 		instances = append(instances, n)
 	}
 
+	labels := make(map[string]interface{})
+	for k, v := range np.Labels {
+		labels[k] = v
+	}
+
 	pool := map[string]interface{}{
 		"label":         np.Label,
 		"plan":          np.Plan,
@@ -418,6 +441,7 @@ func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 		"auto_scaler":   np.AutoScaler,
 		"min_nodes":     np.MinNodes,
 		"max_nodes":     np.MaxNodes,
+		"labels":        labels,
 	}
 
 	nodePools = append(nodePools, pool)
