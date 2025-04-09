@@ -80,6 +80,7 @@ The follow arguments are supported:
 * `auto_scaler` - (Optional) Enable the auto scaler for the default node pool.
 * `min_nodes` - (Optional) The minimum number of nodes to use with the auto scaler.
 * `max_nodes` - (Optional) The maximum number of nodes to use with the auto scaler.
+* `labels` - (Optional) A map of key/value pairs for Kubernetes node labels.
 
 ## Attributes Reference
 
@@ -115,6 +116,7 @@ The following attributes are exported:
 * `auto_scaler` - Boolean indicating if the auto scaler for the default node pool is active.
 * `min_nodes` - The minimum number of nodes used by the auto scaler.
 * `max_nodes` - The maximum number of nodes used by the auto scaler.
+* `labels` - Key/value pairs for Kubernetes node labels.
 
 `nodes`
 
