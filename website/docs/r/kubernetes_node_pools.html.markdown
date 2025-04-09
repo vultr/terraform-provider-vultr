@@ -79,3 +79,5 @@ look like this:
 
 ```sh
 # "clusterID nodePoolID"
+terraform import vultr_kubernetes_node_pools.my-k8s-np "7365a98b-5a43-450f-bd27-d768827100e5 ec330340-4f50-4526-858f-a39199f568ac"
+```
