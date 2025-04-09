@@ -40,6 +40,7 @@ The follow arguments are supported:
 * `auto_scaler` - (Optional) Enable the auto scaler for the default node pool.
 * `min_nodes` - (Optional) The minimum number of nodes to use with the auto scaler.
 * `max_nodes` - (Optional) The maximum number of nodes to use with the auto scaler.
+* `labels` - (Optional) Key/value pairs for Kubernetes node labels.
 
 
 
@@ -59,6 +60,7 @@ The following attributes are exported:
 * `auto_scaler` - Boolean indicating if the  auto scaler for the default node pool is active.
 * `min_nodes` - The minimum number of nodes used by the auto scaler.
 * `max_nodes` - The maximum number of nodes used by the auto scaler.
+* `labels` - Key/value pairs for Kubernetes node labels.
 
 `nodes`
 
@@ -77,5 +79,3 @@ look like this:
 
 ```sh
 # "clusterID nodePoolID"
-terraform import vultr_kubernetes_node_pools.my-k8s-np "7365a98b-5a43-450f-bd27-d768827100e5 ec330340-4f50-4526-858f-a39199f568ac"
-```
