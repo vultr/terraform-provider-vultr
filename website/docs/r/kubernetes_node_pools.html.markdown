@@ -21,9 +21,14 @@ resource "vultr_kubernetes_node_pools" "np-1" {
     plan = "vc2-2c-4gb"
     label = "my-label"
     tag = "my-tag"
-	auto_scaler = true
-	min_nodes = 1
-	max_nodes = 2
+    auto_scaler = true
+    min_nodes = 1
+    max_nodes = 2
+
+    labels = {
+	my-label = "a-label-on-all-nodes",
+	my-second-label = "another-label-on-all-nodes"
+    }
 }
 
 ```
@@ -40,8 +45,7 @@ The follow arguments are supported:
 * `auto_scaler` - (Optional) Enable the auto scaler for the default node pool.
 * `min_nodes` - (Optional) The minimum number of nodes to use with the auto scaler.
 * `max_nodes` - (Optional) The maximum number of nodes to use with the auto scaler.
-
-
+* `labels` - (Optional) A map of key/value pairs for Kubernetes node labels.
 
 ## Attributes Reference
 
@@ -59,6 +63,7 @@ The following attributes are exported:
 * `auto_scaler` - Boolean indicating if the  auto scaler for the default node pool is active.
 * `min_nodes` - The minimum number of nodes used by the auto scaler.
 * `max_nodes` - The maximum number of nodes used by the auto scaler.
+* `labels` - Key/value pairs for Kubernetes node labels.
 
 `nodes`
 

@@ -227,6 +227,7 @@ func flattenNodePools(np []govultr.NodePool) []map[string]interface{} {
 			"min_nodes":     n.MinNodes,
 			"max_nodes":     n.MaxNodes,
 			"nodes":         instances,
+			"labels":        n.Labels,
 		}
 
 		nodePools = append(nodePools, pool)

@@ -54,6 +54,15 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 		MaxNodes:     d.Get("max_nodes").(int),
 	}
 
+	if labelsVal, labelsOK := d.GetOk("labels"); labelsOK {
+		labels := make(map[string]string)
+		for k, v := range labelsVal.(map[string]interface{}) {
+			labels[k] = v.(string)
+		}
+
+		req.Labels = labels
+	}
+
 	nodePool, _, err := client.Kubernetes.CreateNodePool(ctx, clusterID, req)
 	if err != nil {
 		return diag.Errorf("error creating node pool: %v", err)
@@ -121,6 +130,9 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 	if err := d.Set("max_nodes", nodePool.MaxNodes); err != nil {
 		return diag.Errorf("unable to set resource kubernetes_nodepools `max_nodes` read value: %v", err)
 	}
+	if err := d.Set("labels", nodePool.Labels); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `labels` read value: %v", err)
+	}
 
 	var instances []map[string]interface{}
 	for _, v := range nodePool.Nodes {
@@ -153,8 +165,18 @@ func resourceVultrKubernetesNodePoolsUpdate(ctx context.Context, d *schema.Resou
 		MaxNodes:     d.Get("max_nodes").(int),
 	}
 
+	if d.HasChange("labels") {
+		labelsNew := d.Get("labels")
+		labels := make(map[string]string)
+		for k, v := range labelsNew.(map[string]interface{}) {
+			labels[k] = v.(string)
+		}
+
+		req.Labels = labels
+	}
+
 	if _, _, err := client.Kubernetes.UpdateNodePool(ctx, clusterID, d.Id(), req); err != nil {
-		return diag.Errorf("error deleting VKE node pool %v : %v", d.Id(), err)
+		return diag.Errorf("error updating VKE node pool %v : %v", d.Id(), err)
 	}
 
 	return resourceVultrKubernetesNodePoolsRead(ctx, d, meta)

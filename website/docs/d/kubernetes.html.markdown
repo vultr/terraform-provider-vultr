@@ -69,6 +69,7 @@ The following attributes are exported:
 * `auto_scaler` - Boolean indicating if the auto scaler for the default node pool is active.
 * `min_nodes` - The minimum number of nodes used by the auto scaler.
 * `max_nodes` - The maximum number of nodes used by the auto scaler.
+* `labels` - Kubernetes node labels applied to the node pool.
 
 `nodes`
 
