@@ -29,8 +29,12 @@ resource "vultr_kubernetes" "k8" {
 		auto_scaler   = true
 		min_nodes     = 1
 		max_nodes     = 2
+		labels = {
+			my-label = "a-label-on-all-nodes"
+			my-second-label = "another-label-on-all-nodes"
+		}
 	}
-} 
+}
 ```
 
 A default node pool is required when first creating the resource but it can be removed at a later point so long as there is a separate `vultr_kubernetes_node_pools` resource attached. For example:
