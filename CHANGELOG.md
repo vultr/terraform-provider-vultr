@@ -1,4 +1,27 @@
 # Changelog
+## [v2.26.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.25.0...v2.26.0) (2025-04-09)
+### Enhancements
+* resource/instance: Add support for iPXE URL create param [PR 573](https://github.com/vultr/terraform-provider-vultr/pull/573)
+* resource/bare_metal_server: Add support for VPC [PR 578](https://github.com/vultr/terraform-provider-vultr/pull/578)
+* resource/kubernetes: Add support for VPC [PR 579](https://github.com/vultr/terraform-provider-vultr/pull/579)
+* resource/kubernetes: Add labels to kubernetes node pools [PR 581](https://github.com/vultr/terraform-provider-vultr/pull/581)
+* data source/kubernetes: Add labels to kubernetes node pools [PR 581](https://github.com/vultr/terraform-provider-vultr/pull/581)
+* resource/kubernetes: Add taints to kubernetes node pools [PR 584](https://github.com/vultr/terraform-provider-vultr/pull/584)
+* data source/kubernetes: Add taints to kubernetes node pools [PR 584](https://github.com/vultr/terraform-provider-vultr/pull/584)
+
+### Bug Fixes
+* resource/kubernetes: Fix default node pool labels [PR 582](https://github.com/vultr/terraform-provider-vultr/pull/582)
+* data source/kubernetes: Fix default node pool labels [PR 582](https://github.com/vultr/terraform-provider-vultr/pull/582)
+
+### Documentation
+* Add missing labels docs for kubernetes [PR 583](https://github.com/vultr/terraform-provider-vultr/pull/583)
+
+### Dependencies
+* Bump github.com/vultr/govultr/v3 from 3.17.0 to 3.18.0 [PR 574](https://github.com/vultr/terraform-provider-vultr/pull/574)
+* Update govultr from v3.18.0 to v3.19.0 [PR 577](https://github.com/vultr/terraform-provider-vultr/pull/577)
+* Update govultr from v3.19.0 to v3.19.1 [PR 580](https://github.com/vultr/terraform-provider-vultr/pull/580)
+* Bump golang.org/x/oauth2 from 0.28.0 to 0.29.0 [PR 575](https://github.com/vultr/terraform-provider-vultr/pull/575)
+
 ## [v2.25.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.24.0...v2.25.0) (2025-03-14)
 ### Enhancements
 * Add support for virtual file system storages [PR 571](https://github.com/vultr/terraform-provider-vultr/pull/571)
