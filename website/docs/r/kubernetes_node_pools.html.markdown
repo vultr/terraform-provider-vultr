@@ -18,7 +18,7 @@ Create a new VKE cluster:
 resource "vultr_kubernetes_node_pools" "np-1" {
     cluster_id = vultr_kubernetes.k8.id
     node_quantity = 1
-    plan = "vc2-2c-4gb"
+    plan = "vc2-4c-8gb"
     label = "my-label"
     tag = "my-tag"
     auto_scaler = true
@@ -28,6 +28,18 @@ resource "vultr_kubernetes_node_pools" "np-1" {
     labels = {
 	my-label = "a-label-on-all-nodes",
 	my-second-label = "another-label-on-all-nodes"
+    }
+
+    taints {
+	key = "a-taint"
+	value = "is-tainted"
+	effect = "NoExecute"
+    }
+
+    taints {
+	key = "another-taint"
+	value = "is-tainted"
+	effect = "NoSchedule"
     }
 }
 
@@ -46,6 +58,7 @@ The follow arguments are supported:
 * `min_nodes` - (Optional) The minimum number of nodes to use with the auto scaler.
 * `max_nodes` - (Optional) The maximum number of nodes to use with the auto scaler.
 * `labels` - (Optional) A map of key/value pairs for Kubernetes node labels.
+* `taints` - (Optional) Taints to apply to the nodes in the node pool. Should contain `key`, `value` and `effect`.  The `effect` should be one of `NoSchedule`, `PreferNoSchedule` or `NoExecute`.
 
 ## Attributes Reference
 
@@ -64,6 +77,7 @@ The following attributes are exported:
 * `min_nodes` - The minimum number of nodes used by the auto scaler.
 * `max_nodes` - The maximum number of nodes used by the auto scaler.
 * `labels` - Key/value pairs for Kubernetes node labels.
+* `taints` - Taints which should be applied to the nodes by Kubernetes. Made up of `key`, `value` and `effect`.
 
 `nodes`
 
