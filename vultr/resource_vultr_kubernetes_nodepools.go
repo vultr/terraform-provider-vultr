@@ -63,6 +63,21 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 		req.Labels = labels
 	}
 
+	if taintsVal, taintsOK := d.GetOk("taints"); taintsOK {
+		var taints []govultr.Taint
+		taintVals := taintsVal.(*schema.Set).List()
+		for i := range taintVals {
+			taint := taintVals[i].(map[string]interface{})
+			taints = append(taints, govultr.Taint{
+				Key:    taint["key"].(string),
+				Value:  taint["value"].(string),
+				Effect: taint["effect"].(string),
+			})
+		}
+
+		req.Taints = taints
+	}
+
 	nodePool, _, err := client.Kubernetes.CreateNodePool(ctx, clusterID, req)
 	if err != nil {
 		return diag.Errorf("error creating node pool: %v", err)
@@ -134,6 +149,19 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 		return diag.Errorf("unable to set resource kubernetes_nodepools `labels` read value: %v", err)
 	}
 
+	var taints []map[string]interface{}
+	for i := range nodePool.Taints {
+		taints = append(taints, map[string]interface{}{
+			"key":    nodePool.Taints[i].Key,
+			"value":  nodePool.Taints[i].Value,
+			"effect": nodePool.Taints[i].Effect,
+		})
+	}
+
+	if err := d.Set("taints", taints); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `taints` read value: %v", err)
+	}
+
 	var instances []map[string]interface{}
 	for _, v := range nodePool.Nodes {
 		n := map[string]interface{}{
@@ -173,6 +201,22 @@ func resourceVultrKubernetesNodePoolsUpdate(ctx context.Context, d *schema.Resou
 		}
 
 		req.Labels = labels
+	}
+
+	if d.HasChange("taints") {
+		taintsNew := d.Get("taints")
+		var taints []govultr.Taint
+		taintVals := taintsNew.(*schema.Set).List()
+		for i := range taintVals {
+			taint := taintVals[i].(map[string]interface{})
+			taints = append(taints, govultr.Taint{
+				Key:    taint["key"].(string),
+				Value:  taint["value"].(string),
+				Effect: taint["effect"].(string),
+			})
+		}
+
+		req.Taints = taints
 	}
 
 	if _, _, err := client.Kubernetes.UpdateNodePool(ctx, clusterID, d.Id(), req); err != nil {

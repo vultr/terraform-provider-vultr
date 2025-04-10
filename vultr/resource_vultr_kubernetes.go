@@ -274,6 +274,17 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 				labels[k] = v.(string)
 			}
 
+			var taints []govultr.Taint
+			taintsList := n["taints"].(*schema.Set).List()
+			for i := range taintsList {
+				taintMap := taintsList[i].(map[string]interface{})
+				taints = append(taints, govultr.Taint{
+					Key:    taintMap["key"].(string),
+					Value:  taintMap["value"].(string),
+					Effect: taintMap["effect"].(string),
+				})
+			}
+
 			req := &govultr.NodePoolReqUpdate{
 				NodeQuantity: n["node_quantity"].(int),
 				AutoScaler:   govultr.BoolToBoolPtr(n["auto_scaler"].(bool)),
@@ -281,6 +292,7 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 				MaxNodes:     n["max_nodes"].(int),
 				// Not updating tag for default node pool since it's needed to lookup in terraform
 				Labels: labels,
+				Taints: taints,
 			}
 
 			if _, _, err := client.Kubernetes.UpdateNodePool(ctx, d.Id(), n["id"].(string), req); err != nil {
@@ -305,12 +317,24 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 				labels[k] = v.(string)
 			}
 
+			var taints []govultr.Taint
+			taintsList := n["taints"].(*schema.Set).List()
+			for i := range taintsList {
+				taintMap := taintsList[i].(map[string]interface{})
+				taints = append(taints, govultr.Taint{
+					Key:    taintMap["key"].(string),
+					Value:  taintMap["value"].(string),
+					Effect: taintMap["effect"].(string),
+				})
+			}
+
 			req := &govultr.NodePoolReq{
 				NodeQuantity: n["node_quantity"].(int),
 				Tag:          tfVKEDefault,
 				Plan:         n["plan"].(string),
 				Label:        n["label"].(string),
 				Labels:       labels,
+				Taints:       taints,
 			}
 
 			if _, _, err := client.Kubernetes.CreateNodePool(ctx, d.Id(), req); err != nil {
@@ -355,6 +379,17 @@ func generateNodePool(pools interface{}) []govultr.NodePoolReq {
 			labels[k] = v.(string)
 		}
 
+		var taints []govultr.Taint
+		taintsList := r["taints"].(*schema.Set).List()
+		for i := range taintsList {
+			taintMap := taintsList[i].(map[string]interface{})
+			taints = append(taints, govultr.Taint{
+				Key:    taintMap["key"].(string),
+				Value:  taintMap["value"].(string),
+				Effect: taintMap["effect"].(string),
+			})
+		}
+
 		t := govultr.NodePoolReq{
 			NodeQuantity: r["node_quantity"].(int),
 			Label:        r["label"].(string),
@@ -364,6 +399,7 @@ func generateNodePool(pools interface{}) []govultr.NodePoolReq {
 			MinNodes:     r["min_nodes"].(int),
 			MaxNodes:     r["max_nodes"].(int),
 			Labels:       labels,
+			Taints:       taints,
 		}
 
 		npr = append(npr, t)
@@ -428,6 +464,15 @@ func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 		labels[k] = v
 	}
 
+	var taints []map[string]interface{}
+	for i := range np.Taints {
+		taints = append(taints, map[string]interface{}{
+			"key":    np.Taints[i].Key,
+			"value":  np.Taints[i].Value,
+			"effect": np.Taints[i].Effect,
+		})
+	}
+
 	pool := map[string]interface{}{
 		"label":         np.Label,
 		"plan":          np.Plan,
@@ -442,6 +487,7 @@ func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 		"min_nodes":     np.MinNodes,
 		"max_nodes":     np.MaxNodes,
 		"labels":        labels,
+		"taints":        taints,
 	}
 
 	nodePools = append(nodePools, pool)

@@ -70,6 +70,7 @@ The following attributes are exported:
 * `min_nodes` - The minimum number of nodes used by the auto scaler.
 * `max_nodes` - The maximum number of nodes used by the auto scaler.
 * `labels` - Kubernetes node labels applied to the node pool.
+* `taints` - Kubernetes node taints applied to the node pool.
 
 `nodes`
 
