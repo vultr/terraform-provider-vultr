@@ -64,6 +64,26 @@ func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 				Type: schema.TypeString,
 			},
 		},
+		"taints": {
+			Type:     schema.TypeSet,
+			Optional: true,
+			Elem: &schema.Resource{
+				Schema: map[string]*schema.Schema{
+					"key": {
+						Type:     schema.TypeString,
+						Required: true,
+					},
+					"value": {
+						Type:     schema.TypeString,
+						Required: true,
+					},
+					"effect": {
+						Type:     schema.TypeString,
+						Required: true,
+					},
+				},
+			},
+		},
 		//computed fields
 		"id": {
 			Type:     schema.TypeString,

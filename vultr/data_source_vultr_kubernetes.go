@@ -214,6 +214,15 @@ func flattenNodePools(np []govultr.NodePool) []map[string]interface{} {
 			instances = append(instances, a)
 		}
 
+		var taints []map[string]interface{}
+		for i := range n.Taints {
+			taints = append(taints, map[string]interface{}{
+				"key":    n.Taints[i].Key,
+				"value":  n.Taints[i].Value,
+				"effect": n.Taints[i].Effect,
+			})
+		}
+
 		pool := map[string]interface{}{
 			"label":         n.Label,
 			"plan":          n.Plan,
@@ -228,6 +237,7 @@ func flattenNodePools(np []govultr.NodePool) []map[string]interface{} {
 			"max_nodes":     n.MaxNodes,
 			"nodes":         instances,
 			"labels":        n.Labels,
+			"taints":        taints,
 		}
 
 		nodePools = append(nodePools, pool)
