@@ -30,6 +30,8 @@ func TestAccVultrDatabaseBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "label", rName),
 					resource.TestCheckResourceAttr(name, "maintenance_dow", "sunday"),
 					resource.TestCheckResourceAttr(name, "maintenance_time", "01:00"),
+					resource.TestCheckResourceAttr(name, "backup_hour", "23"),
+					resource.TestCheckResourceAttr(name, "backup_minute", "57"),
 					resource.TestCheckResourceAttr(name, "region", "SEA"),
 					resource.TestCheckResourceAttr(name, "plan", "vultr-dbaas-startup-cc-1-55-2"),
 					resource.TestCheckResourceAttr(name, "plan_disk", "55"),
@@ -62,6 +64,8 @@ func TestAccVultrDatabaseUpdate(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "label", rName),
 					resource.TestCheckResourceAttr(name, "maintenance_dow", "sunday"),
 					resource.TestCheckResourceAttr(name, "maintenance_time", "01:00"),
+					resource.TestCheckResourceAttr(name, "backup_hour", "23"),
+					resource.TestCheckResourceAttr(name, "backup_minute", "57"),
 					resource.TestCheckResourceAttr(name, "region", "SEA"),
 					resource.TestCheckResourceAttr(name, "plan", "vultr-dbaas-startup-cc-1-55-2"),
 					resource.TestCheckResourceAttr(name, "plan_disk", "55"),
@@ -80,6 +84,8 @@ func TestAccVultrDatabaseUpdate(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "label", rName),
 					resource.TestCheckResourceAttr(name, "maintenance_dow", "sunday"),
 					resource.TestCheckResourceAttr(name, "maintenance_time", "01:00"),
+					resource.TestCheckResourceAttr(name, "backup_hour", "23"),
+					resource.TestCheckResourceAttr(name, "backup_minute", "57"),
 					resource.TestCheckResourceAttr(name, "region", "EWR"),
 					resource.TestCheckResourceAttr(name, "plan", "vultr-dbaas-startup-cc-1-55-2"),
 					resource.TestCheckResourceAttr(name, "plan_disk", "55"),
@@ -112,6 +118,8 @@ func TestAccVultrDatabaseUpdatePlan(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "label", rName),
 					resource.TestCheckResourceAttr(name, "maintenance_dow", "sunday"),
 					resource.TestCheckResourceAttr(name, "maintenance_time", "01:00"),
+					resource.TestCheckResourceAttr(name, "backup_hour", "23"),
+					resource.TestCheckResourceAttr(name, "backup_minute", "57"),
 					resource.TestCheckResourceAttr(name, "region", "SEA"),
 					resource.TestCheckResourceAttr(name, "plan", "vultr-dbaas-startup-cc-1-55-2"),
 					resource.TestCheckResourceAttr(name, "plan_disk", "55"),
@@ -130,6 +138,8 @@ func TestAccVultrDatabaseUpdatePlan(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "label", rName),
 					resource.TestCheckResourceAttr(name, "maintenance_dow", "sunday"),
 					resource.TestCheckResourceAttr(name, "maintenance_time", "01:00"),
+					resource.TestCheckResourceAttr(name, "backup_hour", "23"),
+					resource.TestCheckResourceAttr(name, "backup_minute", "57"),
 					resource.TestCheckResourceAttr(name, "region", "SEA"),
 					resource.TestCheckResourceAttr(name, "plan", "vultr-dbaas-business-cc-1-55-2"),
 					resource.TestCheckResourceAttr(name, "plan_disk", "55"),
@@ -174,6 +184,8 @@ func testAccVultrDatabaseBase(name string) string {
 			cluster_time_zone = "America/New_York"
 			maintenance_dow = "sunday"
 			maintenance_time = "01:00"
+			backup_hour = "23"
+			backup_minute = "57"
 		} `, name)
 }
 
@@ -188,6 +200,8 @@ func testAccVultrDatabaseBaseUpdatedRegion(name string) string {
 			cluster_time_zone = "America/New_York"
 			maintenance_dow = "sunday"
 			maintenance_time = "01:00"
+			backup_hour = "23"
+			backup_minute = "57"
 		} `, name)
 }
 
@@ -202,6 +216,8 @@ func testAccVultrDatabaseBaseUpdatePlan(name string) string {
 			cluster_time_zone = "America/New_York"
 			maintenance_dow = "sunday"
 			maintenance_time = "01:00"
+			backup_hour = "23"
+			backup_minute = "57"
 		} `, name)
 }
 

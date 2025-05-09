@@ -55,7 +55,6 @@ The following attributes are exported:
 * `database_engine_version` - The database engine version of the managed database read replica.
 * `vpc_id` - The ID of the VPC Network attached to the managed database read replica.
 * `dbname` - The managed database read replica's default logical database.
-* `ferretdb_credentials` - An associated list of FerretDB connection credentials (FerretDB + PostgreSQL engine types only).
 * `host` - The hostname assigned to the managed database read replica.
 * `public_host` - The public hostname assigned to the managed database read replica (VPC-attached only).
 * `user` - The primary admin user for the managed database read replica.
@@ -63,6 +62,8 @@ The following attributes are exported:
 * `port` - The connection port for the managed database read replica.
 * `maintenance_dow` - The preferred maintenance day of week for the managed database read replica.
 * `maintenance_time` - The preferred maintenance time for the managed database read replica.
+* `backup_hour` - The preferred hour of the day (UTC) for daily backups to take place (unavailable for Kafka engine types).
+* `backup_minute` - The preferred minute of the backup hour for daily backups to take place (unavailable for Kafka engine types).
 * `latest_backup` - The date of the latest backup available on the managed database read replica.
 * `trusted_ips` - A list of allowed IP addresses for the managed database read replica.
 * `mysql_sql_modes` - A list of SQL modes currently configured for the managed database read replica (MySQL engine types only).
