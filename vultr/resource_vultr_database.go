@@ -251,12 +251,14 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 		req.MySQLSlowQueryLog = govultr.BoolToBoolPtr(mysqlSlowQueryLog.(bool))
 	}
 
-	if backupHour, backupHourOK := d.GetOk("backup_hour"); backupHourOK {
-		req.BackupHour = govultr.StringToStringPtr(backupHour.(string))
-	}
+	if req.DatabaseEngine != "kafka" {
+		if backupHour, backupHourOK := d.GetOk("backup_hour"); backupHourOK {
+			req.BackupHour = govultr.StringToStringPtr(backupHour.(string))
+		}
 
-	if backupMinute, backupMinuteOK := d.GetOk("backup_minute"); backupMinuteOK {
-		req.BackupMinute = govultr.StringToStringPtr(backupMinute.(string))
+		if backupMinute, backupMinuteOK := d.GetOk("backup_minute"); backupMinuteOK {
+			req.BackupMinute = govultr.StringToStringPtr(backupMinute.(string))
+		}
 	}
 
 	log.Printf("[INFO] Creating database")
