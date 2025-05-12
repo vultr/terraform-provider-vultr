@@ -56,10 +56,10 @@ The following arguments are supported:
 * `tag` - (Optional) The tag to assign to the managed database.
 * `maintenance_dow` - (Optional) The preferred maintenance day of week for the managed database.
 * `maintenance_time` - (Optional) The preferred maintenance time for the managed database.
+* `backhour_hour` - (Optional) The preferred hour of the day (UTC) for daily backups to take place (unavailable for Kafka engine types).
+* `backhour_minute` - (Optional) The preferred minute of the backup hour for daily backups to take place (unavailable for Kafka engine types).
 * `cluster_time_zone` - (Optional) The configured time zone for the Managed Database in TZ database format (e.g. `UTC`, `America/New_York`, `Europe/London`).
 * `trusted_ips` - (Optional) A list of allowed IP addresses for the managed database.
-* `maintenance_dow` - (Optional) The preferred maintenance day of week for the managed database.
-* `maintenance_time` - (Optional) The preferred maintenance time for the managed database in 24-hour HH:00 format (e.g. `01:00`, `13:00`, `23:00`).
 * `mysql_sql_modes` - (Optional) A list of SQL modes to configure for the managed database (MySQL engine types only - `ALLOW_INVALID_DATES`, `ANSI`, `ANSI_QUOTES`, `ERROR_FOR_DIVISION_BY_ZERO`, `HIGH_NOT_PRECEDENCE`, `IGNORE_SPACE`, `NO_AUTO_VALUE_ON_ZERO`, `NO_DIR_IN_CREATE`, `NO_ENGINE_SUBSTITUTION`, `NO_UNSIGNED_SUBTRACTION`, `NO_ZERO_DATE`, `NO_ZERO_IN_DATE`, `ONLY_FULL_GROUP_BY`, `PIPES_AS_CONCAT`, `REAL_AS_FLOAT`, `STRICT_ALL_TABLES`, `STRICT_TRANS_TABLES`, `TIME_TRUNCATE_FRACTIONAL`, `TRADITIONAL`).
 * `mysql_require_primary_key` - (Optional) The configuration value for whether primary keys are required on the managed database (MySQL engine types only).
 * `mysql_slow_query_log` - (Optional) The configuration value for slow query logging on the managed database (MySQL engine types only).
@@ -86,7 +86,6 @@ The following attributes are exported:
 * `database_engine_version` - The database engine version of the managed database.
 * `vpc_id` - The ID of the VPC Network attached to the Managed Database.
 * `dbname` - The managed database's default logical database.
-* `ferretdb_credentials` - An associated list of FerretDB connection credentials (FerretDB + PostgreSQL engine types only).
 * `host` - The hostname assigned to the managed database.
 * `public_host` - The public hostname assigned to the managed database (VPC-attached only).
 * `port` - The connection port for the managed database.
@@ -97,6 +96,8 @@ The following attributes are exported:
 * `access_cert` - The certificate to authenticate the default user (Kafka engine types only).
 * `maintenance_dow` - The preferred maintenance day of week for the managed database.
 * `maintenance_time` - The preferred maintenance time for the managed database.
+* `backup_hour` - The preferred hour of the day (UTC) for daily backups to take place (unavailable for Kafka engine types).
+* `backup_minute` - The preferred minute of the backup hour for daily backups to take place (unavailable for Kafka engine types).
 * `latest_backup` - The date of the latest backup available on the managed database.
 * `trusted_ips` - A list of allowed IP addresses for the managed database.
 * `mysql_sql_modes` - A list of SQL modes currently configured for the managed database (MySQL engine types only).

@@ -194,6 +194,16 @@ func resourceVultrDatabaseReplicaRead(ctx context.Context, d *schema.ResourceDat
 		return diag.Errorf("unable to set resource database read replica `maintenance_time` read value: %v", err)
 	}
 
+	if database.DatabaseEngine != "kafka" {
+		if err := d.Set("backup_hour", *database.BackupHour); err != nil {
+			return diag.Errorf("unable to set resource database read replica `backup_hour` read value: %v", err)
+		}
+
+		if err := d.Set("backup_minute", *database.BackupMinute); err != nil {
+			return diag.Errorf("unable to set resource database read replica `backup_minute` read value: %v", err)
+		}
+	}
+
 	if err := d.Set("latest_backup", database.LatestBackup); err != nil {
 		return diag.Errorf("unable to set resource database read replica `latest_backup` read value: %v", err)
 	}

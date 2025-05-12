@@ -119,6 +119,14 @@ func dataSourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"backup_hour": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"backup_minute": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"latest_backup": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -320,6 +328,16 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set resource database `maintenance_time` read value: %v", err)
 	}
 
+	if databaseList[0].DatabaseEngine != "kafka" {
+		if err := d.Set("backup_hour", *databaseList[0].BackupHour); err != nil {
+			return diag.Errorf("unable to set resource database `backup_hour` read value: %v", err)
+		}
+
+		if err := d.Set("backup_minute", *databaseList[0].BackupMinute); err != nil {
+			return diag.Errorf("unable to set resource database `backup_minute` read value: %v", err)
+		}
+	}
+
 	if err := d.Set("latest_backup", databaseList[0].LatestBackup); err != nil {
 		return diag.Errorf("unable to set resource database `latest_backup` read value: %v", err)
 	}
@@ -408,6 +426,8 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 			"password":                  db.ReadReplicas[v].Password,
 			"maintenance_dow":           db.ReadReplicas[v].MaintenanceDOW,
 			"maintenance_time":          db.ReadReplicas[v].MaintenanceTime,
+			"backup_hour":               *db.ReadReplicas[v].BackupHour,
+			"backup_minute":             *db.ReadReplicas[v].BackupMinute,
 			"latest_backup":             db.ReadReplicas[v].LatestBackup,
 			"trusted_ips":               db.ReadReplicas[v].TrustedIPs,
 			"mysql_sql_modes":           db.ReadReplicas[v].MySQLSQLModes,
@@ -439,6 +459,11 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 
 		if db.DatabaseEngine == "valkey" {
 			delete(r, "cluster_time_zone")
+		}
+
+		if db.DatabaseEngine == "kafka" {
+			delete(r, "backup_hour")
+			delete(r, "backup_minute")
 		}
 
 		replicas = append(replicas, r)

@@ -67,6 +67,14 @@ func resourceVultrDatabase() *schema.Resource {
 				Computed: true,
 				Optional: true,
 			},
+			"backup_hour": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"backup_minute": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
 			"cluster_time_zone": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -243,6 +251,16 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 		req.MySQLSlowQueryLog = govultr.BoolToBoolPtr(mysqlSlowQueryLog.(bool))
 	}
 
+	if req.DatabaseEngine != "kafka" {
+		if backupHour, backupHourOK := d.GetOk("backup_hour"); backupHourOK {
+			req.BackupHour = govultr.StringToStringPtr(backupHour.(string))
+		}
+
+		if backupMinute, backupMinuteOK := d.GetOk("backup_minute"); backupMinuteOK {
+			req.BackupMinute = govultr.StringToStringPtr(backupMinute.(string))
+		}
+	}
+
 	log.Printf("[INFO] Creating database")
 	database, _, err := client.Database.Create(ctx, req)
 	if err != nil {
@@ -256,15 +274,24 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("error while waiting for Managed Database %s to be in an active state : %s", d.Id(), err)
 	}
 
-	// Cluster Time Zone can only be customized after creation
+	// Some values can only be properly set after creation
+	req2 := &govultr.DatabaseUpdateReq{}
 	if clusterTimeZone, clusterTimeZoneOK := d.GetOk("cluster_time_zone"); clusterTimeZoneOK {
-		req2 := &govultr.DatabaseUpdateReq{
-			ClusterTimeZone: clusterTimeZone.(string),
-		}
-
 		log.Printf("[INFO] Updating database default time zone")
+		req2.ClusterTimeZone = clusterTimeZone.(string)
+	}
+
+	// Empty/default backup schedule settings are only honored on update and not create
+	if req.DatabaseEngine != "kafka" && req.BackupHour == nil && req.BackupMinute == nil {
+		log.Printf("[INFO] Updating database backup schedule")
+		req2.BackupHour = govultr.StringToStringPtr("")
+		req2.BackupMinute = govultr.StringToStringPtr("")
+	}
+
+	// Perform an update if needed
+	if req2.ClusterTimeZone != "" || req2.BackupHour != nil || req2.BackupMinute != nil {
 		if _, _, err := client.Database.Update(ctx, d.Id(), req2); err != nil {
-			return diag.Errorf("error updating database: %v", err)
+			return diag.Errorf("error updating post-creation values for database: %v", err)
 		}
 	}
 
@@ -412,6 +439,16 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("unable to set resource database `maintenance_time` read value: %v", err)
 	}
 
+	if database.DatabaseEngine != "kafka" {
+		if err := d.Set("backup_hour", *database.BackupHour); err != nil {
+			return diag.Errorf("unable to set resource database `backup_hour` read value: %v", err)
+		}
+
+		if err := d.Set("backup_minute", *database.BackupMinute); err != nil {
+			return diag.Errorf("unable to set resource database `backup_minute` read value: %v", err)
+		}
+	}
+
 	if err := d.Set("latest_backup", database.LatestBackup); err != nil {
 		return diag.Errorf("unable to set resource database `latest_backup` read value: %v", err)
 	}
@@ -503,6 +540,20 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 		_, newVal := d.GetChange("maintenance_time")
 		maintenanceTime := newVal.(string)
 		req.MaintenanceTime = maintenanceTime
+	}
+
+	if d.HasChange("backup_hour") {
+		log.Printf("[INFO] Updating Backup Hour")
+		_, newVal := d.GetChange("backup_hour")
+		backupHour := newVal.(string)
+		req.BackupHour = govultr.StringToStringPtr(backupHour)
+	}
+
+	if d.HasChange("backup_minute") {
+		log.Printf("[INFO] Updating Backup Minute")
+		_, newVal := d.GetChange("backup_minute")
+		backupMinute := newVal.(string)
+		req.BackupMinute = govultr.StringToStringPtr(backupMinute)
 	}
 
 	if d.HasChange("cluster_time_zone") {

@@ -119,6 +119,16 @@ func readReplicaSchema(isReadReplica bool) map[string]*schema.Schema {
 			Type:     schema.TypeString,
 			Computed: true,
 		},
+		"backup_hour": {
+			Type:     schema.TypeString,
+			Computed: true,
+			Optional: true,
+		},
+		"backup_minute": {
+			Type:     schema.TypeString,
+			Computed: true,
+			Optional: true,
+		},
 		"cluster_time_zone": {
 			Type:     schema.TypeString,
 			Computed: true,
