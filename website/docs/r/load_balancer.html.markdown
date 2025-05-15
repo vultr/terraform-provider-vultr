@@ -79,6 +79,11 @@ The follow arguments are supported:
 * `certificate` - (Required) The SSL Certificate.
 * `chain` - (Optional) The SSL certificate chain.
 
+`auto_ssl` supports the following
+
+* `domain_zone` - (Required) The  Auto SSL domain zone.
+* `sub_domain` - (optional) The Auto SSL sub domain.
+
 `firewall_rules` supports the following
 * `frontend_port` - (Required) Port on load balancer side.
 * `ip_type` - (Required) The type of ip this rule is - may be either v4 or v6.
