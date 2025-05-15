@@ -82,6 +82,10 @@ func dataSourceVultrLoadBalancer() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeMap},
 			},
+			"auto_ssl": {
+				Type:     schema.TypeMap,
+				Computed: true,
+			},
 		},
 	}
 }

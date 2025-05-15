@@ -199,6 +199,27 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				Type:     schema.TypeBool,
 				Computed: true,
 			},
+
+			"auto_ssl": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				MaxItems: 1,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"domain_zone": {
+							Type:         schema.TypeString,
+							Required:     true,
+							Sensitive:    true,
+							ValidateFunc: validation.NoZeroValues,
+						},
+						"sub_domain": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
+
 			"attached_instances": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -255,6 +276,13 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		ssl = nil
 	}
 
+	var autoSSL *govultr.AutoSSL
+	if autoSSLData, autoSSLOk := d.GetOk("auto_ssl"); autoSSLOk {
+		autoSSL = generateAutoSSL(autoSSLData)
+	} else {
+		autoSSL = nil
+	}
+
 	cookieName, cookieOk := d.GetOk("cookie_name")
 	stickySessions := &govultr.StickySessions{}
 	if cookieOk {
@@ -278,6 +306,7 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		StickySessions:     stickySessions,
 		ForwardingRules:    fwMap,
 		SSL:                ssl,
+		AutoSSL:            autoSSL,
 		SSLRedirect:        govultr.BoolToBoolPtr(d.Get("ssl_redirect").(bool)),
 		ProxyProtocol:      govultr.BoolToBoolPtr(d.Get("proxy_protocol").(bool)),
 		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
@@ -397,7 +426,6 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	if err := d.Set("vpc", lb.GenericInfo.VPC); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `vpc` read value: %v", err)
 	}
-
 	return nil
 }
 
@@ -620,5 +648,15 @@ func generateSSL(sslData interface{}) *govultr.SSL {
 		PrivateKey:  config["private_key"].(string),
 		Certificate: config["certificate"].(string),
 		Chain:       config["chain"].(string),
+	}
+}
+
+func generateAutoSSL(autoSSLData interface{}) *govultr.AutoSSL {
+	k := autoSSLData.(*schema.Set).List()
+	config := k[0].(map[string]interface{})
+
+	return &govultr.AutoSSL{
+		DomainZone: config["domain_zone"].(string),
+		DomainSub:  config["sub_domain"].(string),
 	}
 }
