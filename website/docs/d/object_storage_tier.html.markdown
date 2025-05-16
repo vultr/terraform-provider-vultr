@@ -23,6 +23,8 @@ data "vultr_object_storage_tier" "obs-tier" {
 }
 ```
 
+`slug` values and associated details can be retrieved through [this API call](https://www.vultr.com/api/#tag/s3/operation/list-object-storage-tiers).
+
 ## Argument Reference
 
 The following arguments are supported:
