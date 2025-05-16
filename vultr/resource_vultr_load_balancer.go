@@ -207,10 +207,9 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"domain_zone": {
-							Type:         schema.TypeString,
-							Required:     true,
-							Sensitive:    true,
-							ValidateFunc: validation.NoZeroValues,
+							Type:      schema.TypeString,
+							Required:  true,
+							Sensitive: true,
 						},
 						"sub_domain": {
 							Type:     schema.TypeString,
@@ -279,8 +278,6 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 	var autoSSL *govultr.AutoSSL
 	if autoSSLData, autoSSLOk := d.GetOk("auto_ssl"); autoSSLOk {
 		autoSSL = generateAutoSSL(autoSSLData)
-	} else {
-		autoSSL = nil
 	}
 
 	cookieName, cookieOk := d.GetOk("cookie_name")
