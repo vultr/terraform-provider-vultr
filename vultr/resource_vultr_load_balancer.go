@@ -384,6 +384,17 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	}
 	hc = append(hc, hcInfo)
 
+	var autoSSL []map[string]interface{}
+	autoSSLInfo := map[string]interface{}{
+		"domain_zone": lb.AutoSSL.DomainZone,
+		"sub_domain":  lb.AutoSSL.DomainSub,
+	}
+	autoSSL = append(autoSSL, autoSSLInfo)
+
+	if err := d.Set("auto_ssl", autoSSL); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `auto_ssl` read value: %v", err)
+	}
+
 	if err := d.Set("health_check", hc); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `health_check` read value: %v", err)
 	}
@@ -449,6 +460,16 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 		} else {
 			log.Printf(`[INFO] Removing load balancer SSL certificate (%v)`, d.Id())
 			req.SSL = nil
+		}
+	}
+
+	if d.HasChange("auto_ssl") {
+		if autoSSLData, autoSSLOk := d.GetOk("auto_ssl"); autoSSLOk {
+			autoSSL := generateAutoSSL(autoSSLData)
+			req.AutoSSL = autoSSL
+		} else {
+			log.Printf(`[INFO] Disabled load balancer Auto SSL (%v)`, d.Id())
+			req.AutoSSL = nil
 		}
 	}
 
