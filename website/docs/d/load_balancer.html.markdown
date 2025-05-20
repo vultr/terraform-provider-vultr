@@ -45,6 +45,7 @@ The following attributes are exported:
 * `cookie_name` - Name for your given sticky session.
 * `ssl_redirect` - Boolean value that indicates if HTTP calls will be redirected to HTTPS.
 * `has_ssl` - Boolean value that indicates if SSL is enabled.
+* `auto_ssl` - Defines the Auto SSL configuration for a load balancer. The configuration of a `auto_ssl` is listened below.
 * `attached_instances` - Array of instances that are currently attached to the load balancer.
 * `status` - Current status for the load balancer
 * `ipv4` - IPv4 address for your load balancer.
@@ -75,3 +76,7 @@ The following attributes are exported:
 * `frontend_port` - (Required) Port on load balancer side.
 * `ip_type` - (Required) The type of ip this rule is - may be either v4 or v6.
 * `source` - (Required) IP address with subnet that is allowed through the firewall. You may also pass in `cloudflare` which will allow only CloudFlares IP range.
+
+`auto_ssl` supports the following
+* `domain_zone` - (Required) The  Auto SSL domain zone (example.com).
+* `sub_domain` - (Optional) The Auto SSL sub domain.
