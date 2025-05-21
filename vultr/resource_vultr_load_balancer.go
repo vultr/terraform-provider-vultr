@@ -207,9 +207,8 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"domain_zone": {
-							Type:      schema.TypeString,
-							Required:  true,
-							Sensitive: true,
+							Type:     schema.TypeString,
+							Required: true,
 						},
 						"sub_domain": {
 							Type:     schema.TypeString,
