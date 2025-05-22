@@ -81,7 +81,6 @@ The follow arguments are supported:
 * `chain` - (Optional) The SSL certificate chain.
 
 `auto_ssl` supports the following
-
 * `domain_zone` - (Required) The  Auto SSL domain zone (example.com).
 * `sub_domain` - (Optional) The Auto SSL sub domain.
 
