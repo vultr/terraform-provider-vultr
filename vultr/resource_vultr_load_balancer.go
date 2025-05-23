@@ -202,6 +202,7 @@ func resourceVultrLoadBalancer() *schema.Resource {
 
 			"auto_ssl": {
 				Type:     schema.TypeSet,
+				Computed: true,
 				Optional: true,
 				MaxItems: 1,
 				Elem: &schema.Resource{
