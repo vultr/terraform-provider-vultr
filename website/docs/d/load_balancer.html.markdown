@@ -78,5 +78,5 @@ The following attributes are exported:
 * `source` - (Required) IP address with subnet that is allowed through the firewall. You may also pass in `cloudflare` which will allow only CloudFlares IP range.
 
 `auto_ssl` supports the following
-* `domain_zone` - (Required) The  Auto SSL domain zone (example.com).
-* `sub_domain` - (Optional) The Auto SSL subdomain.
+* `domain_zone` - (Required) The  auto SSL domain zone (example.com).
+* `sub_domain` - (Optional) The auto SSL subdomain.
