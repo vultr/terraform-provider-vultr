@@ -202,7 +202,6 @@ func resourceVultrLoadBalancer() *schema.Resource {
 
 			"auto_ssl": {
 				Type:     schema.TypeSet,
-				Computed: true,
 				Optional: true,
 				MaxItems: 1,
 				Elem: &schema.Resource{
@@ -384,17 +383,19 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	}
 	hc = append(hc, hcInfo)
 
-	var autoSSL []map[string]interface{}
-	autoSSLInfo := map[string]interface{}{
-		"domain_zone": lb.AutoSSL.DomainZone,
-		"sub_domain":  lb.AutoSSL.DomainSub,
+	var autoSSL interface{}
+	if lb.AutoSSL != nil && lb.AutoSSL.DomainZone != "" {
+		autoSSL = []map[string]interface{}{
+			{
+				"domain_zone": lb.AutoSSL.DomainZone,
+				"sub_domain":  lb.AutoSSL.DomainSub,
+			},
+		}
 	}
-	autoSSL = append(autoSSL, autoSSLInfo)
 
 	if err := d.Set("auto_ssl", autoSSL); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `auto_ssl` read value: %v", err)
 	}
-
 	if err := d.Set("health_check", hc); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `health_check` read value: %v", err)
 	}
@@ -465,11 +466,12 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 
 	if d.HasChange("auto_ssl") {
 		if autoSSLData, autoSSLOk := d.GetOk("auto_ssl"); autoSSLOk {
-			autoSSL := generateAutoSSL(autoSSLData)
-			req.AutoSSL = autoSSL
+			req.AutoSSL = generateAutoSSL(autoSSLData)
 		} else {
-			log.Printf(`[INFO] Disabled load balancer Auto SSL (%v)`, d.Id())
-			req.AutoSSL = nil
+			log.Printf(`[INFO] Disabled load balancer auto SSL certificate (%v)`, d.Id())
+			if err := client.LoadBalancer.DeleteAutoSSL(ctx, d.Id()); err != nil {
+				return diag.Errorf("error disabling load balancer auto SSL certificate (%v): %v", d.Id(), err)
+			}
 		}
 	}
 
