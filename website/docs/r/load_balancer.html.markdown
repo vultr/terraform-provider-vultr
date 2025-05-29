@@ -81,8 +81,8 @@ The follow arguments are supported:
 * `chain` - (Optional) The SSL certificate chain.
 
 `auto_ssl` supports the following
-* `domain_zone` - (Required) The  Auto SSL domain zone (example.com).
-* `sub_domain` - (Optional) The Auto SSL sub domain.
+* `domain_zone` - (Required) The auto SSL domain zone (example.com).
+* `sub_domain` - (Optional) The auto SSL sub domain.
 
 `firewall_rules` supports the following
 * `frontend_port` - (Required) Port on load balancer side.
@@ -100,6 +100,7 @@ The following attributes are exported:
 * `cookie_name` - Name for your given sticky session.
 * `ssl_redirect` - Boolean value that indicates if HTTP calls will be redirected to HTTPS.
 * `has_ssl` - Boolean value that indicates if SSL is enabled.
+* `auto_ssl` - Defines the auto SSL configuration for a load balancer.
 * `attached_instances` - Array of instances that are currently attached to the load balancer.
 * `status` - Current status for the load balancer
 * `ipv4` - IPv4 address for your load balancer.

@@ -45,7 +45,7 @@ The following attributes are exported:
 * `cookie_name` - Name for your given sticky session.
 * `ssl_redirect` - Boolean value that indicates if HTTP calls will be redirected to HTTPS.
 * `has_ssl` - Boolean value that indicates if SSL is enabled.
-* `auto_ssl` - Defines the Auto SSL configuration for a load balancer. The configuration of a `auto_ssl` is listened below.
+* `auto_ssl` - Defines the auto SSL configuration for a load balancer. The configuration of a `auto_ssl` is listened below.
 * `attached_instances` - Array of instances that are currently attached to the load balancer.
 * `status` - Current status for the load balancer
 * `ipv4` - IPv4 address for your load balancer.
