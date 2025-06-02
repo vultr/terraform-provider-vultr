@@ -55,6 +55,14 @@ func dataSourceVultrLoadBalancer() *schema.Resource {
 				Type:     schema.TypeBool,
 				Computed: true,
 			},
+			"http2": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
+			"http3": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
 			"attached_instances": {
 				Type:     schema.TypeList,
 				Computed: true,
@@ -142,6 +150,12 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	}
 	if err := d.Set("ssl_redirect", lbList[0].GenericInfo.SSLRedirect); err != nil {
 		return diag.Errorf("unable to set load_balancer `ssl_redirect` read value: %v", err)
+	}
+	if err := d.Set("http2", lbList[0].HTTP2); err != nil {
+		return diag.Errorf("unable to set load_balancer `http2` read value: %v", err)
+	}
+	if err := d.Set("http3", lbList[0].HTTP3); err != nil {
+		return diag.Errorf("unable to set load_balancer `http3` read value: %v", err)
 	}
 	if err := d.Set("proxy_protocol", lbList[0].GenericInfo.ProxyProtocol); err != nil {
 		return diag.Errorf("unable to set load_balancer `proxy_protocol` read value: %v", err)

@@ -50,6 +50,16 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"http2": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
+			"http3": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+			},
 			"proxy_protocol": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -279,6 +289,8 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		ForwardingRules:    fwMap,
 		SSL:                ssl,
 		SSLRedirect:        govultr.BoolToBoolPtr(d.Get("ssl_redirect").(bool)),
+		HTTP2:              govultr.BoolToBoolPtr(d.Get("http2").(bool)),
+		HTTP3:              govultr.BoolToBoolPtr(d.Get("http3").(bool)),
 		ProxyProtocol:      govultr.BoolToBoolPtr(d.Get("proxy_protocol").(bool)),
 		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
 		FirewallRules:      fwrMap,
@@ -394,6 +406,12 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	if err := d.Set("ssl_redirect", lb.GenericInfo.SSLRedirect); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `ssl_redirect` read value: %v", err)
 	}
+	if err := d.Set("http2", lb.HTTP2); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `http2` read value: %v", err)
+	}
+	if err := d.Set("http3", lb.HTTP3); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `http3` read value: %v", err)
+	}
 	if err := d.Set("vpc", lb.GenericInfo.VPC); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `vpc` read value: %v", err)
 	}
@@ -408,6 +426,8 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 		Region:             d.Get("region").(string),
 		Label:              d.Get("label").(string),
 		SSLRedirect:        govultr.BoolToBoolPtr(d.Get("ssl_redirect").(bool)),
+		HTTP2:              govultr.BoolToBoolPtr(d.Get("http2").(bool)),
+		HTTP3:              govultr.BoolToBoolPtr(d.Get("http3").(bool)),
 		ProxyProtocol:      govultr.BoolToBoolPtr(d.Get("proxy_protocol").(bool)),
 		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
 	}
