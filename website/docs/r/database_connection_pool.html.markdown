@@ -21,7 +21,7 @@ resource "vultr_database_connection_pool" "my_database_connection_pool" {
 	database = "defaultdb"
 	username = "vultradmin"
 	mode = "transaction"
-	size = "3"
+	size = 3
 }
 ```
 
