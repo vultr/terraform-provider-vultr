@@ -55,6 +55,7 @@ The follow arguments are supported:
 * `ssl` - (Optional) A block that supplies your ssl configuration to be used with HTTPS. The configuration of a `ssl` is listed below.
 * `private_network` (Optional) (Deprecated: use `vpc` instead) A private network ID that the load balancer should be attached to.
 * `vpc` (Optional)- A VPC ID that the load balancer should be attached to.
+* `global_regions` - Array of region IDs to deploy child Load Balancers to.
 
 `health_check` supports the following
 
@@ -104,6 +105,7 @@ The following attributes are exported:
 * `firewall_rules` - Defines the firewall rules for a load balancer.
 * `private_network` - (Deprecated: use `vpc` instead) Defines the private network the load balancer is attached to.
 * `vpc` - Defines the VPC the load balancer is attached to.
+* `global_regions` - Array of region IDs to deploy child Load Balancers to.
 
 ## Import
 

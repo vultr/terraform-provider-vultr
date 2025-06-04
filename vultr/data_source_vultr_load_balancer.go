@@ -82,6 +82,11 @@ func dataSourceVultrLoadBalancer() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeMap},
 			},
+			"global_regions": {
+				Type:     schema.TypeSet,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 		},
 	}
 }
@@ -166,6 +171,9 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	}
 	if err := d.Set("ipv6", lbList[0].IPV6); err != nil {
 		return diag.Errorf("unable to set load_balancer `ipv6` read value: %v", err)
+	}
+	if err := d.Set("global_regions", lbList[0].GlobalRegions); err != nil {
+		return diag.Errorf("unable to set load_balancer `global_regions` read value: %v", err)
 	}
 
 	var rulesList []map[string]interface{}
