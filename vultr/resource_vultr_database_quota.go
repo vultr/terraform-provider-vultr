@@ -37,17 +37,14 @@ func resourceVultrDatabaseQuota() *schema.Resource {
 			"consumer_byte_rate": {
 				Type:     schema.TypeInt,
 				Required: true,
-				ForceNew: true,
 			},
 			"producer_byte_rate": {
 				Type:     schema.TypeInt,
 				Required: true,
-				ForceNew: true,
 			},
 			"request_percentage": {
 				Type:     schema.TypeInt,
 				Required: true,
-				ForceNew: true,
 			},
 			"user": {
 				Type:     schema.TypeString,
