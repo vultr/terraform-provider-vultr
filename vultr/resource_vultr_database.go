@@ -85,6 +85,18 @@ func resourceVultrDatabase() *schema.Resource {
 				Optional: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
+			"enable_kafka_rest": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"enable_schema_registry": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
+			"enable_kafka_connect": {
+				Type:     schema.TypeBool,
+				Optional: true,
+			},
 			"mysql_sql_modes": {
 				Type:     schema.TypeSet,
 				Optional: true,
@@ -191,6 +203,16 @@ func resourceVultrDatabase() *schema.Resource {
 				Computed: true,
 				Optional: true,
 			},
+			"kafka_rest_uri": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
+			"schema_registry_uri": {
+				Type:     schema.TypeString,
+				Computed: true,
+				Optional: true,
+			},
 			"latest_backup": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -215,19 +237,17 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 	client := meta.(*Client).govultrClient()
 
 	req := &govultr.DatabaseCreateReq{
-		DatabaseEngine:         d.Get("database_engine").(string),
-		DatabaseEngineVersion:  d.Get("database_engine_version").(string),
-		Region:                 d.Get("region").(string),
-		Plan:                   d.Get("plan").(string),
-		Label:                  d.Get("label").(string),
-		Tag:                    d.Get("tag").(string),
-		VPCID:                  d.Get("vpc_id").(string),
-		MaintenanceDOW:         d.Get("maintenance_dow").(string),
-		MaintenanceTime:        d.Get("maintenance_time").(string),
-		MySQLRequirePrimaryKey: govultr.BoolToBoolPtr(true),
-		MySQLSlowQueryLog:      govultr.BoolToBoolPtr(false),
-		MySQLLongQueryTime:     d.Get("mysql_long_query_time").(int),
-		EvictionPolicy:         d.Get("eviction_policy").(string),
+		DatabaseEngine:        d.Get("database_engine").(string),
+		DatabaseEngineVersion: d.Get("database_engine_version").(string),
+		Region:                d.Get("region").(string),
+		Plan:                  d.Get("plan").(string),
+		Label:                 d.Get("label").(string),
+		Tag:                   d.Get("tag").(string),
+		VPCID:                 d.Get("vpc_id").(string),
+		MaintenanceDOW:        d.Get("maintenance_dow").(string),
+		MaintenanceTime:       d.Get("maintenance_time").(string),
+		MySQLLongQueryTime:    d.Get("mysql_long_query_time").(int),
+		EvictionPolicy:        d.Get("eviction_policy").(string),
 	}
 
 	if trustedIPs, trustedIPsOK := d.GetOk("trusted_ips"); trustedIPsOK {
@@ -249,6 +269,21 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 
 	if mysqlSlowQueryLog, mysqlSlowQueryLogOK := d.GetOk("mysql_slow_query_log"); mysqlSlowQueryLogOK {
 		req.MySQLSlowQueryLog = govultr.BoolToBoolPtr(mysqlSlowQueryLog.(bool))
+	}
+
+	enableKafkaREST, enableKafkaRESTOK := d.GetOk("enable_kafka_rest")
+	if enableKafkaRESTOK {
+		req.EnableKafkaREST = govultr.BoolToBoolPtr(enableKafkaREST.(bool))
+	}
+
+	enableSchemaRegistry, enableSchemaRegistryOK := d.GetOk("enable_schema_registry")
+	if enableSchemaRegistryOK {
+		req.EnableSchemaRegistry = govultr.BoolToBoolPtr(enableSchemaRegistry.(bool))
+	}
+
+	enableKafkaConnect, enableKafkaConnectOK := d.GetOk("enable_kafka_connect")
+	if enableKafkaConnectOK {
+		req.EnableKafkaConnect = govultr.BoolToBoolPtr(enableKafkaConnect.(bool))
 	}
 
 	if req.DatabaseEngine != "kafka" {
@@ -428,6 +463,26 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 
 		if err := d.Set("access_cert", database.AccessCert); err != nil {
 			return diag.Errorf("unable to set resource database `access_cert` read value: %v", err)
+		}
+
+		if err := d.Set("enable_kafka_rest", database.EnableKafkaREST); err != nil {
+			return diag.Errorf("unable to set resource database `enable_kafka_rest` read value: %v", err)
+		}
+
+		if err := d.Set("kafka_rest_uri", database.AccessCert); err != nil {
+			return diag.Errorf("unable to set resource database `kafka_rest_uri` read value: %v", err)
+		}
+
+		if err := d.Set("enable_schema_registry", database.EnableSchemaRegistry); err != nil {
+			return diag.Errorf("unable to set resource database `enable_schema_registry` read value: %v", err)
+		}
+
+		if err := d.Set("schema_registry_uri", database.AccessCert); err != nil {
+			return diag.Errorf("unable to set resource database `schema_registry_uri` read value: %v", err)
+		}
+
+		if err := d.Set("enable_kafka_connect", database.EnableKafkaConnect); err != nil {
+			return diag.Errorf("unable to set resource database `enable_kafka_connect` read value: %v", err)
 		}
 	}
 
@@ -613,6 +668,27 @@ func resourceVultrDatabaseUpdate(ctx context.Context, d *schema.ResourceData, me
 		_, newVal := d.GetChange("eviction_policy")
 		evictionPolicy := newVal.(string)
 		req.EvictionPolicy = evictionPolicy
+	}
+
+	if d.HasChange("enable_kafka_rest") {
+		log.Printf("[INFO] Updating Enable Kafka REST")
+		_, newVal := d.GetChange("enable_kafka_rest")
+		enableKafkaREST := newVal.(bool)
+		req.EnableKafkaREST = &enableKafkaREST
+	}
+
+	if d.HasChange("enable_schema_registry") {
+		log.Printf("[INFO] Updating Enable Schema Registry")
+		_, newVal := d.GetChange("enable_schema_registry")
+		enableSchemaRegistry := newVal.(bool)
+		req.EnableSchemaRegistry = &enableSchemaRegistry
+	}
+
+	if d.HasChange("enable_kafka_connect") {
+		log.Printf("[INFO] Updating Enable Kafka Connect")
+		_, newVal := d.GetChange("enable_kafka_connect")
+		enableKafkaConnect := newVal.(bool)
+		req.EnableKafkaConnect = &enableKafkaConnect
 	}
 
 	if _, _, err := client.Database.Update(ctx, d.Id(), req); err != nil {

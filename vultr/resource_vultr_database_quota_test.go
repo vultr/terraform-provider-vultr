@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/acctest"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/resource"
@@ -30,6 +31,43 @@ func TestAccVultrDatabaseQuotaBasic(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "consumer_byte_rate", "12345"),
 					resource.TestCheckResourceAttr(name, "producer_byte_rate", "23456"),
 					resource.TestCheckResourceAttr(name, "request_percentage", "20"),
+					resource.TestCheckResourceAttr(name, "user", uName),
+				),
+			},
+		},
+	})
+}
+
+func TestAccVultrDatabaseQuotaUpdate(t *testing.T) {
+	t.Parallel()
+	pName := acctest.RandomWithPrefix("tf-db-rs")
+	uName := acctest.RandomWithPrefix("tf-db-user")
+	rName := acctest.RandomWithPrefix("tf-db-quota")
+
+	name := "vultr_database_quota.test_quota"
+	resource.Test(t, resource.TestCase{
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrDatabaseQuotaDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccVultrDatabaseKafkaBase(pName) + testAccVultrDatabaseUserKafkaBase(uName) + testAccVultrDatabaseQuotaBase(rName, uName),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(name, "client_id", rName),
+					resource.TestCheckResourceAttr(name, "consumer_byte_rate", "12345"),
+					resource.TestCheckResourceAttr(name, "producer_byte_rate", "23456"),
+					resource.TestCheckResourceAttr(name, "request_percentage", "20"),
+					resource.TestCheckResourceAttr(name, "user", uName),
+				),
+			},
+			{
+				PreConfig: func() { time.Sleep(60 * time.Second) },
+				Config:    testAccVultrDatabaseKafkaBase(pName) + testAccVultrDatabaseUserKafkaBase(uName) + testAccVultrDatabaseQuotaBaseUpdated(rName, uName),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(name, "client_id", rName),
+					resource.TestCheckResourceAttr(name, "consumer_byte_rate", "12347"),
+					resource.TestCheckResourceAttr(name, "producer_byte_rate", "23458"),
+					resource.TestCheckResourceAttr(name, "request_percentage", "21"),
 					resource.TestCheckResourceAttr(name, "user", uName),
 				),
 			},
@@ -67,6 +105,18 @@ func testAccVultrDatabaseQuotaBase(clientID string, user string) string {
 			consumer_byte_rate = "12345"
 			producer_byte_rate = "23456"
 			request_percentage = "20"
+			user = "%s"
+		} `, clientID, user)
+}
+
+func testAccVultrDatabaseQuotaBaseUpdated(clientID string, user string) string {
+	return fmt.Sprintf(`
+		resource "vultr_database_quota" "test_quota" {
+			database_id = vultr_database.test.id
+			client_id = "%s"
+			consumer_byte_rate = "12346"
+			producer_byte_rate = "23458"
+			request_percentage = "21"
 			user = "%s"
 		} `, clientID, user)
 }

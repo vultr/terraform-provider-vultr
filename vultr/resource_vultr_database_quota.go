@@ -16,6 +16,7 @@ func resourceVultrDatabaseQuota() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVultrDatabaseQuotaCreate,
 		ReadContext:   resourceVultrDatabaseQuotaRead,
+		UpdateContext: resourceVultrDatabaseQuotaUpdate,
 		DeleteContext: resourceVultrDatabaseQuotaDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -130,6 +131,37 @@ func resourceVultrDatabaseQuotaRead(ctx context.Context, d *schema.ResourceData,
 	}
 
 	return nil
+}
+
+func resourceVultrDatabaseQuotaUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	client := meta.(*Client).govultrClient()
+
+	databaseID := d.Get("database_id").(string)
+	quotaID := strings.Split(d.Id(), "|")
+
+	req := &govultr.DatabaseQuotaUpdateReq{}
+	log.Printf("[INFO] Updating database quota (%s)", d.Id())
+
+	if d.HasChange("consumer_byte_rate") {
+		log.Print("[INFO] Updating `consumer_byte_rate`")
+		req.ConsumerByteRate = d.Get("consumer_byte_rate").(int)
+	}
+
+	if d.HasChange("producer_byte_rate") {
+		log.Print("[INFO] Updating `producer_byte_rate`")
+		req.ProducerByteRate = d.Get("producer_byte_rate").(int)
+	}
+
+	if d.HasChange("request_percentage") {
+		log.Print("[INFO] Updating `request_percentage`")
+		req.RequestPercentage = d.Get("request_percentage").(int)
+	}
+
+	if _, _, err := client.Database.UpdateQuota(ctx, databaseID, quotaID[0], quotaID[1], req); err != nil {
+		return diag.Errorf("error updating database quota %s : %s", d.Id(), err.Error())
+	}
+
+	return resourceVultrDatabaseQuotaRead(ctx, d, meta)
 }
 
 func resourceVultrDatabaseQuotaDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
