@@ -50,7 +50,7 @@ func resourceVultrDatabaseConnector() *schema.Resource {
 	}
 }
 
-func resourceVultrDatabaseConnectorCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrDatabaseConnectorCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	databaseID := d.Get("database_id").(string)
@@ -81,7 +81,7 @@ func resourceVultrDatabaseConnectorCreate(ctx context.Context, d *schema.Resourc
 	return resourceVultrDatabaseConnectorRead(ctx, d, meta)
 }
 
-func resourceVultrDatabaseConnectorRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrDatabaseConnectorRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	databaseID := d.Get("database_id").(string)
@@ -117,7 +117,7 @@ func resourceVultrDatabaseConnectorRead(ctx context.Context, d *schema.ResourceD
 	return nil
 }
 
-func resourceVultrDatabaseConnectorUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrDatabaseConnectorUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	databaseID := d.Get("database_id").(string)
@@ -137,7 +137,7 @@ func resourceVultrDatabaseConnectorUpdate(ctx context.Context, d *schema.Resourc
 		var configMap map[string]interface{}
 		if config != "" {
 			if err := json.Unmarshal([]byte(config), &configMap); err != nil {
-				return diag.Errorf("error parsing JSON for field `config` for updating database connector %s : %s", d.Id(), err.Error())
+				return diag.Errorf("error parsing JSON for field `config` for updating database connector %s : %s", d.Id(), err.Error()) //nolint:lll
 			}
 		}
 
@@ -151,7 +151,7 @@ func resourceVultrDatabaseConnectorUpdate(ctx context.Context, d *schema.Resourc
 	return resourceVultrDatabaseConnectorRead(ctx, d, meta)
 }
 
-func resourceVultrDatabaseConnectorDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrDatabaseConnectorDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting database connector (%s)", d.Id())
 
