@@ -111,6 +111,26 @@ func dataSourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"enable_kafka_rest": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
+			"kafka_rest_uri": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"enable_schema_registry": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
+			"schema_registry_uri": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"enable_kafka_connect": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
 			"maintenance_dow": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -317,6 +337,26 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 
 		if err := d.Set("access_cert", databaseList[0].AccessCert); err != nil {
 			return diag.Errorf("unable to set resource database `access_cert` read value: %v", err)
+		}
+
+		if err := d.Set("enable_kafka_rest", databaseList[0].EnableKafkaREST); err != nil {
+			return diag.Errorf("unable to set resource database `enable_kafka_rest` read value: %v", err)
+		}
+
+		if err := d.Set("kafka_rest_uri", databaseList[0].KafkaRESTURI); err != nil {
+			return diag.Errorf("unable to set resource database `kafka_rest_uri` read value: %v", err)
+		}
+
+		if err := d.Set("enable_schema_registry", databaseList[0].EnableSchemaRegistry); err != nil {
+			return diag.Errorf("unable to set resource database `enable_schema_registry` read value: %v", err)
+		}
+
+		if err := d.Set("schema_registry_uri", databaseList[0].SchemaRegistryURI); err != nil {
+			return diag.Errorf("unable to set resource database `schema_registry_uri` read value: %v", err)
+		}
+
+		if err := d.Set("enable_kafka_connect", databaseList[0].EnableKafkaConnect); err != nil {
+			return diag.Errorf("unable to set resource database `enable_kafka_connect` read value: %v", err)
 		}
 	}
 

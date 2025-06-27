@@ -60,6 +60,11 @@ The following attributes are exported:
 * `password` - The password for the managed database's primary admin user.
 * `access_key` - The private key to authenticate the default user (Kafka engine types only).
 * `access_cert` - The certificate to authenticate the default user (Kafka engine types only).
+* `enable_kafka_rest` - The configuration value for Kafka REST support (Kafka engine types only).
+* `kafka_rest_uri` - The URI to access the RESTful interface of your Kafka cluster if Kafka REST is enabled (Kafka engine types only).
+* `enable_schema_registry` - The configuration value for Schema Registry support (Kafka engine types only).
+* `schema_registry_uri` - The URI to access the Schema Registry service of your Kafka cluster if Schema Registry is enabled (Kafka engine types only).
+* `enable_kafka_connect` - The configuration value for Kafka Connect support (Kafka engine types only).
 * `maintenance_dow` - The preferred maintenance day of week for the managed database.
 * `maintenance_time` - The preferred maintenance time for the managed database.
 * `backup_hour` - The preferred hour of the day (UTC) for daily backups to take place (unavailable for Kafka engine types).
