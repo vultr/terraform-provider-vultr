@@ -469,7 +469,7 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 			return diag.Errorf("unable to set resource database `enable_kafka_rest` read value: %v", err)
 		}
 
-		if err := d.Set("kafka_rest_uri", database.AccessCert); err != nil {
+		if err := d.Set("kafka_rest_uri", database.KafkaRESTURI); err != nil {
 			return diag.Errorf("unable to set resource database `kafka_rest_uri` read value: %v", err)
 		}
 
@@ -477,7 +477,7 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 			return diag.Errorf("unable to set resource database `enable_schema_registry` read value: %v", err)
 		}
 
-		if err := d.Set("schema_registry_uri", database.AccessCert); err != nil {
+		if err := d.Set("schema_registry_uri", database.SchemaRegistryURI); err != nil {
 			return diag.Errorf("unable to set resource database `schema_registry_uri` read value: %v", err)
 		}
 
