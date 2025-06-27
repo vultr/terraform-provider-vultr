@@ -65,8 +65,8 @@ func resourceVultrDatabaseConnectorCreate(ctx context.Context, d *schema.Resourc
 
 	req := &govultr.DatabaseConnectorCreateReq{
 		Name:   d.Get("name").(string),
-		Class:  d.Get("partitions").(string),
-		Topics: d.Get("replication").(string),
+		Class:  d.Get("class").(string),
+		Topics: d.Get("topics").(string),
 		Config: configMap,
 	}
 
@@ -103,7 +103,16 @@ func resourceVultrDatabaseConnectorRead(ctx context.Context, d *schema.ResourceD
 		return diag.Errorf("unable to set resource database connector `topics` read value: %v", err)
 	}
 
-	// handle config json to map
+	if databaseConnector.Config != nil {
+		jsonBytes, err := json.Marshal(databaseConnector.Config)
+		if err != nil {
+			return diag.Errorf("error serializing field `config` to JSON: %v", err)
+		}
+
+		if err := d.Set("config", string(jsonBytes)); err != nil {
+			return diag.Errorf("unable to set resource database connector `config` read value: %v", err)
+		}
+	}
 
 	return nil
 }

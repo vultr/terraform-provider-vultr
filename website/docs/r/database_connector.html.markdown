@@ -8,7 +8,7 @@ description: |-
 
 # vultr_database_connector
 
-Provides a Vultr database connector resource. This can be used to create, read, modify, and delete connectors for a managed database on your Vultr account.
+Provides a Vultr database connector resource. This can be used to create, read, modify, and delete connectors for a managed database on your Vultr account. Note: The managed database must be configured with `enable_kafka_connect = true`.
 
 ## Example Usage
 
@@ -21,9 +21,9 @@ resource "vultr_database_connector" "my_database_connector" {
 	class = "com.couchbase.connect.kafka.CouchbaseSinkConnector"
 	topics = "my_database_topic"
 	config = jsonencode({
-		couchbase.seed.nodes = 3
-		couchbase.username = "some_username"
-		couchbase.password = "some_password"
+		"couchbase.seed.nodes" = "3"
+		"couchbase.username" = "some_username"
+		"couchbase.password" = "some_password"
 	})
 }
 ```
