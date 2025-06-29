@@ -82,6 +82,11 @@ func dataSourceVultrLoadBalancer() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeMap},
 			},
+			"auto_ssl": {
+				Type:     schema.TypeSet,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeMap},
+			},
 		},
 	}
 }
@@ -211,6 +216,17 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 
 	if err := d.Set("firewall_rules", fwrRules); err != nil {
 		return diag.Errorf("unable to set load_balancer `firewall_rules` read value: %v", err)
+	}
+
+	var autoSSL []map[string]interface{}
+	autoSSLInfo := map[string]interface{}{
+		"domain_zone": lbList[0].AutoSSL.DomainZone,
+		"sub_domain":  lbList[0].AutoSSL.DomainSub,
+	}
+	autoSSL = append(autoSSL, autoSSLInfo)
+
+	if err := d.Set("auto_ssl", autoSSL); err != nil {
+		return diag.Errorf("unable to set load_balancer `auto_ssl` read value: %v", err)
 	}
 
 	return nil
