@@ -8,7 +8,7 @@ description: |-
 
 # vultr_database_quota
 
-Provides a Vultr database quota resource. This can be used to create, read, and delete quotas for a managed database on your Vultr account.
+Provides a Vultr database quota resource. This can be used to create, read, modify, and delete quotas for a managed database on your Vultr account.
 
 ## Example Usage
 
@@ -28,7 +28,7 @@ resource "vultr_database_quota" "my_database_quota" {
 ## Argument Reference
 
 
-~> Updating any field will cause a `force new`. This behavior is in place because quotas can only be replaced and not updated at this time, and they also cannot be moved from one managed database to another.
+~> Updating the database ID, client ID, or user will cause a `force new`. This behavior is in place because a database quota cannot be moved from one managed database to another and because quotas exist specifically for client ID/user pairs. 
 
 The following arguments are supported:
 

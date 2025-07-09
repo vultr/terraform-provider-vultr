@@ -74,6 +74,7 @@ func Provider() *schema.Provider {
 			"vultr_database_user":               resourceVultrDatabaseUser(),
 			"vultr_database_topic":              resourceVultrDatabaseTopic(),
 			"vultr_database_quota":              resourceVultrDatabaseQuota(),
+			"vultr_database_connector":          resourceVultrDatabaseConnector(),
 			"vultr_dns_domain":                  resourceVultrDNSDomain(),
 			"vultr_dns_record":                  resourceVultrDNSRecord(),
 			"vultr_firewall_group":              resourceVultrFirewallGroup(),
