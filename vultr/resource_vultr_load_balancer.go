@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"net/url"
 	"strings"
 	"time"
 
@@ -199,25 +200,10 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				Type:     schema.TypeBool,
 				Computed: true,
 			},
-
-			"auto_ssl": {
-				Type:     schema.TypeSet,
+			"auto_ssl_domain": {
+				Type:     schema.TypeString,
 				Optional: true,
-				MaxItems: 1,
-				Elem: &schema.Resource{
-					Schema: map[string]*schema.Schema{
-						"domain_zone": {
-							Type:     schema.TypeString,
-							Required: true,
-						},
-						"sub_domain": {
-							Type:     schema.TypeString,
-							Optional: true,
-						},
-					},
-				},
 			},
-
 			"attached_instances": {
 				Type:     schema.TypeList,
 				Optional: true,
@@ -275,8 +261,13 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 	}
 
 	var autoSSL *govultr.AutoSSL
-	if autoSSLData, autoSSLOk := d.GetOk("auto_ssl"); autoSSLOk {
-		autoSSL = generateAutoSSL(autoSSLData)
+	if autoSSLDomainData, autoSSLDomainOk := d.GetOk("auto_ssl_domain"); autoSSLDomainOk {
+		domain := autoSSLDomainData.(string)
+		if autoSSLDomain, err := generateAutoSSL(domain); err != nil {
+			return diag.Errorf("failed to parse auto SSL domain: %v", err)
+		} else {
+			autoSSL = autoSSLDomain
+		}
 	}
 
 	cookieName, cookieOk := d.GetOk("cookie_name")
@@ -382,19 +373,8 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 		"healthy_threshold":   lb.HealthCheck.HealthyThreshold,
 	}
 	hc = append(hc, hcInfo)
-
-	var autoSSL interface{}
-	if lb.AutoSSL != nil && lb.AutoSSL.DomainZone != "" {
-		autoSSL = []map[string]interface{}{
-			{
-				"domain_zone": lb.AutoSSL.DomainZone,
-				"sub_domain":  lb.AutoSSL.DomainSub,
-			},
-		}
-	}
-
-	if err := d.Set("auto_ssl", autoSSL); err != nil {
-		return diag.Errorf("unable to set resource load_balancer `auto_ssl` read value: %v", err)
+	if err := d.Set("auto_ssl_domain", lb.AutoSSL.Domain); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `auto_ssl_domain` read value: %v", err)
 	}
 	if err := d.Set("health_check", hc); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `health_check` read value: %v", err)
@@ -463,18 +443,20 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 			req.SSL = nil
 		}
 	}
-
-	if d.HasChange("auto_ssl") {
-		if autoSSLData, autoSSLOk := d.GetOk("auto_ssl"); autoSSLOk {
-			req.AutoSSL = generateAutoSSL(autoSSLData)
+	if d.HasChange("auto_ssl_domain") {
+		if autoSSLData, ok := d.GetOk("auto_ssl_domain"); ok && autoSSLData.(string) != "" {
+			autoSSL, err := generateAutoSSL(autoSSLData.(string))
+			if err != nil {
+				return diag.Errorf("failed to parse auto SSL domain: %v", err)
+			}
+			req.AutoSSL = autoSSL
 		} else {
-			log.Printf(`[INFO] Disabled load balancer auto SSL certificate (%v)`, d.Id())
+			log.Printf("[INFO] Disabled load balancer auto SSL certificate (%v)", d.Id())
 			if err := client.LoadBalancer.DeleteAutoSSL(ctx, d.Id()); err != nil {
 				return diag.Errorf("error disabling load balancer auto SSL certificate (%v): %v", d.Id(), err)
 			}
 		}
 	}
-
 	if d.HasChange("forwarding_rules") {
 		_, newFR := d.GetChange("forwarding_rules")
 
@@ -671,12 +653,30 @@ func generateSSL(sslData interface{}) *govultr.SSL {
 	}
 }
 
-func generateAutoSSL(autoSSLData interface{}) *govultr.AutoSSL {
-	k := autoSSLData.(*schema.Set).List()
-	config := k[0].(map[string]interface{})
+func generateAutoSSL(domain string) (*govultr.AutoSSL, error) {
+	parsedDomain, err := url.Parse(domain)
+	if err != nil || parsedDomain.Scheme != "" {
+		return nil, fmt.Errorf("domain format must not include URL scheme (http:// or https://)")
+	}
+
+	hostname := parsedDomain.Hostname()
+	if hostname == "" {
+		hostname = domain
+	}
+
+	subdomainParts := strings.Split(hostname, ".")
+	if len(subdomainParts) <= 2 {
+		return &govultr.AutoSSL{
+			DomainZone: hostname,
+			DomainSub:  "",
+		}, nil
+	}
+
+	subDomain := subdomainParts[0]
+	domainZone := strings.Join(subdomainParts[1:], ".")
 
 	return &govultr.AutoSSL{
-		DomainZone: config["domain_zone"].(string),
-		DomainSub:  config["sub_domain"].(string),
-	}
+		DomainZone: domainZone,
+		DomainSub:  subDomain,
+	}, nil
 }
