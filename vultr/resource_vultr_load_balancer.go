@@ -509,12 +509,12 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 	if d.HasChange("global_regions") {
 		_, newGlobalRegions := d.GetChange("global_regions")
 
-		var newglobalRegionsList []string
+		var newGlobalRegionsList []string
 		for _, regionID := range newGlobalRegions.(*schema.Set).List() {
-			newglobalRegionsList = append(newglobalRegionsList, regionID.(string))
+			newGlobalRegionsList = append(newGlobalRegionsList, regionID.(string))
 		}
 
-		req.GlobalRegions = newglobalRegionsList
+		req.GlobalRegions = newGlobalRegionsList
 	}
 
 	if err := client.LoadBalancer.Update(ctx, d.Id(), req); err != nil {
