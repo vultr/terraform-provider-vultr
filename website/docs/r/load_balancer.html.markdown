@@ -50,6 +50,8 @@ The follow arguments are supported:
 * `proxy_protocol` - (Optional) Boolean value that indicates if Proxy Protocol is enabled.
 * `cookie_name` - (Optional) Name for your given sticky session.
 * `ssl_redirect` - (Optional) Boolean value that indicates if HTTP calls will be redirected to HTTPS.
+* `http2` - Boolean value that indicates if HTTP2 is enabled.
+* `http3` - Boolean value that indicates if HTTP3 is enabled.
 * `attached_instances` - (Optional) Array of instances that are currently attached to the load balancer.
 * `health_check` - (Optional) A block that defines the way load balancers should check for health. The configuration of a `health_check` is listed below.
 * `ssl` - (Optional) A block that supplies your ssl configuration to be used with HTTPS. The configuration of a `ssl` is listed below.
