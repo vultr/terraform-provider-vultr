@@ -258,6 +258,8 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		for _, regionID := range attachGlobalRegions.(*schema.Set).List() {
 			globalRegionsList = append(globalRegionsList, regionID.(string))
 		}
+	} else {
+		globalRegionsList = nil
 	}
 
 	var ssl *govultr.SSL
