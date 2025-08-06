@@ -255,11 +255,10 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 
 	var globalRegionsList []string
 	if attachGlobalRegions, globalRegionsOk := d.GetOk("global_regions"); globalRegionsOk {
-		for _, regionID := range attachGlobalRegions.(*schema.Set).List() {
-			globalRegionsList = append(globalRegionsList, regionID.(string))
+		regions := attachGlobalRegions.(*schema.Set).List()
+		for i := range regions {
+			globalRegionsList = append(globalRegionsList, regions[i].(string))
 		}
-	} else {
-		globalRegionsList = nil
 	}
 
 	var ssl *govultr.SSL
@@ -510,8 +509,9 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 		_, newGlobalRegions := d.GetChange("global_regions")
 
 		var newGlobalRegionsList []string
-		for _, regionID := range newGlobalRegions.(*schema.Set).List() {
-			newGlobalRegionsList = append(newGlobalRegionsList, regionID.(string))
+		regions := newGlobalRegions.(*schema.Set).List()
+		for i := range regions {
+			newGlobalRegionsList = append(newGlobalRegionsList, regions[i].(string))
 		}
 
 		req.GlobalRegions = newGlobalRegionsList
