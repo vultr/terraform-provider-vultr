@@ -53,7 +53,7 @@ The following attributes are exported:
 * `forwarding_rules` - Defines the forwarding rules for a load balancer. The configuration of a `forwarding_rules` is listened below.
 * `private_network` - (Deprecated: use `vpc` instead) Defines the private network the load balancer is attached to.
 * `vpc` - Defines the VPCthe load balancer is attached to.
-* `global_regions` - Array of region IDs to deploy child load balancers to.
+* `global_regions` - A set of region IDs to deploy child load balancers to.
 
 `health_check` supports the following
 
