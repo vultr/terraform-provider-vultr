@@ -44,8 +44,7 @@ The following attributes are exported:
 * `proxy_protocol` - Boolean value that indicates if Proxy Protocol is enabled.
 * `cookie_name` - Name for your given sticky session.
 * `ssl_redirect` - Boolean value that indicates if HTTP calls will be redirected to HTTPS.
-* `http2` - Boolean value that indicates if HTTP2 is enabled.
-* `http3` - Boolean value that indicates if HTTP3 is enabled.
+* `http_version` - Integer value that indicates if HTTP/2 or HTTP/3 is enabled. Allowed values 2 or 3.
 * `has_ssl` - Boolean value that indicates if SSL is enabled.
 * `attached_instances` - Array of instances that are currently attached to the load balancer.
 * `status` - Current status for the load balancer
