@@ -50,15 +50,10 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
-			"http2": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
-			},
-			"http3": {
-				Type:     schema.TypeBool,
-				Optional: true,
-				Default:  false,
+			"http_version": {
+				Type:         schema.TypeInt,
+				Optional:     true,
+				ValidateFunc: validation.IntInSlice([]int{2, 3}),
 			},
 			"proxy_protocol": {
 				Type:     schema.TypeBool,
@@ -280,6 +275,18 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		fwrMap = nil
 	}
 
+	var http2, http3 *bool
+	if httpVersionValue, httpVersionOk := d.GetOk("http_version"); httpVersionOk {
+		httpVersion := httpVersionValue.(int)
+		switch httpVersion {
+		case 2:
+			http2 = govultr.BoolToBoolPtr(true)
+		case 3:
+			http2 = govultr.BoolToBoolPtr(true)
+			http3 = govultr.BoolToBoolPtr(true)
+		}
+	}
+
 	req := &govultr.LoadBalancerReq{
 		Region:             d.Get("region").(string),
 		Label:              d.Get("label").(string),
@@ -289,8 +296,8 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		ForwardingRules:    fwMap,
 		SSL:                ssl,
 		SSLRedirect:        govultr.BoolToBoolPtr(d.Get("ssl_redirect").(bool)),
-		HTTP2:              govultr.BoolToBoolPtr(d.Get("http2").(bool)),
-		HTTP3:              govultr.BoolToBoolPtr(d.Get("http3").(bool)),
+		HTTP2:              http2,
+		HTTP3:              http3,
 		ProxyProtocol:      govultr.BoolToBoolPtr(d.Get("proxy_protocol").(bool)),
 		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
 		FirewallRules:      fwrMap,
@@ -368,6 +375,15 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 		"unhealthy_threshold": lb.HealthCheck.UnhealthyThreshold,
 		"healthy_threshold":   lb.HealthCheck.HealthyThreshold,
 	}
+	var httpVersion int
+	if lb.HTTP2 != nil && *lb.HTTP2 {
+		if lb.HTTP3 != nil && *lb.HTTP3 {
+			httpVersion = 3
+		} else {
+			httpVersion = 2
+		}
+	}
+
 	hc = append(hc, hcInfo)
 
 	if err := d.Set("health_check", hc); err != nil {
@@ -406,11 +422,8 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	if err := d.Set("ssl_redirect", lb.GenericInfo.SSLRedirect); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `ssl_redirect` read value: %v", err)
 	}
-	if err := d.Set("http2", lb.HTTP2); err != nil {
-		return diag.Errorf("unable to set resource load_balancer `http2` read value: %v", err)
-	}
-	if err := d.Set("http3", lb.HTTP3); err != nil {
-		return diag.Errorf("unable to set resource load_balancer `http3` read value: %v", err)
+	if err := d.Set("http_version", httpVersion); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `http_version` read value: %v", err)
 	}
 	if err := d.Set("vpc", lb.GenericInfo.VPC); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `vpc` read value: %v", err)
@@ -422,12 +435,25 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
+	var http2, http3 *bool
+	if httpVersionValue, httpVersionOk := d.GetOk("http_version"); httpVersionOk {
+		httpVersion := httpVersionValue.(int)
+		switch httpVersion {
+		case 2:
+			http2 = govultr.BoolToBoolPtr(true)
+			http3 = govultr.BoolToBoolPtr(false)
+		case 3:
+			http2 = govultr.BoolToBoolPtr(true)
+			http3 = govultr.BoolToBoolPtr(true)
+		}
+	}
+
 	req := &govultr.LoadBalancerReq{
 		Region:             d.Get("region").(string),
 		Label:              d.Get("label").(string),
 		SSLRedirect:        govultr.BoolToBoolPtr(d.Get("ssl_redirect").(bool)),
-		HTTP2:              govultr.BoolToBoolPtr(d.Get("http2").(bool)),
-		HTTP3:              govultr.BoolToBoolPtr(d.Get("http3").(bool)),
+		HTTP2:              http2,
+		HTTP3:              http3,
 		ProxyProtocol:      govultr.BoolToBoolPtr(d.Get("proxy_protocol").(bool)),
 		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
 	}
