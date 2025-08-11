@@ -41,6 +41,8 @@ resource "vultr_kubernetes_node_pools" "np-1" {
 	value = "is-tainted"
 	effect = "NoSchedule"
     }
+
+    user_data = base64encode("This will be added to node user data")
 }
 
 ```
@@ -59,6 +61,7 @@ The follow arguments are supported:
 * `max_nodes` - (Optional) The maximum number of nodes to use with the auto scaler.
 * `labels` - (Optional) A map of key/value pairs for Kubernetes node labels.
 * `taints` - (Optional) Taints to apply to the nodes in the node pool. Should contain `key`, `value` and `effect`.  The `effect` should be one of `NoSchedule`, `PreferNoSchedule` or `NoExecute`.
+* `user_data` - (Optional) A base64 encoded string containing the user data to apply to nodes in the node pool.
 
 ## Attributes Reference
 
@@ -78,6 +81,7 @@ The following attributes are exported:
 * `max_nodes` - The maximum number of nodes used by the auto scaler.
 * `labels` - Key/value pairs for Kubernetes node labels.
 * `taints` - Taints which should be applied to the nodes by Kubernetes. Made up of `key`, `value` and `effect`.
+* `user_data` - A base64 encoded string containing the user data in use by all nodes in the node pool.
 
 `nodes`
 
