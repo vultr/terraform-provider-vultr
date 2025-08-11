@@ -800,13 +800,14 @@ func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta int
 			return nil, "", fmt.Errorf("error retrieving Server %s : %s", d.Id(), err)
 		}
 
-		if attr == "status" {
+		switch attr {
+		case "status":
 			log.Printf("[INFO] The Server Status is %s", server.Status)
 			return server, server.Status, nil
-		} else if attr == "power_status" {
+		case "power_status":
 			log.Printf("[INFO] The Server Power Status is %s", server.PowerStatus)
 			return server, server.PowerStatus, nil
-		} else {
+		default:
 			return nil, "", nil
 		}
 	}

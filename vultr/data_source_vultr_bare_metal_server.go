@@ -237,7 +237,7 @@ func dataSourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceD
 	}
 
 	// only one VPC ever allowed on bare metal server
-	var vpcID string = ""
+	var vpcID = ""
 	if len(vpcInfo) != 0 {
 		vpcID = vpcInfo[0].ID
 	}
