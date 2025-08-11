@@ -409,7 +409,7 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 	}
 
 	// only one VPC ever allowed on bare metal server
-	var vpcID string = ""
+	var vpcID = ""
 	if len(vpcInfo) != 0 {
 		vpcID = vpcInfo[0].ID
 	}
@@ -466,9 +466,9 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 			return diag.Errorf("error retrieving vpc info for bare metal server update : %v", err)
 		}
 
-		var vpcCount int = len(vpcInfo)
-		var vpcUpdateRetries int = 10
-		var vpcUpdateDelayDuration time.Duration = 10 * time.Second
+		var vpcCount = len(vpcInfo)
+		var vpcUpdateRetries = 10
+		var vpcUpdateDelayDuration = 10 * time.Second
 		if vpcCount != 0 {
 			if err := client.BareMetalServer.DetachVPC(ctx, d.Id(), oldVPC.(string)); err != nil {
 				return diag.Errorf("error updating bare metal server vpc detachment : %v", err)
