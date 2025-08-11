@@ -291,8 +291,9 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 				MinNodes:     n["min_nodes"].(int),
 				MaxNodes:     n["max_nodes"].(int),
 				// Not updating tag for default node pool since it's needed to lookup in terraform
-				Labels: labels,
-				Taints: taints,
+				Labels:   labels,
+				Taints:   taints,
+				UserData: govultr.StringToStringPtr(n["user_data"].(string)),
 			}
 
 			if _, _, err := client.Kubernetes.UpdateNodePool(ctx, d.Id(), n["id"].(string), req); err != nil {
@@ -400,6 +401,7 @@ func generateNodePool(pools interface{}) []govultr.NodePoolReq {
 			MaxNodes:     r["max_nodes"].(int),
 			Labels:       labels,
 			Taints:       taints,
+			UserData:     r["user_data"].(string),
 		}
 
 		npr = append(npr, t)
@@ -488,6 +490,7 @@ func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 		"max_nodes":     np.MaxNodes,
 		"labels":        labels,
 		"taints":        taints,
+		"user_data":     np.UserData,
 	}
 
 	nodePools = append(nodePools, pool)

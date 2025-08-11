@@ -84,6 +84,10 @@ func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 				},
 			},
 		},
+		"user_data": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
 		//computed fields
 		"id": {
 			Type:     schema.TypeString,

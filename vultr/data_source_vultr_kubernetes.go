@@ -238,6 +238,7 @@ func flattenNodePools(np []govultr.NodePool) []map[string]interface{} {
 			"nodes":         instances,
 			"labels":        n.Labels,
 			"taints":        taints,
+			"user_data":     n.UserData,
 		}
 
 		nodePools = append(nodePools, pool)
