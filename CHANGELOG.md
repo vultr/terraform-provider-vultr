@@ -1,4 +1,38 @@
 # Changelog
+## [v2.27.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.26.0...v2.27.0) (2025-08-11)
+### Enhancements
+* data source/database: Add database backup schedule fields [PR 590](https://github.com/vultr/terraform-provider-vultr/pull/590)
+* resource/database: Add database backup schedule fields [PR 590](https://github.com/vultr/terraform-provider-vultr/pull/590)
+* resource/database_replica: Add database backup schedule fields [PR 590](https://github.com/vultr/terraform-provider-vultr/pull/590)
+* data source/database: Add support for additional Kafka features [PR 599](https://github.com/vultr/terraform-provider-vultr/pull/599)
+* resource/database: Add support for additional Kafka features [PR 599](https://github.com/vultr/terraform-provider-vultr/pull/599)
+* resource/database_connector: Add support for additional Kafka features [PR 599](https://github.com/vultr/terraform-provider-vultr/pull/599)
+* resource/database_quota: Add support for additional Kafka features [PR 599](https://github.com/vultr/terraform-provider-vultr/pull/599)
+* data source/kubernetes: Add node pool user_data field [PR 607](https://github.com/vultr/terraform-provider-vultr/pull/607)
+* resource/kubernetes: Add node pool user_data field [PR 607](https://github.com/vultr/terraform-provider-vultr/pull/607)
+* resource/kubernetes_nodepool: Add user_data field [PR 607](https://github.com/vultr/terraform-provider-vultr/pull/607)
+* resource/snapshot_from_url: Add use_uefi field [PR 609](https://github.com/vultr/terraform-provider-vultr/pull/609)
+
+### Documentation
+* data source/object_storage_tier: Add link to object storage tier API documentation page [PR 592](https://github.com/vultr/terraform-provider-vultr/pull/592)
+* resource/database_connection_pool: Fix connection pool size type in example usage [PR 594](https://github.com/vultr/terraform-provider-vultr/pull/594)
+* data source/kubernetes: Document node pool user_data field and usage [PR 611](https://github.com/vultr/terraform-provider-vultr/pull/611)
+* resource/kubernetes: Document node pool user_data attribute and usage [PR 611](https://github.com/vultr/terraform-provider-vultr/pull/611)
+* resource/snapshot_from_url: Document use_uefi attribute and usage [PR 611](https://github.com/vultr/terraform-provider-vultr/pull/611)
+
+### Dependencies
+* Bump github.com/vultr/govultr/v3 from 3.19.1 to 3.20.0 [PR 588](https://github.com/vultr/terraform-provider-vultr/pull/588)
+* Bump golang.org/x/oauth2 from 0.29.0 to 0.30.0 [PR 587](https://github.com/vultr/terraform-provider-vultr/pull/587)
+* Bump golang.org/x/net from 0.36.0 to 0.38.0 [PR 586](https://github.com/vultr/terraform-provider-vultr/pull/586)
+* Bump github.com/vultr/govultr/v3 from 3.20.0 to 3.21.0 [PR 598](https://github.com/vultr/terraform-provider-vultr/pull/598)
+* Bump github.com/vultr/govultr/v3 from 3.21.0 to 3.21.1 [PR 602](https://github.com/vultr/terraform-provider-vultr/pull/602)
+* Update govultr from v3.21.1 to v3.22.0 [PR 605](https://github.com/vultr/terraform-provider-vultr/pull/605)
+* Update govultr from v3.22.0 to v3.22.1 [PR 608](https://github.com/vultr/terraform-provider-vultr/pull/608)
+* Bump github.com/cloudflare/circl from 1.3.7 to 1.6.1 [PR 595](https://github.com/vultr/terraform-provider-vultr/pull/595)
+
+### Automation
+* Migrate golangci-lint configuration to v2 [PR 606](https://github.com/vultr/terraform-provider-vultr/pull/606)
+
 ## [v2.26.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.25.0...v2.26.0) (2025-04-09)
 ### Enhancements
 * resource/instance: Add support for iPXE URL create param [PR 573](https://github.com/vultr/terraform-provider-vultr/pull/573)
@@ -14,7 +48,8 @@
 * data source/kubernetes: Fix default node pool labels [PR 582](https://github.com/vultr/terraform-provider-vultr/pull/582)
 
 ### Documentation
-* Add missing labels docs for kubernetes [PR 583](https://github.com/vultr/terraform-provider-vultr/pull/583)
+* data source/kubernetes: Add missing labels docs [PR 583](https://github.com/vultr/terraform-provider-vultr/pull/583)
+* resource/kubernetes: Add missing labels docs [PR 583](https://github.com/vultr/terraform-provider-vultr/pull/583)
 
 ### Dependencies
 * Bump github.com/vultr/govultr/v3 from 3.17.0 to 3.18.0 [PR 574](https://github.com/vultr/terraform-provider-vultr/pull/574)
@@ -40,13 +75,15 @@
 
 ## [v2.24.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.23.1...v2.24.0) (2025-03-10)
 ### Enhancements/Bug Fixes
-* Object Storage: Add tier param and data source [PR 565](https://github.com/vultr/terraform-provider-vultr/pull/565)
+* data source/object_storage: Add obeject storage tier data source [PR 565](https://github.com/vultr/terraform-provider-vultr/pull/565)
+* resource/object_storage: Add tier param [PR 565](https://github.com/vultr/terraform-provider-vultr/pull/565)
 
 ### Documentation
-* Object Storage: Add docs for the tier changes [PR 566](https://github.com/vultr/terraform-provider-vultr/pull/566)
+* data source/object_storage: Add docs for the tier changes [PR 566](https://github.com/vultr/terraform-provider-vultr/pull/566)
+* resource/object_storage: Add docs for the tier changes [PR 566](https://github.com/vultr/terraform-provider-vultr/pull/566)
 
 ### Clean Up
-* Database: Remove managed Redis references [PR 549](https://github.com/vultr/terraform-provider-vultr/pull/549)
+* resource/database: Remove managed Redis references [PR 549](https://github.com/vultr/terraform-provider-vultr/pull/549)
 * Add terraform config to gitignore [PR 563](https://github.com/vultr/terraform-provider-vultr/pull/563)
 
 ### Dependencies
