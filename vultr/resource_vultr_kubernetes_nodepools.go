@@ -52,6 +52,7 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 		AutoScaler:   govultr.BoolToBoolPtr(d.Get("auto_scaler").(bool)),
 		MinNodes:     d.Get("min_nodes").(int),
 		MaxNodes:     d.Get("max_nodes").(int),
+		UserData:     d.Get("user_data").(string),
 	}
 
 	if labelsVal, labelsOK := d.GetOk("labels"); labelsOK {
