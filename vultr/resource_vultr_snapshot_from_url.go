@@ -29,6 +29,11 @@ func resourceVultrSnapshotFromURL() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"use_uefi": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				ForceNew: true,
+			},
 			"date_created": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -57,7 +62,8 @@ func resourceVultrSnapshotFromURLCreate(ctx context.Context, d *schema.ResourceD
 	client := meta.(*Client).govultrClient()
 
 	snapReq := &govultr.SnapshotURLReq{
-		URL: d.Get("url").(string),
+		URL:  d.Get("url").(string),
+		UEFI: govultr.BoolToBoolPtr(d.Get("use_uefi").(bool)),
 	}
 
 	snapshot, _, err := client.Snapshot.CreateFromURL(ctx, snapReq)
