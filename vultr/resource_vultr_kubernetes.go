@@ -336,6 +336,7 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 				Label:        n["label"].(string),
 				Labels:       labels,
 				Taints:       taints,
+				UserData:     n["user_data"].(string),
 			}
 
 			if _, _, err := client.Kubernetes.CreateNodePool(ctx, d.Id(), req); err != nil {
