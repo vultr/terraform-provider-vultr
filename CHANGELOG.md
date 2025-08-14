@@ -1,4 +1,9 @@
 # Changelog
+## [v2.27.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.27.0...v2.27.1) (2025-08-14)
+### Bug Fix
+* resource/kubernetes: Add user data on new default node pool creation [PR 613](https://github.com/vultr/terraform-provider-vultr/pull/613)
+* resource/kubernetes_nodepool: Handle user data changes in update context [PR 613](https://github.com/vultr/terraform-provider-vultr/pull/613)
+
 ## [v2.27.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.26.0...v2.27.0) (2025-08-11)
 ### Enhancements
 * data source/database: Add database backup schedule fields [PR 590](https://github.com/vultr/terraform-provider-vultr/pull/590)
