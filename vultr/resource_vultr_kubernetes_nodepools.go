@@ -220,6 +220,10 @@ func resourceVultrKubernetesNodePoolsUpdate(ctx context.Context, d *schema.Resou
 		req.Taints = taints
 	}
 
+	if d.HasChange("user_data") {
+		req.UserData = govultr.StringToStringPtr(d.Get("user_data").(string))
+	}
+
 	if _, _, err := client.Kubernetes.UpdateNodePool(ctx, clusterID, d.Id(), req); err != nil {
 		return diag.Errorf("error updating VKE node pool %v : %v", d.Id(), err)
 	}
