@@ -656,7 +656,7 @@ func generateSSL(sslData interface{}) *govultr.SSL {
 func generateAutoSSL(domain string) (*govultr.AutoSSL, error) {
 	parsedDomain, err := url.Parse(domain)
 	if err != nil || parsedDomain.Scheme != "" {
-		return nil, fmt.Errorf("domain format must not include URL scheme (http:// or https://)")
+		return nil, fmt.Errorf("invalid domain %q: must not include URL scheme (http:// or https://)", domain)
 	}
 
 	hostname := parsedDomain.Hostname()
@@ -664,19 +664,16 @@ func generateAutoSSL(domain string) (*govultr.AutoSSL, error) {
 		hostname = domain
 	}
 
-	subdomainParts := strings.Split(hostname, ".")
-	if len(subdomainParts) <= 2 {
-		return &govultr.AutoSSL{
-			DomainZone: hostname,
-			DomainSub:  "",
-		}, nil
+	parts := strings.Split(hostname, ".")
+	if len(parts) < 2 {
+		return nil, fmt.Errorf("invalid domain %q: must contain a dot (example.com)", domain)
 	}
 
-	subDomain := subdomainParts[0]
-	domainZone := strings.Join(subdomainParts[1:], ".")
+	domainParts := parts[len(parts)-2:]
+	subParts := parts[:len(parts)-2]
 
 	return &govultr.AutoSSL{
-		DomainZone: domainZone,
-		DomainSub:  subDomain,
+		DomainZone: strings.Join(domainParts, "."),
+		DomainSub:  strings.Join(subParts, "."),
 	}, nil
 }
