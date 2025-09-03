@@ -522,6 +522,12 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 	if err := d.Set("app_id", instance.AppID); err != nil {
 		return diag.Errorf("unable to set resource instance `app_id` read value: %v", err)
 	}
+	if err := d.Set("image_id", instance.ImageID); err != nil {
+		return diag.Errorf("unable to set resource instance `image_id` read value: %v", err)
+	}
+	if err := d.Set("snapshot_id", instance.SnapshotID); err != nil {
+		return diag.Errorf("unable to set resource instance `snapshot_id` read value: %v", err)
+	}
 	if err := d.Set("features", instance.Features); err != nil {
 		return diag.Errorf("unable to set resource instance `features` read value: %v", err)
 	}
