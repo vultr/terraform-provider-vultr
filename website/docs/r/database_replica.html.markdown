@@ -66,6 +66,7 @@ The following attributes are exported:
 * `backup_minute` - The preferred minute of the backup hour for daily backups to take place (unavailable for Kafka engine types).
 * `latest_backup` - The date of the latest backup available on the managed database read replica.
 * `trusted_ips` - A list of allowed IP addresses for the managed database read replica.
+* `ca_certificate` - The CA certificate for Managed Databases on this account.
 * `mysql_sql_modes` - A list of SQL modes currently configured for the managed database read replica (MySQL engine types only).
 * `mysql_require_primary_key` - The configuration value for whether primary keys are required on the managed database read replica (MySQL engine types only).
 * `mysql_slow_query_log` - The configuration value for slow query logging on the managed database read replica (MySQL engine types only).
