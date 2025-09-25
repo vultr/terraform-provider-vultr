@@ -82,6 +82,10 @@ func dataSourceVultrLoadBalancer() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeMap},
 			},
+			"auto_ssl_domain": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -142,6 +146,9 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	}
 	if err := d.Set("ssl_redirect", lbList[0].GenericInfo.SSLRedirect); err != nil {
 		return diag.Errorf("unable to set load_balancer `ssl_redirect` read value: %v", err)
+	}
+	if err := d.Set("auto_ssl_domain", lbList[0].AutoSSL.Domain); err != nil {
+		return diag.Errorf("unable to set load_balancer `auto_ssl_domain` read value: %v", err)
 	}
 	if err := d.Set("proxy_protocol", lbList[0].GenericInfo.ProxyProtocol); err != nil {
 		return diag.Errorf("unable to set load_balancer `proxy_protocol` read value: %v", err)
@@ -212,6 +219,5 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	if err := d.Set("firewall_rules", fwrRules); err != nil {
 		return diag.Errorf("unable to set load_balancer `firewall_rules` read value: %v", err)
 	}
-
 	return nil
 }
