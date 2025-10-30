@@ -93,7 +93,7 @@ func resourceVultrOrganizationPolicy() *schema.Resource {
 	}
 }
 
-func resourceVultrOrganizationPolicyCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationPolicyCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	documentObj := d.Get("document").(*schema.Set).List()
@@ -156,7 +156,7 @@ func resourceVultrOrganizationPolicyCreate(ctx context.Context, d *schema.Resour
 	return resourceVultrOrganizationPolicyRead(ctx, d, meta)
 }
 
-func resourceVultrOrganizationPolicyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationPolicyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	policy, _, err := client.Organization.GetPolicy(ctx, d.Id())
@@ -234,7 +234,7 @@ func resourceVultrOrganizationPolicyRead(ctx context.Context, d *schema.Resource
 	return nil
 }
 
-func resourceVultrOrganizationPolicyUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationPolicyUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Updating organization policy (%s)", d.Id())
 
@@ -313,7 +313,7 @@ func resourceVultrOrganizationPolicyUpdate(ctx context.Context, d *schema.Resour
 	return resourceVultrOrganizationPolicyRead(ctx, d, meta)
 }
 
-func resourceVultrOrganizationPolicyDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationPolicyDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting organization policy (%s)", d.Id())

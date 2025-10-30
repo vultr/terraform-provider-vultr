@@ -10,7 +10,7 @@ import (
 
 func dataSourceVultrOrganizationRole() *schema.Resource {
 	return &schema.Resource{
-		ReadContext: dataSourceVultrOrganizationPolicyRead,
+		ReadContext: dataSourceVultrOrganizationRoleRead,
 		Schema: map[string]*schema.Schema{
 			"filter": dataSourceFiltersSchema(),
 			"name": {
@@ -42,7 +42,7 @@ func dataSourceVultrOrganizationRole() *schema.Resource {
 	}
 }
 
-func dataSourceVultrOrganizationRoleRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceVultrOrganizationRoleRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")

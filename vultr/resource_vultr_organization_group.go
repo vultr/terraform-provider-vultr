@@ -53,7 +53,7 @@ func resourceVultrOrganizationGroup() *schema.Resource {
 	}
 }
 
-func resourceVultrOrganizationGroupCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationGroupCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	grpReq := &govultr.OrganizationGroupReq{
@@ -101,7 +101,7 @@ func resourceVultrOrganizationGroupCreate(ctx context.Context, d *schema.Resourc
 	return resourceVultrOrganizationGroupRead(ctx, d, meta)
 }
 
-func resourceVultrOrganizationGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	grp, _, err := client.Organization.GetGroup(ctx, d.Id())
@@ -151,7 +151,7 @@ func resourceVultrOrganizationGroupRead(ctx context.Context, d *schema.ResourceD
 	if err := d.Set("policies", pols); err != nil {
 		return diag.Errorf("unable to set resource organization group `policies` read value: %v", err)
 	}
-	if err := d.Set("roles", pols); err != nil {
+	if err := d.Set("roles", roles); err != nil {
 		return diag.Errorf("unable to set resource organization group `roles` read value: %v", err)
 	}
 	if err := d.Set("date_created", grp.DateCreated); err != nil {
@@ -161,7 +161,7 @@ func resourceVultrOrganizationGroupRead(ctx context.Context, d *schema.ResourceD
 	return nil
 }
 
-func resourceVultrOrganizationGroupUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationGroupUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Updating organization group (%s)", d.Id())
@@ -286,7 +286,7 @@ func resourceVultrOrganizationGroupUpdate(ctx context.Context, d *schema.Resourc
 	return resourceVultrOrganizationRead(ctx, d, meta)
 }
 
-func resourceVultrOrganizationGroupDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationGroupDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting organization group (%s)", d.Id())

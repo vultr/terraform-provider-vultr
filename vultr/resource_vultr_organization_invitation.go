@@ -62,7 +62,7 @@ func resourceVultrOrganizationInvitation() *schema.Resource {
 	}
 }
 
-func resourceVultrOrganizationInvitationCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationInvitationCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	// var roles []string
@@ -95,7 +95,7 @@ func resourceVultrOrganizationInvitationCreate(ctx context.Context, d *schema.Re
 	return resourceVultrOrganizationInvitationRead(ctx, d, meta)
 }
 
-func resourceVultrOrganizationInvitationRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationInvitationRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	inv, _, err := client.Organization.GetInvitation(ctx, d.Id())
@@ -127,10 +127,6 @@ func resourceVultrOrganizationInvitationRead(ctx context.Context, d *schema.Reso
 	return nil
 }
 
-func resourceVultrOrganizationInvitationUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return resourceVultrOrganizationInvitationRead(ctx, d, meta)
-}
-
-func resourceVultrOrganizationInvitationDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationInvitationDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	return nil
 }

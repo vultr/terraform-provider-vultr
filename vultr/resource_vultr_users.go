@@ -94,7 +94,7 @@ func resourceVultrUsersCreate(ctx context.Context, d *schema.ResourceData, meta 
 		for i := range groupList {
 			addReq := &govultr.OrganizationGroupMemberReq{UserID: d.Id()}
 			if err := client.Organization.AddGroupMember(ctx, groupList[i].(string), addReq); err != nil {
-				log.Print("[ERROR] error adding user %s to organization group %s : %v", d.Id(), groupList[i], err)
+				log.Printf("[ERROR] error adding user %s to organization group %s : %v", d.Id(), groupList[i], err)
 			}
 		}
 	}

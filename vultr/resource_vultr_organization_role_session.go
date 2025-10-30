@@ -79,7 +79,7 @@ func resourceVultrOrganizationRoleSession() *schema.Resource {
 	}
 }
 
-func resourceVultrOrganizationRoleSessionCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationRoleSessionCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	sessionReq := &govultr.OrganizationRoleSessionReq{
@@ -104,7 +104,7 @@ func resourceVultrOrganizationRoleSessionCreate(ctx context.Context, d *schema.R
 	return resourceVultrOrganizationRoleSessionRead(ctx, d, meta)
 }
 
-func resourceVultrOrganizationRoleSessionRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationRoleSessionRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	session, _, err := client.Organization.GetRoleSession(ctx, d.Id())
@@ -148,7 +148,7 @@ func resourceVultrOrganizationRoleSessionRead(ctx context.Context, d *schema.Res
 	return nil
 }
 
-func resourceVultrOrganizationRoleSessionDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationRoleSessionDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting organization role session (%s)", d.Id())

@@ -51,7 +51,7 @@ func resourceVultrOrganizationRole() *schema.Resource {
 	}
 }
 
-func resourceVultrOrganizationRoleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationRoleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	roleReq := &govultr.OrganizationRoleReq{
@@ -123,7 +123,7 @@ func resourceVultrOrganizationRoleRead(ctx context.Context, d *schema.ResourceDa
 	return nil
 }
 
-func resourceVultrOrganizationRoleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationRoleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Updating organization role (%s)", d.Id())
@@ -178,7 +178,7 @@ func resourceVultrOrganizationRoleUpdate(ctx context.Context, d *schema.Resource
 	return resourceVultrOrganizationRead(ctx, d, meta)
 }
 
-func resourceVultrOrganizationRoleDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationRoleDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting organization role (%s)", d.Id())

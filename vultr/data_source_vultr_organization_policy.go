@@ -80,7 +80,7 @@ func dataSourceVultrOrganizationPolicy() *schema.Resource {
 	}
 }
 
-func dataSourceVultrOrganizationPolicyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceVultrOrganizationPolicyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")

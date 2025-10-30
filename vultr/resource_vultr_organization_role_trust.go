@@ -66,7 +66,7 @@ func resourceVultrOrganizationRoleTrust() *schema.Resource {
 	}
 }
 
-func resourceVultrOrganizationRoleTrustCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationRoleTrustCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	var ipRanges []string
@@ -104,7 +104,7 @@ func resourceVultrOrganizationRoleTrustCreate(ctx context.Context, d *schema.Res
 	return resourceVultrOrganizationRoleTrustRead(ctx, d, meta)
 }
 
-func resourceVultrOrganizationRoleTrustRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationRoleTrustRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	trust, _, err := client.Organization.GetRoleTrust(ctx, d.Id())
@@ -136,7 +136,7 @@ func resourceVultrOrganizationRoleTrustRead(ctx context.Context, d *schema.Resou
 	return nil
 }
 
-func resourceVultrOrganizationRoleTrustUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationRoleTrustUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Updating organization role trust (%s)", d.Id())
@@ -167,7 +167,7 @@ func resourceVultrOrganizationRoleTrustUpdate(ctx context.Context, d *schema.Res
 	return resourceVultrOrganizationRoleTrustRead(ctx, d, meta)
 }
 
-func resourceVultrOrganizationRoleTrustDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationRoleTrustDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	log.Printf("[INFO] Deleting organization role trust (%s)", d.Id())

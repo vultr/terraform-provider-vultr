@@ -44,7 +44,7 @@ func dataSourceVultrOrganizationGroup() *schema.Resource {
 	}
 }
 
-func dataSourceVultrOrganizationGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceVultrOrganizationGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	filters, filtersOk := d.GetOk("filter")
