@@ -45,6 +45,11 @@ func resourceVultrUsers() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 			},
+			"groups": {
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+			},
 			"api_key": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -84,6 +89,16 @@ func resourceVultrUsersCreate(ctx context.Context, d *schema.ResourceData, meta 
 		return diag.Errorf("unable to set resource user `api_key` create value: %v", err)
 	}
 
+	if groups, groupsOK := d.GetOk("groups"); groupsOK {
+		groupList := groups.(*schema.Set).List()
+		for i := range groupList {
+			addReq := &govultr.OrganizationGroupMemberReq{UserID: d.Id()}
+			if err := client.Organization.AddGroupMember(ctx, groupList[i].(string), addReq); err != nil {
+				log.Print("[ERROR] error adding user %s to organization group %s : %v", d.Id(), groupList[i], err)
+			}
+		}
+	}
+
 	return resourceVultrUsersRead(ctx, d, meta)
 }
 
@@ -98,6 +113,19 @@ func resourceVultrUsersRead(ctx context.Context, d *schema.ResourceData, meta in
 			return nil
 		}
 		return diag.Errorf("error getting user: %v", err)
+	}
+
+	groups, _, _, err := client.Organization.ListUserGroups(ctx, d.Id(), nil)
+	if err != nil {
+		return diag.Errorf("error getting user groups : %v", err)
+	}
+
+	var groupList []string
+	for i := range groups {
+		groupList = append(groupList, groups[i].ID)
+	}
+	if err := d.Set("groups", groupList); err != nil {
+		return diag.Errorf("unable to set resource user `groups` read value: %v", err)
 	}
 
 	if err := d.Set("name", user.Name); err != nil {
@@ -150,6 +178,43 @@ func resourceVultrUsersUpdate(ctx context.Context, d *schema.ResourceData, meta 
 	err := client.User.Update(context.Background(), d.Id(), userReq)
 	if err != nil {
 		return diag.Errorf("Error updating user %s : %v", d.Id(), err)
+	}
+
+	if d.HasChange("groups") {
+		log.Printf("[INFO] Updating user groups")
+
+		oldGroups, newGroups := d.GetChange("groups")
+		oldGroupsList := oldGroups.(*schema.Set).List()
+		newGroupsList := newGroups.(*schema.Set).List()
+
+		var oldIDs, newIDs []string
+		for i := range oldGroupsList {
+			oldIDs = append(oldIDs, oldGroupsList[i].(string))
+		}
+
+		for i := range newGroupsList {
+			newIDs = append(newIDs, newGroupsList[i].(string))
+		}
+
+		removeIDs := diffSlice(newIDs, oldIDs)
+		addIDs := diffSlice(oldIDs, newIDs)
+
+		if len(removeIDs) > 0 {
+			for i := range removeIDs {
+				if err := client.Organization.RemoveGroupMember(ctx, removeIDs[i], d.Id()); err != nil {
+					return diag.Errorf("error removing user %s from organization group %s : %v", d.Id(), removeIDs[i], err)
+				}
+			}
+		}
+
+		if len(addIDs) > 0 {
+			for i := range addIDs {
+				addReq := &govultr.OrganizationGroupMemberReq{UserID: d.Id()}
+				if err := client.Organization.AddGroupMember(ctx, addIDs[i], addReq); err != nil {
+					return diag.Errorf("error adding user %s to organization group %s : %v", d.Id(), addIDs[i], err)
+				}
+			}
+		}
 	}
 
 	return resourceVultrUsersRead(ctx, d, meta)
