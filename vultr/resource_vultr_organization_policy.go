@@ -40,7 +40,6 @@ func resourceVultrOrganizationPolicy() *schema.Resource {
 			"document": {
 				Type:     schema.TypeSet,
 				Required: true,
-				MaxItems: 1,
 				Elem: &schema.Resource{
 					Schema: map[string]*schema.Schema{
 						"version": {
