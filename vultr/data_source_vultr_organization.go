@@ -74,6 +74,7 @@ func dataSourceVultrOrganizationRead(ctx context.Context, d *schema.ResourceData
 		return diag.Errorf("no results were found")
 	}
 
+	d.SetId(orgList[0].ID)
 	if err := d.Set("name", orgList[0].Name); err != nil {
 		return diag.Errorf("unable to set data source organization `name` read value: %v", err)
 	}

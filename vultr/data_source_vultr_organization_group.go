@@ -115,6 +115,7 @@ func dataSourceVultrOrganizationGroupRead(ctx context.Context, d *schema.Resourc
 		roles = append(roles, roleList[i].ID)
 	}
 
+	d.SetId(groupList[0].ID)
 	if err := d.Set("name", groupList[0].Name); err != nil {
 		return diag.Errorf("unable to set organization group `name` read value: %v", err)
 	}
