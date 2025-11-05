@@ -162,6 +162,7 @@ func dataSourceVultrOrganizationPolicyRead(ctx context.Context, d *schema.Resour
 		},
 	}
 
+	d.SetId(policyList[0].ID)
 	if err := d.Set("name", policyList[0].Name); err != nil {
 		return diag.Errorf("unable to set organization policy `name` read value: %v", err)
 	}

@@ -98,6 +98,7 @@ func dataSourceVultrOrganizationRoleRead(ctx context.Context, d *schema.Resource
 		policies = append(policies, policyList[i].ID)
 	}
 
+	d.SetId(roleList[0].ID)
 	if err := d.Set("name", roleList[0].Name); err != nil {
 		return diag.Errorf("unable to set organization role `name` read value: %v", err)
 	}
