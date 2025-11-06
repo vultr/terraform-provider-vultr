@@ -41,22 +41,22 @@ func resourceVultrOrganizationRoleTrust() *schema.Resource {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"hour_start": {
-				Type:     schema.TypeInt,
-				Required: true,
-			},
-			"hour_end": {
-				Type:     schema.TypeInt,
-				Required: true,
-			},
 			"ip_range": {
 				Type:     schema.TypeSet,
 				Required: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
+			"hour_start": {
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
+			"hour_end": {
+				Type:     schema.TypeInt,
+				Optional: true,
+			},
 			"date_expires": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"date_created": {
 				Type:     schema.TypeString,
@@ -85,7 +85,7 @@ func resourceVultrOrganizationRoleTrustCreate(ctx context.Context, d *schema.Res
 		Conditions: govultr.OrganizationRoleTrustCondition{
 			TimeOfDay: govultr.OrganizationRoleTrustConditionTime{
 				Start: d.Get("hour_start").(int),
-				End:   d.Get("hour_start").(int),
+				End:   d.Get("hour_end").(int),
 			},
 			IPRanges: ipRanges,
 		},
