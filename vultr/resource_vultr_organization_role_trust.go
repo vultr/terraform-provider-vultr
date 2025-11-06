@@ -85,7 +85,7 @@ func resourceVultrOrganizationRoleTrustCreate(ctx context.Context, d *schema.Res
 		Conditions: govultr.OrganizationRoleTrustCondition{
 			TimeOfDay: govultr.OrganizationRoleTrustConditionTime{
 				Start: d.Get("hour_start").(int),
-				End:   d.Get("hour_start").(int),
+				End:   d.Get("hour_end").(int),
 			},
 			IPRanges: ipRanges,
 		},
