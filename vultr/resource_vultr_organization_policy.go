@@ -32,11 +32,6 @@ func resourceVultrOrganizationPolicy() *schema.Resource {
 				Required: true,
 				ForceNew: true,
 			},
-			"is_system_policy": {
-				Type:     schema.TypeBool,
-				Required: true,
-				ForceNew: true,
-			},
 			"document": {
 				Type:     schema.TypeSet,
 				Required: true,
@@ -84,6 +79,10 @@ func resourceVultrOrganizationPolicy() *schema.Resource {
 				Optional: true,
 				Default:  nil,
 				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
+			"is_system_policy": {
+				Type:     schema.TypeBool,
+				Computed: true,
 			},
 			"date_created": {
 				Type:     schema.TypeString,
