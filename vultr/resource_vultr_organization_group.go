@@ -283,7 +283,7 @@ func resourceVultrOrganizationGroupUpdate(ctx context.Context, d *schema.Resourc
 	// 	}
 	// }
 
-	return resourceVultrOrganizationRead(ctx, d, meta)
+	return resourceVultrOrganizationGroupRead(ctx, d, meta)
 }
 
 func resourceVultrOrganizationGroupDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
