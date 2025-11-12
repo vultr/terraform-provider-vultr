@@ -50,5 +50,5 @@ The following attributes are exported:
 
 * `statement` - A list of blocks for the organization policy statements.
 * `effect` - The effect of the the policy document statement.
-* `action` - A list of actions for the policy document statement.
-* `resource` - The applicable resources for the policy document statement.
+* `actions` - A list of actions for the policy document statement.
+* `resources` - A list of applicable resources for the policy document statement.
