@@ -53,14 +53,15 @@ func resourceVultrOrganizationPolicy() *schema.Resource {
 										Type:     schema.TypeString,
 										Required: true,
 									},
-									"action": {
+									"actions": {
 										Type:     schema.TypeList,
 										Required: true,
 										Elem:     &schema.Schema{Type: schema.TypeString},
 									},
-									"resource": {
-										Type:     schema.TypeString,
+									"resources": {
+										Type:     schema.TypeList,
 										Required: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
 									},
 								},
 							},
@@ -103,16 +104,22 @@ func resourceVultrOrganizationPolicyCreate(ctx context.Context, d *schema.Resour
 	for i := range statements {
 		statementObj := statements[i].(map[string]interface{})
 
-		actionObj := statementObj["action"].([]interface{})
+		actionObj := statementObj["actions"].([]interface{})
 		var actionList []string
 		for n := range actionObj {
 			actionList = append(actionList, actionObj[n].(string))
 		}
 
+		resourceObj := statementObj["resources"].([]interface{})
+		var resourceList []string
+		for n := range resourceObj {
+			resourceList = append(resourceList, resourceObj[n].(string))
+		}
+
 		statementReq = append(statementReq, govultr.OrganizationPolicyStatement{
 			Effect:   statementObj["effect"].(string),
 			Action:   actionList,
-			Resource: statementObj["resource"].(string),
+			Resource: resourceList,
 		})
 	}
 
@@ -171,9 +178,9 @@ func resourceVultrOrganizationPolicyRead(ctx context.Context, d *schema.Resource
 	var statementFlat []map[string]interface{}
 	for i := range policy.Document.Statement {
 		statementFlat = append(statementFlat, map[string]interface{}{
-			"effect":   policy.Document.Statement[i].Effect,
-			"action":   policy.Document.Statement[i].Action,
-			"resource": policy.Document.Statement[i].Resource,
+			"effect":    policy.Document.Statement[i].Effect,
+			"actions":   policy.Document.Statement[i].Action,
+			"resources": policy.Document.Statement[i].Resource,
 		})
 	}
 

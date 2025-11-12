@@ -25,8 +25,8 @@ resource "vultr_organization_policy" "my_policy" {
     version = "2012-10-20"
     statement {
       effect = "Allow"
-      action = ["compute.instance.Create"]
-      resource = "*"
+      actions = ["compute.instance.Create"]
+      resources = ["*"]
     }
   }
 }
@@ -47,8 +47,8 @@ The following arguments are supported:
 
 * `statement` - (Required) A list of blocks for the organization policy statements.
 * `effect` - (Required) The effect of the the policy document statement.
-* `action` - (Required) A list of actions for the policy document statement.
-* `resource` - (Required) The applicable resources for the policy document statement.
+* `actions` - (Required) A list of actions for the policy document statement.
+* `resources` - (Required) A list of applicable resources for the policy document statement.
 
 ## Attributes Reference
 
@@ -66,8 +66,8 @@ The following attributes are exported:
 
 * `statement` - A list of blocks for the organization policy statements.
 * `effect` - The effect of the the policy document statement.
-* `action` - A list of actions for the policy document statement.
-* `resource` - The applicable resources for the policy document statement.
+* `actions` - A list of actions for the policy document statement.
+* `resources` - A list of applicable resources for the policy document statement.
 
 ## Import
 

@@ -47,14 +47,15 @@ func dataSourceVultrOrganizationPolicy() *schema.Resource {
 										Type:     schema.TypeString,
 										Computed: true,
 									},
-									"action": {
+									"actions": {
 										Type:     schema.TypeList,
 										Computed: true,
 										Elem:     &schema.Schema{Type: schema.TypeString},
 									},
-									"resource": {
-										Type:     schema.TypeString,
+									"resources": {
+										Type:     schema.TypeList,
 										Computed: true,
+										Elem:     &schema.Schema{Type: schema.TypeString},
 									},
 								},
 							},
@@ -149,9 +150,9 @@ func dataSourceVultrOrganizationPolicyRead(ctx context.Context, d *schema.Resour
 	var statementFlat []map[string]interface{}
 	for i := range policyList[0].Document.Statement {
 		statementFlat = append(statementFlat, map[string]interface{}{
-			"effect":   policyList[0].Document.Statement[i].Effect,
-			"action":   policyList[0].Document.Statement[i].Action,
-			"resource": policyList[0].Document.Statement[i].Resource,
+			"effect":    policyList[0].Document.Statement[i].Effect,
+			"actions":   policyList[0].Document.Statement[i].Action,
+			"resources": policyList[0].Document.Statement[i].Resource,
 		})
 	}
 
