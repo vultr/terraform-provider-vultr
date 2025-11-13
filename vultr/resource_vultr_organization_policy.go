@@ -25,12 +25,10 @@ func resourceVultrOrganizationPolicy() *schema.Resource {
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
 			},
 			"description": {
 				Type:     schema.TypeString,
 				Required: true,
-				ForceNew: true,
 			},
 			"document": {
 				Type:     schema.TypeSet,
@@ -41,12 +39,10 @@ func resourceVultrOrganizationPolicy() *schema.Resource {
 						"version": {
 							Type:     schema.TypeString,
 							Required: true,
-							ForceNew: true,
 						},
 						"statement": {
 							Type:     schema.TypeList,
 							Required: true,
-							ForceNew: true,
 							Elem: &schema.Resource{
 								Schema: map[string]*schema.Schema{
 									"effect": {
@@ -243,6 +239,46 @@ func resourceVultrOrganizationPolicyRead(ctx context.Context, d *schema.Resource
 func resourceVultrOrganizationPolicyUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Updating organization policy (%s)", d.Id())
+
+	documentObj := d.Get("document").(*schema.Set).List()
+	documentVal := documentObj[0].(map[string]interface{})
+	statements := documentVal["statement"].([]interface{})
+
+	var statementReq []govultr.OrganizationPolicyStatement
+	for i := range statements {
+		statementObj := statements[i].(map[string]interface{})
+
+		actionObj := statementObj["actions"].([]interface{})
+		var actionList []string
+		for n := range actionObj {
+			actionList = append(actionList, actionObj[n].(string))
+		}
+
+		resourceObj := statementObj["resources"].([]interface{})
+		var resourceList []string
+		for n := range resourceObj {
+			resourceList = append(resourceList, resourceObj[n].(string))
+		}
+
+		statementReq = append(statementReq, govultr.OrganizationPolicyStatement{
+			Effect:   statementObj["effect"].(string),
+			Action:   actionList,
+			Resource: resourceList,
+		})
+	}
+
+	policyReq := &govultr.OrganizationPolicyReq{
+		Name:        d.Get("name").(string),
+		Description: d.Get("description").(string),
+		PolicyDocument: govultr.OrganizationPolicyDocument{
+			Version:   documentVal["version"].(string),
+			Statement: statementReq,
+		},
+	}
+
+	if _, _, err := client.Organization.UpdatePolicy(ctx, d.Id(), policyReq); err != nil {
+		return diag.Errorf("error while updating organization policy : %s", err)
+	}
 
 	if d.HasChange("groups") {
 		log.Printf("[INFO] Updating organization policy groups")
