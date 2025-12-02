@@ -47,7 +47,7 @@ func dataSourceVultrVPC2Read(ctx context.Context, d *schema.ResourceData, meta i
 		return diag.Errorf("issue with filter: %v", filtersOk)
 	}
 
-	var vpcList []govultr.VPC2
+	var vpcList []govultr.VPC2 //nolint:staticcheck
 	f := buildVultrDataSourceFilter(filters.(*schema.Set))
 	options := &govultr.ListOptions{}
 
