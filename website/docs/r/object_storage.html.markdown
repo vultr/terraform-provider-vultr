@@ -42,6 +42,9 @@ The following arguments are supported:
 If you change these values outside of Terraform it will not detect the state
 drift. This will be added in a future version.
 
+**NOTE** Updating any element of a bucket will necessitate destroying and
+re-creating of the bucket
+
 * `name` - (Required) A name for the bucket
 * `enable_versioning` - (Optional) Whether or not the versioning is enabled in the bucket 
 * `enable_lock` - (Optional) Whether or not object lock is enabled in the bucket 
