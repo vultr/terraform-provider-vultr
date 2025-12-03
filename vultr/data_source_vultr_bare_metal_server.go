@@ -98,6 +98,10 @@ func dataSourceVultrBareMetalServer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"snapshot_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"features": {
 				Type:     schema.TypeList,
 				Computed: true,
@@ -214,6 +218,9 @@ func dataSourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceD
 	}
 	if err := d.Set("image_id", serverList[0].ImageID); err != nil {
 		return diag.Errorf("unable to set bare_metal_server `image_id` read value: %v", err)
+	}
+	if err := d.Set("snapshot_id", serverList[0].SnapshotID); err != nil {
+		return diag.Errorf("unable to set bare_metal_server `snapshot_id` read value: %v", err)
 	}
 	if err := d.Set("v6_network", serverList[0].V6Network); err != nil {
 		return diag.Errorf("unable to set bare_metal_server `v6_network` read value: %v", err)

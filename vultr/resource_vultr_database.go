@@ -217,6 +217,10 @@ func resourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"ca_certificate": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"read_replicas": {
 				Type:     schema.TypeSet,
 				Computed: true,
@@ -510,6 +514,10 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 
 	if err := d.Set("trusted_ips", database.TrustedIPs); err != nil {
 		return diag.Errorf("unable to set resource database `trusted_ips` read value: %v", err)
+	}
+
+	if err := d.Set("ca_certificate", database.CACertificate); err != nil {
+		return diag.Errorf("unable to set resource database `ca_certificate` read value: %v", err)
 	}
 
 	if database.DatabaseEngine == "mysql" {

@@ -123,6 +123,10 @@ func dataSourceVultrInstance() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"snapshot_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"firewall_group_id": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -264,6 +268,9 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 	}
 	if err := d.Set("image_id", serverList[0].ImageID); err != nil {
 		return diag.Errorf("unable to set instance `image_id` read value: %v", err)
+	}
+	if err := d.Set("snapshot_id", serverList[0].SnapshotID); err != nil {
+		return diag.Errorf("unable to set instance `snapshot_id` read value: %v", err)
 	}
 	if err := d.Set("firewall_group_id", serverList[0].FirewallGroupID); err != nil {
 		return diag.Errorf("unable to set instance `firewall_group_id` read value: %v", err)

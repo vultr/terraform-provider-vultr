@@ -156,6 +156,10 @@ func dataSourceVultrDatabase() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Computed: true,
 			},
+			"ca_certificate": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"mysql_sql_modes": {
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -386,6 +390,10 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set resource database `trusted_ips` read value: %v", err)
 	}
 
+	if err := d.Set("ca_certificate", databaseList[0].CACertificate); err != nil {
+		return diag.Errorf("unable to set resource database `ca_certificate` read value: %v", err)
+	}
+
 	if databaseList[0].DatabaseEngine == "mysql" {
 		if err := d.Set("mysql_sql_modes", databaseList[0].MySQLSQLModes); err != nil {
 			return diag.Errorf("unable to set resource database `mysql_sql_modes` read value: %v", err)
@@ -470,6 +478,7 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 			"backup_minute":             *db.ReadReplicas[v].BackupMinute,
 			"latest_backup":             db.ReadReplicas[v].LatestBackup,
 			"trusted_ips":               db.ReadReplicas[v].TrustedIPs,
+			"ca_certificate":            db.ReadReplicas[v].CACertificate,
 			"mysql_sql_modes":           db.ReadReplicas[v].MySQLSQLModes,
 			"mysql_require_primary_key": db.ReadReplicas[v].MySQLRequirePrimaryKey,
 			"mysql_slow_query_log":      db.ReadReplicas[v].MySQLSlowQueryLog,
