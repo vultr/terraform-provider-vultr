@@ -214,7 +214,6 @@ func resourceVultrObjectStorageUpdate(ctx context.Context, d *schema.ResourceDat
 
 		// handle create and updates
 		for i := range newBucketObjs {
-
 			// add new buckets
 			for j := range createBucketNames {
 				if newBucketObjs[i]["name"] == createBucketNames[j] {
