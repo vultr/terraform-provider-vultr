@@ -37,6 +37,28 @@ func resourceVultrObjectStorage() *schema.Resource {
 				Optional: true,
 				Default:  "",
 			},
+			"bucket": {
+				Type:     schema.TypeList,
+				Optional: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"name": {
+							Type:     schema.TypeString,
+							Required: true,
+						},
+						"enable_versioning": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							Default:  false,
+						},
+						"enable_lock": {
+							Type:     schema.TypeBool,
+							Optional: true,
+							Default:  false,
+						},
+					},
+				},
+			},
 			"date_created": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -91,6 +113,21 @@ func resourceVultrObjectStorageCreate(ctx context.Context, d *schema.ResourceDat
 		return diag.Errorf("error while waiting for Object Storage %s to be in a active state : %s", d.Id(), err)
 	}
 
+	if buckets, bucketsOK := d.GetOk("bucket"); bucketsOK {
+		bucketList := buckets.([]interface{})
+		for i := range bucketList {
+			bucketObj := bucketList[i].(map[string]interface{})
+			err := client.ObjectStorage.CreateBucket(ctx, d.Id(), &govultr.ObjectStorageBucketReq{
+				Name:             bucketObj["name"].(string),
+				EnableVersioning: bucketObj["enable_versioning"].(bool),
+				EnableLock:       bucketObj["enable_lock"].(bool),
+			})
+			if err != nil {
+				return diag.Errorf("error while creating object storage bucket : %s", err)
+			}
+		}
+	}
+
 	return resourceVultrObjectStorageRead(ctx, d, meta)
 }
 
@@ -140,6 +177,95 @@ func resourceVultrObjectStorageUpdate(ctx context.Context, d *schema.ResourceDat
 
 	if err := client.ObjectStorage.Update(ctx, d.Id(), objReq); err != nil {
 		return diag.Errorf("error updating object storage %s label : %v", d.Id(), err)
+	}
+
+	if d.HasChange("bucket") {
+		log.Printf("[INFO] Updating object storage buckets")
+
+		oldBuckets, newBuckets := d.GetChange("bucket")
+		oldBucketList := oldBuckets.([]interface{})
+		newBucketList := newBuckets.([]interface{})
+
+		var oldBucketNames []string
+		var oldBucketObjs []map[string]interface{}
+		for i := range oldBucketList {
+			oldBucketObj := oldBucketList[i].(map[string]interface{})
+			oldBucketObjs = append(oldBucketObjs, oldBucketObj)
+			oldBucketNames = append(oldBucketNames, oldBucketObj["name"].(string))
+		}
+
+		var newBucketNames []string
+		var newBucketObjs []map[string]interface{}
+		for i := range newBucketList {
+			newBucketObj := newBucketList[i].(map[string]interface{})
+			newBucketObjs = append(newBucketObjs, newBucketObj)
+			newBucketNames = append(newBucketNames, newBucketObj["name"].(string))
+		}
+
+		removeBucketNames := diffSlice(newBucketNames, oldBucketNames)
+		createBucketNames := diffSlice(oldBucketNames, newBucketNames)
+
+		// remove deleted buckets
+		for i := range removeBucketNames {
+			if err := client.ObjectStorage.DeleteBucket(ctx, d.Id(), removeBucketNames[i]); err != nil {
+				return diag.Errorf("error deleting object storage bucket %q : %s", removeBucketNames[i], err)
+			}
+		}
+
+		// handle create and updates
+		for i := range newBucketObjs {
+			// add new buckets
+			for j := range createBucketNames {
+				if newBucketObjs[i]["name"] == createBucketNames[j] {
+					err := client.ObjectStorage.CreateBucket(ctx, d.Id(), &govultr.ObjectStorageBucketReq{
+						Name:             newBucketObjs[i]["name"].(string),
+						EnableVersioning: newBucketObjs[i]["enable_versioning"].(bool),
+						EnableLock:       newBucketObjs[i]["enable_lock"].(bool),
+					})
+					if err != nil {
+						return diag.Errorf("error adding object storage bucket %q : %s", createBucketNames[j], err)
+					}
+				}
+			}
+
+			// check against values of old state
+			for k := range oldBucketObjs {
+				if oldBucketObjs[k]["name"] == newBucketObjs[i]["name"] {
+					recreate := false
+
+					if oldBucketObjs[k]["enable_versioning"] != newBucketObjs[i]["enable_versioning"] {
+						recreate = true
+					}
+
+					if oldBucketObjs[k]["enable_lock"] != newBucketObjs[i]["enable_lock"] {
+						recreate = true
+					}
+
+					if recreate {
+						if err := client.ObjectStorage.DeleteBucket(ctx, d.Id(), newBucketObjs[i]["name"].(string)); err != nil {
+							return diag.Errorf(
+								"error deleting (re-creating) object storage bucket %q : %s",
+								newBucketObjs[i]["name"].(string),
+								err,
+							)
+						}
+
+						err := client.ObjectStorage.CreateBucket(ctx, d.Id(), &govultr.ObjectStorageBucketReq{
+							Name:             newBucketObjs[i]["name"].(string),
+							EnableVersioning: newBucketObjs[i]["enable_versioning"].(bool),
+							EnableLock:       newBucketObjs[i]["enable_lock"].(bool),
+						})
+						if err != nil {
+							return diag.Errorf(
+								"error adding (re-creating) object storage bucket %q : %s",
+								newBucketObjs[i]["name"].(string),
+								err,
+							)
+						}
+					}
+				}
+			}
+		}
 	}
 
 	return resourceVultrObjectStorageRead(ctx, d, meta)
