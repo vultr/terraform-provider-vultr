@@ -64,6 +64,7 @@ The following attributes are exported:
 * `os_id` - The server's operating system ID.
 * `app_id` - The server's application ID.
 * `image_id` - The Marketplace ID for this application.
+* `snapshot_id` - The ID of the Vultr snapshot that the server was restored from.
 * `firewall_group_id` - The ID of the firewall group applied to this server.
 * `features` - Array of which features are enabled.
 * `backups_schedule` - The current configuration for backups 

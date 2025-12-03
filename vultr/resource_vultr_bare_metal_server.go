@@ -61,11 +61,6 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
-			"snapshot_id": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
 			"enable_ipv6": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -115,6 +110,12 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Optional: true,
 			},
 			"image_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+				ForceNew: true,
+				Optional: true,
+			},
+			"snapshot_id": {
 				Type:     schema.TypeString,
 				Computed: true,
 				ForceNew: true,
@@ -389,6 +390,9 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 	}
 	if err := d.Set("image_id", bms.ImageID); err != nil {
 		return diag.Errorf("unable to set resource bare_metal_server `image_id` read value: %v", err)
+	}
+	if err := d.Set("snapshot_id", bms.SnapshotID); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `snapshot_id` read value: %v", err)
 	}
 	if err := d.Set("v6_network", bms.V6Network); err != nil {
 		return diag.Errorf("unable to set resource bare_metal_server `v6_network` read value: %v", err)

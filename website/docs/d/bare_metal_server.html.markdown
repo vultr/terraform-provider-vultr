@@ -59,5 +59,6 @@ The following attributes are exported:
 * `os_id` - The server's operating system ID.
 * `app_id` - The server's application ID.
 * `image_id` - The Marketplace ID for this application.
+* `snapshot_id` - The ID of the Vultr snapshot that the server was restored from.
 * `vpc_id` - The ID of the VPC which is attached to the bare metal server.
 * `vpc2_ids` - (Deprecated) A list of VPC 2.0 IDs attached to the server.

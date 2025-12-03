@@ -132,6 +132,10 @@ func dataSourceVultrInstances() *schema.Resource {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
+						"snapshot_id": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
 						"firewall_group_id": {
 							Type:     schema.TypeString,
 							Computed: true,
@@ -233,6 +237,7 @@ func dataSourceVultrInstancesRead(ctx context.Context, d *schema.ResourceData, m
 					"os_id":               server.OsID,
 					"app_id":              server.AppID,
 					"image_id":            server.ImageID,
+					"snapshot_id":         server.SnapshotID,
 					"firewall_group_id":   server.FirewallGroupID,
 					"v6_network":          server.V6Network,
 					"v6_main_ip":          server.V6MainIP,
