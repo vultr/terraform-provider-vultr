@@ -77,13 +77,13 @@ func resourceVultrOrganizationRoleTrustCreate(ctx context.Context, d *schema.Res
 		}
 	}
 
-	trustReq := &govultr.OrganizationRoleTrustReq{
+	trustReq := &govultr.OrganizationRoleTrustCreateReq{
 		UserID:  d.Get("user").(string),
 		GroupID: d.Get("group").(string),
 		RoleID:  d.Get("role").(string),
 		Type:    d.Get("type").(string),
 		Conditions: govultr.OrganizationRoleTrustCondition{
-			TimeOfDay: govultr.OrganizationRoleTrustConditionTime{
+			TimeOfDay: &govultr.OrganizationRoleTrustConditionTime{
 				Start: d.Get("hour_start").(int),
 				End:   d.Get("hour_end").(int),
 			},
@@ -149,10 +149,10 @@ func resourceVultrOrganizationRoleTrustUpdate(ctx context.Context, d *schema.Res
 		}
 	}
 
-	req := &govultr.OrganizationRoleTrustReq{
-		Type: d.Get("type").(string),
-		Conditions: govultr.OrganizationRoleTrustCondition{
-			TimeOfDay: govultr.OrganizationRoleTrustConditionTime{
+	req := &govultr.OrganizationRoleTrustUpdateReq{
+		Type: d.Get("type").(*string),
+		Conditions: &govultr.OrganizationRoleTrustCondition{
+			TimeOfDay: &govultr.OrganizationRoleTrustConditionTime{
 				Start: d.Get("hour_start").(int),
 				End:   d.Get("hour_end").(int),
 			},
