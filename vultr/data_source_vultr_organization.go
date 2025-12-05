@@ -12,6 +12,7 @@ func dataSourceVultrOrganization() *schema.Resource {
 	return &schema.Resource{
 		ReadContext: dataSourceVultrOrganizationRead,
 		Schema: map[string]*schema.Schema{
+			"filter": dataSourceFiltersSchema(),
 			"name": {
 				Type:     schema.TypeString,
 				Computed: true,
