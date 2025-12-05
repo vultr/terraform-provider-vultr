@@ -119,15 +119,15 @@ func resourceVultrOrganizationGroupRead(ctx context.Context, d *schema.ResourceD
 		users = append(users, grp.Members[i].ID)
 	}
 
-	polList, _, _, err := client.Organization.ListGroupPolicies(ctx, d.Id())
-	if err != nil {
-		return diag.Errorf("error getting organization group policies : %v", err)
-	}
+	// polList, _, _, err := client.Organization.ListGroupPolicies(ctx, d.Id())
+	// if err != nil {
+	// 	return diag.Errorf("error getting organization group policies : %v", err)
+	// }
 
-	var pols []string
-	for i := range polList.All {
-		pols = append(pols, polList.All[i].ID)
-	}
+	// var pols []string
+	// for i := range polList.All {
+	// 	pols = append(pols, polList.All[i].ID)
+	// }
 
 	roleList, _, _, err := client.Organization.ListGroupRoles(ctx, d.Id())
 	if err != nil {
@@ -148,9 +148,9 @@ func resourceVultrOrganizationGroupRead(ctx context.Context, d *schema.ResourceD
 	if err := d.Set("users", users); err != nil {
 		return diag.Errorf("unable to set resource organization group `users` read value: %v", err)
 	}
-	if err := d.Set("policies", pols); err != nil {
-		return diag.Errorf("unable to set resource organization group `policies` read value: %v", err)
-	}
+	// if err := d.Set("policies", pols); err != nil {
+	// 	return diag.Errorf("unable to set resource organization group `policies` read value: %v", err)
+	// }
 	if err := d.Set("roles", roles); err != nil {
 		return diag.Errorf("unable to set resource organization group `roles` read value: %v", err)
 	}

@@ -37,7 +37,7 @@ The following attributes are exported:
 * `description` - A description of the organization group.
 * `users` - A list of users attached to the organization group.
 * `roles` - A list of roles attached to the organization group.
-* `policies` - A list of policies attached to the organization group.
+* `policies` - **NOTE** This field is temporarily ignored until the API is fixed. A list of policies attached to the organization group.
 * `date_created` - Date of creation for the organization group.
 
 ## Import
