@@ -150,7 +150,7 @@ func resourceVultrOrganizationRoleTrustUpdate(ctx context.Context, d *schema.Res
 	}
 
 	req := &govultr.OrganizationRoleTrustUpdateReq{
-		Type: d.Get("type").(*string),
+		Type: d.Get("type").(string),
 		Conditions: &govultr.OrganizationRoleTrustCondition{
 			TimeOfDay: &govultr.OrganizationRoleTrustConditionTime{
 				Start: d.Get("hour_start").(int),
