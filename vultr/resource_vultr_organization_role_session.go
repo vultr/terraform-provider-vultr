@@ -21,12 +21,12 @@ func resourceVultrOrganizationRoleSession() *schema.Resource {
 			StateContext: schema.ImportStatePassthroughContext,
 		},
 		Schema: map[string]*schema.Schema{
-			"user": {
+			"user_id": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
 			},
-			"role": {
+			"role_id": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true,
@@ -38,12 +38,12 @@ func resourceVultrOrganizationRoleSession() *schema.Resource {
 			},
 			"duration": {
 				Type:     schema.TypeInt,
-				Required: true,
+				Optional: true,
 				ForceNew: true,
 			},
 			"ip_address": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 				ForceNew: true,
 			},
 			"token": {
@@ -83,13 +83,19 @@ func resourceVultrOrganizationRoleSessionCreate(ctx context.Context, d *schema.R
 	client := meta.(*Client).govultrClient()
 
 	sessionReq := &govultr.OrganizationRoleSessionReq{
-		UserID:      d.Get("user").(string),
-		RoleID:      d.Get("role").(string),
+		UserID:      d.Get("user_id").(string),
+		RoleID:      d.Get("role_id").(string),
 		SessionName: d.Get("session_name").(string),
-		Duration:    d.Get("duration").(int),
-		Context: govultr.OrganizationRoleSessionReqContext{
-			IPAddress: d.Get("ip_address").(string),
-		},
+	}
+
+	if dur, durOK := d.GetOk("duration"); durOK {
+		sessionReq.Duration = dur.(int)
+	}
+
+	if ip, ipOK := d.GetOk("ip_address"); ipOK {
+		sessionReq.Context = &govultr.OrganizationRoleSessionReqContext{
+			IPAddress: govultr.StringToStringPtr(ip.(string)),
+		}
 	}
 
 	log.Print("[INFO] Creating organization role session")
@@ -120,10 +126,10 @@ func resourceVultrOrganizationRoleSessionRead(ctx context.Context, d *schema.Res
 	if err := d.Set("session_name", session.SessionName); err != nil {
 		return diag.Errorf("unable to set resource organization role session `session_name` read value: %v", err)
 	}
-	if err := d.Set("user", session.UserID); err != nil {
+	if err := d.Set("user_id", session.UserID); err != nil {
 		return diag.Errorf("unable to set resource organization role session `user` read value: %v", err)
 	}
-	if err := d.Set("role", session.RoleID); err != nil {
+	if err := d.Set("role_id", session.RoleID); err != nil {
 		return diag.Errorf("unable to set resource organization role session `role` read value: %v", err)
 	}
 	if err := d.Set("remaining_duration", session.RemainingDuration); err != nil {
@@ -135,7 +141,7 @@ func resourceVultrOrganizationRoleSessionRead(ctx context.Context, d *schema.Res
 	if err := d.Set("auth_method", session.AuthMethod); err != nil {
 		return diag.Errorf("unable to set resource organization role session `auth_method` read value: %v", err)
 	}
-	if err := d.Set("conditions_me", session.ConditionsMet); err != nil {
+	if err := d.Set("conditions_met", session.ConditionsMet); err != nil {
 		return diag.Errorf("unable to set resource organization role session `conditions_met` read value: %v", err)
 	}
 	if err := d.Set("date_assumed", session.DateAssumed); err != nil {
