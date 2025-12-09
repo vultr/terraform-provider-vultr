@@ -69,27 +69,32 @@ func resourceVultrOrganizationRoleTrust() *schema.Resource {
 func resourceVultrOrganizationRoleTrustCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
+	trustReq := &govultr.OrganizationRoleTrustCreateReq{
+		UserID:      d.Get("user").(string),
+		GroupID:     d.Get("group").(string),
+		RoleID:      d.Get("role").(string),
+		Type:        d.Get("type").(string),
+		Conditions:  &govultr.OrganizationRoleTrustCreateReqCondition{},
+		DateExpires: govultr.StringToStringPtr(d.Get("date_expires").(string)),
+	}
+
+	start, startOK := d.GetOk("hour_start")
+	end, endOK := d.GetOk("hour_end")
+	if startOK || endOK {
+		trustReq.Conditions.TimeOfDay = &govultr.OrganizationRoleTrustCreateReqConditionTime{
+			Start: start.(int),
+			End:   end.(int),
+		}
+	}
+
 	var ipRanges []string
 	if ips, ipsOK := d.GetOk("ip_range"); ipsOK {
 		ipsVal := ips.(*schema.Set).List()
 		for i := range ipsVal {
 			ipRanges = append(ipRanges, ipsVal[i].(string))
 		}
-	}
 
-	trustReq := &govultr.OrganizationRoleTrustCreateReq{
-		UserID:  d.Get("user").(string),
-		GroupID: d.Get("group").(string),
-		RoleID:  d.Get("role").(string),
-		Type:    d.Get("type").(string),
-		Conditions: govultr.OrganizationRoleTrustCondition{
-			TimeOfDay: &govultr.OrganizationRoleTrustConditionTime{
-				Start: d.Get("hour_start").(int),
-				End:   d.Get("hour_end").(int),
-			},
-			IPRanges: ipRanges,
-		},
-		DateExpires: d.Get("date_expires").(string),
+		trustReq.Conditions.IPRanges = ipRanges
 	}
 
 	log.Print("[INFO] Creating organization role trust")
@@ -129,6 +134,9 @@ func resourceVultrOrganizationRoleTrustRead(ctx context.Context, d *schema.Resou
 	if err := d.Set("ip_range", trust.Conditions.IPRanges); err != nil {
 		return diag.Errorf("unable to set resource organization role trust `ip_range` read value: %v", err)
 	}
+	if err := d.Set("date_expires", trust.DateExpires); err != nil {
+		return diag.Errorf("unable to set resource organization role trust `date_expires` read value: %v", err)
+	}
 	if err := d.Set("date_created", trust.DateCreated); err != nil {
 		return diag.Errorf("unable to set resource organization role trust `date_created` read value: %v", err)
 	}
@@ -141,23 +149,35 @@ func resourceVultrOrganizationRoleTrustUpdate(ctx context.Context, d *schema.Res
 
 	log.Printf("[INFO] Updating organization role trust (%s)", d.Id())
 
-	var ips []string
-	ipRangeVal := d.Get("ip_range").(*schema.Set).List()
-	if len(ipRangeVal) != 0 {
-		for i := range ipRangeVal {
-			ips = append(ips, ipRangeVal[i].(string))
+	req := &govultr.OrganizationRoleTrustUpdateReq{
+		Conditions: &govultr.OrganizationRoleTrustCondition{},
+	}
+
+	if d.HasChange("type") {
+		req.Type = d.Get("type").(string)
+	}
+
+	if d.HasChange("date_expires") {
+		req.DateExpires = govultr.StringToStringPtr(d.Get("date_expires").(string))
+	}
+
+	if d.HasChange("hour_start") || d.HasChange("hour_end") {
+		req.Conditions.TimeOfDay = govultr.OrganizationRoleTrustConditionTime{
+			Start: d.Get("hour_start").(int),
+			End:   d.Get("hour_end").(int),
 		}
 	}
 
-	req := &govultr.OrganizationRoleTrustUpdateReq{
-		Type: d.Get("type").(string),
-		Conditions: &govultr.OrganizationRoleTrustCondition{
-			TimeOfDay: &govultr.OrganizationRoleTrustConditionTime{
-				Start: d.Get("hour_start").(int),
-				End:   d.Get("hour_end").(int),
-			},
-			IPRanges: ips,
-		},
+	if d.HasChange("ip_range") {
+		var ips []string
+		ipRangeVal := d.Get("ip_range").(*schema.Set).List()
+		if len(ipRangeVal) != 0 {
+			for i := range ipRangeVal {
+				ips = append(ips, ipRangeVal[i].(string))
+			}
+
+			req.Conditions.IPRanges = ips
+		}
 	}
 
 	if _, _, err := client.Organization.UpdateRoleTrust(ctx, d.Id(), req); err != nil {
