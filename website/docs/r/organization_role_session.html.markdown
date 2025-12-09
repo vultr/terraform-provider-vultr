@@ -16,8 +16,8 @@ Create a new organization role trust.
 
 ```hcl
 resource "vultr_organization_role_trust" "rot" {
-  role = "de2e3d3b-c86f-402e-932f-368fe21c29df"
-  user = "3b37fef9-3fb7-4803-94f6-ceace63b1b90"
+  role_id = "de2e3d3b-c86f-402e-932f-368fe21c29df"
+  user_id = "3b37fef9-3fb7-4803-94f6-ceace63b1b90"
   type = "TemporaryAssumption"
   hour_start = 9
   hour_end = 17
@@ -30,9 +30,8 @@ resource "vultr_organization_role_trust" "rot" {
 
 The following arguments are supported:
 
-* `role` - (Required) A UUID of a role.
-* `user` - (Optional) A UUID of a user.
-* `group` - (Optional) A UUID of a group.
+* `role_id` - (Required) A UUID of a role.
+* `user_id` - (Optional) A UUID of a user.
 * `type` - (Required) The type of role trust.
 * `hour_start` - (Required) The hour that the role trust begins.
 * `hour_end` - (Required) The hour that the role trust ends.
@@ -45,20 +44,11 @@ The following arguments are supported:
 The following attributes are exported:
 
 * `id` - The ID of the role trust.
-* `role` - A UUID of a role.
-* `user` - A UUID of a user.
-* `group` - jA UUID of a group.
+* `role_id` - A UUID of a role.
+* `user_id` - A UUID of a user.
 * `type` - The type of role trust.
 * `hour_start` - The hour that the role trust begins.
 * `hour_end` - The hour that the role trust ends.
 * `ip_range` - A list of IP ranges allowed for the role trust.
 * `date_expires` - A date to expire the role trust.
 * `date_created` - The date the role trust was created.
-
-## Import
-
-Organization role trusts can be imported using the `ID`, e.g.
-
-```
-terraform import vultr_organization_role_trust.my_trust 8fe9e214-ca54-42f5-bdfd-aa12016328f3
-```
