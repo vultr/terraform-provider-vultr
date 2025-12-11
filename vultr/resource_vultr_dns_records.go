@@ -61,7 +61,7 @@ func resourceVultrDNSRecord() *schema.Resource {
 func resourceVultrDNSRecordCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 	p := d.Get("priority").(int)
-	recordReq := &govultr.DomainRecordReq{
+	recordReq := &govultr.DomainRecordCreateReq{
 		Name:     d.Get("name").(string),
 		Type:     d.Get("type").(string),
 		Data:     d.Get("data").(string),
@@ -114,9 +114,9 @@ func resourceVultrDNSRecordUpdate(ctx context.Context, d *schema.ResourceData, m
 	log.Printf("[INFO] Updating DNS record: %s", d.Id())
 
 	p := d.Get("priority").(int)
-	record := &govultr.DomainRecordReq{
+	record := &govultr.DomainRecordUpdateReq{
 		Data:     d.Get("data").(string),
-		Name:     d.Get("name").(string),
+		Name:     govultr.StringToStringPtr(d.Get("name").(string)),
 		TTL:      d.Get("ttl").(int),
 		Priority: &p,
 	}
