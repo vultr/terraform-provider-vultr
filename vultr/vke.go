@@ -58,19 +58,15 @@ func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 			Default:  1,
 		},
 		"labels": {
-			Type:       schema.TypeMap,
-			Optional:   true,
-			Computed:   true,
-			Deprecated: "Managing labels through the node pool resource is deprecated. Use the vultr_kubernetes_node_pool_label resource instead. This field will be removed in a future major version.",
+			Type:     schema.TypeMap,
+			Optional: true,
 			Elem: &schema.Schema{
 				Type: schema.TypeString,
 			},
 		},
 		"taints": {
-			Type:       schema.TypeSet,
-			Optional:   true,
-			Computed:   true,
-			Deprecated: "Managing taints through the node pool resource is deprecated. Use the vultr_kubernetes_node_pool_taint resource instead. This field will be removed in a future major version.",
+			Type:     schema.TypeSet,
+			Optional: true,
 			Elem: &schema.Resource{
 				Schema: map[string]*schema.Schema{
 					"key": {
@@ -86,12 +82,6 @@ func nodePoolSchema(isNodePool bool) map[string]*schema.Schema {
 						Required: true,
 					},
 				},
-			},
-			Set: func(v interface{}) int {
-				var buf string
-				m := v.(map[string]interface{})
-				buf = m["key"].(string) + m["value"].(string) + m["effect"].(string)
-				return schema.HashString(buf)
 			},
 		},
 		"user_data": {
