@@ -1,11 +1,15 @@
 package vultr
 
 import (
+	"context"
 	"encoding/base64"
+	"fmt"
 	"maps"
+	"slices"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
+	"github.com/vultr/govultr/v3"
 	"gopkg.in/yaml.v2"
 )
 
@@ -338,4 +342,150 @@ func getCertsFromKubeConfig(kubeconfig string) (ca string, cert string, key stri
 	}
 
 	return kc.Clusters[0].Cluster.CaCert, kc.Users[0].User.ClientCert, kc.Users[0].User.ClientKey, nil
+}
+
+func updateNodePoolOptions(ctx context.Context, client *govultr.Client, clusterID, nodePoolID, optionKind string, oldData, newData []interface{}) error { //nolint:lll
+	type optionData struct {
+		Create   bool
+		Delete   bool
+		OptionID string
+		Key      string
+		Value    string
+		Effect   string
+	}
+
+	oldOptionData := []optionData{}
+	optionRequests := []optionData{}
+	for i := range oldData {
+		oldOption := oldData[i].(map[string]interface{})
+
+		oldData := optionData{
+			OptionID: oldOption["id"].(string),
+			Key:      oldOption["key"].(string),
+		}
+
+		oldOptionData = append(oldOptionData, oldData)
+	}
+
+	for i := range newData {
+		newOption := newData[i].(map[string]interface{})
+
+		newRequest := optionData{
+			Key:    newOption["key"].(string),
+			Value:  newOption["value"].(string),
+			Create: true,
+			Delete: false,
+		}
+
+		if optionKind == "taints" {
+			newRequest.Effect = newOption["effect"].(string)
+		}
+
+		oldIndex := slices.IndexFunc(oldOptionData, func(o optionData) bool { return o.Key == newRequest.Key })
+
+		if oldIndex >= 0 {
+			// delete the old option in the process
+			newRequest.Delete = true
+			newRequest.OptionID = oldOptionData[oldIndex].OptionID
+		}
+
+		optionRequests = append(optionRequests, newRequest)
+	}
+
+	// mark delete options not in changed data
+	for i := range oldOptionData {
+		if !slices.ContainsFunc(optionRequests, func(o optionData) bool { return o.Key == oldOptionData[i].Key }) {
+			optionRequests = append(optionRequests, optionData{
+				OptionID: oldOptionData[i].OptionID,
+				Delete:   true,
+				Create:   false,
+			})
+		}
+	}
+
+	for i := range optionRequests {
+		switch optionKind {
+		case "labels":
+			if optionRequests[i].Delete {
+				err := client.Kubernetes.DeleteNodePoolLabel(
+					ctx,
+					clusterID,
+					nodePoolID,
+					optionRequests[i].OptionID,
+				)
+				if err != nil {
+					return fmt.Errorf(
+						"error deleting label %q from vke %q node pool %q during option update : %w",
+						optionRequests[i].Key,
+						clusterID,
+						nodePoolID,
+						err,
+					)
+				}
+			}
+
+			if optionRequests[i].Create {
+				_, _, err := client.Kubernetes.CreateNodePoolLabel(
+					ctx,
+					clusterID,
+					nodePoolID,
+					&govultr.NodePoolLabelReq{
+						Key:   optionRequests[i].Key,
+						Value: optionRequests[i].Value,
+					},
+				)
+				if err != nil {
+					return fmt.Errorf(
+						"error creating label %q on vke %q node pool %q during option update : %w",
+						optionRequests[i].Key,
+						clusterID,
+						nodePoolID,
+						err,
+					)
+				}
+			}
+		case "taints":
+			if optionRequests[i].Delete {
+				err := client.Kubernetes.DeleteNodePoolTaint(
+					ctx,
+					clusterID,
+					nodePoolID,
+					optionRequests[i].OptionID,
+				)
+				if err != nil {
+					return fmt.Errorf(
+						"error deleting taint %q from vke %q node pool %q during option update : %w",
+						optionRequests[i].Key,
+						clusterID,
+						nodePoolID,
+						err,
+					)
+				}
+			}
+
+			if optionRequests[i].Create {
+				_, _, err := client.Kubernetes.CreateNodePoolTaint(
+					ctx,
+					clusterID,
+					nodePoolID,
+					&govultr.NodePoolTaintReq{
+						Key:    optionRequests[i].Key,
+						Value:  optionRequests[i].Value,
+						Effect: optionRequests[i].Effect,
+					},
+				)
+				if err != nil {
+					return fmt.Errorf(
+						"error creating label %q on vke %q node pool %q during update : %w",
+						optionRequests[i].Key,
+						clusterID,
+						nodePoolID,
+						err,
+					)
+				}
+			}
+		}
+	}
+
+	return nil
 }
