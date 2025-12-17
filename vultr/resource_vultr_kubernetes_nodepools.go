@@ -59,7 +59,11 @@ func resourceVultrKubernetesNodePoolsStateUpgradeV0ToV1(ctx context.Context, raw
 
 	if len(stateLabels) != 0 {
 		log.Println("[INFO] migrating kubernetes node pool labels from v0 to v1")
-		refLabels, _, err := client.Kubernetes.ListNodePoolLabels(ctx, rawState["cluster_id"].(string), rawState["id"].(string))
+		refLabels, _, err := client.Kubernetes.ListNodePoolLabels(
+			ctx,
+			rawState["cluster_id"].(string),
+			rawState["id"].(string),
+		)
 		if err != nil {
 			log.Println("[ERROR] unable to retrieve updated kubernetes node pool labels from client")
 			return rawState, err
@@ -86,7 +90,11 @@ func resourceVultrKubernetesNodePoolsStateUpgradeV0ToV1(ctx context.Context, raw
 
 	if len(stateTaints) != 0 {
 		log.Println("[INFO] migrating kubernetes node pool taints from v0 to v1")
-		refTaints, _, err := client.Kubernetes.ListNodePoolTaints(ctx, rawState["cluster_id"].(string), rawState["id"].(string))
+		refTaints, _, err := client.Kubernetes.ListNodePoolTaints(
+			ctx,
+			rawState["cluster_id"].(string),
+			rawState["id"].(string),
+		)
 		if err != nil {
 			log.Println("[ERROR] unable to retrieve updated kubernetes node pool taints from client")
 			return rawState, err
