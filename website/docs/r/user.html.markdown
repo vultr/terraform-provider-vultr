@@ -41,6 +41,7 @@ resource "vultr_user" "my_user" {
 	  "dns",
 	  "upgrade",
 	]
+	service_user = true
 }
 ```
 
@@ -53,6 +54,7 @@ The following arguments are supported:
 * `password` - (Required) Password for this user.
 * `api_enabled` - (Optional) Whether API is enabled for the user. Default behavior is set to enabled.
 * `acl` - (Optional) The access control list for the user. 
+* `service_user` - (Optional) Whether the user is a service user.
 
 
 ## Attributes Reference
@@ -62,6 +64,7 @@ The following attributes are exported:
 * `name` - Name for this user.
 * `email` - Email for this user.
 * `api_enabled` - Whether API is enabled for the user.
+* `service_user` - Whether the user is a service user.
 
 ## Import
 
