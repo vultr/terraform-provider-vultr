@@ -53,3 +53,4 @@ The following attributes are exported:
 * `email` - The email of the user.
 * `api_enabled` - Whether API is enabled for the user.
 * `acl` - The access control list for the user.
+* `service_user` - Whether the user is a service user.
