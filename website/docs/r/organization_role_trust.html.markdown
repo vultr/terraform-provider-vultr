@@ -19,8 +19,12 @@ resource "vultr_organization_role_session" "sss" {
   user = "4f86871e-fa75-4fb8-8960-fe4bac4e498c"
   role = "2c536798-6472-4907-b901-8b0c50c9789f"
   session_name = "my-terraform-session"
+  type = "TemporaryAssumption"
   duration = 2300
+  hour_start = 9
+  hour_end = 17
   ip_address = "10.0.0.1"
+  date_expires = "2025-12-31T23:59:59Z"
 }
 ```
 
@@ -30,9 +34,13 @@ The following arguments are supported:
 
 * `user` - (Required) A UUID of a user.
 * `role` - (Required) A UUID of a role.
+* `type` - (Required) The type of role trust (ie. TemporaryAssumption).
 * `session_name` - (Required) A name for the session.
 * `duration` - (Required) The duration of the session.
 * `ip_address` - (Required) An IP for the session.
+* `hour_start` - 24h time that the trust is enabled.
+* `hour_end` - 24h time that the trust is disabled.
+* `date_expires` - (Required) ISO 8601 date time stamp indicationg expiration or role trust.
 
 ## Attributes Reference
 
@@ -49,6 +57,8 @@ The following attributes are exported:
 * `remaining_duration` - The remaining duration of the session.
 * `auth_method` - The auth method of the session.
 * `source_ip` - The source IP of the session.
+* `hour_start` - 24h time that the trust is enabled.
+* `hour_end` - 24h time that the trust is disabled.
 * `date_assumed` - The date that the session was assumed.
 * `date_expires` - The date that the session expires.
 
