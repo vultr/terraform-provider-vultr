@@ -21,6 +21,7 @@ resource "vultr_organization_role" "my_role" {
   type = "assumable"
   max_session_duration = 3600
   policies = [ "bf8587f2-72e6-43e5-9ebc-dd6267eb7f4c", "5db2b8d6-ca62-415a-9f87-d2f89eff8dba" ]
+  groups = [ "2b72adbd-3f25-4ec8-b067-307a8fa4d8fa" ]
 }
 ```
 
@@ -32,7 +33,8 @@ The following arguments are supported:
 * `description` - (Required) A description of the organization role.
 * `type` - (Required) A type for the organization role.
 * `max_session_duration` - (Required) The max session length for the organization role.
-* `policies` - (Optional) A list of UUIDs to attach to the organization role.
+* `policies` - (Optional) A list of policy UUIDs which should be attached to the role.
+* `groups` - (Optional) A list of group UUIDs which should be attached to the role.
 
 ## Attributes Reference
 
@@ -43,7 +45,8 @@ The following attributes are exported:
 * `description` - A description of the organization role.
 * `type` - A type for the organization role.
 * `max_session_duration` - The max session length for the organization role.
-* `policies` - A list of UUIDs to attach to the organization role.
+* `policies` - A list of UUIDs attached to the role.
+* `groups` - A list of group UUIDs attached to the role.
 * `date_created` - Date of creation for the organization role.
 
 ## Import

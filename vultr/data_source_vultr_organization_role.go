@@ -34,6 +34,11 @@ func dataSourceVultrOrganizationRole() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
+			"groups": {
+				Type:     schema.TypeSet,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 			"date_created": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -113,6 +118,19 @@ func dataSourceVultrOrganizationRoleRead(ctx context.Context, d *schema.Resource
 	}
 	if err := d.Set("date_created", roleList[0].DateCreated); err != nil {
 		return diag.Errorf("unable to set organization `date_created` read value: %v", err)
+	}
+
+	groups, _, _, err := client.Organization.ListRoleGroups(ctx, d.Id(), nil)
+	if err != nil {
+		return diag.Errorf("error getting role groups : %v", err)
+	}
+
+	var groupsList []string
+	for i := range groups {
+		groupsList = append(groupsList, groups[i].GroupID)
+	}
+	if err := d.Set("groups", groupsList); err != nil {
+		return diag.Errorf("unable to set role `groups` read value: %v", err)
 	}
 
 	return nil
