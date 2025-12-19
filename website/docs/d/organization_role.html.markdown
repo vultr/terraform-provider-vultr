@@ -43,5 +43,6 @@ The following attributes are exported:
 * `description` - A description of the organization role.
 * `type` - A type for the organization role.
 * `max_session_duration` - The max session length for the organization role.
-* `policies` - A list of UUIDs to attach to the organization role.
+* `policies` - A list of UUIDs attached to the role.
+* `groups` - A list of group UUIDs attached to the role.
 * `date_created` - Date of creation for the organization role.
