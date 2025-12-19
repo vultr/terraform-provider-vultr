@@ -53,6 +53,8 @@ The following arguments are supported:
 * `password` - (Required) Password for this user.
 * `api_enabled` - (Optional) Whether API is enabled for the user. Default behavior is set to enabled.
 * `acl` - (Optional) The access control list for the user. 
+* `groups` - (Optional) A list of UUIDs of groups which should be attached to this user.
+* `roles` - (Optional) A list of UUIDs of roles which should be attached to this user.
 
 
 ## Attributes Reference
@@ -62,6 +64,8 @@ The following attributes are exported:
 * `name` - Name for this user.
 * `email` - Email for this user.
 * `api_enabled` - Whether API is enabled for the user.
+* `groups` - A list of UUIDs of groups attached to this user.
+* `roles` - A list of UUIDs of roles attached to this user.
 
 ## Import
 

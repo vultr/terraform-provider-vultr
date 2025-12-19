@@ -53,3 +53,5 @@ The following attributes are exported:
 * `email` - The email of the user.
 * `api_enabled` - Whether API is enabled for the user.
 * `acl` - The access control list for the user.
+* `groups` - A list of UUIDs of groups attached to this user.
+* `roles` - A list of UUIDs of roles attached to this user.
