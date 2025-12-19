@@ -29,15 +29,27 @@ resource "vultr_kubernetes" "k8" {
 		auto_scaler   = true
 		min_nodes     = 1
 		max_nodes     = 2
-		labels = {
-			my-label = "a-label-on-all-nodes"
-			my-second-label = "another-label-on-all-nodes"
+
+		labels {
+			key = "my-label" 
+			value = "a-label-on-all-nodes"
+		}
+
+		labels {
+		    key = "my-second-label" 
+		    value = "another-label-on-all-nodes"
 		}
 
 		taints {
 			key = "a-taint"
 			value = "is-tainted"
 			effect = "NoExecute"
+		}
+
+		taints {
+			key = "another-taint"
+			value = "is-tainted"
+			effect = "NoSchedule"
 		}
 	}
 }
@@ -86,8 +98,8 @@ The follow arguments are supported:
 * `auto_scaler` - (Optional) Enable the auto scaler for the default node pool.
 * `min_nodes` - (Optional) The minimum number of nodes to use with the auto scaler.
 * `max_nodes` - (Optional) The maximum number of nodes to use with the auto scaler.
-* `labels` - (Optional) A map of key/value pairs for Kubernetes node labels.
-* `taints` - (Optional) Taints to apply to the nodes in the node pool. Should contain `key`, `value` and `effect`.  The `effect` should be one of `NoSchedule`, `PreferNoSchedule` or `NoExecute`.
+* `labels` - (Optional) A list of labels to apply to the nodes in the node pool. Should contain `key` and `value`.
+* `taints` - (Optional) A list of taints to apply to the nodes in the node pool. Should contain `key`, `value` and `effect`.  The `effect` should be one of `NoSchedule`, `PreferNoSchedule` or `NoExecute`.
 
 ## Attributes Reference
 
@@ -123,8 +135,8 @@ The following attributes are exported:
 * `auto_scaler` - Boolean indicating if the auto scaler for the default node pool is active.
 * `min_nodes` - The minimum number of nodes used by the auto scaler.
 * `max_nodes` - The maximum number of nodes used by the auto scaler.
-* `labels` - Key/value pairs for Kubernetes node labels.
-* `taints` - Taints which should be applied to the nodes by Kubernetes. Made up of `key`, `value` and `effect`.
+* `labels` - A list of labels applied to the node pool. Contains `key`, `value` and `id`.
+* `taints` - A list of taints applied to the node pool. Contains `key`, `value`, `effect` and `id`.
 
 
 `nodes`

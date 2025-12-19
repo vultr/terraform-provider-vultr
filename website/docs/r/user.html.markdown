@@ -41,6 +41,7 @@ resource "vultr_user" "my_user" {
 	  "dns",
 	  "upgrade",
 	]
+	service_user = true
 }
 ```
 
@@ -55,6 +56,7 @@ The following arguments are supported:
 * `acl` - (Optional) The access control list for the user. 
 * `groups` - (Optional) A list of UUIDs of groups which should be attached to this user.
 * `roles` - (Optional) A list of UUIDs of roles which should be attached to this user.
+* `service_user` - (Optional) Whether the user is a service user.
 
 
 ## Attributes Reference
@@ -66,6 +68,7 @@ The following attributes are exported:
 * `api_enabled` - Whether API is enabled for the user.
 * `groups` - A list of UUIDs of groups attached to this user.
 * `roles` - A list of UUIDs of roles attached to this user.
+* `service_user` - Whether the user is a service user.
 
 ## Import
 
