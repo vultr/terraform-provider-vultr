@@ -50,6 +50,11 @@ func resourceVultrUsers() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 			},
+			"roles": {
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Optional: true,
+			},
 			"api_key": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -99,6 +104,15 @@ func resourceVultrUsersCreate(ctx context.Context, d *schema.ResourceData, meta 
 		}
 	}
 
+	if roles, rolesOK := d.GetOk("roles"); rolesOK {
+		rolesList := roles.(*schema.Set).List()
+		for i := range rolesList {
+			if _, _, err := client.Organization.AttachRoleUser(ctx, rolesList[i].(string), d.Id()); err != nil {
+				log.Printf("[ERROR] error adding user %s to organization role %s : %v", d.Id(), rolesList[i], err)
+			}
+		}
+	}
+
 	return resourceVultrUsersRead(ctx, d, meta)
 }
 
@@ -126,6 +140,19 @@ func resourceVultrUsersRead(ctx context.Context, d *schema.ResourceData, meta in
 	}
 	if err := d.Set("groups", groupList); err != nil {
 		return diag.Errorf("unable to set resource user `groups` read value: %v", err)
+	}
+
+	roles, _, _, err := client.Organization.ListUserRoles(ctx, d.Id(), nil)
+	if err != nil {
+		return diag.Errorf("error getting user roles : %v", err)
+	}
+
+	var rolesList []string
+	for i := range roles.All {
+		rolesList = append(rolesList, roles.All[i].ID)
+	}
+	if err := d.Set("roles", rolesList); err != nil {
+		return diag.Errorf("unable to set resource user `roles` read value: %v", err)
 	}
 
 	if err := d.Set("name", user.Name); err != nil {
@@ -212,6 +239,42 @@ func resourceVultrUsersUpdate(ctx context.Context, d *schema.ResourceData, meta 
 				addReq := &govultr.OrganizationGroupMemberReq{UserID: d.Id()}
 				if err := client.Organization.AddGroupMember(ctx, addIDs[i], addReq); err != nil {
 					return diag.Errorf("error adding user %s to organization group %s : %v", d.Id(), addIDs[i], err)
+				}
+			}
+		}
+	}
+
+	if d.HasChange("roles") {
+		log.Printf("[INFO] Updating user roles")
+
+		oldRoles, newRoles := d.GetChange("roles")
+		oldRolesList := oldRoles.(*schema.Set).List()
+		newRolesList := newRoles.(*schema.Set).List()
+
+		var oldIDs, newIDs []string
+		for i := range oldRolesList {
+			oldIDs = append(oldIDs, oldRolesList[i].(string))
+		}
+
+		for i := range newRolesList {
+			newIDs = append(newIDs, newRolesList[i].(string))
+		}
+
+		removeIDs := diffSlice(newIDs, oldIDs)
+		addIDs := diffSlice(oldIDs, newIDs)
+
+		if len(removeIDs) > 0 {
+			for i := range removeIDs {
+				if err := client.Organization.DetachRoleUser(ctx, removeIDs[i], d.Id()); err != nil {
+					return diag.Errorf("error removing user %s from organization role %s : %v", d.Id(), removeIDs[i], err)
+				}
+			}
+		}
+
+		if len(addIDs) > 0 {
+			for i := range addIDs {
+				if _, _, err := client.Organization.AttachRoleUser(ctx, addIDs[i], d.Id()); err != nil {
+					return diag.Errorf("error adding user %s to organization role %s : %v", d.Id(), addIDs[i], err)
 				}
 			}
 		}
