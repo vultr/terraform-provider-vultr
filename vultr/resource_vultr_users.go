@@ -55,6 +55,12 @@ func resourceVultrUsers() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Optional: true,
 			},
+			"service_user": {
+				Type:     schema.TypeBool,
+				ForceNew: true,
+				Optional: true,
+				Default:  false,
+			},
 			"api_key": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -67,10 +73,11 @@ func resourceVultrUsersCreate(ctx context.Context, d *schema.ResourceData, meta 
 	client := meta.(*Client).govultrClient()
 	test := d.Get("api_enabled").(bool)
 	userReq := &govultr.UserReq{
-		Email:      d.Get("email").(string),
-		Name:       d.Get("name").(string),
-		Password:   d.Get("password").(string),
-		APIEnabled: &test,
+		Email:       d.Get("email").(string),
+		Name:        d.Get("name").(string),
+		Password:    d.Get("password").(string),
+		APIEnabled:  &test,
+		ServiceUser: d.Get("service_user").(bool),
 	}
 
 	acl, aclOK := d.GetOk("acl")
@@ -166,6 +173,9 @@ func resourceVultrUsersRead(ctx context.Context, d *schema.ResourceData, meta in
 	}
 	if err := d.Set("acl", user.ACL); err != nil {
 		return diag.Errorf("unable to set resource user `acl` read value: %v", err)
+	}
+	if err := d.Set("service_user", user.ServiceUser); err != nil {
+		return diag.Errorf("unable to set resource user `service_user` read value: %v", err)
 	}
 
 	return nil

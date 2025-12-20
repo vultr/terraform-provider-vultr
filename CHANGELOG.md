@@ -1,4 +1,39 @@
 # Changelog
+## [v2.28.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.27.1...v2.28.0) (2025-12-18)
+### Enhancements
+* data source/bare_metal_server: Add snapshot_id field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
+* resource/bare_metal_server: Add snapshot_id field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
+
+* data source/instance: Add snapshot_id field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
+* data source/instances: Add snapshot_id field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
+* resource/instance: Add snapshot_id & image_id fields [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
+
+* data source/database: Add ca_certificate field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
+* resource/database: Add ca_certificate field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
+
+* resource/kubernetes: Migrate node pool labels and taints [PR 649](https://github.com/vultr/terraform-provider-vultr/pull/649)
+* data source/kubernetes: Migrate node pool labels and taints [PR 649](https://github.com/vultr/terraform-provider-vultr/pull/649)
+* resource/kubernetes_node_pool: Migrate node pool labels and taints [PR 649](https://github.com/vultr/terraform-provider-vultr/pull/649)
+* data source/kubernetes_node_pool: Migrate node pool labels and taints [PR 649](https://github.com/vultr/terraform-provider-vultr/pull/649)
+
+* resource/user: Add service_user field [PR 651](https://github.com/vultr/terraform-provider-vultr/pull/651)
+* data source/user: Add service_user field [PR 651](https://github.com/vultr/terraform-provider-vultr/pull/651)
+
+### Dependencies
+* Bump github.com/vultr/govultr/v3 from 3.22.1 to 3.23.0 [PR 615](https://github.com/vultr/terraform-provider-vultr/pull/615)
+* Bump golang.org/x/oauth2 from 0.30.0 to 0.32.0 [PR 621](https://github.com/vultr/terraform-provider-vultr/pull/621)
+* Bump github.com/vultr/govultr/v3 from 3.23.0 to 3.24.0 [PR 619](https://github.com/vultr/terraform-provider-vultr/pull/619)
+* Bump golang.org/x/oauth2 from 0.32.0 to 0.33.0 [PR 629](https://github.com/vultr/terraform-provider-vultr/pull/629)
+* Bump golang.org/x/crypto from 0.36.0 to 0.45.0 [PR 634](https://github.com/vultr/terraform-provider-vultr/pull/634)
+* Bump github.com/hashicorp/terraform-plugin-sdk/v2 from 2.36.1 to 2.38.1 [PR 620](https://github.com/vultr/terraform-provider-vultr/pull/620)
+* Bump github.com/hashicorp/terraform-plugin-log from 0.9.0 to 0.10.0 [PR 633](https://github.com/vultr/terraform-provider-vultr/pull/633)
+* Update govultr from v3.25.0 to v3.26.0 [PR 648](https://github.com/vultr/terraform-provider-vultr/pull/648)
+* Bump golang.org/x/oauth2 from 0.33.0 to 0.34.0 [PR 643](https://github.com/vultr/terraform-provider-vultr/pull/643)
+* Update govultr from v3.26.0 to v3.26.1 [PR 650](https://github.com/vultr/terraform-provider-vultr/pull/650)
+
+### Automation
+* Ignore static check deprecation error on VPC2 [PR 636](https://github.com/vultr/terraform-provider-vultr/pull/636)
+
 ## [v2.27.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.27.0...v2.27.1) (2025-08-14)
 ### Bug Fix
 * resource/kubernetes: Add user data on new default node pool creation [PR 613](https://github.com/vultr/terraform-provider-vultr/pull/613)

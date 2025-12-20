@@ -40,6 +40,10 @@ func dataSourceVultrUser() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Computed: true,
 			},
+			"service_user": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -104,6 +108,9 @@ func dataSourceVultrUserRead(ctx context.Context, d *schema.ResourceData, meta i
 	}
 	if err := d.Set("acl", userList[0].ACL); err != nil {
 		return diag.Errorf("unable to set user `acl` read value: %v", err)
+	}
+	if err := d.Set("service_user", userList[0].ServiceUser); err != nil {
+		return diag.Errorf("unable to set user `service_user` read value: %v", err)
 	}
 
 	groups, _, _, err := client.Organization.ListUserGroups(ctx, userList[0].ID, nil)
