@@ -36,8 +36,9 @@ func dataSourceVultrUser() *schema.Resource {
 				Computed: true,
 			},
 			"roles": {
-				Type: schema.TypeSet,
-				Elem: &schema.Schema{Type: schema.TypeString},
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Computed: true,
 			},
 			"service_user": {
 				Type:     schema.TypeBool,
