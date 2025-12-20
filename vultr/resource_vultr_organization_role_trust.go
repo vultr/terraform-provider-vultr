@@ -74,14 +74,14 @@ func resourceVultrOrganizationRoleTrustCreate(ctx context.Context, d *schema.Res
 		GroupID:     d.Get("group").(string),
 		RoleID:      d.Get("role").(string),
 		Type:        d.Get("type").(string),
-		Conditions:  &govultr.OrganizationRoleTrustCreateReqCondition{},
+		Conditions:  &govultr.OrganizationRoleTrustReqCondition{},
 		DateExpires: govultr.StringToStringPtr(d.Get("date_expires").(string)),
 	}
 
 	start, startOK := d.GetOk("hour_start")
 	end, endOK := d.GetOk("hour_end")
 	if startOK || endOK {
-		trustReq.Conditions.TimeOfDay = &govultr.OrganizationRoleTrustCreateReqConditionTime{
+		trustReq.Conditions.TimeOfDay = &govultr.OrganizationRoleTrustReqConditionTime{
 			Start: start.(int),
 			End:   end.(int),
 		}
@@ -150,7 +150,7 @@ func resourceVultrOrganizationRoleTrustUpdate(ctx context.Context, d *schema.Res
 	log.Printf("[INFO] Updating organization role trust (%s)", d.Id())
 
 	req := &govultr.OrganizationRoleTrustUpdateReq{
-		Conditions: &govultr.OrganizationRoleTrustCondition{},
+		Conditions: &govultr.OrganizationRoleTrustReqCondition{},
 	}
 
 	if d.HasChange("type") {
@@ -162,7 +162,7 @@ func resourceVultrOrganizationRoleTrustUpdate(ctx context.Context, d *schema.Res
 	}
 
 	if d.HasChange("hour_start") || d.HasChange("hour_end") {
-		req.Conditions.TimeOfDay = govultr.OrganizationRoleTrustConditionTime{
+		req.Conditions.TimeOfDay = &govultr.OrganizationRoleTrustReqConditionTime{
 			Start: d.Get("hour_start").(int),
 			End:   d.Get("hour_end").(int),
 		}
