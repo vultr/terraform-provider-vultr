@@ -246,7 +246,10 @@ func resourceVultrUsersUpdate(ctx context.Context, d *schema.ResourceData, meta 
 
 		if len(addIDs) > 0 {
 			for i := range addIDs {
-				addReq := &govultr.OrganizationGroupMemberReq{UserID: d.Id()}
+				addReq := &govultr.OrganizationGroupMemberReq{
+					UserID: d.Id(),
+					Name:   d.Get("name").(string),
+				}
 				if err := client.Organization.AddGroupMember(ctx, addIDs[i], addReq); err != nil {
 					return diag.Errorf("error adding user %s to organization group %s : %v", d.Id(), addIDs[i], err)
 				}

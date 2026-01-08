@@ -111,8 +111,9 @@ func dataSourceVultrOrganizationGroupRead(ctx context.Context, d *schema.Resourc
 	}
 
 	var roles []string
-	for i := range roleList {
-		roles = append(roles, roleList[i].ID)
+	allRoles := roleList.All
+	for i := range allRoles {
+		roles = append(roles, allRoles[i].ID)
 	}
 
 	d.SetId(groupList[0].ID)

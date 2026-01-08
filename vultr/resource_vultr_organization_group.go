@@ -129,14 +129,15 @@ func resourceVultrOrganizationGroupRead(ctx context.Context, d *schema.ResourceD
 		pols = append(pols, polList.All[i].ID)
 	}
 
-	roleList, _, _, err := client.Organization.ListGroupRoles(ctx, d.Id())
+	roleLists, _, _, err := client.Organization.ListGroupRoles(ctx, d.Id())
 	if err != nil {
 		return diag.Errorf("error getting organization group roles : %v", err)
 	}
 
 	var roles []string
-	for i := range roleList {
-		roles = append(roles, roleList[i].ID)
+	allRoles := roleLists.All
+	for i := range allRoles {
+		roles = append(roles, allRoles[i].ID)
 	}
 
 	if err := d.Set("name", grp.Name); err != nil {
