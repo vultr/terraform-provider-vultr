@@ -89,6 +89,7 @@ func Provider() *schema.Provider {
 			"vultr_kubernetes_node_pools":       resourceVultrKubernetesNodePools(),
 			"vultr_load_balancer":               resourceVultrLoadBalancer(),
 			"vultr_object_storage":              resourceVultrObjectStorage(),
+			"vultr_object_storage_bucket":       resourceVultrObjectStorageBucket(),
 			"vultr_organization":                resourceVultrOrganization(),
 			"vultr_organization_group":          resourceVultrOrganizationGroup(),
 			"vultr_organization_invitation":     resourceVultrOrganizationInvitation(),
