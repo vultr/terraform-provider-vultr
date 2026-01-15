@@ -49,7 +49,7 @@ func resourceVultrObjectStorageBucket() *schema.Resource {
 	}
 }
 
-func resourceVultrObjectStorageBucketCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrObjectStorageBucketCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	log.Printf(
@@ -72,7 +72,7 @@ func resourceVultrObjectStorageBucketCreate(ctx context.Context, d *schema.Resou
 	return resourceVultrObjectStorageBucketRead(ctx, d, meta)
 }
 
-func resourceVultrObjectStorageBucketRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrObjectStorageBucketRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	buckets, _, err := client.ObjectStorage.ListBuckets(ctx, d.Get("object_storage_id").(string))
@@ -100,7 +100,7 @@ func resourceVultrObjectStorageBucketRead(ctx context.Context, d *schema.Resourc
 	return nil
 }
 
-func resourceVultrObjectStorageBucketDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrObjectStorageBucketDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	log.Printf(
