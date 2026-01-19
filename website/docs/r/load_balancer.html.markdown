@@ -53,6 +53,7 @@ The follow arguments are supported:
 * `attached_instances` - (Optional) Array of instances that are currently attached to the load balancer.
 * `health_check` - (Optional) A block that defines the way load balancers should check for health. The configuration of a `health_check` is listed below.
 * `ssl` - (Optional) A block that supplies your ssl configuration to be used with HTTPS. The configuration of a `ssl` is listed below.
+* `auto_ssl_domain` - (Optional) The auto SSL domain configuration for a load balancer. This can be a root domain (example.com) or include a subdomain (sub.example.com).
 * `private_network` (Optional) (Deprecated: use `vpc` instead) A private network ID that the load balancer should be attached to.
 * `vpc` (Optional)- A VPC ID that the load balancer should be attached to.
 
@@ -95,6 +96,7 @@ The following attributes are exported:
 * `cookie_name` - Name for your given sticky session.
 * `ssl_redirect` - Boolean value that indicates if HTTP calls will be redirected to HTTPS.
 * `has_ssl` - Boolean value that indicates if SSL is enabled.
+* `auto_ssl_domain` - The auto SSL domain configuration for a load balancer.
 * `attached_instances` - Array of instances that are currently attached to the load balancer.
 * `status` - Current status for the load balancer
 * `ipv4` - IPv4 address for your load balancer.
