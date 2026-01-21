@@ -55,30 +55,6 @@ resource "vultr_kubernetes" "k8" {
 }
 ```
 
-A default node pool is required when first creating the resource but it can be removed at a later point so long as there is a separate `vultr_kubernetes_node_pools` resource attached. For example:
-
-```hcl
-resource "vultr_kubernetes" "k8" {
-	region  = "ewr"
-	label   = "vke-test"
-	version = "v1.28.2+1"
-} 
-
-# This resource must be created and attached to the cluster
-# before removing the default node from the vultr_kubernetes resource
-resource "vultr_kubernetes_node_pools" "np" {
-	cluster_id    = vultr_kubernetes.k8.id
-	node_quantity = 1
-	plan          = "vc2-1c-2gb"
-	label         = "vke-nodepool"
-	auto_scaler   = true
-	min_nodes     = 1
-	max_nodes     = 2
-}
-```
-
-There is still a requirement that there be one node pool attached to the cluster but this should allow more flexibility about which node pool that is.
-
 ## Argument Reference
 
 The follow arguments are supported:
