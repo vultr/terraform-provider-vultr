@@ -100,7 +100,7 @@ func dataSourceVultrOrganizationRoleRead(ctx context.Context, d *schema.Resource
 
 	var policies []string
 	for i := range policyList {
-		policies = append(policies, policyList[i].ID)
+		policies = append(policies, policyList[i].PolicyID)
 	}
 
 	d.SetId(roleList[0].ID)

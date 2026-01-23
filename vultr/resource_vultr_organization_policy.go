@@ -65,18 +65,21 @@ func resourceVultrOrganizationPolicy() *schema.Resource {
 					},
 				},
 			},
-			"groups": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Default:  nil,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
-			"users": {
-				Type:     schema.TypeSet,
-				Optional: true,
-				Default:  nil,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
+			// "roles": {
+			// 	Type:     schema.TypeSet,
+			// 	Required: true,
+			// 	Elem:     &schema.Schema{Type: schema.TypeString},
+			// },
+			// "groups": {
+			// 	Type:     schema.TypeSet,
+			// 	Computed: true,
+			// 	Elem:     &schema.Schema{Type: schema.TypeString},
+			// },
+			// "users": {
+			// 	Type:     schema.TypeSet,
+			// 	Computed: true,
+			// 	Elem:     &schema.Schema{Type: schema.TypeString},
+			// },
 			"is_system_policy": {
 				Type:     schema.TypeBool,
 				Computed: true,
@@ -135,23 +138,23 @@ func resourceVultrOrganizationPolicyCreate(ctx context.Context, d *schema.Resour
 		return diag.Errorf("error while creating organization policy : %s", err)
 	}
 
-	if groups, groupsOK := d.GetOk("groups"); groupsOK {
-		groupList := groups.(*schema.Set).List()
-		for i := range groupList {
-			if err := client.Organization.AttachPolicyGroup(ctx, policy.ID, groupList[i].(string)); err != nil {
-				return diag.Errorf("error attaching organization policy %s to group %s : %v", policy.ID, groupList[i], err)
-			}
-		}
-	}
+	// if groups, groupsOK := d.GetOk("groups"); groupsOK {
+	// 	groupList := groups.(*schema.Set).List()
+	// 	for i := range groupList {
+	// 		if err := client.Organization.AttachPolicyGroup(ctx, policy.ID, groupList[i].(string)); err != nil {
+	// 			return diag.Errorf("error attaching organization policy %s to group %s : %v", policy.ID, groupList[i], err)
+	// 		}
+	// 	}
+	// }
 
-	if users, usersOK := d.GetOk("users"); usersOK {
-		userList := users.(*schema.Set).List()
-		for i := range userList {
-			if err := client.Organization.AttachPolicyUser(ctx, policy.ID, userList[i].(string)); err != nil {
-				return diag.Errorf("error attaching organization policy %s to user %s : %v", policy.ID, userList[i], err)
-			}
-		}
-	}
+	// if users, usersOK := d.GetOk("users"); usersOK {
+	// 	userList := users.(*schema.Set).List()
+	// 	for i := range userList {
+	// 		if err := client.Organization.AttachPolicyUser(ctx, policy.ID, userList[i].(string)); err != nil {
+	// 			return diag.Errorf("error attaching organization policy %s to user %s : %v", policy.ID, userList[i], err)
+	// 		}
+	// 	}
+	// }
 
 	d.SetId(policy.ID)
 
@@ -187,29 +190,29 @@ func resourceVultrOrganizationPolicyRead(ctx context.Context, d *schema.Resource
 		},
 	}
 
-	users, _, _, err := client.Organization.ListPolicyUsers(ctx, d.Id(), nil)
-	if err != nil {
-		return diag.Errorf("error getting organization policy users : %v", err)
-	}
+	// users, _, _, err := client.Organization.ListPolicyUsers(ctx, d.Id(), nil)
+	// if err != nil {
+	// 	return diag.Errorf("error getting organization policy users : %v", err)
+	// }
 
-	var userIDs []string
-	if len(users) != 0 {
-		for i := range users {
-			userIDs = append(userIDs, users[i].ID)
-		}
-	}
+	// var userIDs []string
+	// if len(users) != 0 {
+	// 	for i := range users {
+	// 		userIDs = append(userIDs, users[i].ID)
+	// 	}
+	// }
 
-	groups, _, _, err := client.Organization.ListPolicyGroups(ctx, d.Id(), nil)
-	if err != nil {
-		return diag.Errorf("error getting organization policy groups : %v", err)
-	}
+	// groups, _, _, err := client.Organization.ListPolicyGroups(ctx, d.Id(), nil)
+	// if err != nil {
+	// 	return diag.Errorf("error getting organization policy groups : %v", err)
+	// }
 
-	var groupIDs []string
-	if len(groups) != 0 {
-		for i := range groups {
-			groupIDs = append(groupIDs, groups[i].ID)
-		}
-	}
+	// var groupIDs []string
+	// if len(groups) != 0 {
+	// 	for i := range groups {
+	// 		groupIDs = append(groupIDs, groups[i].ID)
+	// 	}
+	// }
 
 	if err := d.Set("name", policy.Name); err != nil {
 		return diag.Errorf("unable to set resource organization policy `name` read value: %v", err)
@@ -223,12 +226,12 @@ func resourceVultrOrganizationPolicyRead(ctx context.Context, d *schema.Resource
 	if err := d.Set("is_system_policy", policy.SystemPolicy); err != nil {
 		return diag.Errorf("unable to set resource organization policy `is_system_policy` read value: %v", err)
 	}
-	if err := d.Set("users", userIDs); err != nil {
-		return diag.Errorf("unable to set resource organization policy `users` read value: %v", err)
-	}
-	if err := d.Set("groups", groupIDs); err != nil {
-		return diag.Errorf("unable to set resource organization policy `groups` read value: %v", err)
-	}
+	// if err := d.Set("users", userIDs); err != nil {
+	// 	return diag.Errorf("unable to set resource organization policy `users` read value: %v", err)
+	// }
+	// if err := d.Set("groups", groupIDs); err != nil {
+	// 	return diag.Errorf("unable to set resource organization policy `groups` read value: %v", err)
+	// }
 	if err := d.Set("date_created", policy.DateCreated); err != nil {
 		return diag.Errorf("unable to set resource organization policy `date_created` read value: %v", err)
 	}

@@ -22,7 +22,7 @@ resource "vultr_organization_role_trust" "rot" {
   hour_start = 9
   hour_end = 17
   ip_range = ["10.0.0.0/8", "192.168.0.1/16"]
-  date_expires = "2025-12-31T23:59:59Z"
+  date_expires = "2025-12-31T05:00:00+00:00"
 }
 ```
 
