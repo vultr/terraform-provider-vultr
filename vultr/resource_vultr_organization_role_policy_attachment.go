@@ -56,7 +56,7 @@ func resourceVultrOrganizationRolePolicyAttachmentCreate(ctx context.Context, d 
 	return resourceVultrOrganizationRolePolicyAttachmentRead(ctx, d, meta)
 }
 
-func resourceVultrOrganizationRolePolicyAttachmentRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrOrganizationRolePolicyAttachmentRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	roleID := d.Get("role_id").(string)
