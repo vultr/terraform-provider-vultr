@@ -40,12 +40,12 @@ func resourceVultrOrganizationRole() *schema.Resource {
 			},
 			"policies": {
 				Type:     schema.TypeSet,
-				Optional: true,
+				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"groups": {
 				Type:     schema.TypeSet,
-				Optional: true,
+				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 			"date_created": {
@@ -75,24 +75,24 @@ func resourceVultrOrganizationRoleCreate(ctx context.Context, d *schema.Resource
 
 	d.SetId(role.ID)
 
-	if policies, policiesOK := d.GetOk("policies"); policiesOK {
-		polList := policies.(*schema.Set).List()
-		for i := range polList {
-			polReq := &govultr.OrganizationRolePolicyReq{PolicyID: polList[i].(string)}
-			if _, _, err := client.Organization.AttachRolePolicy(ctx, d.Id(), polReq); err != nil {
-				return diag.Errorf("error attaching organization role %s to policy %s : %v", role.ID, polList[i], err)
-			}
-		}
-	}
+	// if policies, policiesOK := d.GetOk("policies"); policiesOK {
+	// 	polList := policies.(*schema.Set).List()
+	// 	for i := range polList {
+	// 		polReq := &govultr.OrganizationRolePolicyReq{PolicyID: polList[i].(string)}
+	// 		if _, _, err := client.Organization.AttachRolePolicy(ctx, d.Id(), polReq); err != nil {
+	// 			return diag.Errorf("error attaching organization role %s to policy %s : %v", role.ID, polList[i], err)
+	// 		}
+	// 	}
+	// }
 
-	if groups, groupsOK := d.GetOk("groups"); groupsOK {
-		groupsList := groups.(*schema.Set).List()
-		for i := range groupsList {
-			if _, _, err := client.Organization.AttachRoleGroup(ctx, d.Id(), groupsList[i].(string)); err != nil {
-				return diag.Errorf("error attaching organization role %s to group %s : %v", role.ID, groupsList[i], err)
-			}
-		}
-	}
+	// if groups, groupsOK := d.GetOk("groups"); groupsOK {
+	// 	groupsList := groups.(*schema.Set).List()
+	// 	for i := range groupsList {
+	// 		if _, _, err := client.Organization.AttachRoleGroup(ctx, d.Id(), groupsList[i].(string)); err != nil {
+	// 			return diag.Errorf("error attaching organization role %s to group %s : %v", role.ID, groupsList[i], err)
+	// 		}
+	// 	}
+	// }
 
 	return resourceVultrOrganizationRoleRead(ctx, d, meta)
 }
@@ -165,78 +165,78 @@ func resourceVultrOrganizationRoleUpdate(ctx context.Context, d *schema.Resource
 		return diag.Errorf("error updating organization role %s : %v", d.Id(), err)
 	}
 
-	if d.HasChange("policies") {
-		log.Printf("[INFO] Updating organization role policies")
+	// if d.HasChange("policies") {
+	// 	log.Printf("[INFO] Updating organization role policies")
 
-		oldPolicies, newPolicies := d.GetChange("policies")
-		oldPolicyList := oldPolicies.(*schema.Set).List()
-		newPolicyList := newPolicies.(*schema.Set).List()
+	// 	oldPolicies, newPolicies := d.GetChange("policies")
+	// 	oldPolicyList := oldPolicies.(*schema.Set).List()
+	// 	newPolicyList := newPolicies.(*schema.Set).List()
 
-		var oldIDs, newIDs []string
-		for i := range oldPolicyList {
-			oldIDs = append(oldIDs, oldPolicyList[i].(string))
-		}
+	// 	var oldIDs, newIDs []string
+	// 	for i := range oldPolicyList {
+	// 		oldIDs = append(oldIDs, oldPolicyList[i].(string))
+	// 	}
 
-		for i := range newPolicyList {
-			newIDs = append(newIDs, newPolicyList[i].(string))
-		}
+	// 	for i := range newPolicyList {
+	// 		newIDs = append(newIDs, newPolicyList[i].(string))
+	// 	}
 
-		removeIDs := diffSlice(newIDs, oldIDs)
-		addIDs := diffSlice(oldIDs, newIDs)
+	// 	removeIDs := diffSlice(newIDs, oldIDs)
+	// 	addIDs := diffSlice(oldIDs, newIDs)
 
-		if len(removeIDs) > 0 {
-			for i := range removeIDs {
-				if _, _, err := client.Organization.DetachRolePolicy(ctx, d.Id(), removeIDs[i]); err != nil {
-					return diag.Errorf("error detaching organization role %s policy %s : %v", d.Id(), removeIDs[i], err)
-				}
-			}
-		}
+	// 	if len(removeIDs) > 0 {
+	// 		for i := range removeIDs {
+	// 			if _, _, err := client.Organization.DetachRolePolicy(ctx, d.Id(), removeIDs[i]); err != nil {
+	// 				return diag.Errorf("error detaching organization role %s policy %s : %v", d.Id(), removeIDs[i], err)
+	// 			}
+	// 		}
+	// 	}
 
-		if len(addIDs) > 0 {
-			for i := range addIDs {
-				addReq := &govultr.OrganizationRolePolicyReq{PolicyID: addIDs[i]}
-				if _, _, err := client.Organization.AttachRolePolicy(ctx, d.Id(), addReq); err != nil {
-					return diag.Errorf("error attaching organization role %s policy %s : %v", d.Id(), addIDs[i], err)
-				}
-			}
-		}
-	}
+	// 	if len(addIDs) > 0 {
+	// 		for i := range addIDs {
+	// 			addReq := &govultr.OrganizationRolePolicyReq{PolicyID: addIDs[i]}
+	// 			if _, _, err := client.Organization.AttachRolePolicy(ctx, d.Id(), addReq); err != nil {
+	// 				return diag.Errorf("error attaching organization role %s policy %s : %v", d.Id(), addIDs[i], err)
+	// 			}
+	// 		}
+	// 	}
+	// }
 
-	if d.HasChange("groups") {
-		log.Printf("[INFO] Updating role groups")
+	// if d.HasChange("groups") {
+	// 	log.Printf("[INFO] Updating role groups")
 
-		oldGroups, newGroups := d.GetChange("groups")
-		oldGroupsList := oldGroups.(*schema.Set).List()
-		newGroupsList := newGroups.(*schema.Set).List()
+	// 	oldGroups, newGroups := d.GetChange("groups")
+	// 	oldGroupsList := oldGroups.(*schema.Set).List()
+	// 	newGroupsList := newGroups.(*schema.Set).List()
 
-		var oldIDs, newIDs []string
-		for i := range oldGroupsList {
-			oldIDs = append(oldIDs, oldGroupsList[i].(string))
-		}
+	// 	var oldIDs, newIDs []string
+	// 	for i := range oldGroupsList {
+	// 		oldIDs = append(oldIDs, oldGroupsList[i].(string))
+	// 	}
 
-		for i := range newGroupsList {
-			newIDs = append(newIDs, newGroupsList[i].(string))
-		}
+	// 	for i := range newGroupsList {
+	// 		newIDs = append(newIDs, newGroupsList[i].(string))
+	// 	}
 
-		removeIDs := diffSlice(newIDs, oldIDs)
-		addIDs := diffSlice(oldIDs, newIDs)
+	// 	removeIDs := diffSlice(newIDs, oldIDs)
+	// 	addIDs := diffSlice(oldIDs, newIDs)
 
-		if len(removeIDs) > 0 {
-			for i := range removeIDs {
-				if err := client.Organization.DetachRoleGroup(ctx, d.Id(), removeIDs[i]); err != nil {
-					return diag.Errorf("error detaching organization role %s group %s : %v", d.Id(), removeIDs[i], err)
-				}
-			}
-		}
+	// 	if len(removeIDs) > 0 {
+	// 		for i := range removeIDs {
+	// 			if err := client.Organization.DetachRoleGroup(ctx, d.Id(), removeIDs[i]); err != nil {
+	// 				return diag.Errorf("error detaching organization role %s group %s : %v", d.Id(), removeIDs[i], err)
+	// 			}
+	// 		}
+	// 	}
 
-		if len(addIDs) > 0 {
-			for i := range addIDs {
-				if _, _, err := client.Organization.AttachRoleGroup(ctx, d.Id(), addIDs[i]); err != nil {
-					return diag.Errorf("error attaching organization role %s group %s : %v", d.Id(), addIDs[i], err)
-				}
-			}
-		}
-	}
+	// 	if len(addIDs) > 0 {
+	// 		for i := range addIDs {
+	// 			if _, _, err := client.Organization.AttachRoleGroup(ctx, d.Id(), addIDs[i]); err != nil {
+	// 				return diag.Errorf("error attaching organization role %s group %s : %v", d.Id(), addIDs[i], err)
+	// 			}
+	// 		}
+	// 	}
+	// }
 
 	return resourceVultrOrganizationRead(ctx, d, meta)
 }
