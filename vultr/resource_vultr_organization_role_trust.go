@@ -56,7 +56,7 @@ func resourceVultrOrganizationRoleTrust() *schema.Resource {
 			},
 			"date_expires": {
 				Type:     schema.TypeString,
-				Required: true,
+				Optional: true,
 			},
 			"date_created": {
 				Type:     schema.TypeString,
