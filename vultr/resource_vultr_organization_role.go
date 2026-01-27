@@ -238,7 +238,7 @@ func resourceVultrOrganizationRoleUpdate(ctx context.Context, d *schema.Resource
 	// 	}
 	// }
 
-	return resourceVultrOrganizationRead(ctx, d, meta)
+	return resourceVultrOrganizationRoleRead(ctx, d, meta)
 }
 
 func resourceVultrOrganizationRoleDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
