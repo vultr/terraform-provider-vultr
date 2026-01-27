@@ -95,7 +95,7 @@ func resourceVultrOrganizationRoleGroupAttachmentDelete(ctx context.Context, d *
 	groupID := d.Get("group_id").(string)
 
 	log.Printf("[INFO] Deleting organization role group attachment (%s)", d.Id())
-	if _, _, err := client.Organization.DetachRolePolicy(ctx, roleID, groupID); err != nil {
+	if err := client.Organization.DetachRoleGroup(ctx, roleID, groupID); err != nil {
 		return diag.Errorf("error deleting organization role group attachment %s : %v", d.Id(), err)
 	}
 
