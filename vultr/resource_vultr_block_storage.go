@@ -183,17 +183,19 @@ func resourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData, 
 func resourceVultrBlockStorageUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	blockReq := &govultr.BlockStorageUpdate{}
-	if d.HasChange("label") {
-		blockReq.Label = d.Get("label").(string)
-	}
+	if d.HasChange("label") || d.HasChange("size_gb") {
+		blockReq := &govultr.BlockStorageUpdate{}
+		if d.HasChange("label") {
+			blockReq.Label = d.Get("label").(string)
+		}
 
-	if d.HasChange("size_gb") {
-		blockReq.SizeGB = d.Get("size_gb").(int)
-	}
+		if d.HasChange("size_gb") {
+			blockReq.SizeGB = d.Get("size_gb").(int)
+		}
 
-	if err := client.BlockStorage.Update(ctx, d.Id(), blockReq); err != nil {
-		return diag.Errorf("error updating block storage: %v", err)
+		if err := client.BlockStorage.Update(ctx, d.Id(), blockReq); err != nil {
+			return diag.Errorf("error updating block storage: %v", err)
+		}
 	}
 
 	if d.HasChange("attached_to_instance") {
