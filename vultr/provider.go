@@ -84,6 +84,7 @@ func Provider() *schema.Provider {
 			"vultr_kubernetes":                  resourceVultrKubernetes(),
 			"vultr_kubernetes_node_pools":       resourceVultrKubernetesNodePools(),
 			"vultr_load_balancer":               resourceVultrLoadBalancer(),
+			"vultr_nat_gateway":                 resourceVultrNATGateway(),
 			"vultr_object_storage":              resourceVultrObjectStorage(),
 			"vultr_reserved_ip":                 resourceVultrReservedIP(),
 			"vultr_reverse_ipv4":                resourceVultrReverseIPV4(),
