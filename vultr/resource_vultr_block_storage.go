@@ -193,7 +193,7 @@ func resourceVultrBlockStorageUpdate(ctx context.Context, d *schema.ResourceData
 	}
 
 	if err := client.BlockStorage.Update(ctx, d.Id(), blockReq); err != nil {
-		return diag.Errorf("error getting block storage: %v", err)
+		return diag.Errorf("error updating block storage: %v", err)
 	}
 
 	if d.HasChange("attached_to_instance") {
