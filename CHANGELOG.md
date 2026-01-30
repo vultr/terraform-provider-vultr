@@ -1,8 +1,21 @@
 # Changelog
+## [v2.28.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.28.0...2.28.1) (2026-01-30)
+### Bug Fixes
+* resource/instance: Add missing label attribute during read [PR 666](https://github.com/vultr/terraform-provider-vultr/pull/666)
+* resource/block storage: Avoid empty PATCH during update [PR 675](https://github.com/vultr/terraform-provider-vultr/pull/675)
+
+### Documentation
+* Remove confusing node pool suggestion in docs [PR 667](https://github.com/vultr/terraform-provider-vultr/pull/667)
+* Update kubernetes related docs [PR 668](https://github.com/vultr/terraform-provider-vultr/pull/668)
+* Remove old region doc for block storage [PR 669](https://github.com/vultr/terraform-provider-vultr/pull/669)
+
+### New Contributors
+* @Steen3S made their first contribution in [PR 666](https://github.com/vultr/terraform-provider-vultr/pull/666)
+
 ## [v2.28.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.27.1...v2.28.0) (2025-12-18)
 ### Enhancements
-* data source/bare_metal_server: Add snapshot_id field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
-* resource/bare_metal_server: Add snapshot_id field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
+* data source/bare metal server: Add snapshot_id field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
+* resource/bare metal server: Add snapshot_id field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
 
 * data source/instance: Add snapshot_id field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
 * data source/instances: Add snapshot_id field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
@@ -13,8 +26,8 @@
 
 * resource/kubernetes: Migrate node pool labels and taints [PR 649](https://github.com/vultr/terraform-provider-vultr/pull/649)
 * data source/kubernetes: Migrate node pool labels and taints [PR 649](https://github.com/vultr/terraform-provider-vultr/pull/649)
-* resource/kubernetes_node_pool: Migrate node pool labels and taints [PR 649](https://github.com/vultr/terraform-provider-vultr/pull/649)
-* data source/kubernetes_node_pool: Migrate node pool labels and taints [PR 649](https://github.com/vultr/terraform-provider-vultr/pull/649)
+* resource/kubernetes node pool: Migrate node pool labels and taints [PR 649](https://github.com/vultr/terraform-provider-vultr/pull/649)
+* data source/kubernetes node pool: Migrate node pool labels and taints [PR 649](https://github.com/vultr/terraform-provider-vultr/pull/649)
 
 * resource/user: Add service_user field [PR 651](https://github.com/vultr/terraform-provider-vultr/pull/651)
 * data source/user: Add service_user field [PR 651](https://github.com/vultr/terraform-provider-vultr/pull/651)
@@ -35,30 +48,30 @@
 * Ignore static check deprecation error on VPC2 [PR 636](https://github.com/vultr/terraform-provider-vultr/pull/636)
 
 ## [v2.27.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.27.0...v2.27.1) (2025-08-14)
-### Bug Fix
+### Bug Fixes
 * resource/kubernetes: Add user data on new default node pool creation [PR 613](https://github.com/vultr/terraform-provider-vultr/pull/613)
-* resource/kubernetes_nodepool: Handle user data changes in update context [PR 613](https://github.com/vultr/terraform-provider-vultr/pull/613)
+* resource/kubernetes nodepool: Handle user data changes in update context [PR 613](https://github.com/vultr/terraform-provider-vultr/pull/613)
 
 ## [v2.27.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.26.0...v2.27.0) (2025-08-11)
 ### Enhancements
 * data source/database: Add database backup schedule fields [PR 590](https://github.com/vultr/terraform-provider-vultr/pull/590)
 * resource/database: Add database backup schedule fields [PR 590](https://github.com/vultr/terraform-provider-vultr/pull/590)
-* resource/database_replica: Add database backup schedule fields [PR 590](https://github.com/vultr/terraform-provider-vultr/pull/590)
+* resource/database replica: Add database backup schedule fields [PR 590](https://github.com/vultr/terraform-provider-vultr/pull/590)
 * data source/database: Add support for additional Kafka features [PR 599](https://github.com/vultr/terraform-provider-vultr/pull/599)
 * resource/database: Add support for additional Kafka features [PR 599](https://github.com/vultr/terraform-provider-vultr/pull/599)
-* resource/database_connector: Add support for additional Kafka features [PR 599](https://github.com/vultr/terraform-provider-vultr/pull/599)
-* resource/database_quota: Add support for additional Kafka features [PR 599](https://github.com/vultr/terraform-provider-vultr/pull/599)
+* resource/database connector: Add support for additional Kafka features [PR 599](https://github.com/vultr/terraform-provider-vultr/pull/599)
+* resource/database quota: Add support for additional Kafka features [PR 599](https://github.com/vultr/terraform-provider-vultr/pull/599)
 * data source/kubernetes: Add node pool user_data field [PR 607](https://github.com/vultr/terraform-provider-vultr/pull/607)
 * resource/kubernetes: Add node pool user_data field [PR 607](https://github.com/vultr/terraform-provider-vultr/pull/607)
-* resource/kubernetes_nodepool: Add user_data field [PR 607](https://github.com/vultr/terraform-provider-vultr/pull/607)
-* resource/snapshot_from_url: Add use_uefi field [PR 609](https://github.com/vultr/terraform-provider-vultr/pull/609)
+* resource/kubernetes nodepool: Add user_data field [PR 607](https://github.com/vultr/terraform-provider-vultr/pull/607)
+* resource/snapshot from url: Add use_uefi field [PR 609](https://github.com/vultr/terraform-provider-vultr/pull/609)
 
 ### Documentation
-* data source/object_storage_tier: Add link to object storage tier API documentation page [PR 592](https://github.com/vultr/terraform-provider-vultr/pull/592)
-* resource/database_connection_pool: Fix connection pool size type in example usage [PR 594](https://github.com/vultr/terraform-provider-vultr/pull/594)
+* data source/object storage tier: Add link to object storage tier API documentation page [PR 592](https://github.com/vultr/terraform-provider-vultr/pull/592)
+* resource/database connection pool: Fix connection pool size type in example usage [PR 594](https://github.com/vultr/terraform-provider-vultr/pull/594)
 * data source/kubernetes: Document node pool user_data field and usage [PR 611](https://github.com/vultr/terraform-provider-vultr/pull/611)
 * resource/kubernetes: Document node pool user_data attribute and usage [PR 611](https://github.com/vultr/terraform-provider-vultr/pull/611)
-* resource/snapshot_from_url: Document use_uefi attribute and usage [PR 611](https://github.com/vultr/terraform-provider-vultr/pull/611)
+* resource/snapshot from url: Document use_uefi attribute and usage [PR 611](https://github.com/vultr/terraform-provider-vultr/pull/611)
 
 ### Dependencies
 * Bump github.com/vultr/govultr/v3 from 3.19.1 to 3.20.0 [PR 588](https://github.com/vultr/terraform-provider-vultr/pull/588)
@@ -76,7 +89,7 @@
 ## [v2.26.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.25.0...v2.26.0) (2025-04-09)
 ### Enhancements
 * resource/instance: Add support for iPXE URL create param [PR 573](https://github.com/vultr/terraform-provider-vultr/pull/573)
-* resource/bare_metal_server: Add support for VPC [PR 578](https://github.com/vultr/terraform-provider-vultr/pull/578)
+* resource/bare metal server: Add support for VPC [PR 578](https://github.com/vultr/terraform-provider-vultr/pull/578)
 * resource/kubernetes: Add support for VPC [PR 579](https://github.com/vultr/terraform-provider-vultr/pull/579)
 * resource/kubernetes: Add labels to kubernetes node pools [PR 581](https://github.com/vultr/terraform-provider-vultr/pull/581)
 * data source/kubernetes: Add labels to kubernetes node pools [PR 581](https://github.com/vultr/terraform-provider-vultr/pull/581)
@@ -108,19 +121,19 @@
 ### Documentation
 * resource/vpc2: Add deprecation notice for all VPC2 elements [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
 * resource/instance: Add deprecation notice for all VPC2 fields [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
-* resource/bare_metal_server: Add deprecation notice for all VPC2 fields [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
-* data_source/vpc2: Add deprecation notice for all VPC2 elements [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
-* data_source/instance: Add deprecation notice for all VPC2 fields [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
-* data_source/bare_metal_server: Add deprecation notice for all VPC2 fields [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
+* resource/bare metal server: Add deprecation notice for all VPC2 fields [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
+* data source/vpc2: Add deprecation notice for all VPC2 elements [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
+* data source/instance: Add deprecation notice for all VPC2 fields [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
+* data source/bare metal server: Add deprecation notice for all VPC2 fields [PR 570](https://github.com/vultr/terraform-provider-vultr/pull/570)
 
 ## [v2.24.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.23.1...v2.24.0) (2025-03-10)
 ### Enhancements/Bug Fixes
-* data source/object_storage: Add obeject storage tier data source [PR 565](https://github.com/vultr/terraform-provider-vultr/pull/565)
-* resource/object_storage: Add tier param [PR 565](https://github.com/vultr/terraform-provider-vultr/pull/565)
+* data source/object storage: Add obeject storage tier data source [PR 565](https://github.com/vultr/terraform-provider-vultr/pull/565)
+* resource/object storage: Add tier param [PR 565](https://github.com/vultr/terraform-provider-vultr/pull/565)
 
 ### Documentation
-* data source/object_storage: Add docs for the tier changes [PR 566](https://github.com/vultr/terraform-provider-vultr/pull/566)
-* resource/object_storage: Add docs for the tier changes [PR 566](https://github.com/vultr/terraform-provider-vultr/pull/566)
+* data source/object storage: Add docs for the tier changes [PR 566](https://github.com/vultr/terraform-provider-vultr/pull/566)
+* resource/object storage: Add docs for the tier changes [PR 566](https://github.com/vultr/terraform-provider-vultr/pull/566)
 
 ### Clean Up
 * resource/database: Remove managed Redis references [PR 549](https://github.com/vultr/terraform-provider-vultr/pull/549)
@@ -151,7 +164,7 @@
 
 ### Deprecations
 * resource/database: Deprecate Redis-named fields [PR 533](https://github.com/vultr/terraform-provider-vultr/pull/533)
-* data_source/database: Deprecate Redis-named fields [PR 533](https://github.com/vultr/terraform-provider-vultr/pull/533)
+* data source/database: Deprecate Redis-named fields [PR 533](https://github.com/vultr/terraform-provider-vultr/pull/533)
 
 ### Dependencies
 * Update govultr from v3.11.2 to v3.12.0 [PR 532](https://github.com/vultr/terraform-provider-vultr/pull/532)
@@ -168,18 +181,18 @@
 
 ## [v2.22.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.22.0...v2.22.1) (2024-11-07)
 ### Bug Fixes
-* resource/bare_metal_server: Set default value for user_scheme [PR 525](https://github.com/vultr/terraform-provider-vultr/pull/525)
+* resource/bare metal server: Set default value for user_scheme [PR 525](https://github.com/vultr/terraform-provider-vultr/pull/525)
 * resource/instance: Set default value for user_scheme [PR 525](https://github.com/vultr/terraform-provider-vultr/pull/525)
 
 ## [v2.22.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.21.0...v2.22.0) (2024-11-06)
 ### Enhancements
-* resource/bare_metal_server: Add `user_scheme` options [PR 514](https://github.com/vultr/terraform-provider-vultr/pull/514)
-* data_source/bare_metal_server: Add `user_scheme` options [PR 514](https://github.com/vultr/terraform-provider-vultr/pull/514)
+* resource/bare metal server: Add `user_scheme` options [PR 514](https://github.com/vultr/terraform-provider-vultr/pull/514)
+* data source/bare metal server: Add `user_scheme` options [PR 514](https://github.com/vultr/terraform-provider-vultr/pull/514)
 * resource/instance: Add `user_scheme` options [PR 514](https://github.com/vultr/terraform-provider-vultr/pull/514)
-* data_source/instance: Add `user_scheme` options [PR 514](https://github.com/vultr/terraform-provider-vultr/pull/514)
+* data source/instance: Add `user_scheme` options [PR 514](https://github.com/vultr/terraform-provider-vultr/pull/514)
 * resource/kubernetes: Add/improve existing resource import [PR 503](https://github.com/vultr/terraform-provider-vultr/pull/503)
 * resource/database: Add support for Kafka [PR 522](https://github.com/vultr/terraform-provider-vultr/pull/522)
-* data_source/database: Add support for Kafka [PR 522](https://github.com/vultr/terraform-provider-vultr/pull/522)
+* data source/database: Add support for Kafka [PR 522](https://github.com/vultr/terraform-provider-vultr/pull/522)
 
 ### Dependencies
 * Update govultr from v3.8.1 to v3.9.0 [PR 504](https://github.com/vultr/terraform-provider-vultr/pull/504)
@@ -203,16 +216,16 @@
 
 ## [v2.21.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.20.1...v2.21.0) (2024-06-10)
 ### Enhancements
-* resource/container_registry: add resource support [PR 445](https://github.com/vultr/terraform-provider-vultr/pull/445)
-* resource/container_registry: add registry name validation [PR 493](https://github.com/vultr/terraform-provider-vultr/pull/493)
-* data_source/container_registry: add data source support [PR 493](https://github.com/vultr/terraform-provider-vultr/pull/493)
+* resource/container registry: add resource support [PR 445](https://github.com/vultr/terraform-provider-vultr/pull/445)
+* resource/container registry: add registry name validation [PR 493](https://github.com/vultr/terraform-provider-vultr/pull/493)
+* data source/container registry: add data source support [PR 493](https://github.com/vultr/terraform-provider-vultr/pull/493)
 * resource/user: change ACL schema to set to state drift [PR 495](https://github.com/vultr/terraform-provider-vultr/pull/495)
 * resource/inference: add resource [PR 501](https://github.com/vultr/terraform-provider-vultr/pull/501)
-* data_source/inference: add data source [PR 501](https://github.com/vultr/terraform-provider-vultr/pull/501)
+* data source/inference: add data source [PR 501](https://github.com/vultr/terraform-provider-vultr/pull/501)
 
 ### Deprecations
-* resource/private_network: removed from provider [PR 496](https://github.com/vultr/terraform-provider-vultr/pull/496)
-* data_source/private_network: removed from provider [PR 496](https://github.com/vultr/terraform-provider-vultr/pull/496)
+* resource/private network: removed from provider [PR 496](https://github.com/vultr/terraform-provider-vultr/pull/496)
+* data source/private network: removed from provider [PR 496](https://github.com/vultr/terraform-provider-vultr/pull/496)
 
 ### Dependencies
 * Bump golang.org/x/oauth2 from 0.20.0 to 0.21.0 [PR 497](https://github.com/vultr/terraform-provider-vultr/pull/497)
@@ -232,7 +245,7 @@
 ## [v2.20.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.19.0...v2.20.0) (2024-05-29)
 
 ### Enhancements
-* resource/bare_metal_server: add support for mdisk_mode option [PR 489](https://github.com/vultr/terraform-provider-vultr/pull/489)
+* resource/bare metal server: add support for mdisk_mode option [PR 489](https://github.com/vultr/terraform-provider-vultr/pull/489)
 
 ### Bug Fixes
 * Stop using deprecated terraform helper resource for retries [PR 456](https://github.com/vultr/terraform-provider-vultr/pull/456)
@@ -266,11 +279,11 @@
 ### Enhancements
 * resource/instances: Allow creation without public IP [PR 450](https://github.com/vultr/terraform-provider-vultr/pull/450)
 * resource/instances: Add marketplace app variables support [PR 448](https://github.com/vultr/terraform-provider-vultr/pull/448)
-* resource/bare_metal_server: Add marketplace app variables support [PR 448](https://github.com/vultr/terraform-provider-vultr/pull/448)
-* resource/load_balancers: Add retry to delete [PR 451](https://github.com/vultr/terraform-provider-vultr/pull/451)
+* resource/bare metal server: Add marketplace app variables support [PR 448](https://github.com/vultr/terraform-provider-vultr/pull/448)
+* resource/load balancers: Add retry to delete [PR 451](https://github.com/vultr/terraform-provider-vultr/pull/451)
 
 ### Bug Fixes
-* resource/bare_metal_server: Fix nil interface panic on creation [PR 452](https://github.com/vultr/terraform-provider-vultr/pull/452)
+* resource/bare metal server: Fix nil interface panic on creation [PR 452](https://github.com/vultr/terraform-provider-vultr/pull/452)
 
 ### Documentation
 * resource/instances: Add disable_public_ipv4 field to webdocs [PR 453](https://github.com/vultr/terraform-provider-vultr/pull/453)
@@ -289,16 +302,16 @@
 
 ##[v2.18.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.17.1...v2.18.0) (2023-12-11)
 ### Enhancements
-* resource/bare_metal_server: Add Persistent PXE field [PR 368](https://github.com/vultr/terraform-provider-vultr/pull/368)
-* data_source/instances: Add instances data source [PR 296](https://github.com/vultr/terraform-provider-vultr/pull/296)
-* data_source/ssh_key: Export the key ID [PR 338](https://github.com/vultr/terraform-provider-vultr/pull/338)
+* resource/bare metal server: Add Persistent PXE field [PR 368](https://github.com/vultr/terraform-provider-vultr/pull/368)
+* data source/instances: Add instances data source [PR 296](https://github.com/vultr/terraform-provider-vultr/pull/296)
+* data source/ssh key: Export the key ID [PR 338](https://github.com/vultr/terraform-provider-vultr/pull/338)
 * resource/kubernetes: Add firewall field [PR 434](https://github.com/vultr/terraform-provider-vultr/pull/434)
-* data_source/kubernetes: Add firewall field [PR 434](https://github.com/vultr/terraform-provider-vultr/pull/434)
+* data source/kubernetes: Add firewall field [PR 434](https://github.com/vultr/terraform-provider-vultr/pull/434)
 * resource/database: Add redis user access control [PR 439](https://github.com/vultr/terraform-provider-vultr/pull/439)
 
 ### Bug Fixes
 * Remove deprecated SDK meta version function usage [PR 432](https://github.com/vultr/terraform-provider-vultr/pull/432)
-* data_source/database: Fix bug with flattening non-FerretDB replicas [PR 427](https://github.com/vultr/terraform-provider-vultr/pull/427)
+* data source/database: Fix bug with flattening non-FerretDB replicas [PR 427](https://github.com/vultr/terraform-provider-vultr/pull/427)
 
 ### Documentation
 * Add documentation for the instances data source [PR 431](https://github.com/vultr/terraform-provider-vultr/pull/431)
@@ -318,9 +331,9 @@
 ## [v2.17.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.17.0...v2.17.1) (2023-10-31)
 ### Enhancements
 * resource/database: Add FerretDB Support [PR 422](https://github.com/vultr/terraform-provider-vultr/pull/422)
-* data_source/database: Add FerretDB Support [PR 422](https://github.com/vultr/terraform-provider-vultr/pull/422)
+* data source/database: Add FerretDB Support [PR 422](https://github.com/vultr/terraform-provider-vultr/pull/422)
 * resource/kubernetes: Add support for the VKE HA control plane option [PR 423](https://github.com/vultr/terraform-provider-vultr/pull/423)
-* data_source/kubernetes: Add support for the VKE HA control plane option [PR 423](https://github.com/vultr/terraform-provider-vultr/pull/423)
+* data source/kubernetes: Add support for the VKE HA control plane option [PR 423](https://github.com/vultr/terraform-provider-vultr/pull/423)
 
 ### Bug Fixes
 * resource/vpc2: Fix ForceNew when optional fields not set [PR 424](https://github.com/vultr/terraform-provider-vultr/pull/424)
@@ -330,7 +343,7 @@
 * Bump google.golang.org/grpc from 1.57.0 to 1.57.1 [PR 419](https://github.com/vultr/terraform-provider-vultr/pull/419)
 
 ## [v2.17.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.16.4...v2.17.0) (2023-10-25)
-### Enhancement
+### Enhancements
 * Database: Add support for public/private hostnames [PR 416](https://github.com/vultr/terraform-provider-vultr/pull/416)
 
 ### Documentation
@@ -356,17 +369,17 @@
 * Extend the nightly acceptance test timeout by one hour [PR 405](https://github.com/vultr/terraform-provider-vultr/pull/405)
 
 ## [v2.16.2](https://github.com/vultr/terraform-provider-vultr/compare/v2.16.1...v2.16.2) (2023-09-25)
-# Enhancement
-* data_source/instance: Add a per-page param for instance data source [PR 384](https://github.com/vultr/terraform-provider-vultr/pull/384)
+### Enhancements
+* data source/instance: Add a per-page param for instance data source [PR 384](https://github.com/vultr/terraform-provider-vultr/pull/384)
 
-# Bug Fix
+### Bug Fixes
 * resource/database: Add missing vpc_id property to managed database read replicas [PR 403](https://github.com/vultr/terraform-provider-vultr/pull/403)
-* data_source/database: Add missing vpc_id property to managed database read replicas [PR 403](https://github.com/vultr/terraform-provider-vultr/pull/403)
+* data source/database: Add missing vpc_id property to managed database read replicas [PR 403](https://github.com/vultr/terraform-provider-vultr/pull/403)
 
 ## [v2.16.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.16.0...v2.16.1) (2023-09-22)
-### Bug Fix
+### Bug Fixes
 * resource/vpc2: Fix delete retries and detach errors with VPC2s [PR 399](https://github.com/vultr/terraform-provider-vultr/pull/399)
-* resource/bare_metal_server: Revert BM update delay for detach VPC2 [PR 400](https://github.com/vultr/terraform-provider-vultr/pull/400)
+* resource/bare metal server: Revert BM update delay for detach VPC2 [PR 400](https://github.com/vultr/terraform-provider-vultr/pull/400)
 
 ### Dependencies
 * Bump github.com/vultr/govultr/v3 from 3.2.0 to 3.3.1 [PR 391](https://github.com/vultr/terraform-provider-vultr/pull/391)
@@ -379,8 +392,8 @@
 * resource/vpc: Add/update retry on create/delete actions [PR 362](https://github.com/vultr/terraform-provider-vultr/pull/362)
 * resource/database: Add support for DBaaS VPC networks [PR 385](https://github.com/vultr/terraform-provider-vultr/pull/385)
 * resource/vpc2: Add VPC 2.0 [PR 389](https://github.com/vultr/terraform-provider-vultr/pull/389)
-* data_source/vpc2: Add VPC 2.0 [PR 389](https://github.com/vultr/terraform-provider-vultr/pull/389)
-* resource/bare_metal_server: Wait for VPC 2.0 detachments on BM [PR 396](https://github.com/vultr/terraform-provider-vultr/pull/396)
+* data source/vpc2: Add VPC 2.0 [PR 389](https://github.com/vultr/terraform-provider-vultr/pull/389)
+* resource/bare metal server: Wait for VPC 2.0 detachments on BM [PR 396](https://github.com/vultr/terraform-provider-vultr/pull/396)
 
 ### Documentation
 * load balancer: Set non-required fields with default values [PR 365](https://github.com/vultr/terraform-provider-vultr/pull/365)
@@ -402,7 +415,7 @@
 * @ogawa0071 made their first contribution in [PR 389](https://github.com/vultr/terraform-provider-vultr/pull/389)
 
 ## [v2.15.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.15.0...v2.15.1) (2023-05-10)
-### Enhancement
+### Enhancements
 * Add documentation for Vultr managed database data sources and resources [PR 356](https://github.com/vultr/terraform-provider-vultr/pull/356)
 * Add VPC delete retries [PR 358](https://github.com/vultr/terraform-provider-vultr/pull/358)
 
@@ -410,7 +423,7 @@
 * Bump golang.org/x/oauth2 from 0.7.0 to 0.8.0 [PR 357](https://github.com/vultr/terraform-provider-vultr/pull/357)
 
 ## [v2.15.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.14.1...v2.15.0) (2023-05-04)
-### Enhancement
+### Enhancements
 * resource/database: Add Support for Vultr Managed Databases [PR 352](https://github.com/vultr/terraform-provider-vultr/pull/352)
 * data source/database: Add Support for Vultr Managed Databases [PR 352](https://github.com/vultr/terraform-provider-vultr/pull/352)
 
@@ -421,7 +434,7 @@
 * @christhemorse made their first contribution in [PR 352](https://github.com/vultr/terraform-provider-vultr/pull/352)
 
 ## [v2.14.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.14.0...v2.14.1) (2023-04-28)
-### Enhancement
+### Enhancements
 * resource/kuberneters: added vke certs as exported atrributes [PR 349](https://github.com/vultr/terraform-provider-vultr/pull/349)
 * data source/kuberneters: added vke certs as exported atrributes [PR 349](https://github.com/vultr/terraform-provider-vultr/pull/349)
 
@@ -429,7 +442,7 @@
 * @happytreees made their first contribution in [PR 349](https://github.com/vultr/terraform-provider-vultr/pull/349)
 
 ## [v2.14.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.13.0...v2.14.0) (2023-04-13)
-### Enhancement
+### Enhancements
 * resource/kubernetes: Add VKE k8s version upgrade functionality [PR 344](https://github.com/vultr/terraform-provider-vultr/pull/344)
 * resource/kubernetes: Mark the kube_config schema value as sensitive [PR 346](https://github.com/vultr/terraform-provider-vultr/pull/346)
 
@@ -437,7 +450,7 @@
 * Bump golang.org/x/oauth2 from 0.6.0 to 0.7.0 [PR 343](https://github.com/vultr/terraform-provider-vultr/pull/343)
 
 ## [v2.13.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.12.1...v2.13.0) (2023-04-03)
-### Enhancement
+### Enhancements
 * resource/reserved ip: Add missing resource warning for reserved IP [PR 327](https://github.com/vultr/terraform-provider-vultr/pull/327)
 * resource/dns domain: Add missing resource warnings [PR 323](https://github.com/vultr/terraform-provider-vultr/pull/323)
 * resource/block storage: Add missing resource warnings [PR 323](https://github.com/vultr/terraform-provider-vultr/pull/323)
@@ -459,32 +472,32 @@
 * @mondragonfx made their first contribution in [PR 336](https://github.com/vultr/terraform-provider-vultr/pull/336)
 
 ## [v2.12.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.12.0...v2.12.1) (2023-02-10)
-### Enhancement
+### Enhancements
 * resource/instance: Add check for & detach of ISO on instance delete [312](https://github.com/vultr/terraform-provider-vultr/pull/312)
 * All resources that use "region":
     - Add DiffSuppressFunc to ignore case [318](https://github.com/vultr/terraform-provider-vultr/pull/318)
 
 ## [v2.12.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.4...v2.12.0) (2022-12-08)
-### Enhancement
+### Enhancements
 * resource/instance: remove deprecated tag fields [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
-* resource/bare_metal_server: remove deprecated tag fields [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
+* resource/bare metal server: remove deprecated tag fields [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
 * data source/instance: remove deprecated tag fields [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
-* data source/bare_metal_server: remove deprecated tag fields [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
+* data source/bare metal server: remove deprecated tag fields [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
 
-### Bug Fix
+### Bug Fixes
 * everything: golangci-lint fixes [302](https://github.com/vultr/terraform-provider-vultr/pull/302)
 
 ### Documentation
 * Fixed typo [279](https://github.com/vultr/terraform-provider-vultr/pull/279)
 * Update rate-limit documentation [283](https://github.com/vultr/terraform-provider-vultr/pull/283)
-* resource/instance_ipv4 fix type error on reboot [292](https://github.com/vultr/terraform-provider-vultr/pull/292)
-* resource/bare_metal_server: update floating IP description [293](https://github.com/vultr/terraform-provider-vultr/pull/293)
+* resource/instance ipv4 fix type error on reboot [292](https://github.com/vultr/terraform-provider-vultr/pull/292)
+* resource/bare metal server: update floating IP description [293](https://github.com/vultr/terraform-provider-vultr/pull/293)
 * resource/instance: remove the tag field from the docs [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
-* resource/bare_metal_server: remove the tag field from the docs [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
+* resource/bare metal server: remove the tag field from the docs [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
 * data source/instance: remove the tag field from the docs [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
-* data source/bare_metal_server: remove the tag field from the docs [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
+* data source/bare metal server: remove the tag field from the docs [297](https://github.com/vultr/terraform-provider-vultr/pull/297)
 
-### Dependency
+### Dependencies
 * update terraform-sdk from 2.19.0 to 2.21.0 [280](https://github.com/vultr/terraform-provider-vultr/pull/280)
 * update terraform-sdk from 2.21.0 to 2.24.0 [294](https://github.com/vultr/terraform-provider-vultr/pull/294)
 * update terraform-sdk from 2.24.0 to 2.24.1 [298](https://github.com/vultr/terraform-provider-vultr/pull/298)
@@ -497,10 +510,10 @@
 * @jasites made their first contribution in [293](https://github.com/vultr/terraform-provider-vultr/pull/293)
 
 ## [v2.11.4](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.3...v2.11.4) (2022-07-25)
-### Enhancement
+### Enhancements
 * data source/object storage cluster: add datasource for object storage cluster [275](https://github.com/vultr/terraform-provider-vultr/pull/275)
 
-### Documentatio
+### Documentation
 * data source/object storage cluster: add docs for object storage cluster [275](https://github.com/vultr/terraform-provider-vultr/pull/275)
 
 ### Dependency
@@ -508,18 +521,18 @@
 * update terraform-plugin-sdk from 2.18.0 to 2.19.0 [274](https://github.com/vultr/terraform-provider-vultr/pull/274)
 
 ## [v2.11.3](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.2...v2.11.3) (2022-06-14)
-### Enchancement
-* resource/reserved_ip: Add support for reserved IP label updates [268](https://github.com/vultr/terraform-provider-vultr/pull/268)
+### Enhancements
+* resource/reserved ip: Add support for reserved IP label updates [268](https://github.com/vultr/terraform-provider-vultr/pull/268)
 
 ### Documentation
 * resource/instance: Fix typo [268](https://github.com/vultr/terraform-provider-vultr/pull/268)
-* resource/reverse_ip: Fix type [268](https://github.com/vultr/terraform-provider-vultr/pull/268)
+* resource/reverse ip: Fix type [268](https://github.com/vultr/terraform-provider-vultr/pull/268)
 
 ## [v2.11.2](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.1...v2.11.2) (2022-06-03)
-### Enhancement
+### Enhancements
 * data source/plan: Add GPU fields [264](https://github.com/vultr/terraform-provider-vultr/pull/264)
 
-### Bug Fix
+### Bug Fixes
 * Fix acceptance tests [260](https://github.com/vultr/terraform-provider-vultr/pull/260)
 
 ### Dependency
@@ -529,15 +542,15 @@
 ## [v2.11.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.11.0...v2.11.1) (2022-05-18)
 ### Documentation
 * resource/instance: fix incorrect import example [251](https://github.com/vultr/terraform-provider-vultr/pull/251)
-* resource/instance_ipv4: fix vultr_instance_ipv4 resource doc and argument reference [253](https://github.com/vultr/terraform-provider-vultr/pull/253)
+* resource/instance ipv4: fix vultr_instance_ipv4 resource doc and argument reference [253](https://github.com/vultr/terraform-provider-vultr/pull/253)
 
 ### Dependency
 * updated govultr from v1.16.0 to v1.17.0 [255](https://github.com/vultr/terraform-provider-vultr/pull/255)
 
-### Bug Fix
-* resource/kubernetes_nodepool: fix `tag` so that it can be deleted [255](https://github.com/vultr/terraform-provider-vultr/pull/255)
+### Bug Fixes
+* resource/kubernetes nodepool: fix `tag` so that it can be deleted [255](https://github.com/vultr/terraform-provider-vultr/pull/255)
 * resource/instance: fix `tag` so that it can be deleted [255](https://github.com/vultr/terraform-provider-vultr/pull/255)
-* resource/bare_metal_server: fix `tag` so that it can be deleted [255](https://github.com/vultr/terraform-provider-vultr/pull/255)
+* resource/bare metal server: fix `tag` so that it can be deleted [255](https://github.com/vultr/terraform-provider-vultr/pull/255)
 
 ### New Contributors
 * @NicolasCARPi made their first contribution in [251](https://github.com/vultr/terraform-provider-vultr/pull/251)
@@ -555,7 +568,7 @@
 * updated govultr from 2.14.2 to 2.15.1 [233](https://github.com/vultr/terraform-provider-vultr/pull/233)
 * updated govultr from 2.15.1 to 2.16.0 [241](https://github.com/vultr/terraform-provider-vultr/pull/241)
 
-### Enhancement
+### Enhancements
 * resource/kubernetes: allow removal of default node pool after resource creation [248](https://github.com/vultr/terraform-provider-vultr/pull/248)
 * resource/kubernetes: add support for auto scaler options on node pools [247](https://github.com/vultr/terraform-provider-vultr/pull/247)
 * resource/kubernetes node pools: add support for auto scaler options on node pools [247](https://github.com/vultr/terraform-provider-vultr/pull/247)
@@ -574,7 +587,7 @@
 * data source/instance: add support for tags [240](https://github.com/vultr/terraform-provider-vultr/pull/240)
 * data source/bare metal: add support for tags [240](https://github.com/vultr/terraform-provider-vultr/pull/240)
 
-### Bug Fix
+### Bug Fixes
 * resource/kubernetes: fix labeling on cluster updates [239](https://github.com/vultr/terraform-provider-vultr/pull/239)
 * resource/firewall rule: read from correct govultr data [243](https://github.com/vultr/terraform-provider-vultr/pull/243)
 
@@ -683,7 +696,7 @@ Enhancement:
 * resource/bare_metal: fix missing `mac_address` definition in scheme [140](https://github.com/vultr/terraform-provider-vultr/pull/140)
 
 ## 2.3.0 (May 11, 2021)
-### Enchancements
+### Enhancements
 * resource/vultr_instances: allow the configuration of `backups_schedule` [134](https://github.com/vultr/terraform-provider-vultr/pull/134) [136](https://github.com/vultr/terraform-provider-vultr/pull/136)
 * resource/vultr_load_balancers: add support for new LB features `private_network` and `firewall_rules` [137](https://github.com/vultr/terraform-provider-vultr/pull/137)
 * resource/vultr_iso: support detaching during deletion  [131](https://github.com/vultr/terraform-provider-vultr/pull/131) Thanks @johnrichardrinehart
