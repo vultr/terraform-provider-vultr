@@ -10,6 +10,8 @@ import (
 	"github.com/vultr/govultr/v3"
 )
 
+const maxPortRange = 65535
+
 func resourceVultrNATGatewayPortForwardingRule() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVultrNATGatewayPortForwardingRuleCreate,
@@ -45,7 +47,7 @@ func resourceVultrNATGatewayPortForwardingRule() *schema.Resource {
 			"external_port": {
 				Type:         schema.TypeInt,
 				Required:     true,
-				ValidateFunc: validation.IntBetween(1, 65535),
+				ValidateFunc: validation.IntBetween(1, maxPortRange),
 			},
 			"internal_ip": {
 				Type:         schema.TypeString,
@@ -55,7 +57,7 @@ func resourceVultrNATGatewayPortForwardingRule() *schema.Resource {
 			"internal_port": {
 				Type:         schema.TypeInt,
 				Required:     true,
-				ValidateFunc: validation.IntBetween(1, 65535),
+				ValidateFunc: validation.IntBetween(1, maxPortRange),
 			},
 			"enabled": {
 				Type:     schema.TypeBool,
@@ -83,7 +85,7 @@ func resourceVultrNATGatewayPortForwardingRule() *schema.Resource {
 	}
 }
 
-func resourceVultrNATGatewayPortForwardingRuleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrNATGatewayPortForwardingRuleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	vpcID := d.Get("vpc_id").(string)
@@ -110,7 +112,7 @@ func resourceVultrNATGatewayPortForwardingRuleCreate(ctx context.Context, d *sch
 	return resourceVultrNATGatewayPortForwardingRuleRead(ctx, d, meta)
 }
 
-func resourceVultrNATGatewayPortForwardingRuleRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrNATGatewayPortForwardingRuleRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	vpcID := d.Get("vpc_id").(string)
@@ -160,7 +162,7 @@ func resourceVultrNATGatewayPortForwardingRuleRead(ctx context.Context, d *schem
 	return nil
 }
 
-func resourceVultrNATGatewayPortForwardingRuleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrNATGatewayPortForwardingRuleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	vpcID := d.Get("vpc_id").(string)
@@ -217,7 +219,7 @@ func resourceVultrNATGatewayPortForwardingRuleUpdate(ctx context.Context, d *sch
 	return resourceVultrNATGatewayPortForwardingRuleRead(ctx, d, meta)
 }
 
-func resourceVultrNATGatewayPortForwardingRuleDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrNATGatewayPortForwardingRuleDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting NAT Gateway port forwarding rule (%s)", d.Id())
 

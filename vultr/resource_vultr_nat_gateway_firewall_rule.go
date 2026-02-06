@@ -13,6 +13,8 @@ import (
 	"github.com/vultr/govultr/v3"
 )
 
+const maxSubnetSize = 32
+
 func resourceVultrNATGatewayFirewallRule() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVultrNATGatewayFirewallRuleCreate,
@@ -51,7 +53,7 @@ func resourceVultrNATGatewayFirewallRule() *schema.Resource {
 			"subnet_size": {
 				Type:         schema.TypeInt,
 				Required:     true,
-				ValidateFunc: validation.IntBetween(0, 32),
+				ValidateFunc: validation.IntBetween(0, maxSubnetSize),
 				ForceNew:     true,
 			},
 			"port": {
@@ -78,7 +80,7 @@ func resourceVultrNATGatewayFirewallRule() *schema.Resource {
 	}
 }
 
-func resourceVultrNATGatewayFirewallRuleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrNATGatewayFirewallRuleCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	vpcID := d.Get("vpc_id").(string)
@@ -103,7 +105,7 @@ func resourceVultrNATGatewayFirewallRuleCreate(ctx context.Context, d *schema.Re
 	return resourceVultrNATGatewayFirewallRuleRead(ctx, d, meta)
 }
 
-func resourceVultrNATGatewayFirewallRuleRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrNATGatewayFirewallRuleRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	vpcID := d.Get("vpc_id").(string)
@@ -141,7 +143,7 @@ func resourceVultrNATGatewayFirewallRuleRead(ctx context.Context, d *schema.Reso
 	return nil
 }
 
-func resourceVultrNATGatewayFirewallRuleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrNATGatewayFirewallRuleUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	vpcID := d.Get("vpc_id").(string)
@@ -162,7 +164,7 @@ func resourceVultrNATGatewayFirewallRuleUpdate(ctx context.Context, d *schema.Re
 	return resourceVultrNATGatewayFirewallRuleRead(ctx, d, meta)
 }
 
-func resourceVultrNATGatewayFirewallRuleDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func resourceVultrNATGatewayFirewallRuleDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	log.Printf("[INFO] Deleting NAT Gateway firewall rule (%s)", d.Id())
 
@@ -182,7 +184,7 @@ func validatePortOrPortRange(val interface{}, key string) (warns []string, errs 
 	parts := strings.Split(v, ":")
 	if len(parts) > 2 {
 		errs = append(errs, fmt.Errorf("%v must be a single port (1–65535) or port range (start:end), got %v", key, v))
-		return
+		return nil, errs
 	}
 
 	parsePort := func(p string) (int, error) {
@@ -198,7 +200,7 @@ func validatePortOrPortRange(val interface{}, key string) (warns []string, errs 
 		if _, err := parsePort(parts[0]); err != nil {
 			errs = append(errs, fmt.Errorf("%v must be a valid port (1–65535), got %v", key, v))
 		}
-		return
+		return nil, errs
 	}
 
 	// Port range
@@ -207,7 +209,8 @@ func validatePortOrPortRange(val interface{}, key string) (warns []string, errs 
 
 	if err1 != nil || err2 != nil || start > end {
 		errs = append(errs, fmt.Errorf("%v must be a valid port range (start:end) with start ≤ end, got %v", key, v))
+		return nil, errs
 	}
 
-	return
+	return nil, nil
 }
