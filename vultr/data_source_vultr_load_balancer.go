@@ -89,6 +89,7 @@ func dataSourceVultrLoadBalancer() *schema.Resource {
 			"auto_ssl_domain": {
 				Type:     schema.TypeString,
 				Computed: true,
+			},
 			"global_regions": {
 				Type:     schema.TypeSet,
 				Computed: true,
