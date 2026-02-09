@@ -1,4 +1,23 @@
 # Changelog
+## [v2.29.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.28.1...v2.29.0) (2026-02-09)
+### Enhancements
+* resource/vpc: Add NAT gateways [PR 678](https://github.com/vultr/terraform-provider-vultr/pull/678)
+* data source/vpc: Add NAT gateways [PR 678](https://github.com/vultr/terraform-provider-vultr/pull/678)
+* resource/load balancers: Add HTTP version [PR 604](https://github.com/vultr/terraform-provider-vultr/pull/604)
+* data source/load balancers: Add HTTP version [PR 604](https://github.com/vultr/terraform-provider-vultr/pull/604)
+* resource/load balancers: Add global regions [PR 603](https://github.com/vultr/terraform-provider-vultr/pull/603)
+* data source/load balancers: Add global regions [PR 603](https://github.com/vultr/terraform-provider-vultr/pull/603)
+* resource/load balancers: Add auto SSL [PR 591](https://github.com/vultr/terraform-provider-vultr/pull/591)
+* data source/load balancers: Add auto SSL [PR 591](https://github.com/vultr/terraform-provider-vultr/pull/591)
+
+### Bug Fixes
+* Fix missing comma in lb data source schema [PR 681](https://github.com/vultr/terraform-provider-vultr/pull/681)
+
+### Dependencies
+* Bump github.com/vultr/govultr/v3 from 3.26.1 to 3.27.0 [PR 679](https://github.com/vultr/terraform-provider-vultr/pull/679)
+* Bump golang.org/x/oauth2 from 0.34.0 to 0.35.0 [PR 680](https://github.com/vultr/terraform-provider-vultr/pull/680)
+* Bump github.com/hashicorp/terraform-plugin-sdk/v2 from 2.38.1 to 2.38.2 [PR 677](https://github.com/vultr/terraform-provider-vultr/pull/677)
+
 ## [v2.28.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.28.0...2.28.1) (2026-01-30)
 ### Bug Fixes
 * resource/instance: Add missing label attribute during read [PR 666](https://github.com/vultr/terraform-provider-vultr/pull/666)
