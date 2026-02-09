@@ -2,11 +2,11 @@
 ## [v2.29.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.28.1...v2.29.0) (2026-02-09)
 ### Enhancements
 * resource/vpc: Add NAT gateways [PR 678](https://github.com/vultr/terraform-provider-vultr/pull/678)
-* data surce/vpc: Add NAT gateways [PR 678](https://github.com/vultr/terraform-provider-vultr/pull/678)
+* data source/vpc: Add NAT gateways [PR 678](https://github.com/vultr/terraform-provider-vultr/pull/678)
 * resource/load balancers: Add HTTP version [PR 604](https://github.com/vultr/terraform-provider-vultr/pull/604)
 * data source/load balancers: Add HTTP version [PR 604](https://github.com/vultr/terraform-provider-vultr/pull/604)
 * resource/load balancers: Add global regions [PR 603](https://github.com/vultr/terraform-provider-vultr/pull/603)
-* data surce/load balancers: Add global regions [PR 603](https://github.com/vultr/terraform-provider-vultr/pull/603)
+* data source/load balancers: Add global regions [PR 603](https://github.com/vultr/terraform-provider-vultr/pull/603)
 * resource/load balancers: Add auto SSL [PR 591](https://github.com/vultr/terraform-provider-vultr/pull/591)
 * data source/load balancers: Add auto SSL [PR 591](https://github.com/vultr/terraform-provider-vultr/pull/591)
 
