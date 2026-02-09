@@ -522,11 +522,20 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 	if err := d.Set("app_id", instance.AppID); err != nil {
 		return diag.Errorf("unable to set resource instance `app_id` read value: %v", err)
 	}
+	if err := d.Set("image_id", instance.ImageID); err != nil {
+		return diag.Errorf("unable to set resource instance `image_id` read value: %v", err)
+	}
+	if err := d.Set("snapshot_id", instance.SnapshotID); err != nil {
+		return diag.Errorf("unable to set resource instance `snapshot_id` read value: %v", err)
+	}
 	if err := d.Set("features", instance.Features); err != nil {
 		return diag.Errorf("unable to set resource instance `features` read value: %v", err)
 	}
 	if err := d.Set("hostname", instance.Hostname); err != nil {
 		return diag.Errorf("unable to set resource instance `hostname` read value: %v", err)
+	}
+	if err := d.Set("label", instance.Label); err != nil {
+		return diag.Errorf("unable to set resource instance `label` read value: %v", err)
 	}
 	if err := d.Set("user_scheme", instance.UserScheme); err != nil {
 		return diag.Errorf("unable to set resource instance `user_scheme` read value: %v", err)
@@ -800,13 +809,14 @@ func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta int
 			return nil, "", fmt.Errorf("error retrieving Server %s : %s", d.Id(), err)
 		}
 
-		if attr == "status" {
+		switch attr {
+		case "status":
 			log.Printf("[INFO] The Server Status is %s", server.Status)
 			return server, server.Status, nil
-		} else if attr == "power_status" {
+		case "power_status":
 			log.Printf("[INFO] The Server Power Status is %s", server.PowerStatus)
 			return server, server.PowerStatus, nil
-		} else {
+		default:
 			return nil, "", nil
 		}
 	}

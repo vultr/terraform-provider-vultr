@@ -65,7 +65,124 @@ func dataSourceVultrKubernetes() *schema.Resource {
 				Type:     schema.TypeList,
 				Computed: true,
 				Elem: &schema.Resource{
-					Schema: nodePoolSchema(false),
+					Schema: map[string]*schema.Schema{
+						"label": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"plan": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"node_quantity": {
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"auto_scaler": {
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
+						"min_nodes": {
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"max_nodes": {
+							Type:     schema.TypeInt,
+							Computed: true,
+						},
+						"labels": {
+							Type:     schema.TypeSet,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"key": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"value": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"id": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
+						},
+						"taints": {
+							Type:     schema.TypeSet,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"key": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"value": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"effect": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"id": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
+						},
+						"user_data": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"id": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"tag": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"date_created": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"date_updated": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"status": {
+							Type:     schema.TypeString,
+							Computed: true,
+						},
+						"nodes": {
+							Type:     schema.TypeList,
+							Computed: true,
+							Elem: &schema.Resource{
+								Schema: map[string]*schema.Schema{
+									"id": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"date_created": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"label": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+									"status": {
+										Type:     schema.TypeString,
+										Computed: true,
+									},
+								},
+							},
+						},
+					},
 				},
 			},
 			"kube_config": {
@@ -76,12 +193,10 @@ func dataSourceVultrKubernetes() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
 			"client_key": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-
 			"client_certificate": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -191,7 +306,55 @@ func dataSourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, 
 	if err := d.Set("client_key", key); err != nil {
 		return diag.Errorf("unable to set kubernetes `client_key` read value: %v", err)
 	}
-	if err := d.Set("node_pools", flattenNodePools(k8List[0].NodePools)); err != nil {
+
+	nodePools := flattenNodePools(k8List[0].NodePools)
+
+	for i := range nodePools {
+		labelData, _, err := client.Kubernetes.ListNodePoolLabels(ctx, k8List[0].ID, nodePools[i]["id"].(string))
+		if err != nil {
+			return diag.Errorf(
+				"error getting data source cluster (%v) node pool (%v) labels : %v",
+				k8List[0].ID,
+				nodePools[i]["id"].(string),
+				err,
+			)
+		}
+
+		var labels []map[string]interface{}
+		for j := range labelData {
+			labels = append(labels, map[string]interface{}{
+				"id":    labelData[j].ID,
+				"key":   labelData[j].Key,
+				"value": labelData[j].Value,
+			})
+		}
+
+		nodePools[i]["labels"] = labels
+
+		taintData, _, err := client.Kubernetes.ListNodePoolTaints(ctx, k8List[0].ID, nodePools[i]["id"].(string))
+		if err != nil {
+			return diag.Errorf(
+				"error getting data source cluster (%v) node pool (%v) taints : %v",
+				k8List[0].ID,
+				nodePools[i]["id"].(string),
+				err,
+			)
+		}
+
+		var taints []map[string]interface{}
+		for j := range taintData {
+			taints = append(taints, map[string]interface{}{
+				"id":     taintData[j].ID,
+				"key":    taintData[j].Key,
+				"value":  taintData[j].Value,
+				"effect": taintData[j].Effect,
+			})
+		}
+
+		nodePools[i]["taints"] = taints
+	}
+
+	if err := d.Set("node_pools", nodePools); err != nil {
 		return diag.Errorf("unable to set kubernetes `node_pools` read value: %v", err)
 	}
 
@@ -214,15 +377,6 @@ func flattenNodePools(np []govultr.NodePool) []map[string]interface{} {
 			instances = append(instances, a)
 		}
 
-		var taints []map[string]interface{}
-		for i := range n.Taints {
-			taints = append(taints, map[string]interface{}{
-				"key":    n.Taints[i].Key,
-				"value":  n.Taints[i].Value,
-				"effect": n.Taints[i].Effect,
-			})
-		}
-
 		pool := map[string]interface{}{
 			"label":         n.Label,
 			"plan":          n.Plan,
@@ -236,8 +390,7 @@ func flattenNodePools(np []govultr.NodePool) []map[string]interface{} {
 			"min_nodes":     n.MinNodes,
 			"max_nodes":     n.MaxNodes,
 			"nodes":         instances,
-			"labels":        n.Labels,
-			"taints":        taints,
+			"user_data":     n.UserData,
 		}
 
 		nodePools = append(nodePools, pool)

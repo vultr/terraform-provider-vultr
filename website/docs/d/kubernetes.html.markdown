@@ -69,8 +69,20 @@ The following attributes are exported:
 * `auto_scaler` - Boolean indicating if the auto scaler for the default node pool is active.
 * `min_nodes` - The minimum number of nodes used by the auto scaler.
 * `max_nodes` - The maximum number of nodes used by the auto scaler.
-* `labels` - Kubernetes node labels applied to the node pool.
-* `taints` - Kubernetes node taints applied to the node pool.
+* `user_data` - The base64 encoded string containing the user data applied to nodes in the node pool.
+
+`labels` - A list of labels applied to the nodes in the node pool with these fields:
+
+* `id` - The ID of the label.
+* `key` - The key definining the label for kubernetes.
+* `value` - The value of the label for kubernetes.
+
+`taints` - A list of taints to apply to the nodes in the node pool with these fields: 
+
+* `id` - The ID of the taint.
+* `key` - The key definining the taint for kubernetes.
+* `value` - The value of the taint for kubernetes.
+* `effect` - The effect of the taint for kubernetes. 
 
 `nodes`
 

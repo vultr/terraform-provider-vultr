@@ -17,6 +17,7 @@ Create a new Snapshots from URL
 ```hcl
 resource "vultr_snapshot_from_url" "my_snapshot" {
 	url = "http://dl-cdn.alpinelinux.org/alpine/v3.9/releases/x86_64/alpine-virt-3.9.1-x86_64.iso"
+	use_uefi = true
 }
 ```
 
@@ -25,6 +26,7 @@ resource "vultr_snapshot_from_url" "my_snapshot" {
 The following arguments are supported:
 
 * `url` - (Required) URL of the given resource you want to create a snapshot from.
+* `use_uefi` - (Optional) Whether or not to use UEFI when creating the snapshot.
 
 ## Attributes Reference
 
@@ -38,8 +40,6 @@ The following attributes are exported:
 * `status` - The status for the given snapshot.
 * `os_id` - The os id which the snapshot is associated with.
 * `app_id` - The app id which the snapshot is associated with.
-
-
 
 ## Import
 

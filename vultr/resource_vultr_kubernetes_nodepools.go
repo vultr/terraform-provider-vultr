@@ -35,8 +35,82 @@ func resourceVultrKubernetesNodePools() *schema.Resource {
 				return []*schema.ResourceData{d}, nil
 			},
 		},
-		Schema: nodePoolSchema(true),
+		Schema:        resourceVultrKubernetesNodePoolsV1(true),
+		SchemaVersion: 1,
+		StateUpgraders: []schema.StateUpgrader{
+			{
+				Type:    resourceVultrKubernetesNodePoolsV0(true).CoreConfigSchema().ImpliedType(),
+				Upgrade: resourceVultrKubernetesNodePoolsStateUpgradeV0ToV1,
+				Version: 0,
+			},
+		},
 	}
+}
+
+func resourceVultrKubernetesNodePoolsStateUpgradeV0ToV1(ctx context.Context, rawState map[string]interface{}, meta interface{}) (map[string]interface{}, error) { //nolint:lll
+	if len(rawState) == 0 {
+		return rawState, nil
+	}
+
+	client := meta.(*Client).govultrClient()
+
+	stateLabels := rawState["labels"].(map[string]interface{})
+	stateTaints := rawState["taints"].([]interface{})
+
+	if len(stateLabels) != 0 {
+		log.Println("[INFO] migrating kubernetes node pool labels from v0 to v1")
+		refLabels, _, err := client.Kubernetes.ListNodePoolLabels(
+			ctx,
+			rawState["cluster_id"].(string),
+			rawState["id"].(string),
+		)
+		if err != nil {
+			log.Println("[ERROR] unable to retrieve updated kubernetes node pool labels from client")
+			return rawState, err
+		}
+
+		newStateLabels := []map[string]interface{}{}
+		for j := range refLabels {
+			for key, val := range stateLabels {
+				newStateLabel := map[string]interface{}{}
+				if key == refLabels[j].Key {
+					newStateLabel["key"] = key
+					newStateLabel["value"] = val.(string)
+					newStateLabel["id"] = refLabels[j].ID
+
+					newStateLabels = append(newStateLabels, newStateLabel)
+				}
+			}
+		}
+
+		// replace the labels state
+		delete(rawState, "labels")
+		rawState["labels"] = newStateLabels
+	}
+
+	if len(stateTaints) != 0 {
+		log.Println("[INFO] migrating kubernetes node pool taints from v0 to v1")
+		refTaints, _, err := client.Kubernetes.ListNodePoolTaints(
+			ctx,
+			rawState["cluster_id"].(string),
+			rawState["id"].(string),
+		)
+		if err != nil {
+			log.Println("[ERROR] unable to retrieve updated kubernetes node pool taints from client")
+			return rawState, err
+		}
+
+		for j := range refTaints {
+			for k := range stateTaints {
+				stateTaintData := stateTaints[k].(map[string]interface{})
+				if stateTaintData["key"] == refTaints[j].Key {
+					stateTaintData["id"] = refTaints[j].ID
+				}
+			}
+		}
+	}
+
+	return rawState, nil
 }
 
 func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
@@ -52,30 +126,7 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 		AutoScaler:   govultr.BoolToBoolPtr(d.Get("auto_scaler").(bool)),
 		MinNodes:     d.Get("min_nodes").(int),
 		MaxNodes:     d.Get("max_nodes").(int),
-	}
-
-	if labelsVal, labelsOK := d.GetOk("labels"); labelsOK {
-		labels := make(map[string]string)
-		for k, v := range labelsVal.(map[string]interface{}) {
-			labels[k] = v.(string)
-		}
-
-		req.Labels = labels
-	}
-
-	if taintsVal, taintsOK := d.GetOk("taints"); taintsOK {
-		var taints []govultr.Taint
-		taintVals := taintsVal.(*schema.Set).List()
-		for i := range taintVals {
-			taint := taintVals[i].(map[string]interface{})
-			taints = append(taints, govultr.Taint{
-				Key:    taint["key"].(string),
-				Value:  taint["value"].(string),
-				Effect: taint["effect"].(string),
-			})
-		}
-
-		req.Taints = taints
+		UserData:     d.Get("user_data").(string),
 	}
 
 	nodePool, _, err := client.Kubernetes.CreateNodePool(ctx, clusterID, req)
@@ -92,6 +143,55 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 	if _, err = waitForNodePoolAvailable(ctx, d, "active", []string{"pending"}, "status", meta); err != nil {
 		return diag.Errorf(
 			"error while waiting for node pool %v to be completed: %v", d.Id(), err)
+	}
+
+	labels := d.Get("labels").(*schema.Set).List()
+	for i := range labels {
+		labelMap := labels[i].(map[string]interface{})
+		_, _, err := client.Kubernetes.CreateNodePoolLabel(
+			ctx,
+			clusterID,
+			d.Id(),
+			&govultr.NodePoolLabelReq{
+				Key:   labelMap["key"].(string),
+				Value: labelMap["value"].(string),
+			},
+		)
+
+		if err != nil {
+			return diag.Errorf(
+				"error creating label %q for node pool %v on cluster %v : %v",
+				labelMap["key"].(string),
+				d.Id(),
+				clusterID,
+				err,
+			)
+		}
+	}
+
+	taints := d.Get("taints").(*schema.Set).List()
+	for i := range taints {
+		taintMap := taints[i].(map[string]interface{})
+		_, _, err := client.Kubernetes.CreateNodePoolTaint(
+			ctx,
+			clusterID,
+			d.Id(),
+			&govultr.NodePoolTaintReq{
+				Key:    taintMap["key"].(string),
+				Value:  taintMap["value"].(string),
+				Effect: taintMap["effect"].(string),
+			},
+		)
+
+		if err != nil {
+			return diag.Errorf(
+				"error creating taint %q for node pool %v on cluster %v : %v",
+				taintMap["key"].(string),
+				d.Id(),
+				clusterID,
+				err,
+			)
+		}
 	}
 
 	return resourceVultrKubernetesNodePoolsRead(ctx, d, meta)
@@ -145,22 +245,6 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 	if err := d.Set("max_nodes", nodePool.MaxNodes); err != nil {
 		return diag.Errorf("unable to set resource kubernetes_nodepools `max_nodes` read value: %v", err)
 	}
-	if err := d.Set("labels", nodePool.Labels); err != nil {
-		return diag.Errorf("unable to set resource kubernetes_nodepools `labels` read value: %v", err)
-	}
-
-	var taints []map[string]interface{}
-	for i := range nodePool.Taints {
-		taints = append(taints, map[string]interface{}{
-			"key":    nodePool.Taints[i].Key,
-			"value":  nodePool.Taints[i].Value,
-			"effect": nodePool.Taints[i].Effect,
-		})
-	}
-
-	if err := d.Set("taints", taints); err != nil {
-		return diag.Errorf("unable to set resource kubernetes_nodepools `taints` read value: %v", err)
-	}
 
 	var instances []map[string]interface{}
 	for _, v := range nodePool.Nodes {
@@ -177,6 +261,45 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 		return diag.Errorf("unable to set resource kubernetes_nodepools `nodes` read value: %v", err)
 	}
 
+	// add node pool labels
+	labelData, _, err := client.Kubernetes.ListNodePoolLabels(ctx, clusterID, d.Id())
+	if err != nil {
+		return diag.Errorf("error getting cluster (%v) node pool (%v) labels : %v", clusterID, d.Id(), err)
+	}
+
+	var labels []map[string]interface{}
+	for j := range labelData {
+		labels = append(labels, map[string]interface{}{
+			"id":    labelData[j].ID,
+			"key":   labelData[j].Key,
+			"value": labelData[j].Value,
+		})
+	}
+
+	if err := d.Set("labels", labels); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `labels` read value: %v", err)
+	}
+
+	// add node pool taints
+	taintData, _, err := client.Kubernetes.ListNodePoolTaints(ctx, clusterID, d.Id())
+	if err != nil {
+		return diag.Errorf("error getting cluster (%v) node pool (%v) taints : %v", clusterID, d.Id(), err)
+	}
+
+	var taints []map[string]interface{}
+	for j := range taintData {
+		taints = append(taints, map[string]interface{}{
+			"id":     taintData[j].ID,
+			"key":    taintData[j].Key,
+			"value":  taintData[j].Value,
+			"effect": taintData[j].Effect,
+		})
+	}
+
+	if err := d.Set("taints", taints); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `taints` read value: %v", err)
+	}
+
 	return nil
 }
 
@@ -188,39 +311,48 @@ func resourceVultrKubernetesNodePoolsUpdate(ctx context.Context, d *schema.Resou
 	req := &govultr.NodePoolReqUpdate{
 		NodeQuantity: d.Get("node_quantity").(int),
 		Tag:          govultr.StringToStringPtr(d.Get("tag").(string)),
-		AutoScaler:   govultr.BoolToBoolPtr(d.Get("auto_scaler").(bool)),
-		MinNodes:     d.Get("min_nodes").(int),
-		MaxNodes:     d.Get("max_nodes").(int),
 	}
 
-	if d.HasChange("labels") {
-		labelsNew := d.Get("labels")
-		labels := make(map[string]string)
-		for k, v := range labelsNew.(map[string]interface{}) {
-			labels[k] = v.(string)
-		}
-
-		req.Labels = labels
+	if d.HasChange("auto_scaler") {
+		req.AutoScaler = govultr.BoolToBoolPtr(d.Get("auto_scaler").(bool))
 	}
 
-	if d.HasChange("taints") {
-		taintsNew := d.Get("taints")
-		var taints []govultr.Taint
-		taintVals := taintsNew.(*schema.Set).List()
-		for i := range taintVals {
-			taint := taintVals[i].(map[string]interface{})
-			taints = append(taints, govultr.Taint{
-				Key:    taint["key"].(string),
-				Value:  taint["value"].(string),
-				Effect: taint["effect"].(string),
-			})
-		}
+	if d.HasChange("min_nodes") {
+		req.MinNodes = d.Get("min_nodes").(int)
+	}
 
-		req.Taints = taints
+	if d.HasChange("max_nodes") {
+		req.MaxNodes = d.Get("max_nodes").(int)
+	}
+
+	if d.HasChange("user_data") {
+		req.UserData = govultr.StringToStringPtr(d.Get("user_data").(string))
 	}
 
 	if _, _, err := client.Kubernetes.UpdateNodePool(ctx, clusterID, d.Id(), req); err != nil {
 		return diag.Errorf("error updating VKE node pool %v : %v", d.Id(), err)
+	}
+
+	if d.HasChange("labels") {
+		oldLabels, newLabels := d.GetChange("labels")
+		oldLabelsData := oldLabels.(*schema.Set).List()
+		newLabelsData := newLabels.(*schema.Set).List()
+
+		err := updateNodePoolOptions(ctx, client, clusterID, d.Id(), "labels", oldLabelsData, newLabelsData)
+		if err != nil {
+			return diag.FromErr(err)
+		}
+	}
+
+	if d.HasChange("taints") {
+		oldTaints, newTaints := d.GetChange("taints")
+		oldTaintsData := oldTaints.(*schema.Set).List()
+		newTaintsData := newTaints.(*schema.Set).List()
+
+		err := updateNodePoolOptions(ctx, client, clusterID, d.Id(), "taints", oldTaintsData, newTaintsData)
+		if err != nil {
+			return diag.FromErr(err)
+		}
 	}
 
 	return resourceVultrKubernetesNodePoolsRead(ctx, d, meta)

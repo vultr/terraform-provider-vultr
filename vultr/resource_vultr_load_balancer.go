@@ -51,6 +51,11 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"http_version": {
+				Type:         schema.TypeInt,
+				Optional:     true,
+				ValidateFunc: validation.IntInSlice([]int{2, 3}),
+			},
 			"proxy_protocol": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -222,6 +227,11 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"global_regions": {
+				Type:     schema.TypeSet,
+				Optional: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 		},
 	}
 }
@@ -251,6 +261,14 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		}
 	} else {
 		instanceList = nil
+	}
+
+	var globalRegionsList []string
+	if attachGlobalRegions, globalRegionsOk := d.GetOk("global_regions"); globalRegionsOk {
+		regions := attachGlobalRegions.(*schema.Set).List()
+		for i := range regions {
+			globalRegionsList = append(globalRegionsList, regions[i].(string))
+		}
 	}
 
 	var ssl *govultr.SSL
@@ -285,6 +303,18 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		fwrMap = nil
 	}
 
+	var http2, http3 *bool
+	if httpVersionValue, httpVersionOk := d.GetOk("http_version"); httpVersionOk {
+		httpVersion := httpVersionValue.(int)
+		switch httpVersion {
+		case 2:
+			http2 = govultr.BoolToBoolPtr(true)
+		case 3:
+			http2 = govultr.BoolToBoolPtr(true)
+			http3 = govultr.BoolToBoolPtr(true)
+		}
+	}
+
 	req := &govultr.LoadBalancerReq{
 		Region:             d.Get("region").(string),
 		Label:              d.Get("label").(string),
@@ -295,9 +325,12 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		SSL:                ssl,
 		AutoSSL:            autoSSL,
 		SSLRedirect:        govultr.BoolToBoolPtr(d.Get("ssl_redirect").(bool)),
+		HTTP2:              http2,
+		HTTP3:              http3,
 		ProxyProtocol:      govultr.BoolToBoolPtr(d.Get("proxy_protocol").(bool)),
 		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
 		FirewallRules:      fwrMap,
+		GlobalRegions:      globalRegionsList,
 	}
 
 	if d.Get("vpc") != "" {
@@ -372,6 +405,15 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 		"unhealthy_threshold": lb.HealthCheck.UnhealthyThreshold,
 		"healthy_threshold":   lb.HealthCheck.HealthyThreshold,
 	}
+	var httpVersion int
+	if lb.HTTP2 != nil && *lb.HTTP2 {
+		if lb.HTTP3 != nil && *lb.HTTP3 {
+			httpVersion = 3
+		} else {
+			httpVersion = 2
+		}
+	}
+
 	hc = append(hc, hcInfo)
 	if err := d.Set("auto_ssl_domain", lb.AutoSSL.Domain); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `auto_ssl_domain` read value: %v", err)
@@ -412,19 +454,41 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	if err := d.Set("ssl_redirect", lb.GenericInfo.SSLRedirect); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `ssl_redirect` read value: %v", err)
 	}
+	if err := d.Set("http_version", httpVersion); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `http_version` read value: %v", err)
+	}
 	if err := d.Set("vpc", lb.GenericInfo.VPC); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `vpc` read value: %v", err)
 	}
+	if err := d.Set("global_regions", lb.GlobalRegions); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `global_regions` read value: %v", err)
+	}
+
 	return nil
 }
 
 func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
+	var http2, http3 *bool
+	if httpVersionValue, httpVersionOk := d.GetOk("http_version"); httpVersionOk {
+		httpVersion := httpVersionValue.(int)
+		switch httpVersion {
+		case 2:
+			http2 = govultr.BoolToBoolPtr(true)
+			http3 = govultr.BoolToBoolPtr(false)
+		case 3:
+			http2 = govultr.BoolToBoolPtr(true)
+			http3 = govultr.BoolToBoolPtr(true)
+		}
+	}
+
 	req := &govultr.LoadBalancerReq{
 		Region:             d.Get("region").(string),
 		Label:              d.Get("label").(string),
 		SSLRedirect:        govultr.BoolToBoolPtr(d.Get("ssl_redirect").(bool)),
+		HTTP2:              http2,
+		HTTP3:              http3,
 		ProxyProtocol:      govultr.BoolToBoolPtr(d.Get("proxy_protocol").(bool)),
 		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
 	}
@@ -516,6 +580,18 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 
 	if d.HasChange("vpc") {
 		req.VPC = govultr.StringToStringPtr(d.Get("vpc").(string))
+	}
+
+	if d.HasChange("global_regions") {
+		_, newGlobalRegions := d.GetChange("global_regions")
+
+		var newGlobalRegionsList []string
+		regions := newGlobalRegions.(*schema.Set).List()
+		for i := range regions {
+			newGlobalRegionsList = append(newGlobalRegionsList, regions[i].(string))
+		}
+
+		req.GlobalRegions = newGlobalRegionsList
 	}
 
 	if err := client.LoadBalancer.Update(ctx, d.Id(), req); err != nil {

@@ -61,11 +61,6 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Optional: true,
 				ForceNew: true,
 			},
-			"snapshot_id": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-			},
 			"enable_ipv6": {
 				Type:     schema.TypeBool,
 				Optional: true,
@@ -115,6 +110,12 @@ func resourceVultrBareMetalServer() *schema.Resource {
 				Optional: true,
 			},
 			"image_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+				ForceNew: true,
+				Optional: true,
+			},
+			"snapshot_id": {
 				Type:     schema.TypeString,
 				Computed: true,
 				ForceNew: true,
@@ -390,6 +391,9 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 	if err := d.Set("image_id", bms.ImageID); err != nil {
 		return diag.Errorf("unable to set resource bare_metal_server `image_id` read value: %v", err)
 	}
+	if err := d.Set("snapshot_id", bms.SnapshotID); err != nil {
+		return diag.Errorf("unable to set resource bare_metal_server `snapshot_id` read value: %v", err)
+	}
 	if err := d.Set("v6_network", bms.V6Network); err != nil {
 		return diag.Errorf("unable to set resource bare_metal_server `v6_network` read value: %v", err)
 	}
@@ -409,7 +413,7 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 	}
 
 	// only one VPC ever allowed on bare metal server
-	var vpcID string = ""
+	var vpcID = ""
 	if len(vpcInfo) != 0 {
 		vpcID = vpcInfo[0].ID
 	}
@@ -466,9 +470,9 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 			return diag.Errorf("error retrieving vpc info for bare metal server update : %v", err)
 		}
 
-		var vpcCount int = len(vpcInfo)
-		var vpcUpdateRetries int = 10
-		var vpcUpdateDelayDuration time.Duration = 10 * time.Second
+		var vpcCount = len(vpcInfo)
+		var vpcUpdateRetries = 10
+		var vpcUpdateDelayDuration = 10 * time.Second
 		if vpcCount != 0 {
 			if err := client.BareMetalServer.DetachVPC(ctx, d.Id(), oldVPC.(string)); err != nil {
 				return diag.Errorf("error updating bare metal server vpc detachment : %v", err)

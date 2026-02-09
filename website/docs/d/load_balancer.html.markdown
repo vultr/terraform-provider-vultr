@@ -44,6 +44,7 @@ The following attributes are exported:
 * `proxy_protocol` - Boolean value that indicates if Proxy Protocol is enabled.
 * `cookie_name` - Name for your given sticky session.
 * `ssl_redirect` - Boolean value that indicates if HTTP calls will be redirected to HTTPS.
+* `http_version` - Integer value that indicates if HTTP/2 or HTTP/3 is enabled. Allowed values 2 or 3.
 * `has_ssl` - Boolean value that indicates if SSL is enabled.
 * `auto_ssl_domain` - The auto SSL domain configuration for a load balancer. This can be a root domain (example.com) or include a subdomain (sub.example.com).
 * `attached_instances` - Array of instances that are currently attached to the load balancer.
@@ -54,6 +55,7 @@ The following attributes are exported:
 * `forwarding_rules` - Defines the forwarding rules for a load balancer. The configuration of a `forwarding_rules` is listened below.
 * `private_network` - (Deprecated: use `vpc` instead) Defines the private network the load balancer is attached to.
 * `vpc` - Defines the VPCthe load balancer is attached to.
+* `global_regions` - A set of region IDs to deploy child load balancers to.
 
 `health_check` supports the following
 

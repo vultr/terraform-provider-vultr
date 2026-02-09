@@ -29,7 +29,7 @@ resource "vultr_block_storage" "my_blockstorage" {
 The following arguments are supported:
 
 * `size_gb` - (Required) The size of the given block storage.
-* `region` - (Required) Region in which this block storage will reside in. (Currently only NJ/NY supported region "ewr")
+* `region` - (Required) Region in which this block storage will reside in. Refer to the region data source to determine if the desired storage option is available or check the [API options](https://www.vultr.com/api/#tag/region/operation/list-regions).
 * `attached_to_instance` - (Optional) VPS ID that you want to have this block storage attached to.
 * `label` - (Optional) Label that is given to your block storage.
 * `block_type` - (Optional)  Determines on the type of block storage volume that will be created. Soon to become a required parameter. Options are `high_perf` or `storage_opt`.
@@ -43,7 +43,7 @@ The following attributes are exported:
 
 * `id` - The ID for this block storage.
 * `size_gb` - The size of the given block storage.
-* `region` - Region in which this block storage will reside in. (Currently only NJ/NY supported region "ewr")
+* `region` - Region in which this block storage will reside in. 
 * `attached_to_instance` - VPS ID that is attached to this block storage.
 * `label` - Label that is given to your block storage.
 * `cost` - The monthly cost of this block storage.

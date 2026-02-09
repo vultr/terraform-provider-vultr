@@ -87,6 +87,11 @@ func TestAccResourceVultrKubernetesNodePoolsUpdateAutoScaler(t *testing.T) {
 					resource.TestCheckResourceAttr(name, "auto_scaler", "true"),
 					resource.TestCheckResourceAttr(name, "min_nodes", "2"),
 					resource.TestCheckResourceAttr(name, "max_nodes", "4"),
+					resource.TestCheckResourceAttr(name, "labels.0.key", "test-label"),
+					resource.TestCheckResourceAttr(name, "labels.0.value", "test-label-value-upd"),
+					resource.TestCheckResourceAttr(name, "taints.0.key", "test-taint"),
+					resource.TestCheckResourceAttr(name, "taints.0.value", "test-taint-value-upd"),
+					resource.TestCheckResourceAttr(name, "taints.0.effect", "PreferNoSchedule"),
 				),
 			},
 			{
@@ -114,6 +119,17 @@ func testAccVultrKubernetesNodePoolsBase(label string) string {
 				plan = "vc2-2c-4gb"
     			label = "%s"
     			tag = "test23"
+
+				labels {
+					key = "test-label"
+					value = "test-label-value"
+				}
+
+				taints {
+					key = "test-taint"
+					value = "test-taint-value"
+					effect = "PreferNoSchedule"
+				}
 		}`, label)
 }
 
@@ -128,6 +144,17 @@ func testAccVultrKubernetesNodePoolsUpdate(label string) string {
 				auto_scaler = true
 				min_nodes = 2
 				max_nodes = 4
+
+				labels {
+					key = "test-label"
+					value = "test-label-value-upd"
+				}
+
+				taints {
+					key = "test-taint"
+					value = "test-taint-value-upd"
+					effect = "PreferNoSchedule"
+				}
 		}`, label)
 }
 
@@ -142,5 +169,16 @@ func testAccVultrKubernetesNodePoolsUpdateAutoScaler(label string) string {
 				auto_scaler = false
 				min_nodes = 3
 				max_nodes = 5
+
+				labels {
+					key = "test-label"
+					value = "test-label-value"
+				}
+
+				taints {
+					key = "test-taint"
+					value = "test-taint-value"
+					effect = "PreferNoSchedule"
+				}
 		}`, label)
 }

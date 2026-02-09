@@ -29,9 +29,15 @@ resource "vultr_kubernetes" "k8" {
 		auto_scaler   = true
 		min_nodes     = 1
 		max_nodes     = 2
-		labels = {
-			my-label = "a-label-on-all-nodes"
-			my-second-label = "another-label-on-all-nodes"
+
+		labels {
+			key = "my-label" 
+			value = "a-label-on-all-nodes"
+		}
+
+		labels {
+		    key = "my-second-label" 
+		    value = "another-label-on-all-nodes"
 		}
 
 		taints {
@@ -39,33 +45,15 @@ resource "vultr_kubernetes" "k8" {
 			value = "is-tainted"
 			effect = "NoExecute"
 		}
+
+		taints {
+			key = "another-taint"
+			value = "is-tainted"
+			effect = "NoSchedule"
+		}
 	}
 }
 ```
-
-A default node pool is required when first creating the resource but it can be removed at a later point so long as there is a separate `vultr_kubernetes_node_pools` resource attached. For example:
-
-```hcl
-resource "vultr_kubernetes" "k8" {
-	region  = "ewr"
-	label   = "vke-test"
-	version = "v1.28.2+1"
-} 
-
-# This resource must be created and attached to the cluster
-# before removing the default node from the vultr_kubernetes resource
-resource "vultr_kubernetes_node_pools" "np" {
-	cluster_id    = vultr_kubernetes.k8.id
-	node_quantity = 1
-	plan          = "vc2-1c-2gb"
-	label         = "vke-nodepool"
-	auto_scaler   = true
-	min_nodes     = 1
-	max_nodes     = 2
-}
-```
-
-There is still a requirement that there be one node pool attached to the cluster but this should allow more flexibility about which node pool that is.
 
 ## Argument Reference
 
@@ -73,21 +61,31 @@ The follow arguments are supported:
 
 * `region` - (Required) The region your VKE cluster will be deployed in.
 * `version` - (Required) The version your VKE cluster you want deployed. [See Available Version](https://www.vultr.com/api/#operation/get-kubernetes-versions)
-* `label` - (Optional) The VKE clusters label.
+* `label` - (Required) The label for the cluster.
 * `ha_controlplanes` - (Optional, Default to False) Boolean indicating if the cluster should be created with multiple, highly available controlplanes.
 * `enable_firewall` - (Optional, Default to False) Boolean indicating if the cluster should be created with a managed firewall.
 * `vpc_id` - (Optional) The ID of the VPC to use when creating the cluster. If not provided a new VPC will be created instead.
 
-`node_pools` (Optional) **NOTE** There must be 1 node pool when the kubernetes resource is first created (see explanation above). It supports the following fields
+`node_pools` (Required) Defines the default node pool for a cluster using these fields:
 
 * `node_quantity` - (Required) The number of nodes in this node pool.
-* `plan` - (Required) The plan to be used in this node pool. [See Plans List](https://www.vultr.com/api/#operation/list-plans) Note the minimum plan requirements must have at least 1 core and 2 gbs of memory.
+* `plan` - (Required) The plan to be used in this node pool. [See plans list](https://www.vultr.com/api/#operation/list-plans) Note the minimum plan requirements must have at least 1 core and 2 gbs of memory.
 * `label` - (Required) The label to be used as a prefix for nodes in this node pool.
-* `auto_scaler` - (Optional) Enable the auto scaler for the default node pool.
-* `min_nodes` - (Optional) The minimum number of nodes to use with the auto scaler.
-* `max_nodes` - (Optional) The maximum number of nodes to use with the auto scaler.
-* `labels` - (Optional) A map of key/value pairs for Kubernetes node labels.
-* `taints` - (Optional) Taints to apply to the nodes in the node pool. Should contain `key`, `value` and `effect`.  The `effect` should be one of `NoSchedule`, `PreferNoSchedule` or `NoExecute`.
+* `auto_scaler` - (Optional, Default to False) Enable the auto scaler for the default node pool.
+* `min_nodes` - (Optional, Default to 1) The minimum number of nodes to use with the auto scaler.
+* `max_nodes` - (Optional, Default to 1) The maximum number of nodes to use with the auto scaler.
+* `user_data` - (Optional) A base64 encoded string containing the user data to apply to nodes in the node pool.
+
+`labels` - (Optional) A list of labels to apply to the nodes in the node pool with these fields:
+
+* `key` - (Required) The key definining the label for kubernetes.
+* `value` - (Required) The value of the label for kubernetes.
+
+`taints` - (Optional) A list of taints to apply to the nodes in the node pool with these fields: 
+
+* `key` - (Required) The key definining the taint for kubernetes.
+* `value` - (Required) The value of the taint for kubernetes.
+* `effect` - (Required) The effect of the taint for kubernetes.  Must be one of `NoSchedule`, `PreferNoSchedule` or `NoExecute`.
 
 ## Attributes Reference
 
@@ -112,25 +110,37 @@ The following attributes are exported:
 
 `node_pools`
 
-* `date_created` - Date of node pool creation.
-* `date_updated` - Date of node pool updates.
+* `id` - The ID of the node pool.
 * `label` - Label of node pool.
-* `node_quantity` - Number of nodes within node pool.
 * `plan` - Node plan that nodes are using within this node pool.
-* `status` - Status of node pool.
-* `tag` - Tag for node pool.
-* `nodes` - Array that contains information about nodes within this node pool.
+* `tag` - The default tag that is assigned to the default node pool.
+* `node_quantity` - Number of nodes within node pool.
 * `auto_scaler` - Boolean indicating if the auto scaler for the default node pool is active.
 * `min_nodes` - The minimum number of nodes used by the auto scaler.
 * `max_nodes` - The maximum number of nodes used by the auto scaler.
-* `labels` - Key/value pairs for Kubernetes node labels.
-* `taints` - Taints which should be applied to the nodes by Kubernetes. Made up of `key`, `value` and `effect`.
+* `user_data` - The base64 encoded user data for nodes in the node pool.
+* `status` - Status of node pool.
+* `tag` - Tag for node pool.
+* `date_created` - Date of node pool creation.
+* `date_updated` - Date of node pool updates.
 
+`labels` - A list of labels applied to the nodes in the node pool with these fields:
 
-`nodes`
+* `id` - The ID of the label.
+* `key` - The key definining the label for kubernetes.
+* `value` - The value of the label for kubernetes.
 
-* `date_created` - Date node was created.
+`taints` - A list of taints to apply to the nodes in the node pool with these fields: 
+
+* `id` - The ID of the taint.
+* `key` - The key definining the taint for kubernetes.
+* `value` - The value of the taint for kubernetes.
+* `effect` - The effect of the taint for kubernetes. 
+
+`nodes` - Array that contains information about nodes within this node pool.
+
 * `id` - ID of node.
+* `date_created` - Date node was created.
 * `label` - Label of node.
 * `status` - Status of node.
 
@@ -139,7 +149,9 @@ The following attributes are exported:
 A kubernetes cluster created outside of terraform can be imported into the
 terraform state using the UUID.  One thing to note is that all kubernetes
 resources have a default node pool with a tag of `tf-vke-default`. In order to
-avoid errors, ensure that there is a node pool with that tag set.
+avoid errors, ensure that there is a node pool with that tag set that the node
+pool matches the configuration in the `node_pools` block of the kubernetes
+resource.
 
 ```sh
 terraform import vultr_kubernetes.my-k8s 7365a98b-5a43-450f-bd27-d768827100e5
