@@ -54,6 +54,7 @@ The follow arguments are supported:
 * `attached_instances` - (Optional) Array of instances that are currently attached to the load balancer.
 * `health_check` - (Optional) A block that defines the way load balancers should check for health. The configuration of a `health_check` is listed below.
 * `ssl` - (Optional) A block that supplies your ssl configuration to be used with HTTPS. The configuration of a `ssl` is listed below.
+* `auto_ssl_domain` - (Optional) The auto SSL domain configuration for a load balancer. This can be a root domain (example.com) or include a subdomain (sub.example.com).
 * `private_network` (Optional) (Deprecated: use `vpc` instead) A private network ID that the load balancer should be attached to.
 * `vpc` (Optional)- A VPC ID that the load balancer should be attached to.
 * `global_regions` - A set of region IDs to deploy child load balancers to.
@@ -98,6 +99,7 @@ The following attributes are exported:
 * `ssl_redirect` - Boolean value that indicates if HTTP calls will be redirected to HTTPS.
 * `http_version` - Integer value that indicates if HTTP/2 or HTTP/3 is enabled.
 * `has_ssl` - Boolean value that indicates if SSL is enabled.
+* `auto_ssl_domain` - The auto SSL domain configuration for a load balancer.
 * `attached_instances` - Array of instances that are currently attached to the load balancer.
 * `status` - Current status for the load balancer
 * `ipv4` - IPv4 address for your load balancer.

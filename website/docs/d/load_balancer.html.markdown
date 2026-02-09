@@ -46,6 +46,7 @@ The following attributes are exported:
 * `ssl_redirect` - Boolean value that indicates if HTTP calls will be redirected to HTTPS.
 * `http_version` - Integer value that indicates if HTTP/2 or HTTP/3 is enabled. Allowed values 2 or 3.
 * `has_ssl` - Boolean value that indicates if SSL is enabled.
+* `auto_ssl_domain` - The auto SSL domain configuration for a load balancer. This can be a root domain (example.com) or include a subdomain (sub.example.com).
 * `attached_instances` - Array of instances that are currently attached to the load balancer.
 * `status` - Current status for the load balancer
 * `ipv4` - IPv4 address for your load balancer.
@@ -77,3 +78,4 @@ The following attributes are exported:
 * `frontend_port` - (Required) Port on load balancer side.
 * `ip_type` - (Required) The type of ip this rule is - may be either v4 or v6.
 * `source` - (Required) IP address with subnet that is allowed through the firewall. You may also pass in `cloudflare` which will allow only CloudFlares IP range.
+
