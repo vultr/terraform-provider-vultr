@@ -54,6 +54,10 @@ The following attributes are exported:
 * `cluster_ca_certificate` - The base64 encoded public certificate for the cluster's certificate authority.
 * `client_key` - The base64 encoded private key used by clients to access the cluster.
 * `client_certificate` - The base64 encoded public certificate used by clients to access the cluster.
+* `oidc_issuer_url` - The URL of the OIDC provider that issues authentication tokens.
+* `oidc_client_id` - The unique identifier assigned to your application by the OIDC provider.
+* `oidc_username_claim` - The claim in the OIDC token that identifies the end user's username.
+* `oidc_groups_claim` - The claim in the OIDC token that contains the user's group memberships.
 * `node_pools` - Contains the default node pool that was deployed.
 
 `node_pools`

@@ -201,6 +201,22 @@ func dataSourceVultrKubernetes() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"oidc_issuer_url": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"oidc_client_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"oidc_username_claim": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"oidc_groups_claim": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 		},
 	}
 }
@@ -302,6 +318,18 @@ func dataSourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, 
 	}
 	if err := d.Set("client_certificate", cert); err != nil {
 		return diag.Errorf("unable to set kubernetes `client_certificate` read value: %v", err)
+	}
+	if err := d.Set("oidc_issuer_url", k8List[0].OIDCConfig.IssuerURL); err != nil {
+		return diag.Errorf("unable to set kubernetes `oidc_issuer_url` read value: %v", err)
+	}
+	if err := d.Set("oidc_client_id", k8List[0].OIDCConfig.ClientID); err != nil {
+		return diag.Errorf("unable to set kubernetes `oidc_client_id` read value: %v", err)
+	}
+	if err := d.Set("oidc_username_claim", k8List[0].OIDCConfig.UserNameClaim); err != nil {
+		return diag.Errorf("unable to set kubernetes `oidc_username_claim` read value: %v", err)
+	}
+	if err := d.Set("oidc_groups_claim", k8List[0].OIDCConfig.GroupsClaim); err != nil {
+		return diag.Errorf("unable to set kubernetes `oidc_groups_claim` read value: %v", err)
 	}
 	if err := d.Set("client_key", key); err != nil {
 		return diag.Errorf("unable to set kubernetes `client_key` read value: %v", err)

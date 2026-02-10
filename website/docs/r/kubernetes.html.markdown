@@ -65,6 +65,10 @@ The follow arguments are supported:
 * `ha_controlplanes` - (Optional, Default to False) Boolean indicating if the cluster should be created with multiple, highly available controlplanes.
 * `enable_firewall` - (Optional, Default to False) Boolean indicating if the cluster should be created with a managed firewall.
 * `vpc_id` - (Optional) The ID of the VPC to use when creating the cluster. If not provided a new VPC will be created instead.
+* `oidc_issuer_url` - (Optional) The URL of the OIDC provider that issues authentication tokens.
+* `oidc_client_id` - (Optional) The unique identifier assigned to your application by the OIDC provider.
+* `oidc_username_claim` - (Optional) The claim in the OIDC token that identifies the end user's username.
+* `oidc_groups_claim` - (Optional) The claim in the OIDC token that contains the user's group memberships.
 
 `node_pools` (Required) Defines the default node pool for a cluster using these fields:
 
@@ -106,6 +110,10 @@ The following attributes are exported:
 * `cluster_ca_certificate` - The base64 encoded public certificate for the cluster's certificate authority.
 * `client_key` - The base64 encoded private key used by clients to access the cluster.
 * `client_certificate` - The base64 encoded public certificate used by clients to access the cluster.
+* `oidc_issuer_url` - The URL of the OIDC provider that issues authentication tokens.
+* `oidc_client_id` - The unique identifier assigned to your application by the OIDC provider.
+* `oidc_username_claim` - The claim in the OIDC token that identifies the end user's username.
+* `oidc_groups_claim` - The claim in the OIDC token that contains the user's group memberships.
 * `node_pools` - Contains the default node pool that was deployed.
 
 `node_pools`
