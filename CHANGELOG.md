@@ -1,4 +1,9 @@
 # Changelog
+## [v2.29.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.29.0...v2.29.1) (2026-02-10)
+### Enhancements
+* resource/kubernetes: Add OIDC fields [PR 684](https://github.com/vultr/terraform-provider-vultr/pull/684)
+* data source/kubernetes: Add OIDC fields [PR 684](https://github.com/vultr/terraform-provider-vultr/pull/684)
+
 ## [v2.29.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.28.1...v2.29.0) (2026-02-09)
 ### Enhancements
 * resource/vpc: Add NAT gateways [PR 678](https://github.com/vultr/terraform-provider-vultr/pull/678)
