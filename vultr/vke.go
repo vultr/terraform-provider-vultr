@@ -35,9 +35,31 @@ type KubeConfig struct {
 func resourceVultrKubernetesV1() map[string]*schema.Schema {
 	schemaV0 := resourceVultrKubernetesV0().Schema
 	schemaV1 := map[string]*schema.Schema{}
+
 	maps.Copy(schemaV1, schemaV0)
 
 	schemaV1["node_pools"].Elem.(*schema.Resource).Schema = resourceVultrKubernetesNodePoolsV1(false)
+
+	oidc := map[string]*schema.Schema{
+		"oidc_issuer_url": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
+		"oidc_client_id": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
+		"oidc_username_claim": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
+		"oidc_groups_claim": {
+			Type:     schema.TypeString,
+			Optional: true,
+		},
+	}
+
+	maps.Copy(schemaV1, oidc)
 
 	return schemaV1
 }

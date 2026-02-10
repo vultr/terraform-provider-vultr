@@ -534,6 +534,9 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 	if err := d.Set("hostname", instance.Hostname); err != nil {
 		return diag.Errorf("unable to set resource instance `hostname` read value: %v", err)
 	}
+	if err := d.Set("label", instance.Label); err != nil {
+		return diag.Errorf("unable to set resource instance `label` read value: %v", err)
+	}
 	if err := d.Set("user_scheme", instance.UserScheme); err != nil {
 		return diag.Errorf("unable to set resource instance `user_scheme` read value: %v", err)
 	}

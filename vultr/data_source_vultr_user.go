@@ -30,6 +30,10 @@ func dataSourceVultrUser() *schema.Resource {
 				Elem:     &schema.Schema{Type: schema.TypeString},
 				Computed: true,
 			},
+			"service_user": {
+				Type:     schema.TypeBool,
+				Computed: true,
+			},
 			"groups": {
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
@@ -38,10 +42,6 @@ func dataSourceVultrUser() *schema.Resource {
 			"roles": {
 				Type:     schema.TypeSet,
 				Elem:     &schema.Schema{Type: schema.TypeString},
-				Computed: true,
-			},
-			"service_user": {
-				Type:     schema.TypeBool,
 				Computed: true,
 			},
 		},

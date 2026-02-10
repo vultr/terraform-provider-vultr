@@ -58,35 +58,54 @@ The follow arguments are supported:
 
 * `cluster_id` - (Required) The VKE cluster ID you want to attach this nodepool to.
 * `node_quantity` - (Required) The number of nodes in this node pool.
-* `plan` - (Required) The plan to be used in this node pool. [See Plans List](https://www.vultr.com/api/#operation/list-plans) Note the minimum plan requirements must have at least 1 core and 2 gbs of memory.
+* `plan` - (Required) The plan to be used in this node pool. [See plans list](https://www.vultr.com/api/#operation/list-plans) Note the minimum plan requirements must have at least 1 core and 2 gbs of memory.
 * `label` - (Required) The label to be used as a prefix for nodes in this node pool.
 * `tag` - (Optional) A tag that is assigned to this node pool.
-* `auto_scaler` - (Optional) Enable the auto scaler for the default node pool.
-* `min_nodes` - (Optional) The minimum number of nodes to use with the auto scaler.
-* `max_nodes` - (Optional) The maximum number of nodes to use with the auto scaler.
-* `labels` - (Optional) A list of labels to apply to the nodes in the node pool. Should contain `key` and `value`.
-* `taints` - (Optional) A list of taints to apply to the nodes in the node pool. Should contain `key`, `value` and `effect`.  The `effect` should be one of `NoSchedule`, `PreferNoSchedule` or `NoExecute`.
+* `auto_scaler` - (Optional, Default to False) Enable the auto scaler for the default node pool.
+* `min_nodes` - (Optional, Default to 1) The minimum number of nodes to use with the auto scaler.
+* `max_nodes` - (Optional, Default to 1) The maximum number of nodes to use with the auto scaler.
 * `user_data` - (Optional) A base64 encoded string containing the user data to apply to nodes in the node pool.
+
+`labels` - (Optional) A list of labels to apply to the nodes in the node pool with these fields:
+
+* `key` - (Required) The key definining the label for kubernetes.
+* `value` - (Required) The value of the label for kubernetes.
+
+`taints` - (Optional) A list of taints to apply to the nodes in the node pool with these fields: 
+
+* `key` - (Required) The key definining the taint for kubernetes.
+* `value` - (Required) The value of the taint for kubernetes.
+* `effect` - (Required) The effect of the taint for kubernetes.  Must be one of `NoSchedule`, `PreferNoSchedule` or `NoExecute`.
 
 ## Attributes Reference
 
 The following attributes are exported:
 * `id` - The Nodepool ID.
+* `status` - Status of node pool.
 * `cluster_id` - The VKE cluster ID.
 * `date_created` - Date of node pool creation.
 * `date_updated` - Date of node pool updates.
 * `label` - Label of node pool.
-* `node_quantity` - Number of nodes within node pool.
 * `plan` - Node plan that nodes are using within this node pool.
-* `status` - Status of node pool.
 * `tag` - Tag for node pool.
-* `nodes` - Array that contains information about nodes within this node pool.
+* `node_quantity` - Number of nodes within node pool.
 * `auto_scaler` - Boolean indicating if the  auto scaler for the default node pool is active.
 * `min_nodes` - The minimum number of nodes used by the auto scaler.
 * `max_nodes` - The maximum number of nodes used by the auto scaler.
-* `labels` - A list of labels applied to the node pool. Contains `key`, `value` and `id`.
-* `taints` - A list of taints applied to the node pool. Contains `key`, `value`, `effect` and `id`.
 * `user_data` - A base64 encoded string containing the user data in use by all nodes in the node pool.
+
+`labels` - A list of labels applied to the nodes in the node pool with these fields:
+
+* `id` - The ID of the label.
+* `key` - The key definining the label for kubernetes.
+* `value` - The value of the label for kubernetes.
+
+`taints` - A list of taints to apply to the nodes in the node pool with these fields: 
+
+* `id` - The ID of the taint.
+* `key` - The key definining the taint for kubernetes.
+* `value` - The value of the taint for kubernetes.
+* `effect` - The effect of the taint for kubernetes. 
 
 `nodes`
 

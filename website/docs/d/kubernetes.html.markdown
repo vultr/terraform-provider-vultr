@@ -54,6 +54,10 @@ The following attributes are exported:
 * `cluster_ca_certificate` - The base64 encoded public certificate for the cluster's certificate authority.
 * `client_key` - The base64 encoded private key used by clients to access the cluster.
 * `client_certificate` - The base64 encoded public certificate used by clients to access the cluster.
+* `oidc_issuer_url` - The URL of the OIDC provider that issues authentication tokens.
+* `oidc_client_id` - The unique identifier assigned to your application by the OIDC provider.
+* `oidc_username_claim` - The claim in the OIDC token that identifies the end user's username.
+* `oidc_groups_claim` - The claim in the OIDC token that contains the user's group memberships.
 * `node_pools` - Contains the default node pool that was deployed.
 
 `node_pools`
@@ -69,9 +73,20 @@ The following attributes are exported:
 * `auto_scaler` - Boolean indicating if the auto scaler for the default node pool is active.
 * `min_nodes` - The minimum number of nodes used by the auto scaler.
 * `max_nodes` - The maximum number of nodes used by the auto scaler.
-* `labels` - Kubernetes node labels applied to the node pool.
-* `taints` - Kubernetes node taints applied to the node pool.
 * `user_data` - The base64 encoded string containing the user data applied to nodes in the node pool.
+
+`labels` - A list of labels applied to the nodes in the node pool with these fields:
+
+* `id` - The ID of the label.
+* `key` - The key definining the label for kubernetes.
+* `value` - The value of the label for kubernetes.
+
+`taints` - A list of taints to apply to the nodes in the node pool with these fields: 
+
+* `id` - The ID of the taint.
+* `key` - The key definining the taint for kubernetes.
+* `value` - The value of the taint for kubernetes.
+* `effect` - The effect of the taint for kubernetes. 
 
 `nodes`
 

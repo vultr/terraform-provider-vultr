@@ -55,6 +55,10 @@ func dataSourceVultrLoadBalancer() *schema.Resource {
 				Type:     schema.TypeBool,
 				Computed: true,
 			},
+			"http_version": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
 			"attached_instances": {
 				Type:     schema.TypeList,
 				Computed: true,
@@ -81,6 +85,15 @@ func dataSourceVultrLoadBalancer() *schema.Resource {
 				Type:     schema.TypeList,
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeMap},
+			},
+			"auto_ssl_domain": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"global_regions": {
+				Type:     schema.TypeSet,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
 		},
 	}
@@ -143,6 +156,9 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	if err := d.Set("ssl_redirect", lbList[0].GenericInfo.SSLRedirect); err != nil {
 		return diag.Errorf("unable to set load_balancer `ssl_redirect` read value: %v", err)
 	}
+	if err := d.Set("auto_ssl_domain", lbList[0].AutoSSL.Domain); err != nil {
+		return diag.Errorf("unable to set load_balancer `auto_ssl_domain` read value: %v", err)
+	}
 	if err := d.Set("proxy_protocol", lbList[0].GenericInfo.ProxyProtocol); err != nil {
 		return diag.Errorf("unable to set load_balancer `proxy_protocol` read value: %v", err)
 	}
@@ -166,6 +182,22 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	}
 	if err := d.Set("ipv6", lbList[0].IPV6); err != nil {
 		return diag.Errorf("unable to set load_balancer `ipv6` read value: %v", err)
+	}
+	if err := d.Set("global_regions", lbList[0].GlobalRegions); err != nil {
+		return diag.Errorf("unable to set load_balancer `global_regions` read value: %v", err)
+	}
+
+	var httpVersion int
+	if lbList[0].HTTP2 != nil && *lbList[0].HTTP2 {
+		if lbList[0].HTTP3 != nil && *lbList[0].HTTP3 {
+			httpVersion = 3
+		} else {
+			httpVersion = 2
+		}
+
+		if err := d.Set("http_version", httpVersion); err != nil {
+			return diag.Errorf("unable to set load_balancer http_version read value: %v", err)
+		}
 	}
 
 	var rulesList []map[string]interface{}
@@ -212,6 +244,5 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	if err := d.Set("firewall_rules", fwrRules); err != nil {
 		return diag.Errorf("unable to set load_balancer `firewall_rules` read value: %v", err)
 	}
-
 	return nil
 }

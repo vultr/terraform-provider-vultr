@@ -88,6 +88,15 @@ func resourceVultrKubernetesCreate(ctx context.Context, d *schema.ResourceData, 
 		NodePools:       nodePoolReq,
 	}
 
+	if oidcURL, ok := d.GetOk("oidc_issuer_url"); ok {
+		req.OIDCConfig = &govultr.ClusterOIDCConfig{
+			IssuerURL:     oidcURL.(string),
+			ClientID:      d.Get("oidc_client_id").(string),
+			UserNameClaim: d.Get("oidc_username_claim").(string),
+			GroupsClaim:   d.Get("oidc_groups_claim").(string),
+		}
+	}
+
 	cluster, _, err := client.Kubernetes.CreateCluster(ctx, req)
 	if err != nil {
 		return diag.Errorf("error creating kubernetes cluster: %v", err)
@@ -284,6 +293,18 @@ You must set the default tag on one node pool before importing.`,
 	if err := d.Set("firewall_group_id", vke.FirewallGroupID); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `firewall_group_id` read value: %v", err)
 	}
+	if err := d.Set("oidc_issuer_url", vke.OIDCConfig.IssuerURL); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `oidc_issuer_url` read value: %v", err)
+	}
+	if err := d.Set("oidc_client_id", vke.OIDCConfig.ClientID); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `oidc_client_id` read value: %v", err)
+	}
+	if err := d.Set("oidc_username_claim", vke.OIDCConfig.UserNameClaim); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `oidc_username_claim` read value: %v", err)
+	}
+	if err := d.Set("oidc_groups_claim", vke.OIDCConfig.GroupsClaim); err != nil {
+		return diag.Errorf("unable to set resource kubernetes `oidc_groups_claim` read value: %v", err)
+	}
 
 	return nil
 }
@@ -291,13 +312,20 @@ You must set the default tag on one node pool before importing.`,
 func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	if d.HasChange("label") {
-		req := &govultr.ClusterReqUpdate{}
-		req.Label = d.Get("label").(string)
+	req := &govultr.ClusterReqUpdate{}
+	req.Label = d.Get("label").(string) // label is required on all updates
 
-		if err := client.Kubernetes.UpdateCluster(ctx, d.Id(), req); err != nil {
-			return diag.Errorf("error updating vke cluster (%v): %v", d.Id(), err)
+	if d.HasChanges("oidc_issuer_url", "oidc_client_id", "oidc_username_claim", "oidc_groups_claim") {
+		req.OIDCConfig = &govultr.ClusterOIDCConfig{
+			IssuerURL:     d.Get("oidc_issuer_url").(string),
+			ClientID:      d.Get("oidc_client_id").(string),
+			UserNameClaim: d.Get("oidc_username_claim").(string),
+			GroupsClaim:   d.Get("oidc_groups_claim").(string),
 		}
+	}
+
+	if err := client.Kubernetes.UpdateCluster(ctx, d.Id(), req); err != nil {
+		return diag.Errorf("error updating vke cluster (%v): %v", d.Id(), err)
 	}
 
 	if d.HasChange("node_pools") {
