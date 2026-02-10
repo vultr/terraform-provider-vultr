@@ -5,7 +5,7 @@ go 1.24.0
 require (
 	github.com/hashicorp/terraform-plugin-log v0.10.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.38.2
-	github.com/vultr/govultr/v3 v3.24.1-0.20260123205913-e1643994edf7
+	github.com/vultr/govultr/v3 v3.24.1-0.20260209233550-fc318ad034f0
 	golang.org/x/oauth2 v0.35.0
 )
 
