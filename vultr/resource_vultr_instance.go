@@ -281,8 +281,9 @@ hostname on UI or API issues a reinstall of the OS.`,
 				Computed: true,
 			},
 			"kvm": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:      schema.TypeString,
+				Computed:  true,
+				Sensitive: true,
 			},
 			"features": {
 				Type:     schema.TypeList,
