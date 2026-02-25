@@ -36,6 +36,16 @@ func resourceVultrOIDCIssuer() *schema.Resource {
 				ForceNew: true,
 				Optional: true,
 			},
+			"kty": {
+				Type:     schema.TypeString,
+				ForceNew: true,
+				Optional: true,
+			},
+			"kid": {
+				Type:     schema.TypeString,
+				ForceNew: true,
+				Optional: true,
+			},
 			"n": {
 				Type:     schema.TypeString,
 				ForceNew: true,
