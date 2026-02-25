@@ -45,7 +45,7 @@ func dataSourceVultrOIDCDiscovery() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
-			"id_token_values_supported": {
+			"id_token_signing_values_supported": {
 				Type:     schema.TypeList,
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
