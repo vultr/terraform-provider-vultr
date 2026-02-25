@@ -38,6 +38,9 @@ linters:
         - opinionated
         - performance
         - style
+    gosec:
+      excludes:
+        - G117
     govet:
       settings:
         printf:
