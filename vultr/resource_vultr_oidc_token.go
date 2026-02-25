@@ -27,9 +27,10 @@ func resourceVultrOIDCToken() *schema.Resource {
 				ForceNew: true,
 			},
 			"client_secret": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:      schema.TypeString,
+				Required:  true,
+				ForceNew:  true,
+				Sensitive: true,
 			},
 			"code": {
 				Type:     schema.TypeString,
