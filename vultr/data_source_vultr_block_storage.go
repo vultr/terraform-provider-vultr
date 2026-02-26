@@ -21,6 +21,10 @@ func dataSourceVultrBlockStorage() *schema.Resource {
 				Type:     schema.TypeInt,
 				Computed: true,
 			},
+			"pending_charges": {
+				Type:     schema.TypeFloat,
+				Computed: true,
+			},
 			"status": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -37,6 +41,14 @@ func dataSourceVultrBlockStorage() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"attached_to_instance_ip": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"attached_to_instance_label": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
 			"label": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -47,6 +59,18 @@ func dataSourceVultrBlockStorage() *schema.Resource {
 			},
 			"block_type": {
 				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"os_id": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
+			"snapshot_id": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"bootable": {
+				Type:     schema.TypeBool,
 				Computed: true,
 			},
 		},
@@ -105,6 +129,9 @@ func dataSourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData
 	if err := d.Set("cost", blockList[0].Cost); err != nil {
 		return diag.Errorf("unable to set block_storage `cost` read value: %v", err)
 	}
+	if err := d.Set("pending_charges", blockList[0].PendingCharges); err != nil {
+		return diag.Errorf("unable to set block_storage `pending_charges` read value: %v", err)
+	}
 	if err := d.Set("status", blockList[0].Status); err != nil {
 		return diag.Errorf("unable to set block_storage `status` read value: %v", err)
 	}
@@ -117,6 +144,12 @@ func dataSourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData
 	if err := d.Set("attached_to_instance", blockList[0].AttachedToInstance); err != nil {
 		return diag.Errorf("unable to set block_storage `attached_to_instance` read value: %v", err)
 	}
+	if err := d.Set("attached_to_instance_ip", blockList[0].AttachedToInstanceIP); err != nil {
+		return diag.Errorf("unable to set block_storage `attached_to_instance_ip` read value: %v", err)
+	}
+	if err := d.Set("attached_to_instance_label", blockList[0].AttachedToInstanceLabel); err != nil {
+		return diag.Errorf("unable to set block_storage `attached_to_instance_label` read value: %v", err)
+	}
 	if err := d.Set("label", blockList[0].Label); err != nil {
 		return diag.Errorf("unable to set block_storage `label` read value: %v", err)
 	}
@@ -125,6 +158,15 @@ func dataSourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData
 	}
 	if err := d.Set("block_type", blockList[0].BlockType); err != nil {
 		return diag.Errorf("unable to set block_storage `block_type` read value: %v", err)
+	}
+	if err := d.Set("os_id", blockList[0].OSID); err != nil {
+		return diag.Errorf("unable to set block_storage `os_id` read value: %v", err)
+	}
+	if err := d.Set("snapshot_id", blockList[0].SnapshotID); err != nil {
+		return diag.Errorf("unable to set block_storage `snapshot_id` read value: %v", err)
+	}
+	if err := d.Set("bootable", blockList[0].Bootable); err != nil {
+		return diag.Errorf("unable to set block_storage `bootable` read value: %v", err)
 	}
 	return nil
 }
