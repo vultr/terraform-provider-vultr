@@ -1,4 +1,29 @@
 # Changelog
+## [v2.30.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.29.1...v2.30.0) (2026-02-26)
+### Enhancements
+* resource/instance: Mark KVM URLs fields as sensitive [PR 690](https://github.com/vultr/terraform-provider-vultr/pull/690)
+* data source/instance: Mark KVM URLs fields as sensitive [PR 690](https://github.com/vultr/terraform-provider-vultr/pull/690)
+* data source/block_storage: Add OS, attached and other bootable instance-related fields [PR 696](https://github.com/vultr/terraform-provider-vultr/pull/696)
+* resource/block_storage: Add OS, attached and other bootable instance-related fields [PR 696](https://github.com/vultr/terraform-provider-vultr/pull/696)
+* data source/block_storage: Add pending charges field [PR 696](https://github.com/vultr/terraform-provider-vultr/pull/696)
+* resource/block_storage: Add pending charges field [PR 696](https://github.com/vultr/terraform-provider-vultr/pull/696)
+* resource/instance: Add attable block devices [PR 696](https://github.com/vultr/terraform-provider-vultr/pull/696)
+* resource/database: Add pending charges field [PR 696](https://github.com/vultr/terraform-provider-vultr/pull/696)
+* data source/database: Add pending charges field [PR 696](https://github.com/vultr/terraform-provider-vultr/pull/696)
+* resource/region: Add connectivity field [PR 696](https://github.com/vultr/terraform-provider-vultr/pull/696)
+* data source/region: Add connectivity field [PR 696](https://github.com/vultr/terraform-provider-vultr/pull/696)
+
+### Dependencies
+* Update govultr from v3.27.0 to v3.28.0 [PR 694](https://github.com/vultr/terraform-provider-vultr/pull/694)
+* Update govultr from v3.28.0 to v3.28.1 [PR 695](https://github.com/vultr/terraform-provider-vultr/pull/695)
+* Bump github.com/cloudflare/circl from 1.6.1 to 1.6.3 [PR 691](https://github.com/vultr/terraform-provider-vultr/pull/691)
+
+### Automation
+* Ignore gosec G117 [PR 693](https://github.com/vultr/terraform-provider-vultr/pull/693)
+
+### New Contributors
+* @glitchedmob made their first contribution in [PR 690](https://github.com/vultr/terraform-provider-vultr/pull/690)
+
 ## [v2.29.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.29.0...v2.29.1) (2026-02-10)
 ### Enhancements
 * resource/kubernetes: Add OIDC fields [PR 684](https://github.com/vultr/terraform-provider-vultr/pull/684)
