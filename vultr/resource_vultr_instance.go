@@ -210,6 +210,31 @@ hostname on UI or API issues a reinstall of the OS.`,
 				ForceNew: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
+			"block_devices": {
+				Type:     schema.TypeList,
+				Optional: true,
+				ForceNew: true,
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"block_id": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+						"bootable": {
+							Type:     schema.TypeBool,
+							Optional: true,
+						},
+						"disk_size": {
+							Type:     schema.TypeInt,
+							Optional: true,
+						},
+						"label": {
+							Type:     schema.TypeString,
+							Optional: true,
+						},
+					},
+				},
+			},
 			// Computed
 			"os": {
 				Type:     schema.TypeString,
@@ -348,6 +373,21 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		req.AppVariables = appVariablesMap
 	}
 
+	if blockDevicesInput, blockDevicesOK := d.GetOk("block_devices"); blockDevicesOK {
+		var blockDevices []govultr.InstanceBlockDevice
+		for _, v := range blockDevicesInput.([]interface{}) {
+			blockDeviceMap := v.(map[string]interface{})
+			blockDevices = append(blockDevices, govultr.InstanceBlockDevice{
+				BlockID:  blockDeviceMap["block_id"].(string),
+				Bootable: blockDeviceMap["bootable"].(bool),
+				DiskSize: blockDeviceMap["disk_size"].(int),
+				Label:    blockDeviceMap["label"].(string),
+			})
+		}
+
+		req.BlockDevices = blockDevices
+	}
+
 	// If no osOptions where selected and osID has a real value then set the osOptions to osID
 	if osOption == "" && osID.(int) != 0 {
 		osOption = "os_id"
@@ -408,6 +448,10 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 
 		if strings.Contains(err.Error(), "Floating IPv4 address is already attached to another server") {
 			return retry.RetryableError(fmt.Errorf("cannot create instance with reserved IP: %s", err.Error()))
+		}
+
+		if strings.Contains(err.Error(), "Block storage is already attached to another server") {
+			return retry.RetryableError(fmt.Errorf("cannot create instance with block storage: %s", err.Error()))
 		}
 
 		return retry.NonRetryableError(err)

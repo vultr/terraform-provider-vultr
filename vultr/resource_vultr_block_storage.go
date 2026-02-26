@@ -39,6 +39,7 @@ func resourceVultrBlockStorage() *schema.Resource {
 			"attached_to_instance": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"label": {
 				Type:     schema.TypeString,
@@ -113,8 +114,8 @@ func resourceVultrBlockStorageCreate(ctx context.Context, d *schema.ResourceData
 		SizeGB:     d.Get("size_gb").(int),
 		Label:      d.Get("label").(string),
 		BlockType:  d.Get("block_type").(string),
-		SnapshotID: d.Get("block_type").(string),
-		OSID:       d.Get("block_type").(int),
+		SnapshotID: d.Get("snapshot_id").(string),
+		OSID:       d.Get("os_id").(int),
 	}
 
 	bootable, bootableOK := d.GetOk("bootable")

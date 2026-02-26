@@ -85,6 +85,7 @@ The following attributes are exported:
 * `status` - The current status of the managed database (poweroff, rebuilding, rebalancing, configuring, running).
 * `label` - The managed database's label.
 * `tag` - The managed database's tag.
+* `pending_charges` - Charges due for this managed database subscription at the end of the billing period.
 * `database_engine` - The database engine of the managed database.
 * `database_engine_version` - The database engine version of the managed database.
 * `vpc_id` - The ID of the VPC Network attached to the Managed Database.
