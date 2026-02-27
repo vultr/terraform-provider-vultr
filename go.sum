@@ -158,6 +158,8 @@ github.com/vultr/govultr/v3 v3.24.1-0.20260209233550-fc318ad034f0 h1:tyyDZlzhb0p
 github.com/vultr/govultr/v3 v3.24.1-0.20260209233550-fc318ad034f0/go.mod h1:9WwnWGCKnwDlNjHjtt+j+nP+0QWq6hQXzaHgddqrLWY=
 github.com/vultr/govultr/v3 v3.24.1-0.20260225202946-8265a8d1e352 h1:Hv3IWP0c4hCg+vxcOZI9yVXZdu/jO8Jq34nDrkNEcbw=
 github.com/vultr/govultr/v3 v3.24.1-0.20260225202946-8265a8d1e352/go.mod h1:9WwnWGCKnwDlNjHjtt+j+nP+0QWq6hQXzaHgddqrLWY=
+github.com/vultr/govultr/v3 v3.24.1-0.20260227194118-082fd7e63c7d h1:HEvG0EukwfSv8J6cUKNmuu1yxwNotmKtuEijlLEz21w=
+github.com/vultr/govultr/v3 v3.24.1-0.20260227194118-082fd7e63c7d/go.mod h1:9WwnWGCKnwDlNjHjtt+j+nP+0QWq6hQXzaHgddqrLWY=
 github.com/xanzy/ssh-agent v0.3.3 h1:+/15pJfg/RsTxqYcX6fHqOXZwwMP+2VyYWJeWM2qQFM=
 github.com/xanzy/ssh-agent v0.3.3/go.mod h1:6dzNDKs0J9rVPHPhaGCukekBHKqfl+L3KghI1Bc68Uw=
 github.com/yuin/goldmark v1.4.13/go.mod h1:6yULJ656Px+3vBD8DxQVa3kxgyrAnzto9xy5taEt/CY=
