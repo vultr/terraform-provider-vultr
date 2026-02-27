@@ -12,6 +12,8 @@ import (
 func resourceVultrOIDCToken() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVultrOIDCTokenCreate,
+		ReadContext:   resourceVultrOIDCTokenRead,
+		DeleteContext: resourceVultrOIDCTokenDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
@@ -34,14 +36,17 @@ func resourceVultrOIDCToken() *schema.Resource {
 			},
 			"code": {
 				Type:     schema.TypeString,
+				ForceNew: true,
 				Optional: true,
 			},
 			"redirect_uri": {
 				Type:     schema.TypeString,
+				ForceNew: true,
 				Optional: true,
 			},
 			"refresh_token": {
 				Type:     schema.TypeString,
+				ForceNew: true,
 				Optional: true,
 			},
 			"access_token": {
@@ -103,5 +108,13 @@ func resourceVultrOIDCTokenCreate(ctx context.Context, d *schema.ResourceData, m
 		return diag.Errorf("unable to set instance `scope` create value: %v", err)
 	}
 
+	return nil
+}
+
+func resourceVultrOIDCTokenRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	return nil
+}
+
+func resourceVultrOIDCTokenDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	return nil
 }
