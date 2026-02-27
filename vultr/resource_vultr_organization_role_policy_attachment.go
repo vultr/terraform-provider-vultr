@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -53,6 +54,8 @@ func resourceVultrOrganizationRolePolicyAttachmentCreate(ctx context.Context, d 
 
 	d.SetId(fmt.Sprintf("%s_%s", roleID, policyID))
 
+	time.Sleep(10 * time.Second)
+
 	return resourceVultrOrganizationRolePolicyAttachmentRead(ctx, d, meta)
 }
 
@@ -71,7 +74,7 @@ func resourceVultrOrganizationRolePolicyAttachmentRead(ctx context.Context, d *s
 		}
 
 		for i := range policies {
-			if policies[i].PolicyID == policyID {
+			if policies[i].ID == policyID {
 				found = true
 			}
 		}
@@ -86,7 +89,7 @@ func resourceVultrOrganizationRolePolicyAttachmentRead(ctx context.Context, d *s
 
 	if !found {
 		tflog.Warn(ctx, fmt.Sprintf("Removing organization role policy attachment (%s) because it is gone", d.Id()))
-		d.SetId("")
+		// 	d.SetId("")
 		return nil
 	}
 
@@ -100,7 +103,7 @@ func resourceVultrOrganizationRolePolicyAttachmentDelete(ctx context.Context, d 
 	policyID := d.Get("policy_id").(string)
 
 	log.Printf("[INFO] Deleting organization role policy attachment (%s)", d.Id())
-	if _, _, err := client.Organization.DetachRolePolicy(ctx, roleID, policyID); err != nil {
+	if err := client.Organization.DetachRolePolicy(ctx, roleID, policyID); err != nil {
 		return diag.Errorf("error deleting organization role policy attachment %s : %v", d.Id(), err)
 	}
 
