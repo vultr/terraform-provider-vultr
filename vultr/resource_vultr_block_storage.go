@@ -39,6 +39,7 @@ func resourceVultrBlockStorage() *schema.Resource {
 			"attached_to_instance": {
 				Type:     schema.TypeString,
 				Optional: true,
+				Computed: true,
 			},
 			"label": {
 				Type:     schema.TypeString,
@@ -50,15 +51,43 @@ func resourceVultrBlockStorage() *schema.Resource {
 				Optional: true,
 				Default:  false,
 			},
+			"os_id": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				ForceNew: true,
+			},
+			"snapshot_id": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+			},
+			"bootable": {
+				Type:     schema.TypeBool,
+				Optional: true,
+				Default:  false,
+				ForceNew: true,
+			},
 			"date_created": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
 			"cost": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
+			"pending_charges": {
 				Type:     schema.TypeFloat,
 				Computed: true,
 			},
 			"status": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"attached_to_instance_ip": {
+				Type:     schema.TypeString,
+				Computed: true,
+			},
+			"attached_to_instance_label": {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
@@ -81,10 +110,17 @@ func resourceVultrBlockStorageCreate(ctx context.Context, d *schema.ResourceData
 	client := meta.(*Client).govultrClient()
 
 	bsReq := &govultr.BlockStorageCreate{
-		Region:    d.Get("region").(string),
-		SizeGB:    d.Get("size_gb").(int),
-		Label:     d.Get("label").(string),
-		BlockType: d.Get("block_type").(string),
+		Region:     d.Get("region").(string),
+		SizeGB:     d.Get("size_gb").(int),
+		Label:      d.Get("label").(string),
+		BlockType:  d.Get("block_type").(string),
+		SnapshotID: d.Get("snapshot_id").(string),
+		OSID:       d.Get("os_id").(int),
+	}
+
+	bootable, bootableOK := d.GetOk("bootable")
+	if bootableOK {
+		bsReq.Bootable = govultr.BoolToBoolPtr(bootable.(bool))
 	}
 
 	bs, _, err := client.BlockStorage.Create(ctx, bsReq)
@@ -155,6 +191,9 @@ func resourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData, 
 	if err := d.Set("cost", bs.Cost); err != nil {
 		return diag.Errorf("unable to set resource block_storage `cost` read value: %v", err)
 	}
+	if err := d.Set("pending_charges", bs.PendingCharges); err != nil {
+		return diag.Errorf("unable to set resource block_storage `pending_charges` read value: %v", err)
+	}
 	if err := d.Set("status", bs.Status); err != nil {
 		return diag.Errorf("unable to set resource block_storage `status` read value: %v", err)
 	}
@@ -167,6 +206,12 @@ func resourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData, 
 	if err := d.Set("attached_to_instance", bs.AttachedToInstance); err != nil {
 		return diag.Errorf("unable to set resource block_storage `attached_to_instance` read value: %v", err)
 	}
+	if err := d.Set("attached_to_instance_ip", bs.AttachedToInstanceIP); err != nil {
+		return diag.Errorf("unable to set resource block_storage `attached_to_instance_ip` read value: %v", err)
+	}
+	if err := d.Set("attached_to_instance_label", bs.AttachedToInstanceLabel); err != nil {
+		return diag.Errorf("unable to set resource block_storage `attached_to_instance_label` read value: %v", err)
+	}
 	if err := d.Set("label", bs.Label); err != nil {
 		return diag.Errorf("unable to set resource block_storage `label` read value: %v", err)
 	}
@@ -175,6 +220,15 @@ func resourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData, 
 	}
 	if err := d.Set("block_type", bs.BlockType); err != nil {
 		return diag.Errorf("unable to set resource block_storage `block_type` read value: %v", err)
+	}
+	if err := d.Set("os_id", bs.OSID); err != nil {
+		return diag.Errorf("unable to set resource block_storage `os_id` read value: %v", err)
+	}
+	if err := d.Set("snapshot_id", bs.SnapshotID); err != nil {
+		return diag.Errorf("unable to set resource block_storage `snapshot_id` read value: %v", err)
+	}
+	if err := d.Set("bootable", bs.Bootable); err != nil {
+		return diag.Errorf("unable to set resource block_storage `bootable` read value: %v", err)
 	}
 
 	return nil
