@@ -95,8 +95,9 @@ func dataSourceVultrInstance() *schema.Resource {
 				Computed: true,
 			},
 			"kvm": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:      schema.TypeString,
+				Computed:  true,
+				Sensitive: true,
 			},
 			"backups": {
 				Type:     schema.TypeString,

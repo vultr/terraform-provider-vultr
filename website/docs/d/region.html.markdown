@@ -42,3 +42,4 @@ The following attributes are exported:
 * `country` - The country the region is in.
 * `city` - The city the region is in.
 * `options` - Shows whether options like ddos protection or block storage are available in the region.
+* `connectivity` - Lists the region's connectivity options, such as `public_ip` and `nat_gateway`.

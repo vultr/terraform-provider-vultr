@@ -30,6 +30,11 @@ func dataSourceVultrRegion() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
+			"connectivity": {
+				Type:     schema.TypeList,
+				Computed: true,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+			},
 		},
 	}
 }
@@ -93,6 +98,9 @@ func dataSourceVultrRegionRead(ctx context.Context, d *schema.ResourceData, meta
 	}
 	if err := d.Set("options", regionList[0].Options); err != nil {
 		return diag.Errorf("unable to set region `options` read value: %v", err)
+	}
+	if err := d.Set("connectivity", regionList[0].Connectivity); err != nil {
+		return diag.Errorf("unable to set region `connectivity` read value: %v", err)
 	}
 	return nil
 }

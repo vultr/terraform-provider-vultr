@@ -86,6 +86,13 @@ The following arguments are supported:
 * `dow` - (Optional) Day of week to run. `1 = Sunday`, `2 = Monday`, `3 = Tuesday`, `4 = Wednesday`, `5 = Thursday`, `6 = Friday`, `7 = Saturday`
 * `dom` - (Optional) Day of month to run. Use values between 1 and 28.
 
+`block_devices` - (Optional) Available for VX1 instances: A list of block devices to attach to your instance. Define your block devices, create bootable block devices, or use local storage (if plan has local storage) as scratch disk with these fields:
+
+* `block_id` - (Optional) The ID of an existing block device or `local` if the VX1 plan has local storage and you wish to utilize it for this instance.
+* `bootable` - (Optional) Whether the associated block device is bootable.
+* `disk_size` - (Optional) The disk size for the block device if it is being created.
+* `label` - (Optional) The label for the block device if it is being created.
+
 ## Attributes Reference
 
 The following attributes are exported:

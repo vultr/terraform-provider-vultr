@@ -70,6 +70,10 @@ func dataSourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"pending_charges": {
+				Type:     schema.TypeFloat,
+				Computed: true,
+			},
 			"dbname": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -296,6 +300,10 @@ func dataSourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("unable to set resource database `tag` read value: %v", err)
 	}
 
+	if err := d.Set("pending_charges", databaseList[0].PendingCharges); err != nil {
+		return diag.Errorf("unable to set resource database `pending_charges` read value: %v", err)
+	}
+
 	if err := d.Set("dbname", databaseList[0].DBName); err != nil {
 		return diag.Errorf("unable to set resource database `dbname` read value: %v", err)
 	}
@@ -466,6 +474,7 @@ func flattenReplicas(db *govultr.Database) []map[string]interface{} {
 			"status":                    db.ReadReplicas[v].Status,
 			"label":                     db.ReadReplicas[v].Label,
 			"tag":                       db.ReadReplicas[v].Tag,
+			"pending_charges":           db.ReadReplicas[v].PendingCharges,
 			"dbname":                    db.ReadReplicas[v].DBName,
 			"host":                      db.ReadReplicas[v].Host,
 			"public_host":               db.ReadReplicas[v].PublicHost,

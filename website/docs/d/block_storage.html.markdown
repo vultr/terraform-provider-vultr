@@ -40,10 +40,16 @@ The following attributes are exported:
 
 * `label` - The label of the block storage subscription.
 * `cost` - The cost per month of the block storage subscription in USD.
+* `pending_charges` - Charges due for this block storage subscription at the end of the billing period.
 * `status` - The status of the block storage subscription.
 * `size_gb` - The size of the block storage subscription in GB.
 * `region` - The region ID of the block storage subscription.
 * `attached_to_instance` - The ID of the VPS the block storage subscription is attached to.
+* `attached_to_instance_ip` - The IP address of the VPS the block storage subscription is attached to.
+* `attached_to_instance_label` - The label of the VPS the block storage subscription is attached to.
 * `date_created` - The date the block storage subscription was added to your Vultr account.
 * `mount_id` - An ID associated with the instance, when mounted the ID can be found in /dev/disk/by-id prefixed with virtio.
 * `block_type` - The type of block storage volume.
+* `os_id` - The operating system ID for this bootable block device, if applicable.
+* `snapshot_id` - The snapshot_id from which this block device was cloned.
+* `bootable` - Whether or not this block device can be used as a bootable volume.

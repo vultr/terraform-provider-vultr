@@ -158,6 +158,10 @@ func resourceVultrDatabase() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"pending_charges": {
+				Type:     schema.TypeFloat,
+				Computed: true,
+			},
 			"dbname": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -419,6 +423,10 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 	}
 
 	if err := d.Set("tag", database.Tag); err != nil {
+		return diag.Errorf("unable to set resource database `tag` read value: %v", err)
+	}
+
+	if err := d.Set("pending_charges", database.PendingCharges); err != nil {
 		return diag.Errorf("unable to set resource database `tag` read value: %v", err)
 	}
 

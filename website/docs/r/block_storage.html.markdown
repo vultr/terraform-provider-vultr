@@ -34,6 +34,9 @@ The following arguments are supported:
 * `label` - (Optional) Label that is given to your block storage.
 * `block_type` - (Optional)  Determines on the type of block storage volume that will be created. Soon to become a required parameter. Options are `high_perf` or `storage_opt`.
 * `live` - (Optional) Boolean value that will allow attachment of the volume to an instance without a restart. Default is false.
+* `bootable` - (Optional) Boolean value that will flag a block storage device as bootable.
+* `os_id` - (Optional) The operating system ID to use for this block storage device if it is bootable.
+* `snapshot_id` - (Optional) The ID of an existing block snapshot your new block storage will be a clone of.
 
 
 
@@ -45,13 +48,19 @@ The following attributes are exported:
 * `size_gb` - The size of the given block storage.
 * `region` - Region in which this block storage will reside in. 
 * `attached_to_instance` - VPS ID that is attached to this block storage.
+* `attached_to_instance_ip` - IP address of the VPS the block storage subscription is attached to.
+* `attached_to_instance_label` - Label of the VPS the block storage subscription is attached to.
 * `label` - Label that is given to your block storage.
 * `cost` - The monthly cost of this block storage.
+* `pending_charges` - Charges due for this block storage subscription at the end of the billing period.
 * `date_created` - The date this block storage was created.
 * `status` - Current status of your block storage.
 * `live` - Flag which will determine if a volume should be attached with a restart or not.
 * `mount_id` - An ID associated with the instance, when mounted the ID can be found in /dev/disk/by-id prefixed with virtio.
 * `block_type` - The type of block storage volume. Values are `high_perf` or `storage_opt`.
+* `os_id` - The operating system ID for this bootable block device, if applicable.
+* `snapshot_id` - The snapshot_id from which this block device was cloned.
+* `bootable` - Whether or not this block device can be used as a bootable volume.
 
 ## Import
 
