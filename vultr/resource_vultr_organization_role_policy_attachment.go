@@ -12,6 +12,8 @@ import (
 	"github.com/vultr/govultr/v3"
 )
 
+const orgRolePolicyAttachmentCreateDelay = 10
+
 func resourceVultrOrganizationRolePolicyAttachment() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVultrOrganizationRolePolicyAttachmentCreate,
@@ -54,7 +56,7 @@ func resourceVultrOrganizationRolePolicyAttachmentCreate(ctx context.Context, d 
 
 	d.SetId(fmt.Sprintf("%s_%s", roleID, policyID))
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(orgRolePolicyAttachmentCreateDelay * time.Second)
 
 	return resourceVultrOrganizationRolePolicyAttachmentRead(ctx, d, meta)
 }
