@@ -69,11 +69,9 @@
 ### Enhancements
 * data source/bare metal server: Add snapshot_id field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
 * resource/bare metal server: Add snapshot_id field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
-
 * data source/instance: Add snapshot_id field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
 * data source/instances: Add snapshot_id field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
 * resource/instance: Add snapshot_id & image_id fields [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
-
 * data source/database: Add ca_certificate field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
 * resource/database: Add ca_certificate field [PR 616](https://github.com/vultr/terraform-provider-vultr/pull/616)
 

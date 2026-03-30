@@ -19,6 +19,12 @@ resource "vultr_object_storage" "tf" {
     cluster_id = 9
     tier_id = 4
     label = "vultr-object-storage"
+
+    bucket {
+      name = "my-bucket"
+      enable_versioning = true
+      enable_lock = true
+    }
 }
 ```
 
@@ -29,6 +35,19 @@ The following arguments are supported:
 * `cluster_id` - (Required) The ID of the region that you want the object storage to be deployed in.
 * `tier_id` - (Required) The ID of the tier to deploy the storage under.
 * `label` - (Optional) The description you want to give your object storage.
+
+* `bucket` (Optional) supports the following
+
+**NOTE** Bucket support in Terraform relies solely on the local Terraform state.
+If you change these values outside of Terraform it will not detect the state
+drift. This will be added in a future version.
+
+**NOTE** Updating any element of a bucket will necessitate destroying and
+re-creating of the bucket
+
+* `name` - (Required) A name for the bucket
+* `enable_versioning` - (Optional) Whether or not the versioning is enabled in the bucket 
+* `enable_lock` - (Optional) Whether or not object lock is enabled in the bucket 
 
 ## Attributes Reference
 
