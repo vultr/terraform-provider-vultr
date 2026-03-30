@@ -46,7 +46,7 @@ func resourceVultrOrganizationRolePolicyAttachmentCreate(ctx context.Context, d 
 	_, _, err := client.Organization.AttachRolePolicy(
 		ctx,
 		roleID,
-		&govultr.OrganizationRolePolicyReq{PolicyID: policyID},
+		policyID,
 	)
 	if err != nil {
 		return diag.Errorf("error while creating organization role policy attachment: %s", err)
