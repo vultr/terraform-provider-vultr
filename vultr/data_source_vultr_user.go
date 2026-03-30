@@ -34,6 +34,16 @@ func dataSourceVultrUser() *schema.Resource {
 				Type:     schema.TypeBool,
 				Computed: true,
 			},
+			"groups": {
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Computed: true,
+			},
+			"roles": {
+				Type:     schema.TypeSet,
+				Elem:     &schema.Schema{Type: schema.TypeString},
+				Computed: true,
+			},
 		},
 	}
 }
@@ -101,6 +111,33 @@ func dataSourceVultrUserRead(ctx context.Context, d *schema.ResourceData, meta i
 	}
 	if err := d.Set("service_user", userList[0].ServiceUser); err != nil {
 		return diag.Errorf("unable to set user `service_user` read value: %v", err)
+	}
+
+	groups, _, _, err := client.Organization.ListUserGroups(ctx, userList[0].ID, nil)
+	if err != nil {
+		return diag.Errorf("error getting user groups : %v", err)
+	}
+
+	var groupList []string
+	for i := range groups {
+		groupList = append(groupList, groups[i].ID)
+	}
+
+	if err := d.Set("groups", groupList); err != nil {
+		return diag.Errorf("unable to set user `groups` read value: %v", err)
+	}
+
+	roles, _, _, err := client.Organization.ListUserRoles(ctx, d.Id(), nil)
+	if err != nil {
+		return diag.Errorf("error getting user roles : %v", err)
+	}
+
+	var rolesList []string
+	for i := range roles.All {
+		rolesList = append(rolesList, roles.All[i].ID)
+	}
+	if err := d.Set("roles", rolesList); err != nil {
+		return diag.Errorf("unable to set user `roles` read value: %v", err)
 	}
 
 	return nil
