@@ -41,10 +41,12 @@ func resourceVultrFirewallRule() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"icmp", "tcp", "udp", "gre", "ah", "esp"}, false),
 			},
 			"subnet": {
-				Type:         schema.TypeString,
-				Required:     true,
-				ForceNew:     true,
-				ValidateFunc: validation.IsIPAddress,
+				Type:             schema.TypeString,
+				Required:         true,
+				ForceNew:         true,
+				ValidateFunc:     validation.IsIPAddress,
+				DiffSuppressFunc: suppressIPDiff,
+				StateFunc:        canonicalizeIP,
 			},
 			"subnet_size": {
 				Type:     schema.TypeInt,
