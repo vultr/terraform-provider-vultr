@@ -236,6 +236,13 @@ func resourceVultrKubernetesNodePoolsV0(isNodePool bool) *schema.Resource {
 				Type:         schema.TypeInt,
 				ValidateFunc: validation.IntAtLeast(1),
 				Required:     true,
+				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
+					// When auto_scaler is enabled, node count is managed by cluster autoscaler
+					if autoScaler, ok := d.GetOk("auto_scaler"); ok && autoScaler.(bool) {
+						return true
+					}
+					return false
+				},
 			},
 			"auto_scaler": {
 				Type:     schema.TypeBool,
