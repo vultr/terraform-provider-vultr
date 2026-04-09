@@ -41,7 +41,18 @@ func resourceVultrKubernetesStateUpgradeV0ToV1(ctx context.Context, rawState map
 		return rawState, nil
 	}
 
-	migrateState := rawState["node_pools"].([]interface{})[0].(map[string]interface{})
+	nodePools, ok := rawState["node_pools"].([]interface{})
+	if !ok || len(nodePools) == 0 {
+		log.Println("[INFO] skipping kubernetes state migration: node_pools is nil or empty")
+		return rawState, nil
+	}
+
+	migrateState, ok := nodePools[0].(map[string]interface{})
+	if !ok {
+		log.Println("[INFO] skipping kubernetes state migration: node_pools[0] is not a map")
+		return rawState, nil
+	}
+
 	migrateState["cluster_id"] = rawState["id"]
 
 	nps, err := resourceVultrKubernetesNodePoolsStateUpgradeV0ToV1(

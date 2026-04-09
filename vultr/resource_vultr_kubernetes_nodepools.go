@@ -52,58 +52,76 @@ func resourceVultrKubernetesNodePoolsStateUpgradeV0ToV1(ctx context.Context, raw
 		return rawState, nil
 	}
 
+	stateLabels, labelsOk := rawState["labels"].(map[string]interface{})
+	stateTaints, taintsOk := rawState["taints"].([]interface{})
+
+	// Only get the client if we have labels or taints to migrate
+	if (!labelsOk || len(stateLabels) == 0) && (!taintsOk || len(stateTaints) == 0) {
+		log.Println("[INFO] skipping kubernetes node pool state migration: labels and taints are nil or empty")
+		delete(rawState, "labels")
+		rawState["labels"] = []map[string]interface{}{}
+		return rawState, nil
+	}
+
 	client := meta.(*Client).govultrClient()
 
-	stateLabels := rawState["labels"].(map[string]interface{})
-	stateTaints := rawState["taints"].([]interface{})
+	if labelsOk && len(stateLabels) > 0 {
+		log.Println("[INFO] migrating kubernetes node pool labels from v0 to v1")
+		refLabels, _, err := client.Kubernetes.ListNodePoolLabels(
+			ctx,
+			rawState["cluster_id"].(string),
+			rawState["id"].(string),
+		)
+		if err != nil {
+			log.Println("[ERROR] unable to retrieve updated kubernetes node pool labels from client")
+			return rawState, err
+		}
 
-	log.Println("[INFO] migrating kubernetes node pool labels from v0 to v1")
-	refLabels, _, err := client.Kubernetes.ListNodePoolLabels(
-		ctx,
-		rawState["cluster_id"].(string),
-		rawState["id"].(string),
-	)
-	if err != nil {
-		log.Println("[ERROR] unable to retrieve updated kubernetes node pool labels from client")
-		return rawState, err
-	}
+		newStateLabels := []map[string]interface{}{}
+		for j := range refLabels {
+			for key, val := range stateLabels {
+				newStateLabel := map[string]interface{}{}
+				if key == refLabels[j].Key {
+					newStateLabel["key"] = key
+					newStateLabel["value"] = val.(string)
+					newStateLabel["id"] = refLabels[j].ID
 
-	newStateLabels := []map[string]interface{}{}
-	for j := range refLabels {
-		for key, val := range stateLabels {
-			newStateLabel := map[string]interface{}{}
-			if key == refLabels[j].Key {
-				newStateLabel["key"] = key
-				newStateLabel["value"] = val.(string)
-				newStateLabel["id"] = refLabels[j].ID
-
-				newStateLabels = append(newStateLabels, newStateLabel)
+					newStateLabels = append(newStateLabels, newStateLabel)
+				}
 			}
 		}
+
+		// replace the labels state
+		delete(rawState, "labels")
+		rawState["labels"] = newStateLabels
+	} else {
+		log.Println("[INFO] skipping kubernetes node pool labels migration: labels is nil or empty")
+		delete(rawState, "labels")
+		rawState["labels"] = []map[string]interface{}{}
 	}
 
-	// replace the labels state
-	delete(rawState, "labels")
-	rawState["labels"] = newStateLabels
+	if taintsOk && len(stateTaints) > 0 {
+		log.Println("[INFO] migrating kubernetes node pool taints from v0 to v1")
+		refTaints, _, err := client.Kubernetes.ListNodePoolTaints(
+			ctx,
+			rawState["cluster_id"].(string),
+			rawState["id"].(string),
+		)
+		if err != nil {
+			log.Println("[ERROR] unable to retrieve updated kubernetes node pool taints from client")
+			return rawState, err
+		}
 
-	log.Println("[INFO] migrating kubernetes node pool taints from v0 to v1")
-	refTaints, _, err := client.Kubernetes.ListNodePoolTaints(
-		ctx,
-		rawState["cluster_id"].(string),
-		rawState["id"].(string),
-	)
-	if err != nil {
-		log.Println("[ERROR] unable to retrieve updated kubernetes node pool taints from client")
-		return rawState, err
-	}
-
-	for j := range refTaints {
-		for k := range stateTaints {
-			stateTaintData := stateTaints[k].(map[string]interface{})
-			if stateTaintData["key"] == refTaints[j].Key {
-				stateTaintData["id"] = refTaints[j].ID
+		for j := range refTaints {
+			for k := range stateTaints {
+				stateTaintData := stateTaints[k].(map[string]interface{})
+				if stateTaintData["key"] == refTaints[j].Key {
+					stateTaintData["id"] = refTaints[j].ID
+				}
 			}
 		}
+	} else {
+		log.Println("[INFO] skipping kubernetes node pool taints migration: taints is nil or empty")
 	}
 
 	return rawState, nil
