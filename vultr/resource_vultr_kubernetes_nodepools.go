@@ -60,6 +60,8 @@ func resourceVultrKubernetesNodePoolsStateUpgradeV0ToV1(ctx context.Context, raw
 		log.Println("[INFO] skipping kubernetes node pool state migration: labels and taints are nil or empty")
 		delete(rawState, "labels")
 		rawState["labels"] = []map[string]interface{}{}
+		delete(rawState, "taints")
+		rawState["taints"] = []interface{}{}
 		return rawState, nil
 	}
 
@@ -122,6 +124,8 @@ func resourceVultrKubernetesNodePoolsStateUpgradeV0ToV1(ctx context.Context, raw
 		}
 	} else {
 		log.Println("[INFO] skipping kubernetes node pool taints migration: taints is nil or empty")
+		delete(rawState, "taints")
+		rawState["taints"] = []interface{}{}
 	}
 
 	return rawState, nil
