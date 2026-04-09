@@ -65,8 +65,6 @@ func resourceVultrKubernetesNodePoolsStateUpgradeV0ToV1(ctx context.Context, raw
 	case []interface{}:
 		stateTaints = rawState["taints"].([]interface{})
 	}
-	// stateLabels := rawState["labels"].(map[string]interface{})
-	// stateTaints := rawState["taints"].([]interface{})
 
 	log.Println("[INFO] migrating kubernetes node pool labels from v0 to v1")
 	refLabels, _, err := client.Kubernetes.ListNodePoolLabels(
