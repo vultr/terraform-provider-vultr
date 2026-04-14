@@ -212,6 +212,10 @@ func resourceVultrDatabaseReplicaRead(ctx context.Context, d *schema.ResourceDat
 		return diag.Errorf("unable to set resource database read replica `trusted_ips` read value: %v", err)
 	}
 
+	if err := d.Set("ca_certificate", database.CACertificate); err != nil {
+		return diag.Errorf("unable to set resource database read replica `ca_certificate` read value: %v", err)
+	}
+
 	if database.DatabaseEngine == "mysql" {
 		if err := d.Set("mysql_sql_modes", database.MySQLSQLModes); err != nil {
 			return diag.Errorf("unable to set resource database read replica `mysql_sql_modes` read value: %v", err)

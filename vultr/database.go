@@ -139,6 +139,10 @@ func readReplicaSchema(isReadReplica bool) map[string]*schema.Schema {
 			Optional: true,
 			Elem:     &schema.Schema{Type: schema.TypeString},
 		},
+		"ca_certificate": {
+			Type:     schema.TypeString,
+			Computed: true,
+		},
 		"mysql_sql_modes": {
 			Type:     schema.TypeSet,
 			Computed: true,
