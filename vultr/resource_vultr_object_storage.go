@@ -22,6 +22,8 @@ func resourceVultrObjectStorage() *schema.Resource {
 			StateContext: func(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
 				client := meta.(*Client).govultrClient()
 
+				d.SetId(d.Id())
+
 				// tier_id will cause replacement if not set on import. The
 				// tier_id only returns on the list call so we have to list all
 				// object storages, check for matching ID and take the tier ID
@@ -38,6 +40,8 @@ func resourceVultrObjectStorage() *schema.Resource {
 							if err := d.Set("tier_id", obs[i].Tier.ID); err != nil {
 								return nil, fmt.Errorf("unable to set tier_id during import of object storage: %v", err)
 							}
+
+							return []*schema.ResourceData{d}, nil
 						}
 					}
 
@@ -49,9 +53,7 @@ func resourceVultrObjectStorage() *schema.Resource {
 					}
 				}
 
-				d.SetId(d.Id())
-
-				return []*schema.ResourceData{d}, nil
+				return nil, fmt.Errorf("unable to import object storage")
 			},
 		},
 		Schema: map[string]*schema.Schema{
