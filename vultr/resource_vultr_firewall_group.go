@@ -33,18 +33,6 @@ func resourceVultrFirewallGroup() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"instance_count": {
-				Type:     schema.TypeInt,
-				Computed: true,
-			},
-			"rule_count": {
-				Type:     schema.TypeInt,
-				Computed: true,
-			},
-			"max_rule_count": {
-				Type:     schema.TypeInt,
-				Computed: true,
-			},
 		},
 	}
 }
@@ -86,15 +74,6 @@ func resourceVultrFirewallGroupRead(ctx context.Context, d *schema.ResourceData,
 	}
 	if err := d.Set("date_modified", group.DateModified); err != nil {
 		return diag.Errorf("unable to set resource firewall_group `date_modified` read value: %v", err)
-	}
-	if err := d.Set("instance_count", group.InstanceCount); err != nil {
-		return diag.Errorf("unable to set resource firewall_group `instance_count` read value: %v", err)
-	}
-	if err := d.Set("rule_count", group.RuleCount); err != nil {
-		return diag.Errorf("unable to set resource firewall_group `rule_count` read value: %v", err)
-	}
-	if err := d.Set("max_rule_count", group.MaxRuleCount); err != nil {
-		return diag.Errorf("unable to set resource firewall_group `max_rule_count` read value: %v", err)
 	}
 	return nil
 }
