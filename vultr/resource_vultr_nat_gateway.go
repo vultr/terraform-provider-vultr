@@ -27,7 +27,7 @@ func resourceVultrNATGateway() *schema.Resource {
 				strngs := strings.SplitN(d.Id(), "_", 2)
 				if len(strngs) != 2 {
 					return nil, fmt.Errorf(`unable to import vpc nat gateway: 
-the composite import id must be formatted as <VPC UUID>_<NAT UUID>, recieved %q`, d.Id())
+the composite import id must be formatted as <VPC UUID>_<NAT UUID>, received %q`, d.Id())
 				}
 
 				d.SetId(strngs[1])
