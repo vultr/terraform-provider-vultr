@@ -35,7 +35,9 @@ func resourceVultrObjectStorage() *schema.Resource {
 
 					for i := range obs {
 						if obs[i].ID == d.Id() {
-							d.Set("tier_id", obs[i].Tier.ID)
+							if err := d.Set("tier_id", obs[i].Tier.ID); err != nil {
+								return nil, fmt.Errorf("unable to set tier_id during import of object storage: %v", err)
+							}
 						}
 					}
 
