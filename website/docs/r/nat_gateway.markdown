@@ -46,3 +46,12 @@ The following attributes are exported:
 * `private_ips` - The private IP addresses of the NAT Gateway.
 * `billing_charges` - The current charges for the NAT Gateway.
 * `billing_monthly` - The total monthly charges for the NAT Gateway.
+
+## Import
+NAT gateways rely on a VPC ID as well as their own ID. To import we look up the
+NAT gateway via a composite key formatted like `<VPC UUID>_<NAT UUID>` (the two
+UUIDs serparated by an underscore). The import will look like:
+
+```
+terraform import vultr_nat_gateway.my_ngw 7ceab21c-e35b-4efb-9e96-6026ff5de5aa_f5dc2455-b748-4a8c-a8ac-5eef9c2ebfb7
+```
