@@ -19,7 +19,38 @@ func resourceVultrObjectStorage() *schema.Resource {
 		UpdateContext: resourceVultrObjectStorageUpdate,
 		DeleteContext: resourceVultrObjectStorageDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: func(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				client := meta.(*Client).govultrClient()
+
+				// tier_id will cause replacement if not set on import. The
+				// tier_id only returns on the list call so we have to list all
+				// object storages, check for matching ID and take the tier ID
+				// from that response
+				listOpts := govultr.ListOptions{}
+				for {
+					obs, meta, _, err := client.ObjectStorage.List(ctx, &listOpts)
+					if err != nil {
+						return nil, fmt.Errorf("error during import of object storage: %v", err)
+					}
+
+					for i := range obs {
+						if obs[i].ID == d.Id() {
+							d.Set("tier_id", obs[i].Tier.ID)
+						}
+					}
+
+					if meta.Links.Next == "" {
+						break
+					} else {
+						listOpts.Cursor = meta.Links.Next
+						continue
+					}
+				}
+
+				d.SetId(d.Id())
+
+				return []*schema.ResourceData{d}, nil
+			},
 		},
 		Schema: map[string]*schema.Schema{
 			"cluster_id": {
