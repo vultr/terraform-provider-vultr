@@ -328,12 +328,18 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 
 	bms, _, err := client.BareMetalServer.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Invalid server") {
-			log.Printf("[WARN] Removing bare metal server %s because it is gone", d.Id())
+		missing, missErr := checkIsMissing(err, "invalid server")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			log.Printf("[WARN] Removing bare metal server (%s) because it is gone", d.Id())
 			d.SetId("")
 			return nil
 		}
-		return diag.Errorf("error getting bare metal server: %v", err)
+
+		return diag.Errorf("error getting bare metal server (%s): %v", d.Id(), err)
 	}
 
 	d.SetId(bms.ID)

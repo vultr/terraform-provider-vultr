@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -20,7 +21,27 @@ func resourceVultrNATGateway() *schema.Resource {
 		UpdateContext: resourceVultrNATGatewayUpdate,
 		DeleteContext: resourceVultrNATGatewayDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: func(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+				client := meta.(*Client).govultrClient()
+
+				strngs := strings.SplitN(d.Id(), "_", 2)
+				if len(strngs) != 2 {
+					return nil, fmt.Errorf(`unable to import vpc nat gateway: 
+the composite import id must be formatted as <VPC UUID>_<NAT UUID>, received %q`, d.Id())
+				}
+
+				d.SetId(strngs[1])
+
+				if _, _, err := client.VPC.GetNATGateway(ctx, strngs[0], strngs[1]); err != nil {
+					return nil, fmt.Errorf("unable to import vpc nat gateway: %v", err)
+				}
+
+				if err := d.Set("vpc_id", strngs[0]); err != nil {
+					return nil, fmt.Errorf("unable to set vpc_id on vpc nat gateway: %v", err)
+				}
+
+				return []*schema.ResourceData{d}, nil
+			},
 		},
 		Schema: map[string]*schema.Schema{
 			// Required

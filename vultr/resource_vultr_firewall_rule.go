@@ -59,18 +59,17 @@ func resourceVultrFirewallRule() *schema.Resource {
 				ForceNew: true,
 				Default:  "",
 			},
-			"source": {
-				Type:         schema.TypeString,
-				Optional:     true,
-				ForceNew:     true,
-				ValidateFunc: validation.StringInSlice([]string{"", "cloudflare"}, false),
-				Default:      "",
-			},
 			"notes": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 				Default:  "",
+			},
+			"source": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Computed: true,
 			},
 		},
 	}

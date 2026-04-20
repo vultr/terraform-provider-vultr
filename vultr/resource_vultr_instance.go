@@ -490,11 +490,17 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 
 	instance, _, err := client.Instance.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "invalid instance ID") {
+		missing, missErr := checkIsMissing(err, "instance not found")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
 			log.Printf("[WARN] Removing instance (%s) because it is gone", d.Id())
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting instance (%s): %v", d.Id(), err)
 	}
 
