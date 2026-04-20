@@ -3,7 +3,7 @@ package vultr
 import (
 	"encoding/json"
 	"fmt"
-  "net"
+	"net"
 	"net/http"
 	"strings"
 
