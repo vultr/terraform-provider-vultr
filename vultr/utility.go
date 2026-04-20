@@ -3,6 +3,7 @@ package vultr
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -54,7 +55,7 @@ func checkIsMissing(e error, missingMsg string) (bool, error) {
 		return false, fmt.Errorf("unable to unmarshal api response: %v", err)
 	}
 
-	if apiError.Status == 404 {
+	if apiError.Status == http.StatusNotFound {
 		return true, nil
 	}
 
