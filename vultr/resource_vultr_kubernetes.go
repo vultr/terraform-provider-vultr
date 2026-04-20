@@ -337,8 +337,12 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 		oldNodePoolData := oldNodePool.(map[string]interface{})
 		newNodePoolData := newNodePool.(map[string]interface{})
 
-		req := &govultr.NodePoolReqUpdate{
-			NodeQuantity: newNodePoolData["node_quantity"].(int),
+		req := &govultr.NodePoolReqUpdate{}
+
+		// Only send node_quantity when auto_scaler is disabled
+		// When auto_scaler is enabled, the cluster autoscaler manages node count
+		if !newNodePoolData["auto_scaler"].(bool) {
+			req.NodeQuantity = newNodePoolData["node_quantity"].(int)
 		}
 
 		if newNodePoolData["auto_scaler"] != oldNodePoolData["auto_scaler"] {
