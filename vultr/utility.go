@@ -1,10 +1,18 @@
 package vultr
 
 import (
+	"encoding/json"
+	"fmt"
+	"net/http"
 	"strings"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
+
+type apiError struct {
+	Status  int    `json:"status"`
+	Message string `json:"error"`
+}
 
 // Lookup changes on a TF field and convert schema.Set to []string
 func tfChangeToSlices(fieldname string, d *schema.ResourceData) ([]string, []string) { //nolint:unparam
@@ -39,6 +47,23 @@ func diffSlice(x, y []string) []string {
 	}
 
 	return diff
+}
+
+func checkIsMissing(e error, missingMsg string) (bool, error) {
+	apiError := apiError{}
+	if err := json.Unmarshal([]byte(e.Error()), &apiError); err != nil {
+		return false, fmt.Errorf("unable to unmarshal api response: %w", err)
+	}
+
+	if apiError.Status == http.StatusNotFound {
+		return true, nil
+	}
+
+	if missingMsg != "" && strings.Contains(apiError.Message, missingMsg) {
+		return true, nil
+	}
+
+	return false, nil
 }
 
 // IgnoreCase implement a DiffSupressFunc to ignore case
