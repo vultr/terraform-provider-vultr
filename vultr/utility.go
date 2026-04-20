@@ -3,6 +3,7 @@ package vultr
 import (
 	"encoding/json"
 	"fmt"
+  "net"
 	"net/http"
 	"strings"
 
@@ -69,4 +70,32 @@ func checkIsMissing(e error, missingMsg string) (bool, error) {
 // IgnoreCase implement a DiffSupressFunc to ignore case
 func IgnoreCase(k, old, new string, d *schema.ResourceData) bool {
 	return strings.EqualFold(old, new)
+}
+
+// suppressIPDiff returns true when old and new are the same IP address
+// just written differently (leading zeros, mixed case, etc).
+// Handles both v4 and v6 transparently.
+func suppressIPDiff(_, old, new string, _ *schema.ResourceData) bool {
+	oldIP := net.ParseIP(old)
+	newIP := net.ParseIP(new)
+
+	// if either side doesn't parse, fall through to normal string compare
+	if oldIP == nil || newIP == nil {
+		return old == new
+	}
+
+	return oldIP.Equal(newIP)
+}
+
+// canonicalizeIP parses and re-renders an IP address to its canonical
+// string form. For v6 this strips leading zeros and lowercases per
+// RFC 5952, matching what the Vultr API returns.
+// If it can't parse (bad input or empty string), just pass through.
+func canonicalizeIP(val interface{}) string {
+	raw := val.(string)
+	ip := net.ParseIP(raw)
+	if ip == nil {
+		return raw
+	}
+	return ip.String()
 }
