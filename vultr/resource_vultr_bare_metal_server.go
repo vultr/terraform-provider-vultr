@@ -330,7 +330,7 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 	if err != nil {
 		missing, missErr := checkIsMissing(err, "invalid server")
 		if missErr != nil {
-			return diag.Errorf("unable to parse error from api response : %v", missErr)
+			return diag.Errorf("error in api response %q : %v", err, missErr)
 		}
 
 		if missing {

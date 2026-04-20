@@ -492,8 +492,7 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 	if err != nil {
 		missing, missErr := checkIsMissing(err, "instance not found")
 		if missErr != nil {
-			log.Printf("[ERROR] Unable to parse error response %q : %v", err, missErr)
-			return diag.Errorf("unable to parse error from api response : %v", missErr)
+			return diag.Errorf("error in api response %q : %v", err, missErr)
 		}
 
 		if missing {

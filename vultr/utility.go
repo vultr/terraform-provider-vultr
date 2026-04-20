@@ -52,7 +52,7 @@ func diffSlice(x, y []string) []string {
 func checkIsMissing(e error, missingMsg string) (bool, error) {
 	apiError := apiError{}
 	if err := json.Unmarshal([]byte(e.Error()), &apiError); err != nil {
-		return false, fmt.Errorf("unable to unmarshal api response: %v", err)
+		return false, fmt.Errorf("unable to unmarshal api response: %w", err)
 	}
 
 	if apiError.Status == http.StatusNotFound {
