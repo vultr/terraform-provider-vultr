@@ -57,17 +57,17 @@ func resourceVultrFirewallRule() *schema.Resource {
 				ForceNew: true,
 				Default:  "",
 			},
-			"source": {
-				Type:     schema.TypeString,
-				Optional: true,
-				ForceNew: true,
-				Default:  "",
-			},
 			"notes": {
 				Type:     schema.TypeString,
 				Optional: true,
 				ForceNew: true,
 				Default:  "",
+			},
+			"source": {
+				Type:     schema.TypeString,
+				Optional: true,
+				ForceNew: true,
+				Computed: true,
 			},
 		},
 	}
