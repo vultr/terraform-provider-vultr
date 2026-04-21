@@ -35,11 +35,6 @@ func resourceVultrInference() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"usage": {
-				Type:     schema.TypeMap,
-				Computed: true,
-				Elem:     schema.TypeInt,
-			},
 		},
 		Timeouts: &schema.ResourceTimeout{
 			Create: schema.DefaultTimeout(defaultTimeout),
@@ -89,14 +84,6 @@ func resourceVultrInferenceRead(ctx context.Context, d *schema.ResourceData, met
 
 	if err := d.Set("api_key", inferenceSub.APIKey); err != nil {
 		return diag.Errorf("unable to set resource inference `api_key` read value: %v", err)
-	}
-
-	// Grab usage
-	usage, _, err := client.Inference.GetUsage(ctx, d.Id())
-	if err == nil {
-		if err := d.Set("usage", flattenInferenceUsage(usage)); err != nil {
-			return diag.Errorf("unable to set resource inference `usage` read value: %v", err)
-		}
 	}
 
 	return nil

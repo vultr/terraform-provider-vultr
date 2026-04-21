@@ -25,11 +25,6 @@ func dataSourceVultrInference() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
-			"usage": {
-				Type:     schema.TypeMap,
-				Computed: true,
-				Elem:     schema.TypeInt,
-			},
 		},
 	}
 }
@@ -85,25 +80,5 @@ func dataSourceVultrInferenceRead(ctx context.Context, d *schema.ResourceData, m
 		return diag.Errorf("unable to set inference `api_key` read value: %v", err)
 	}
 
-	// Grab usage
-	usage, _, err := client.Inference.GetUsage(ctx, d.Id())
-	if err == nil {
-		if err := d.Set("usage", flattenInferenceUsage(usage)); err != nil {
-			return diag.Errorf("unable to set inference `usage` read value: %v", err)
-		}
-	}
-
 	return nil
-}
-
-func flattenInferenceUsage(u *govultr.InferenceUsage) map[string]interface{} {
-	f := map[string]interface{}{
-		"chat_current_tokens":     u.Chat.CurrentTokens,
-		"chat_monthly_allotment":  u.Chat.MonthlyAllotment,
-		"chat_overage":            u.Chat.Overage,
-		"audio_tts_characters":    u.Audio.TTSCharacters,
-		"audio_tts_sm_characters": u.Audio.TTSSMCharacters,
-	}
-
-	return f
 }
