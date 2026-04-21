@@ -13,3 +13,4 @@ main.tf
 .idea
 terraform-provider-vultr
 terraform-provider-vultr.exe
+vendor
