@@ -3,9 +3,11 @@ package vultr
 import (
 	"context"
 	"log"
+	"net/netip"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v3"
 )
 
@@ -22,9 +24,10 @@ func resourceVultrReverseIPV6() *schema.Resource {
 				ForceNew: true,
 			},
 			"ip": {
-				Type:     schema.TypeString,
-				Required: true,
-				ForceNew: true,
+				Type:         schema.TypeString,
+				Required:     true,
+				ForceNew:     true,
+				ValidateFunc: validation.IsIPv6Address,
 			},
 			"reverse": {
 				Type:     schema.TypeString,
@@ -39,9 +42,13 @@ func resourceVultrReverseIPV6Create(ctx context.Context, d *schema.ResourceData,
 	client := meta.(*Client).govultrClient()
 
 	instanceID := d.Get("instance_id").(string)
-	ip := d.Get("ip").(string)
+	ip, err := netip.ParseAddr(d.Get("ip").(string))
+	if err != nil {
+		return diag.Errorf("error parsing ipv6 address : %v", err)
+	}
+
 	req := &govultr.ReverseIP{
-		IP:      ip,
+		IP:      ip.StringExpanded(),
 		Reverse: d.Get("reverse").(string),
 	}
 
@@ -49,7 +56,7 @@ func resourceVultrReverseIPV6Create(ctx context.Context, d *schema.ResourceData,
 		return diag.Errorf("error creating reverse IPv6: %v", err)
 	}
 
-	d.SetId(ip)
+	d.SetId(ip.StringExpanded())
 
 	return resourceVultrReverseIPV6Read(ctx, d, meta)
 }
