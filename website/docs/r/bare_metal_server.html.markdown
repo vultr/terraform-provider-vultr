@@ -61,7 +61,8 @@ The following arguments are supported:
 * `label` - (Optional) A label for the server.
 * `reserved_ipv4` - (Optional) The ID of the floating IP to use as the main IP of this server. [See Reserved IPs](https://www.vultr.com/api/#operation/list-reserved-ips)
 * `app_variables` - (Optional) A map of user-supplied variable keys and values for Vultr Marketplace apps. [See List Marketplace App Variables](https://www.vultr.com/api/#tag/marketplace/operation/list-marketplace-app-variables)
-* `user_scheme` - (Optional) The scheme used for the default user. Possible values are `root` or `limited` (linux servers only). 
+* `user_scheme` - (Optional) The scheme used for the default user. Possible values are `root` or `limited` (linux servers only).
+* `mdisk_mode` - (Optional) The raid configuration to use when provisioning the server.  Possible values: `raid1`, `jbod`, `none`. Defaults to `none`.
 
 ## Attributes Reference
 
