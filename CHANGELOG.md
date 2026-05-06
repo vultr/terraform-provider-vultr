@@ -1,4 +1,15 @@
 # Changelog
+## [v2.31.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.31.0...v2.31.1) (2026-05-06)
+### Dependencies
+* Update govultr from v3.30.0 to v3.31.1 [PR 731](https://github.com/vultr/terraform-provider-vultr/pull/731)
+* Bump github.com/hashicorp/terraform-plugin-sdk/v2 from 2.40.0 to 2.40.1 [PR 733](https://github.com/vultr/terraform-provider-vultr/pull/733)
+
+### Documentation
+* resource/bare_metal_server: Document mdisk_mode field [PR 734](https://github.com/vultr/terraform-provider-vultr/pull/734)
+
+## New Contributors
+* @tghaas made their first contribution in [PR 734](https://github.com/vultr/terraform-provider-vultr/pull/734)
+
 ## [v2.31.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.30.1...v2.31.0) (2026-04-21)
 ### Enhancements
 * data source/logs: Add new logs data source [PR 706](https://github.com/vultr/terraform-provider-vultr/pull/706)
