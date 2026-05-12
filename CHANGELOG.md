@@ -1,4 +1,11 @@
 # Changelog
+## [v2.31.2](https://github.com/vultr/terraform-provider-vultr/compare/v2.31.1...v2.31.2) (2026-05-12)
+### Documentation
+* Remove old fields from org role docs [PR 737](https://github.com/vultr/terraform-provider-vultr/pull/737)
+
+### Dependencies
+* Update govultr from v3.31.1 to v3.31.2 [PR 738](https://github.com/vultr/terraform-provider-vultr/pull/738)
+
 ## [v2.31.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.31.0...v2.31.1) (2026-05-06)
 ### Dependencies
 * Update govultr from v3.30.0 to v3.31.1 [PR 731](https://github.com/vultr/terraform-provider-vultr/pull/731)
