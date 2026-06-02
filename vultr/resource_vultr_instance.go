@@ -90,6 +90,12 @@ Will not do anything unless enable_ipv6 is also true.`,
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
+			"vpc_only": {
+				Type:        schema.TypeBool,
+				Optional:    true,
+				ForceNew:    true,
+				Description: `Requires a 'vpc_ids' with a NAT gateway attached`,
+			},
 			"vpc2_ids": {
 				Type:       schema.TypeSet,
 				Optional:   true,
@@ -363,6 +369,7 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		Region:            d.Get("region").(string),
 		Plan:              d.Get("plan").(string),
 		UserScheme:        d.Get("user_scheme").(string),
+		VPCOnly:           govultr.BoolToBoolPtr(d.Get("vpc_only").(bool)),
 	}
 
 	if appVariables, appVariablesOK := d.GetOk("app_variables"); appVariablesOK {
@@ -634,6 +641,10 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		if err := d.Set("vpc_ids", vpcs); err != nil {
 			return diag.Errorf("unable to set resource instance `vpc_ids` read value: %v", err)
 		}
+	}
+
+	if err := d.Set("vpc_only", instance.VPCOnly); err != nil {
+		return diag.Errorf("unable to set resource instance `vpc_only` read value: %v", err)
 	}
 
 	if _, vpc2Update := d.GetOk("vpc2_ids"); vpc2Update {
