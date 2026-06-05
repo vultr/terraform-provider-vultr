@@ -40,6 +40,12 @@ The following attributes are exported:
 
 * `region` - The region your load balancer is deployed in.
 * `label` - The load balancers label.
+* `nodes` - The number of nodes for the load balancer.
+* `balancing_algorithm` - The balancing algorithm for your load balancer.
+* `proxy_protocol` - Boolean value that indicates if Proxy Protocol is enabled.
+* `cookie_name` - Name for your given sticky session.
+* `ssl_redirect` - Boolean value that indicates if HTTP calls will be redirected to HTTPS.
+* `http_version` - Integer value that indicates if HTTP/2 or HTTP/3 is enabled.
 * `balancing_algorithm` - The balancing algorithm for your load balancer.
 * `proxy_protocol` - Boolean value that indicates if Proxy Protocol is enabled.
 * `cookie_name` - Name for your given sticky session.

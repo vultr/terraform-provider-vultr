@@ -19,6 +19,7 @@ resource "vultr_load_balancer" "lb" {
   region = "ewr"
   label     = "vultr-load-balancer"
   balancing_algorithm = "roundrobin"
+  nodes = 3
 
   forwarding_rules {
     frontend_protocol = "http"
@@ -45,6 +46,7 @@ The follow arguments are supported:
 
 * `region` - (Required) The region your load balancer is deployed in.
 * `forwarding_rules` - (Required) List of forwarding rules for a load balancer. The configuration of a `forwarding_rules` is listened below.
+* `nodes` - (Optional) The number of nodes to add to the load balancer (1-99). Must be an odd number. Default value is 1.
 * `label` - (Optional) The load balancer's label.
 * `balancing_algorithm` - (Optional) The balancing algorithm for your load balancer. Options are `roundrobin` or `leastconn`. Default value is `roundrobin`
 * `proxy_protocol` - (Optional) Boolean value that indicates if Proxy Protocol is enabled.
@@ -93,6 +95,7 @@ The following attributes are exported:
 * `id` - The load balancer ID.
 * `region` - The region your load balancer is deployed in.
 * `label` - The load balancer's label.
+* `nodes` - The number of nodes for the load balancer.
 * `balancing_algorithm` - The balancing algorithm for your load balancer.
 * `proxy_protocol` - Boolean value that indicates if Proxy Protocol is enabled.
 * `cookie_name` - Name for your given sticky session.
