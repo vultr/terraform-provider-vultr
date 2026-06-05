@@ -36,6 +36,11 @@ func resourceVultrLoadBalancer() *schema.Resource {
 				Optional: true,
 				Default:  "",
 			},
+			"nodes": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  1,
+			},
 			"balancing_algorithm": {
 				Type:         schema.TypeString,
 				Optional:     true,
@@ -327,6 +332,7 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 		SSLRedirect:        govultr.BoolToBoolPtr(d.Get("ssl_redirect").(bool)),
 		HTTP2:              http2,
 		HTTP3:              http3,
+		Nodes:              d.Get("nodes").(int),
 		ProxyProtocol:      govultr.BoolToBoolPtr(d.Get("proxy_protocol").(bool)),
 		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
 		FirewallRules:      fwrMap,
@@ -442,6 +448,9 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	if err := d.Set("status", lb.Status); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `status` read value: %v", err)
 	}
+	if err := d.Set("nodes", lb.Nodes); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `nodes` read value: %v", err)
+	}
 	if err := d.Set("ipv4", lb.IPV4); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `ipv4` read value: %v", err)
 	}
@@ -491,6 +500,10 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 		HTTP3:              http3,
 		ProxyProtocol:      govultr.BoolToBoolPtr(d.Get("proxy_protocol").(bool)),
 		BalancingAlgorithm: d.Get("balancing_algorithm").(string),
+	}
+
+	if d.HasChange("nodes") {
+		req.Nodes = d.Get("nodes").(int)
 	}
 
 	if d.HasChange("health_check") {

@@ -30,6 +30,10 @@ func dataSourceVultrLoadBalancer() *schema.Resource {
 				Type:     schema.TypeString,
 				Computed: true,
 			},
+			"nodes": {
+				Type:     schema.TypeInt,
+				Computed: true,
+			},
 			"forwarding_rules": {
 				Type:     schema.TypeList,
 				Computed: true,
@@ -176,6 +180,9 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	}
 	if err := d.Set("label", lbList[0].Label); err != nil {
 		return diag.Errorf("unable to set load_balancer `label` read value: %v", err)
+	}
+	if err := d.Set("nodes", lbList[0].Nodes); err != nil {
+		return diag.Errorf("unable to set load_balancer `nodes` read value: %v", err)
 	}
 	if err := d.Set("ipv4", lbList[0].IPV4); err != nil {
 		return diag.Errorf("unable to set load_balancer `ipv4` read value: %v", err)
