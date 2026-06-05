@@ -32,7 +32,7 @@ func dataSourceVultrLoadBalancer() *schema.Resource {
 			},
 			"nodes": {
 				Type:     schema.TypeInt,
-				Optional: true,
+				Computed: true,
 			},
 			"forwarding_rules": {
 				Type:     schema.TypeList,
