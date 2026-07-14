@@ -28,7 +28,7 @@
 ### Documentation
 * resource/bare_metal_server: Document mdisk_mode field [PR 734](https://github.com/vultr/terraform-provider-vultr/pull/734)
 
-## New Contributors
+### New Contributors
 * @tghaas made their first contribution in [PR 734](https://github.com/vultr/terraform-provider-vultr/pull/734)
 
 ## [v2.31.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.30.1...v2.31.0) (2026-04-21)
