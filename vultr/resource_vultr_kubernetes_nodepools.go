@@ -314,13 +314,8 @@ func resourceVultrKubernetesNodePoolsUpdate(ctx context.Context, d *schema.Resou
 	clusterID := d.Get("cluster_id").(string)
 
 	req := &govultr.NodePoolReqUpdate{
-		Tag: govultr.StringToStringPtr(d.Get("tag").(string)),
-	}
-
-	// Only send node_quantity when auto_scaler is disabled
-	// When auto_scaler is enabled, the cluster autoscaler manages node count
-	if !d.Get("auto_scaler").(bool) {
-		req.NodeQuantity = d.Get("node_quantity").(int)
+		NodeQuantity: d.Get("node_quantity").(int),
+		Tag:          govultr.StringToStringPtr(d.Get("tag").(string)),
 	}
 
 	if d.HasChange("auto_scaler") {
