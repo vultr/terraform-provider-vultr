@@ -1,4 +1,18 @@
 # Changelog
+## [v2.32.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.31.2...v2.32.0) (2026-07-14)
+### Enhancements
+* resource/instance: Add vpc_only field [PR 741](https://github.com/vultr/terraform-provider-vultr/pull/741)
+* resource/load_balancer: Add nodes field [PR 742](https://github.com/vultr/terraform-provider-vultr/pull/742)
+* data source/load_balancer: Add nodes field [PR 742](https://github.com/vultr/terraform-provider-vultr/pull/742)
+
+### Bug Fixes
+* resource/kubernetes: Revert "Ignore node count when autoscaler is enabled" [PR 748](https://github.com/vultr/terraform-provider-vultr/pull/748)
+
+### Dependencies
+* Update go from v1.25 to v1.26 [PR 740](https://github.com/vultr/terraform-provider-vultr/pull/740)
+* Bump golang.org/x/net from 0.52.0 to 0.55.0 [PR 745](https://github.com/vultr/terraform-provider-vultr/pull/745)
+* Bump golang.org/x/crypto from 0.51.0 to 0.52.0 [PR 746](https://github.com/vultr/terraform-provider-vultr/pull/746)
+
 ## [v2.31.2](https://github.com/vultr/terraform-provider-vultr/compare/v2.31.1...v2.31.2) (2026-05-12)
 ### Documentation
 * Remove old fields from org role docs [PR 737](https://github.com/vultr/terraform-provider-vultr/pull/737)
@@ -14,7 +28,7 @@
 ### Documentation
 * resource/bare_metal_server: Document mdisk_mode field [PR 734](https://github.com/vultr/terraform-provider-vultr/pull/734)
 
-## New Contributors
+### New Contributors
 * @tghaas made their first contribution in [PR 734](https://github.com/vultr/terraform-provider-vultr/pull/734)
 
 ## [v2.31.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.30.1...v2.31.0) (2026-04-21)
