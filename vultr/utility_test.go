@@ -127,3 +127,42 @@ func TestCanonicalizeIP(t *testing.T) {
 		})
 	}
 }
+
+func TestCanonicalizeUserDataLineEndings(t *testing.T) {
+	cases := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{
+			name: "lf unchanged",
+			in:   "#cloud-config\nmanage_etc_hosts: false\n",
+			want: "#cloud-config\nmanage_etc_hosts: false\n",
+		},
+		{
+			name: "crlf normalized",
+			in:   "#cloud-config\r\nmanage_etc_hosts: false\r\n",
+			want: "#cloud-config\nmanage_etc_hosts: false\n",
+		},
+		{
+			name: "cr normalized",
+			in:   "#cloud-config\rmanage_etc_hosts: false\r",
+			want: "#cloud-config\nmanage_etc_hosts: false\n",
+		},
+		{
+			name: "content preserved",
+			in:   "#cloud-config\nusers:\n  - name: terraform\n",
+			want: "#cloud-config\nusers:\n  - name: terraform\n",
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := canonicalizeUserDataLineEndings(tc.in)
+			if got != tc.want {
+				t.Errorf("canonicalizeUserDataLineEndings(%q) = %q, want %q",
+					tc.in, got, tc.want)
+			}
+		})
+	}
+}

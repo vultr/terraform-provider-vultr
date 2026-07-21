@@ -120,10 +120,11 @@ Will not do anything unless enable_ipv6 is also true.`,
 				Optional: true,
 			},
 			"user_data": {
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
-				ForceNew: true,
+				Type:      schema.TypeString,
+				Computed:  true,
+				Optional:  true,
+				ForceNew:  true,
+				StateFunc: canonicalizeUserDataLineEndings,
 			},
 			"activation_email": {
 				Type:     schema.TypeBool,
@@ -597,6 +598,25 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 	}
 	if err := d.Set("user_scheme", instance.UserScheme); err != nil {
 		return diag.Errorf("unable to set resource instance `user_scheme` read value: %v", err)
+	}
+
+	userData, _, err := client.Instance.GetUserData(ctx, d.Id())
+	if err != nil {
+		return diag.Errorf("error getting instance (%s) user_data: %v", d.Id(), err)
+	}
+
+	encodedUserData := ""
+	if userData != nil {
+		encodedUserData = userData.Data
+	}
+
+	decodedUserData, err := base64.StdEncoding.DecodeString(encodedUserData)
+	if err != nil {
+		return diag.Errorf("error decoding instance (%s) user_data: %v", d.Id(), err)
+	}
+
+	if err := d.Set("user_data", canonicalizeUserDataLineEndings(string(decodedUserData))); err != nil {
+		return diag.Errorf("unable to set resource instance `user_data` read value: %v", err)
 	}
 
 	backup, _, err := client.Instance.GetBackupSchedule(ctx, d.Id())
