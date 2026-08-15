@@ -118,6 +118,34 @@ func resourceVultrKubernetesNodePoolsStateUpgradeV0ToV1(ctx context.Context, raw
 	return rawState, nil
 }
 
+// findNodePoolByLabel returns the node pool with the given label on the cluster. It exists to
+// recover from a create response that describes a different pool than the one requested; see
+// resourceVultrKubernetesNodePoolsCreate.
+func findNodePoolByLabel(ctx context.Context, client *govultr.Client, clusterID, label string) (*govultr.NodePool, error) { //nolint:lll
+	options := &govultr.ListOptions{PerPage: 100}
+
+	for {
+		pools, meta, _, err := client.Kubernetes.ListNodePools(ctx, clusterID, options)
+		if err != nil {
+			return nil, fmt.Errorf("error listing node pools on cluster %v : %w", clusterID, err)
+		}
+
+		for i := range pools {
+			if pools[i].Label == label {
+				return &pools[i], nil
+			}
+		}
+
+		if meta == nil || meta.Links == nil || meta.Links.Next == "" {
+			break
+		}
+
+		options.Cursor = meta.Links.Next
+	}
+
+	return nil, fmt.Errorf("no node pool labeled %q found on cluster %v", label, clusterID)
+}
+
 func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
@@ -137,6 +165,30 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 	nodePool, _, err := client.Kubernetes.CreateNodePool(ctx, clusterID, req)
 	if err != nil {
 		return diag.Errorf("error creating node pool: %v", err)
+	}
+
+	// The API can respond to a create with a node pool that is NOT the one just created when
+	// several creates are in flight against the same cluster (Terraform runs resources
+	// concurrently by default). Trusting that response makes multiple resources adopt a single
+	// pool id, so state silently points at the wrong pool while the real ones become orphans.
+	//
+	// `label` is unique per cluster and is how a pool is identified everywhere else in this
+	// provider, so use it to detect the mismatch and recover the correct id.
+	if nodePool.Label != req.Label {
+		log.Printf(
+			"[WARN] create for node pool %q returned pool %q (id %v); resolving by label",
+			req.Label, nodePool.Label, nodePool.ID,
+		)
+
+		resolved, err := findNodePoolByLabel(ctx, client, clusterID, req.Label)
+		if err != nil {
+			return diag.Errorf(
+				"error creating node pool %q: the API returned pool %q (id %v) and it could not be resolved by label: %v", //nolint:lll
+				req.Label, nodePool.Label, nodePool.ID, err,
+			)
+		}
+
+		nodePool = resolved
 	}
 
 	d.SetId(nodePool.ID)
