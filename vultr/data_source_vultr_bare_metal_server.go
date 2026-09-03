@@ -107,11 +107,6 @@ func dataSourceVultrBareMetalServer() *schema.Resource {
 				Computed: true,
 				Elem:     &schema.Schema{Type: schema.TypeString},
 			},
-			"vpc2_ids": {
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
 			"user_scheme": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -251,15 +246,6 @@ func dataSourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceD
 
 	if err := d.Set("vpc_id", vpcID); err != nil {
 		return diag.Errorf("unable to set data source bare metal server `vpc_id` read value : %v", err)
-	}
-
-	vpc2s, err := getBareMetalServerVPC2s(client, d.Id())
-	if err != nil {
-		return diag.Errorf("%s", err.Error())
-	}
-
-	if err := d.Set("vpc2_ids", vpc2s); err != nil {
-		return diag.Errorf("unable to set instance `vpc2_ids` read value: %v", err)
 	}
 
 	return nil

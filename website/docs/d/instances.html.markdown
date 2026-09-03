@@ -77,4 +77,3 @@ The following attributes are exported:
   * `hostname` - The hostname assigned to the server.
   * `vpc_ids` - A list of VPC IDs attached to the server.
   * `vpc_only` - Whether the instance was deployed without public networking.
-  * `vpc2_ids` - (Deprecated) A list of VPC 2.0 IDs attached to the server.

@@ -154,11 +154,6 @@ func dataSourceVultrInstance() *schema.Resource {
 				Type:     schema.TypeBool,
 				Computed: true,
 			},
-			"vpc2_ids": {
-				Type:     schema.TypeList,
-				Computed: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
-			},
 		},
 	}
 }
@@ -310,6 +305,7 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 		"dom":  strconv.Itoa(schedule.Dom),
 		"dow":  strconv.Itoa(schedule.Dow),
 	}
+
 	if err := d.Set("backups_schedule", bsInfo); err != nil {
 		return diag.Errorf("error setting `backups_schedule`: %#v", err)
 	}
@@ -319,20 +315,14 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("%s", err.Error())
 	}
 
-	vpc2s, err := getVPC2s(client, d.Id())
-	if err != nil {
-		return diag.Errorf("%s", err.Error())
-	}
-
 	if err := d.Set("vpc_ids", vpcs); err != nil {
 		return diag.Errorf("unable to set instance `vpc_ids` read value: %v", err)
 	}
+
 	if err := d.Set("vpc_only", serverList[0].VPCOnly); err != nil {
 		return diag.Errorf("unable to set instance `vpc_only` read value: %v", err)
 	}
-	if err := d.Set("vpc2_ids", vpc2s); err != nil {
-		return diag.Errorf("unable to set instance `vpc2_ids` read value: %v", err)
-	}
+
 	if err := d.Set("user_scheme", serverList[0].UserScheme); err != nil {
 		return diag.Errorf("unable to set instance `user_scheme` read value: %v", err)
 	}

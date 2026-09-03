@@ -50,7 +50,6 @@ The following arguments are supported:
 * `snapshot_id` - (Optional) The ID of the Vultr snapshot that the server will restore for the initial installation. [See List Snapshots](https://www.vultr.com/api/#operation/list-snapshots)
 * `script_id` - (Optional) The ID of the startup script you want added to the server.
 * `vpc_id` - (Optional) The VPC ID to use when creating the server.
-* `vpc2_ids` - (Deprecated) A list of VPC 2.0 IDs to be attached to the server.
 * `ssh_key_ids` - (Optional) A list of SSH key IDs to apply to the server on install (only valid for Linux/FreeBSD).
 * `user_data` - (Optional) Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
 * `enable_ipv6` - (Optional) Whether the server has IPv6 networking activated.
@@ -90,7 +89,6 @@ The following attributes are exported:
 * `snapshot_id` - The ID of the Vultr snapshot that the server was restored from.
 * `script_id` - The ID of the startup script that was added to the server.
 * `vpc_id` - The ID of the VPC used by the server.
-* `vpc2_ids` - (Deprecated) A list of VPC 2.0 IDs to be attached to the server.
 * `ssh_key_ids` - A list of SSH key IDs applied to the server on install.
 * `user_data` - Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
 * `enable_ipv6` - Whether the server has IPv6 networking activated.

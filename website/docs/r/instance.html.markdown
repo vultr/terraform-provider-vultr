@@ -63,7 +63,6 @@ The following arguments are supported:
 * `private_network_ids` - (Optional) (Deprecated: use `vpc_ids` instead) A list of private network IDs to be attached to the server.
 * `vpc_ids` - (Optional) A list of VPC IDs to be attached to the server.
 * `vpc_only` - (Optional) If enabled, no public IP or NIC will be attached. Requires a `vpc_ids` with a NAT gateway set up.
-* `vpc2_ids` - (Deprecated) A list of VPC 2.0 IDs to be attached to the server.
 * `ssh_key_ids` - (Optional) A list of SSH key IDs to apply to the server on install (only valid for Linux/FreeBSD).
 * `user_data` - (Optional) Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
 * `backups` - (Optional) Whether automatic backups will be enabled for this server (these have an extra charge associated with them). Values can be enabled or disabled.
@@ -129,7 +128,6 @@ The following attributes are exported:
 * `private_network_ids` - (Deprecated: Use `vpc_ids` instead) A list of private network IDs attached to the server.
 * `vpc_ids` - A list of VPC IDs attached to the server.
 * `vpc_only` - If enabled, no public IP or NIC will be attached.
-* `vpc2_ids` - (Deprecated) A list of VPC 2.0 IDs attached to the server.
 * `ssh_key_ids` - A list of SSH key IDs applied to the server on install.
 * `user_data` - Generic data store, which some provisioning tools and cloud operating systems use as a configuration file. It is generally consumed only once after an instance has been launched, but individual needs may vary.
 * `backups` - Whether automatic backups are enabled for this server.

@@ -96,12 +96,6 @@ Will not do anything unless enable_ipv6 is also true.`,
 				ForceNew:    true,
 				Description: `Requires a 'vpc_ids' with a NAT gateway attached`,
 			},
-			"vpc2_ids": {
-				Type:       schema.TypeSet,
-				Optional:   true,
-				Elem:       &schema.Schema{Type: schema.TypeString},
-				Deprecated: "VPC2 is deprecated and will not be supported in a future release.  Use VPC instead",
-			},
 			"label": {
 				Type:     schema.TypeString,
 				Computed: true,
@@ -429,12 +423,6 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 		}
 	}
 
-	if vpcIDs, vpcOK := d.GetOk("vpc2_ids"); vpcOK {
-		for _, v := range vpcIDs.(*schema.Set).List() {
-			req.AttachVPC2 = append(req.AttachVPC2, v.(string)) //nolint:staticcheck
-		}
-	}
-
 	if sshKeyIDs, sshKeyOK := d.GetOk("ssh_key_ids"); sshKeyOK {
 		for _, v := range sshKeyIDs.([]interface{}) {
 			req.SSHKeys = append(req.SSHKeys, v.(string))
@@ -632,11 +620,6 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("%s", err.Error())
 	}
 
-	vpc2s, err := getVPC2s(client, d.Id())
-	if err != nil {
-		return diag.Errorf("%s", err.Error())
-	}
-
 	if _, vpcUpdate := d.GetOk("vpc_ids"); vpcUpdate {
 		if err := d.Set("vpc_ids", vpcs); err != nil {
 			return diag.Errorf("unable to set resource instance `vpc_ids` read value: %v", err)
@@ -645,12 +628,6 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 
 	if err := d.Set("vpc_only", instance.VPCOnly); err != nil {
 		return diag.Errorf("unable to set resource instance `vpc_only` read value: %v", err)
-	}
-
-	if _, vpc2Update := d.GetOk("vpc2_ids"); vpc2Update {
-		if err := d.Set("vpc2_ids", vpc2s); err != nil {
-			return diag.Errorf("unable to set resource instance `vpc2_ids` read value: %v", err)
-		}
 	}
 
 	return nil
@@ -709,24 +686,6 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 
 		req.AttachVPC = append(req.AttachVPC, diffSlice(oldIDs, newIDs)...)
 		req.DetachVPC = append(req.DetachVPC, diffSlice(newIDs, oldIDs)...)
-	}
-
-	if d.HasChange("vpc2_ids") {
-		log.Printf("[INFO] Updating vpc2_ids")
-		oldVPC, newVPC := d.GetChange("vpc2_ids")
-
-		var oldIDs []string
-		for _, v := range oldVPC.(*schema.Set).List() {
-			oldIDs = append(oldIDs, v.(string))
-		}
-
-		var newIDs []string
-		for _, v := range newVPC.(*schema.Set).List() {
-			newIDs = append(newIDs, v.(string))
-		}
-
-		req.AttachVPC2 = append(req.AttachVPC2, diffSlice(oldIDs, newIDs)...) //nolint:staticcheck
-		req.DetachVPC2 = append(req.DetachVPC2, diffSlice(newIDs, oldIDs)...) //nolint:staticcheck
 	}
 
 	if d.HasChange("tags") {
@@ -797,17 +756,6 @@ func resourceVultrInstanceDelete(ctx context.Context, d *schema.ResourceData, me
 
 		if _, _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
 			return diag.Errorf("error detaching VPCs prior to deleting instance %s : %v", d.Id(), err)
-		}
-	}
-
-	if vpcIDs, vpcOK := d.GetOk("vpc2_ids"); vpcOK {
-		detach := &govultr.InstanceUpdateReq{}
-		for _, v := range vpcIDs.(*schema.Set).List() {
-			detach.DetachVPC2 = append(detach.DetachVPC2, v.(string)) //nolint:staticcheck
-		}
-
-		if _, _, err := client.Instance.Update(ctx, d.Id(), detach); err != nil {
-			return diag.Errorf("error detaching VPC2s prior to deleting instance %s : %v", d.Id(), err)
 		}
 	}
 
