@@ -99,3 +99,9 @@ func canonicalizeIP(val interface{}) string {
 	}
 	return ip.String()
 }
+
+func canonicalizeUserDataLineEndings(val interface{}) string {
+	raw := val.(string)
+	normalized := strings.ReplaceAll(raw, "\r\n", "\n")
+	return strings.ReplaceAll(normalized, "\r", "\n")
+}
