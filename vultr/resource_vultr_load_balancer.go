@@ -82,7 +82,7 @@ func resourceVultrLoadBalancerV1() *schema.Resource {
 
 	schemaGlobalRegions := map[string]*schema.Schema{
 		"global_regions": {
-			Type:     schema.TypeSet,
+			Type:     schema.TypeList,
 			Optional: true,
 			Elem: &schema.Resource{
 				Schema: map[string]*schema.Schema{
@@ -355,7 +355,7 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 
 	var globalRegionsList []govultr.LBGlobalRegion
 	if attachGlobalRegions, globalRegionsOk := d.GetOk("global_regions"); globalRegionsOk {
-		regions := attachGlobalRegions.(*schema.Set).List()
+		regions := attachGlobalRegions.([]interface{})
 		for i := range regions {
 			region := regions[i].(map[string]interface{})
 			globalRegionsList = append(globalRegionsList, govultr.LBGlobalRegion{
@@ -514,11 +514,26 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	}
 
 	hc = append(hc, hcInfo)
-	if err := d.Set("auto_ssl_domain", lb.AutoSSL.Domain); err != nil {
-		return diag.Errorf("unable to set resource load_balancer `auto_ssl_domain` read value: %v", err)
-	}
+
 	if err := d.Set("health_check", hc); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `health_check` read value: %v", err)
+	}
+
+	globalRegions := []map[string]interface{}{}
+	for i := range lb.GlobalRegions {
+		region := map[string]interface{}{
+			"region_id": lb.GlobalRegions[i].RegionID,
+			"vpc_id":    lb.GlobalRegions[i].VPCID,
+		}
+		globalRegions = append(globalRegions, region)
+	}
+
+	if err := d.Set("global_regions", globalRegions); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `global_regions` read value: %v", err)
+	}
+
+	if err := d.Set("auto_ssl_domain", lb.AutoSSL.Domain); err != nil {
+		return diag.Errorf("unable to set resource load_balancer `auto_ssl_domain` read value: %v", err)
 	}
 	if err := d.Set("has_ssl", lb.SSLInfo); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `has_ssl` read value: %v", err)
@@ -561,9 +576,6 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 	}
 	if err := d.Set("vpc", lb.GenericInfo.VPC); err != nil {
 		return diag.Errorf("unable to set resource load_balancer `vpc` read value: %v", err)
-	}
-	if err := d.Set("global_regions", lb.GlobalRegions); err != nil {
-		return diag.Errorf("unable to set resource load_balancer `global_regions` read value: %v", err)
 	}
 
 	return nil
@@ -692,7 +704,7 @@ func resourceVultrLoadBalancerUpdate(ctx context.Context, d *schema.ResourceData
 		_, globalRegions := d.GetChange("global_regions")
 
 		var globalRegionsList []govultr.LBGlobalRegion
-		regions := globalRegions.(*schema.Set).List()
+		regions := globalRegions.([]interface{})
 		for i := range regions {
 			region := regions[i].(map[string]interface{})
 			globalRegionsList = append(globalRegionsList, govultr.LBGlobalRegion{
