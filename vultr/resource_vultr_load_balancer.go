@@ -454,9 +454,13 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 
 	lb, _, err := client.LoadBalancer.Get(ctx, d.Id())
 	if err != nil {
-		log.Printf("[WARN] Vultr load balancer (%v) not found", d.Id())
-		d.SetId("")
-		return nil
+		if strings.Contains(err.Error(), "Load Balancer Subscription ID Not Found") {
+			log.Printf("[WARN] load balancer (%v) not found", d.Id())
+			d.SetId("")
+			return nil
+		}
+
+		return diag.Errorf("error getting load balancer: %v", err)
 	}
 
 	var rulesList []map[string]interface{}
