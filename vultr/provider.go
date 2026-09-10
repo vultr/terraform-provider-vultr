@@ -1,6 +1,9 @@
 package vultr
 
 import (
+	"context"
+
+	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
@@ -124,16 +127,21 @@ func Provider() *schema.Provider {
 			"vultr_vpc":                                  resourceVultrVPC(),
 		},
 
-		ConfigureFunc: providerConfigure,
+		ConfigureContextFunc: providerConfigure,
 	}
 }
 
-func providerConfigure(d *schema.ResourceData) (interface{}, error) {
+func providerConfigure(ctx context.Context, d *schema.ResourceData) (interface{}, diag.Diagnostics) {
 	config := Config{
 		APIKey:     d.Get("api_key").(string),
 		RateLimit:  d.Get("rate_limit").(int),
 		RetryLimit: d.Get("retry_limit").(int),
 	}
 
-	return config.Client()
+	client, err := config.Client()
+	if err != nil {
+		return nil, diag.FromErr(err)
+	}
+
+	return client, nil
 }
