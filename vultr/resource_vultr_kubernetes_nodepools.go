@@ -20,7 +20,7 @@ func resourceVultrKubernetesNodePools() *schema.Resource {
 		UpdateContext: resourceVultrKubernetesNodePoolsUpdate,
 		DeleteContext: resourceVultrKubernetesNodePoolsDelete,
 		Importer: &schema.ResourceImporter{
-			State: func(d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
+			StateContext: func(ctx context.Context, d *schema.ResourceData, meta any) ([]*schema.ResourceData, error) {
 				ids := strings.SplitN(d.Id(), " ", 2)
 				if len(ids) != 2 || ids[0] == "" || ids[1] == "" {
 					err := fmt.Errorf("unexpected format of node pool import IDs (%s): expected 'clusterID nodePoolID'", d.Id())
