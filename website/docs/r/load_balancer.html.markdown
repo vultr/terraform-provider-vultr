@@ -45,7 +45,6 @@ resource "vultr_load_balancer" "lb" {
 The follow arguments are supported:
 
 * `region` - (Required) The region your load balancer is deployed in.
-* `forwarding_rules` - (Required) List of forwarding rules for a load balancer. The configuration of a `forwarding_rules` is listened below.
 * `nodes` - (Optional) The number of nodes to add to the load balancer (1-99). Must be an odd number. Default value is 1.
 * `label` - (Optional) The load balancer's label.
 * `balancing_algorithm` - (Optional) The balancing algorithm for your load balancer. Options are `roundrobin` or `leastconn`. Default value is `roundrobin`
@@ -54,15 +53,16 @@ The follow arguments are supported:
 * `ssl_redirect` - (Optional) Boolean value that indicates if HTTP calls will be redirected to HTTPS.
 * `http_version` - (Optional) Integer value that indicates if HTTP/2 or HTTP/3 is enabled. Allowed values 2 or 3.
 * `attached_instances` - (Optional) Array of instances that are currently attached to the load balancer.
-* `health_check` - (Optional) A block that defines the way load balancers should check for health. The configuration of a `health_check` is listed below.
-* `ssl` - (Optional) A block that supplies your ssl configuration to be used with HTTPS. The configuration of a `ssl` is listed below.
 * `auto_ssl_domain` - (Optional) The auto SSL domain configuration for a load balancer. This can be a root domain (example.com) or include a subdomain (sub.example.com).
 * `private_network` (Optional) (Deprecated: use `vpc` instead) A private network ID that the load balancer should be attached to.
 * `vpc` (Optional)- A VPC ID that the load balancer should be attached to.
-* `global_regions` - A set of region IDs to deploy child load balancers to.
 
-`health_check` supports the following
+`ssl` (Optional) block supports the following elements:
+* `private_key` - (Required) The SSL certificates private key.
+* `certificate` - (Required) The SSL Certificate.
+* `chain` - (Optional) The SSL certificate chain.
 
+`health_check` (Optional) block supports the following elements:
 * `protocol` - (Optional) The protocol used to traffic requests to the load balancer. Possible values are `http`, or `tcp`. Default value is `http`.
 * `path` - (Optional) The path on the attached instances that the load balancer should check against. Default value is `/`
 * `port` - (Optional) The assigned port (integer) on the attached instances that the load balancer should check against. Default value is `80`.
@@ -71,23 +71,20 @@ The follow arguments are supported:
 * `unhealthy_threshold` - (Optional) Number of failed attempts encountered before failover. Default value is 5.
 * `healthy_threshold` - (Optional)  Number of failed attempts encountered before failover. Default value is 5. 
 
-`forwarding_rules` supports the following
-
+`forwarding_rules` (Required) is a list of items the following elements:
 * `frontend_protocol` - (Required) Protocol on load balancer side. Possible values: "http", "https", "tcp".
 * `frontend_port` - (Required) Port on load balancer side.
 * `backend_protocol` - (Required) Protocol on instance side. Possible values: "http", "https", "tcp".
 * `backend_port` - (Required) Port on instance side.
 
-`ssl` supports the following
-
-* `private_key` - (Required) The SSL certificates private key.
-* `certificate` - (Required) The SSL Certificate.
-* `chain` - (Optional) The SSL certificate chain.
-
-`firewall_rules` supports the following
+`firewall_rules` (Optional) is a list of items the following elements:
 * `frontend_port` - (Required) Port on load balancer side.
 * `ip_type` - (Required) The type of ip this rule is - may be either v4 or v6.
 * `source` - (Required) IP address with subnet that is allowed through the firewall. You may also pass in `cloudflare` which will allow only CloudFlares IP range.
+
+`global_regions` (Optional) is a list of items the following elements:
+* `region_id` - (Required) The three letter region code which should have a child load balancer
+* `vpc_id` - (Optional) The VPC ID to attach to the child load balancer
 
 ## Attributes Reference
 
@@ -107,17 +104,38 @@ The following attributes are exported:
 * `status` - Current status for the load balancer
 * `ipv4` - IPv4 address for your load balancer.
 * `ipv6` - IPv6 address for your load balancer.
-* `health_check` - Defines the way load balancers should check for health. 
-* `forwarding_rules` - Defines the forwarding rules for a load balancer.
-* `firewall_rules` - Defines the firewall rules for a load balancer.
 * `private_network` - (Deprecated: use `vpc` instead) Defines the private network the load balancer is attached to.
 * `vpc` - Defines the VPC the load balancer is attached to.
-* `global_regions` - A set of region IDs to deploy child load balancers to.
+
+`health_check` exports the following elements:
+* `protocol` - The protocol used to traffic requests to the load balancer. Possible values are "http", "https", or "tcp".
+* `path` - The path on the attached instances that the load balancer should check against.
+* `port` - The assigned port (integer) on the attached instances that the load balancer should check against.
+* `check_interval` - Time in seconds to perform health check. Default value is 15.
+* `response_timeout` - Time in seconds to wait for a health check response. Default value is 5.
+* `unhealthy_threshold` - Number of failed attempts encountered before failover. Default value is 5.
+* `healthy_threshold` -  Number of failed attempts encountered before failover. Default value is 5. 
+
+`forwarding_rules` is a list of items with the following elements:
+* `frontend_protocol` - Protocol on load balancer side. Possible values: "http", "https", "tcp".
+* `frontend_port` - Port on load balancer side.
+* `backend_protocol` - Protocol on instance side. Possible values: "http", "https", "tcp".
+* `target_port` - Port on instance side.
+
+`firewall_rules` is a list of items with the following elements:
+* `frontend_port` - Port on load balancer side.
+* `ip_type` - The type of ip this rule is - may be either v4 or v6.
+* `source` - IP address with subnet that is allowed through the firewall. You may also pass in `cloudflare` which will allow only CloudFlares IP range.
+
+`global_regions` is a list of items with the following elements:
+* `region_id` - The three letter region code of the child load balancer 
+* `vpc_id` - The VPC ID attached to the child load balancer
+
 
 ## Import
 
 Load Balancers can be imported using the load balancer `ID`, e.g.
 
 ```
-terraform import vultr_load_balancer.lb b6a859c5-b299-49dd-8888-b1abbc517d08
+terraform import vultr_load_balancer.lb-name b6a859c5-b299-49dd-8888-b1abbc517d08
 ```

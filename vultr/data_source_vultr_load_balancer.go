@@ -95,9 +95,9 @@ func dataSourceVultrLoadBalancer() *schema.Resource {
 				Computed: true,
 			},
 			"global_regions": {
-				Type:     schema.TypeSet,
+				Type:     schema.TypeList,
 				Computed: true,
-				Elem:     &schema.Schema{Type: schema.TypeString},
+				Elem:     &schema.Schema{Type: schema.TypeMap},
 			},
 		},
 	}
@@ -190,9 +190,6 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	if err := d.Set("ipv6", lbList[0].IPV6); err != nil {
 		return diag.Errorf("unable to set load_balancer `ipv6` read value: %v", err)
 	}
-	if err := d.Set("global_regions", lbList[0].GlobalRegions); err != nil {
-		return diag.Errorf("unable to set load_balancer `global_regions` read value: %v", err)
-	}
 
 	var httpVersion int
 	if lbList[0].HTTP2 != nil && *lbList[0].HTTP2 {
@@ -251,5 +248,20 @@ func dataSourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData
 	if err := d.Set("firewall_rules", fwrRules); err != nil {
 		return diag.Errorf("unable to set load_balancer `firewall_rules` read value: %v", err)
 	}
+
+	var globalRegions []map[string]interface{}
+	regions := lbList[0].GlobalRegions
+	for i := range regions {
+		region := map[string]interface{}{
+			"region_id": regions[i].RegionID,
+			"vpc_id":    regions[i].VPCID,
+		}
+		globalRegions = append(globalRegions, region)
+	}
+
+	if err := d.Set("global_regions", globalRegions); err != nil {
+		return diag.Errorf("unable to set load_balancer `global_regions` read value: %v", err)
+	}
+
 	return nil
 }

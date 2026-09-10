@@ -61,10 +61,8 @@ The following attributes are exported:
 * `forwarding_rules` - Defines the forwarding rules for a load balancer. The configuration of a `forwarding_rules` is listened below.
 * `private_network` - (Deprecated: use `vpc` instead) Defines the private network the load balancer is attached to.
 * `vpc` - Defines the VPCthe load balancer is attached to.
-* `global_regions` - A set of region IDs to deploy child load balancers to.
 
-`health_check` supports the following
-
+`health_check` exports the following elements:
 * `protocol` - The protocol used to traffic requests to the load balancer. Possible values are "http", "https", or "tcp".
 * `path` - The path on the attached instances that the load balancer should check against.
 * `port` - The assigned port (integer) on the attached instances that the load balancer should check against.
@@ -73,15 +71,18 @@ The following attributes are exported:
 * `unhealthy_threshold` - Number of failed attempts encountered before failover. Default value is 5.
 * `healthy_threshold` -  Number of failed attempts encountered before failover. Default value is 5. 
 
-`forwarding_rules` supports the following
-
+`forwarding_rules` is a list of items with the following elements:
 * `frontend_protocol` - Protocol on load balancer side. Possible values: "http", "https", "tcp".
 * `frontend_port` - Port on load balancer side.
 * `backend_protocol` - Protocol on instance side. Possible values: "http", "https", "tcp".
 * `target_port` - Port on instance side.
 
-`firewall_rules` supports the following
-* `frontend_port` - (Required) Port on load balancer side.
-* `ip_type` - (Required) The type of ip this rule is - may be either v4 or v6.
-* `source` - (Required) IP address with subnet that is allowed through the firewall. You may also pass in `cloudflare` which will allow only CloudFlares IP range.
+`firewall_rules` is a list of items with the following elements:
+* `frontend_port` - Port on load balancer side.
+* `ip_type` - The type of ip this rule is - may be either v4 or v6.
+* `source` - IP address with subnet that is allowed through the firewall. You may also pass in `cloudflare` which will allow only CloudFlares IP range.
+
+`global_regions` is a list of items with the following elements:
+* `region_id` - The three letter region code of the child load balancer 
+* `vpc_id` - The VPC ID attached to the child load balancer
 
