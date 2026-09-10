@@ -105,9 +105,9 @@ func TestAccVultrDatabaseUpdatePlan(t *testing.T) {
 
 	name := "vultr_database.test"
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrDatabaseDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrDatabaseDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrDatabaseBase(rName),

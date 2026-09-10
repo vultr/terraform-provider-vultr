@@ -135,9 +135,9 @@ func TestAccVultrInstanceUpdateVPCIDs(t *testing.T) {
 
 	name := "vultr_instance.test"
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrInstanceDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrInstanceDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrInstanceBase(rName),
@@ -174,9 +174,9 @@ func TestAccVultrInstanceUpdateTags(t *testing.T) {
 
 	name := "vultr_instance.test"
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrInstanceDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrInstanceDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrInstanceBase(rName),
