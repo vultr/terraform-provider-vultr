@@ -66,9 +66,9 @@ func TestAccVultrReservedIPIPv6(t *testing.T) {
 	ipType := "v6"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrReservedIPDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrReservedIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrReservedIPConfig(rServerLabel, rLabel, ipType),
@@ -114,9 +114,9 @@ func TestAccVultrReservedIPLabelUpdate(t *testing.T) {
 	rLabelUpdated := rLabel + "_updated"
 
 	resource.Test(t, resource.TestCase{
-		PreCheck:     func() { testAccPreCheck(t) },
-		Providers:    testAccProviders,
-		CheckDestroy: testAccCheckVultrReservedIPDestroy,
+		PreCheck:          func() { testAccPreCheck(t) },
+		ProviderFactories: testAccProviderFactories,
+		CheckDestroy:      testAccCheckVultrReservedIPDestroy,
 		Steps: []resource.TestStep{
 			{
 				Config: testAccVultrReservedIPConfigLabel(rLabel),
