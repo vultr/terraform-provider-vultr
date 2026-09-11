@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -110,11 +109,17 @@ func resourceVultrOIDCIssuerRead(ctx context.Context, d *schema.ResourceData, me
 
 	issu, _, err := client.OIDC.GetOIDCIssuer(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Issuer Not Found") {
+		missing, missErr := checkIsMissing(err, "Issuer Not Found")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
 			tflog.Warn(ctx, fmt.Sprintf("Removing oidc issuer (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting oidc issuer : %v", err)
 	}
 

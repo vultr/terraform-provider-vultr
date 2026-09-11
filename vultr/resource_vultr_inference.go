@@ -2,9 +2,10 @@ package vultr
 
 import (
 	"context"
+	"fmt"
 	"log"
-	"strings"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v3"
@@ -66,11 +67,17 @@ func resourceVultrInferenceRead(ctx context.Context, d *schema.ResourceData, met
 
 	inferenceSub, _, err := client.Inference.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "invalid inference ID") {
-			log.Printf("[WARN] Removing inference subscription (%s) because it is gone", d.Id())
+		missing, missErr := checkIsMissing(err, "invalid inference ID")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("removing inference subscription (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting inference subscription (%s): %v", d.Id(), err)
 	}
 

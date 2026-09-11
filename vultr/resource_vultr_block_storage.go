@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -174,11 +173,17 @@ func resourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData, 
 
 	bs, _, err := client.BlockStorage.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Invalid block storage ID") {
-			tflog.Warn(ctx, fmt.Sprintf("Removing block storage (%s) because it is gone", d.Id()))
+		missing, missErr := checkIsMissing(err, "Invalid block storage ID")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("removing block storage (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting block storage: %v", err)
 	}
 

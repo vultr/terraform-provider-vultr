@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -89,11 +88,17 @@ func resourceVultrReservedIPRead(ctx context.Context, d *schema.ResourceData, me
 
 	rip, _, err := client.ReservedIP.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Invalid reserved-ip ID") {
+		missing, missErr := checkIsMissing(err, "reserved ip not found")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
 			tflog.Warn(ctx, fmt.Sprintf("Removing reserved-ip (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting Reserved IPs: %v", err)
 	}
 

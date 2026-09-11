@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -102,11 +101,17 @@ func resourceVultrOrganizationRoleRead(ctx context.Context, d *schema.ResourceDa
 
 	role, _, err := client.Organization.GetRole(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Role not found") {
+		missing, missErr := checkIsMissing(err, "Role not found")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
 			tflog.Warn(ctx, fmt.Sprintf("Removing organization role (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting organization role : %v", err)
 	}
 

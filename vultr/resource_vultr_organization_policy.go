@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -166,11 +165,17 @@ func resourceVultrOrganizationPolicyRead(ctx context.Context, d *schema.Resource
 
 	policy, _, err := client.Organization.GetPolicy(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Policy not found") {
-			tflog.Warn(ctx, fmt.Sprintf("Removing organization policy (%s) because it is gone", d.Id()))
+		missing, missErr := checkIsMissing(err, "Policy not found")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("removing organization policy (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting organization policy : %v", err)
 	}
 

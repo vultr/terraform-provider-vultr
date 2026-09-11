@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -78,11 +77,17 @@ func resourceVultrDNSDomainRead(ctx context.Context, d *schema.ResourceData, met
 
 	domain, _, err := client.Domain.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Invalid domain") {
+		missing, missErr := checkIsMissing(err, "Invalid domain")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
 			tflog.Warn(ctx, fmt.Sprintf("Removing domain (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting domains : %v", err)
 	}
 

@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -454,8 +455,13 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 
 	lb, _, err := client.LoadBalancer.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Load Balancer Subscription ID Not Found") {
-			log.Printf("[WARN] load balancer (%v) not found", d.Id())
+		missing, missErr := checkIsMissing(err, "Load Balancer Subscription ID Not Found")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("Remove load balancer (%v) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}

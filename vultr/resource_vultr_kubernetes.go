@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -168,13 +169,20 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 	vke, _, err := client.Kubernetes.GetCluster(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Unauthorized") {
-			return diag.Errorf("API authorization error: %v", err)
+			return diag.Errorf("api authorization error: %v", err)
 		}
-		if strings.Contains(err.Error(), "Invalid resource ID") {
-			log.Printf("[WARN] Kubernetes Cluster (%v) not found", d.Id())
+
+		missing, missErr := checkIsMissing(err, "Invalid resource ID")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("removing kubernetes cluster (%v) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting cluster (%s): %v", d.Id(), err)
 	}
 

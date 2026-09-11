@@ -150,11 +150,17 @@ func resourceVultrVirtualFileSystemStorageRead(ctx context.Context, d *schema.Re
 
 	storage, _, err := client.VirtualFileSystemStorage.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Subscription ID Not Found.") {
+		missing, missErr := checkIsMissing(err, "Subscription ID Not Found.")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing virtual file system storage (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting virtual file system storage: %v", err)
 	}
 

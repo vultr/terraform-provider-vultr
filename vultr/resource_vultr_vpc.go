@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -83,11 +84,17 @@ func resourceVultrVPCRead(ctx context.Context, d *schema.ResourceData, meta inte
 
 	vpc, _, err := client.VPC.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Invalid VPC ID") {
-			log.Printf("[WARN] Vultr VPC (%s) not found", d.Id())
+		missing, missErr := checkIsMissing(err, "VPC not found")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("removing vpc (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting VPC: %v", err)
 	}
 

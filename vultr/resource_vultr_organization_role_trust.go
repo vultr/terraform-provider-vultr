@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -114,11 +113,17 @@ func resourceVultrOrganizationRoleTrustRead(ctx context.Context, d *schema.Resou
 
 	trust, _, err := client.Organization.GetRoleTrust(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Role trust not found") {
-			tflog.Warn(ctx, fmt.Sprintf("Removing organization role trust (%s) because it is gone", d.Id()))
+		missing, missErr := checkIsMissing(err, "Role trust not found")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("removing organization role trust (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting organization role trust : %v", err)
 	}
 
