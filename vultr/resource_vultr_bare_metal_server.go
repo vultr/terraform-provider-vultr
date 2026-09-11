@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -322,7 +323,7 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 		}
 
 		if missing {
-			log.Printf("[WARN] Removing bare metal server (%s) because it is gone", d.Id())
+			tflog.Warn(ctx, fmt.Sprintf("removing bare metal server (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}

@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -64,11 +63,17 @@ func resourceVultrSSHKeyRead(ctx context.Context, d *schema.ResourceData, meta i
 
 	key, _, err := client.SSHKey.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Invalid ssh key") {
-			tflog.Warn(ctx, fmt.Sprintf("Removing ssh key (%s) because it is gone", d.Id()))
+		missing, missErr := checkIsMissing(err, "Invalid ssh key")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("removing ssh key (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting SSH keys: %v", err)
 	}
 

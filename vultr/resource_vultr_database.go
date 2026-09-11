@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -358,11 +358,17 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 
 	database, _, err := client.Database.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "invalid database ID") {
-			log.Printf("[WARN] Removing database (%s) because it is gone", d.Id())
+		missing, missErr := checkIsMissing(err, "invalid database ID")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("removing database (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting database (%s): %v", d.Id(), err)
 	}
 

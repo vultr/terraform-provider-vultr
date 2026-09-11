@@ -11,6 +11,7 @@ import (
 
 	"github.com/vultr/govultr/v3"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -85,12 +86,18 @@ func resourceVultrIsoRead(ctx context.Context, d *schema.ResourceData, meta inte
 
 	iso, _, err := client.ISO.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains("Invalid iso", err.Error()) {
-			log.Printf("[WARN] Removing ISO (%s) because it is gone", d.Id())
+		missing, missErr := checkIsMissing(err, "Invalid iso")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("removing private iso (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
-		return diag.Errorf("Error getting ISO %s : %v", d.Id(), err)
+
+		return diag.Errorf("error getting ISO %s : %v", d.Id(), err)
 	}
 
 	if err := d.Set("date_created", iso.DateCreated); err != nil {

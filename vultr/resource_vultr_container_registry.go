@@ -6,8 +6,8 @@ import (
 	"log"
 	"regexp"
 	"strconv"
-	"strings"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -101,11 +101,17 @@ func resourceVultrContainerRegistryRead(ctx context.Context, d *schema.ResourceD
 
 	cr, _, err := client.ContainerRegistry.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Invalid container registry ID") {
-			log.Printf("[WARN] Container registry (%s) not found and will be removed", d.Id())
+		missing, missErr := checkIsMissing(err, "Invalid container registry ID")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("removing container registry (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting container registry: %v", err)
 	}
 

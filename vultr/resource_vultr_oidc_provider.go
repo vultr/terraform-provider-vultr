@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -56,11 +55,17 @@ func resourceVultrOIDCProviderRead(ctx context.Context, d *schema.ResourceData, 
 
 	prov, _, err := client.OIDC.GetOIDCProvider(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Provider Not Found") {
-			tflog.Warn(ctx, fmt.Sprintf("Removing oidc provider (%s) because it is gone", d.Id()))
+		missing, missErr := checkIsMissing(err, "Provider Not Found")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("removing oidc provider (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting oidc provider : %v", err)
 	}
 

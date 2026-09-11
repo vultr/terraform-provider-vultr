@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -210,13 +211,20 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 	nodePool, _, err := client.Kubernetes.GetNodePool(ctx, clusterID, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Unauthorized") {
-			return diag.Errorf("API authorization error: %v", err)
+			return diag.Errorf("api authorization error: %v", err)
 		}
-		if strings.Contains(err.Error(), "Invalid NodePool ID") {
-			log.Printf("[WARN] Kubernetes NodePool (%v) not found", d.Id())
+
+		missing, missErr := checkIsMissing(err, "Invalid NodePool ID")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("removing kubernetes node pool (%v) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting node pool: %v", err)
 	}
 

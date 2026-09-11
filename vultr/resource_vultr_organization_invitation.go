@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"strings"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
@@ -100,11 +99,17 @@ func resourceVultrOrganizationInvitationRead(ctx context.Context, d *schema.Reso
 
 	inv, _, err := client.Organization.GetInvitation(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "Invite not found") {
-			tflog.Warn(ctx, fmt.Sprintf("Removing organization invitation (%s) because it is gone", d.Id()))
+		missing, missErr := checkIsMissing(err, "Invite not found")
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("removing organization invitation (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
+
 		return diag.Errorf("error getting organization invitation : %v", err)
 	}
 
