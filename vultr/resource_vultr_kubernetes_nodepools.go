@@ -124,8 +124,17 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 
 	clusterID := d.Get("cluster_id").(string)
 
+	nodeQuantity, err := nodePoolCreateQuantity(
+		d.Get("node_quantity").(int),
+		d.Get("auto_scaler").(bool),
+		d.Get("min_nodes").(int),
+	)
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	req := &govultr.NodePoolReq{
-		NodeQuantity: d.Get("node_quantity").(int),
+		NodeQuantity: nodeQuantity,
 		Label:        d.Get("label").(string),
 		Plan:         d.Get("plan").(string),
 		Tag:          d.Get("tag").(string),
@@ -137,7 +146,11 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 
 	nodePool, _, err := client.Kubernetes.CreateNodePool(ctx, clusterID, req)
 	if err != nil {
-		return diag.Errorf("error creating node pool: %v", err)
+		return diag.Errorf(
+			"error creating node pool: %v. "+
+				"node_quantity must be a positive integer on create (initial size), even when auto_scaler is true",
+			err,
+		)
 	}
 
 	d.SetId(nodePool.ID)
@@ -379,6 +392,33 @@ func resourceVultrKubernetesNodePoolsDelete(ctx context.Context, d *schema.Resou
 	}
 
 	return nil
+}
+
+// nodePoolCreateQuantity returns the initial node count for CreateNodePool.
+// The Vultr API always requires a positive node_quantity on create. When auto_scaler
+// is enabled, that value is the initial size and min_nodes/max_nodes bound the scaler.
+// If node_quantity is 0 (for example lifecycle.ignore_changes on create) and
+// auto_scaler is true, min_nodes is used when it is at least 1.
+func nodePoolCreateQuantity(nodeQuantity int, autoScaler bool, minNodes int) (int, error) {
+	if nodeQuantity >= 1 {
+		return nodeQuantity, nil
+	}
+
+	if autoScaler && minNodes >= 1 {
+		log.Printf(
+			"[WARN] node_quantity was %d on create; using min_nodes (%d) as the initial node count "+
+				"because auto_scaler is enabled",
+			nodeQuantity,
+			minNodes,
+		)
+		return minNodes, nil
+	}
+
+	return 0, fmt.Errorf(
+		"node_quantity must be a positive integer on create (it is the initial node count). " +
+			"When auto_scaler is true, set node_quantity to the initial size (usually equal to min_nodes). " +
+			"lifecycle.ignore_changes = [node_quantity] can send 0 on create and is unsafe unless min_nodes >= 1",
+	)
 }
 
 func waitForNodePoolAvailable(ctx context.Context, d *schema.ResourceData, target string, pending []string, attribute string, meta interface{}) (interface{}, error) { //nolint:lll

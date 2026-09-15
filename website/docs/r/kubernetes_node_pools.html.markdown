@@ -57,11 +57,11 @@ resource "vultr_kubernetes_node_pools" "np-1" {
 The follow arguments are supported:
 
 * `cluster_id` - (Required) The VKE cluster ID you want to attach this nodepool to.
-* `node_quantity` - (Required) The number of nodes in this node pool.
+* `node_quantity` - (Required) The number of nodes in this node pool. This remains required on **create** even when `auto_scaler` is `true`: the API uses it as the **initial** node count, while `min_nodes`/`max_nodes` bound the scaler. Do not set `lifecycle.ignore_changes = [node_quantity]` on first apply; Terraform can then send `0` and create will fail (or fall back to `min_nodes` when autoscaling is enabled). After the pool exists, ignoring `node_quantity` is reasonable if the autoscaler should own the live count.
 * `plan` - (Required) The plan to be used in this node pool. [See plans list](https://www.vultr.com/api/#operation/list-plans) Note the minimum plan requirements must have at least 1 core and 2 gbs of memory.
 * `label` - (Required) The label to be used as a prefix for nodes in this node pool.
 * `tag` - (Optional) A tag that is assigned to this node pool.
-* `auto_scaler` - (Optional, Default to False) Enable the auto scaler for the default node pool.
+* `auto_scaler` - (Optional, Default to False) Enable the auto scaler for this node pool.
 * `min_nodes` - (Optional, Default to 1) The minimum number of nodes to use with the auto scaler.
 * `max_nodes` - (Optional, Default to 1) The maximum number of nodes to use with the auto scaler.
 * `user_data` - (Optional) A base64 encoded string containing the user data to apply to nodes in the node pool.
