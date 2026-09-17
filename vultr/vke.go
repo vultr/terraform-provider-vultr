@@ -199,23 +199,27 @@ func resourceVultrKubernetesV0() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Sensitive:   true,
+				Deprecated:  "kubernetes configs are their own data source and are no longer populated here",
 			},
 			"cluster_ca_certificate": {
-				Type:      schema.TypeString,
-				Computed:  true,
-				Sensitive: true,
+				Type:       schema.TypeString,
+				Computed:   true,
+				Sensitive:  true,
+				Deprecated: "kubernetes certificate fields are no longer populated",
 			},
 
 			"client_key": {
-				Type:      schema.TypeString,
-				Computed:  true,
-				Sensitive: true,
+				Type:       schema.TypeString,
+				Computed:   true,
+				Sensitive:  true,
+				Deprecated: "kubernetes certificate fields are no longer populated",
 			},
 
 			"client_certificate": {
-				Type:      schema.TypeString,
-				Computed:  true,
-				Sensitive: true,
+				Type:       schema.TypeString,
+				Computed:   true,
+				Sensitive:  true,
+				Deprecated: "kubernetes certificate fields are no longer populated",
 			},
 		},
 	}

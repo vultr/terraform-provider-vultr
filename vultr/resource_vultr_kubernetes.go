@@ -269,29 +269,6 @@ You must set the default tag on one node pool before importing.`,
 	if err := d.Set("status", vke.Status); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `status` read value: %v", err)
 	}
-
-	config, _, err := client.Kubernetes.GetKubeConfig(ctx, d.Id())
-	if err != nil {
-		return diag.Errorf("could not get kubeconfig : %v", err)
-	}
-
-	ca, cert, key, err := getCertsFromKubeConfig(config.KubeConfig)
-	if err != nil {
-		return diag.Errorf("error getting certs from kubeconfig : %v", err)
-	}
-
-	if err := d.Set("kube_config", config.KubeConfig); err != nil {
-		return diag.Errorf("unable to set resource kubernetes `kube_config` read value: %v", err)
-	}
-	if err := d.Set("cluster_ca_certificate", ca); err != nil {
-		return diag.Errorf("unable to set kubernetes `cluster_ca_certificate` read value: %v", err)
-	}
-	if err := d.Set("client_certificate", cert); err != nil {
-		return diag.Errorf("unable to set kubernetes `client_certificate` read value: %v", err)
-	}
-	if err := d.Set("client_key", key); err != nil {
-		return diag.Errorf("unable to set kubernetes `client_key` read value: %v", err)
-	}
 	if err := d.Set("version", vke.Version); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `version` read value: %v", err)
 	}
