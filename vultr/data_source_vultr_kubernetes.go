@@ -186,20 +186,24 @@ func dataSourceVultrKubernetes() *schema.Resource {
 				},
 			},
 			"kube_config": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:       schema.TypeString,
+				Computed:   true,
+				Deprecated: "kubernetes configs are their own data source and are no longer populated here",
 			},
 			"cluster_ca_certificate": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:       schema.TypeString,
+				Computed:   true,
+				Deprecated: "kubernetes certificate fields are no longer populated",
 			},
 			"client_key": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:       schema.TypeString,
+				Computed:   true,
+				Deprecated: "kubernetes certificate fields are no longer populated",
 			},
 			"client_certificate": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:       schema.TypeString,
+				Computed:   true,
+				Deprecated: "kubernetes certificate fields are no longer populated",
 			},
 			"oidc_issuer_url": {
 				Type:     schema.TypeString,
@@ -266,16 +270,6 @@ func dataSourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, 
 		return diag.Errorf("no results were found")
 	}
 
-	kubeConfig, _, err := client.Kubernetes.GetKubeConfig(ctx, k8List[0].ID)
-	if err != nil {
-		return diag.Errorf("error getting kubeconfig")
-	}
-
-	ca, cert, key, err := getCertsFromKubeConfig(kubeConfig.KubeConfig)
-	if err != nil {
-		return diag.Errorf("error getting certs from kubeconfig : %v", err)
-	}
-
 	d.SetId(k8List[0].ID)
 	if err := d.Set("label", k8List[0].Label); err != nil {
 		return diag.Errorf("unable to set kubernetes `label` read value: %v", err)
@@ -310,15 +304,6 @@ func dataSourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, 
 	if err := d.Set("status", k8List[0].Status); err != nil {
 		return diag.Errorf("unable to set kubernetes `status` read value: %v", err)
 	}
-	if err := d.Set("kube_config", kubeConfig.KubeConfig); err != nil {
-		return diag.Errorf("unable to set kubernetes `kube_config` read value: %v", err)
-	}
-	if err := d.Set("cluster_ca_certificate", ca); err != nil {
-		return diag.Errorf("unable to set kubernetes `cluster_ca_certificate` read value: %v", err)
-	}
-	if err := d.Set("client_certificate", cert); err != nil {
-		return diag.Errorf("unable to set kubernetes `client_certificate` read value: %v", err)
-	}
 	if err := d.Set("oidc_issuer_url", k8List[0].OIDCConfig.IssuerURL); err != nil {
 		return diag.Errorf("unable to set kubernetes `oidc_issuer_url` read value: %v", err)
 	}
@@ -330,9 +315,6 @@ func dataSourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, 
 	}
 	if err := d.Set("oidc_groups_claim", k8List[0].OIDCConfig.GroupsClaim); err != nil {
 		return diag.Errorf("unable to set kubernetes `oidc_groups_claim` read value: %v", err)
-	}
-	if err := d.Set("client_key", key); err != nil {
-		return diag.Errorf("unable to set kubernetes `client_key` read value: %v", err)
 	}
 
 	nodePools := flattenNodePools(k8List[0].NodePools)
