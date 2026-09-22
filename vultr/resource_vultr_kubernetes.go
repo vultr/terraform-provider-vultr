@@ -25,7 +25,7 @@ func resourceVultrKubernetes() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
-		Schema:        resourceVultrKubernetesV1(),
+		SchemaFunc:    resourceVultrKubernetesV1,
 		SchemaVersion: 1,
 		StateUpgraders: []schema.StateUpgrader{
 			{
