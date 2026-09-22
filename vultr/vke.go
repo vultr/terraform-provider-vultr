@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"maps"
 	"slices"
+	"strconv"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -219,6 +220,15 @@ func resourceVultrKubernetesNodePoolsV0(isNodePool bool) *schema.Resource {
 				Type:         schema.TypeInt,
 				ValidateFunc: validation.IntAtLeast(1),
 				Required:     true,
+				DiffSuppressFunc: func(k, oldValue, newValue string, d *schema.ResourceData) bool {
+					stateNPAutoScaler := d.State().Attributes["node_pools.0.auto_scaler"]
+					autoScaler, err := strconv.ParseBool(stateNPAutoScaler)
+					if err != nil {
+						return false
+					}
+
+					return autoScaler
+				},
 			},
 			"auto_scaler": {
 				Type:     schema.TypeBool,
