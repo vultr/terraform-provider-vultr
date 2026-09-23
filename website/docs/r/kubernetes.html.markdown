@@ -1,3 +1,7 @@
+---
+layout: "vultr"
+page_title: "Vultr: vultr_kubernetes"
+sidebar_current: "docs-vultr-resource-kubernetes"
 description: |-
   Provides a Vultr Kubernetes Engine (VKE) resource. This can be used to create, read, modify, and delete VKE clusters on your Vultr account.
 ---
