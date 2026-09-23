@@ -60,7 +60,7 @@ func dataSourceVultrKubernetesKubeConfig() *schema.Resource {
 	}
 }
 
-func dataSourceVultrKubernetesKubeConfigRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceVultrKubernetesKubeConfigRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	config, _, err := client.Kubernetes.GetKubeConfig(ctx, d.Get("cluster_id").(string))
