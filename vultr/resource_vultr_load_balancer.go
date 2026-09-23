@@ -26,7 +26,7 @@ func resourceVultrLoadBalancer() *schema.Resource {
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
 		},
-		Schema:        resourceVultrLoadBalancerV1().Schema,
+		SchemaFunc:    resourceVultrLoadBalancerV1,
 		SchemaVersion: 1,
 		StateUpgraders: []schema.StateUpgrader{
 			{
@@ -77,7 +77,7 @@ func resourceVultrLoadBalancerStateUpgradeV0ToV1(ctx context.Context, rawState m
 	return rawState, nil
 }
 
-func resourceVultrLoadBalancerV1() *schema.Resource {
+func resourceVultrLoadBalancerV1() map[string]*schema.Schema {
 	schemaV0 := resourceVultrLoadBalancerV0().Schema
 	schemaV1 := map[string]*schema.Schema{}
 
@@ -103,9 +103,7 @@ func resourceVultrLoadBalancerV1() *schema.Resource {
 	maps.Copy(schemaV0, schemaGlobalRegions)
 	maps.Copy(schemaV1, schemaV0)
 
-	return &schema.Resource{
-		Schema: schemaV1,
-	}
+	return schemaV1
 }
 
 func resourceVultrLoadBalancerV0() *schema.Resource {
