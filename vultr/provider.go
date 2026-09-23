@@ -44,6 +44,7 @@ func Provider() *schema.Provider {
 			"vultr_iso_private":                 dataSourceVultrIsoPrivate(),
 			"vultr_iso_public":                  dataSourceVultrIsoPublic(),
 			"vultr_kubernetes":                  dataSourceVultrKubernetes(),
+			"vultr_kubernetes_kubeconfig":       dataSourceVultrKubernetesKubeConfig(),
 			"vultr_load_balancer":               dataSourceVultrLoadBalancer(),
 			"vultr_logs":                        dataSourceVultrLogs(),
 			"vultr_object_storage":              dataSourceVultrObjectStorage(),

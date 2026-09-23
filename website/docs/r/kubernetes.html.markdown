@@ -106,10 +106,6 @@ The following attributes are exported:
 * `endpoint` - Domain for your Kubernetes clusters control plane.
 * `ip` - IP address of VKE cluster control plane.
 * `date_created` - Date of VKE cluster creation.
-* `kube_config` - Base64 encoded Kubeconfig for this VKE cluster.
-* `cluster_ca_certificate` - The base64 encoded public certificate for the cluster's certificate authority.
-* `client_key` - The base64 encoded private key used by clients to access the cluster.
-* `client_certificate` - The base64 encoded public certificate used by clients to access the cluster.
 * `oidc_issuer_url` - The URL of the OIDC provider that issues authentication tokens.
 * `oidc_client_id` - The unique identifier assigned to your application by the OIDC provider.
 * `oidc_username_claim` - The claim in the OIDC token that identifies the end user's username.

@@ -2,7 +2,6 @@ package vultr
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"maps"
 	"slices"
@@ -10,27 +9,7 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v3"
-	"gopkg.in/yaml.v2"
 )
-
-type KubeConfig struct {
-	APIVersion string `yaml:"apiVersion"`
-	Kind       string `yaml:"kind"`
-	Clusters   []struct {
-		Name    string `yaml:"name"`
-		Cluster struct {
-			CaCert string `yaml:"certificate-authority-data"`
-			Server string `yaml:"server"`
-		} `yaml:"cluster"`
-	} `yaml:"clusters"`
-	Users []struct {
-		Name string `yaml:"name"`
-		User struct {
-			ClientCert string `yaml:"client-certificate-data"`
-			ClientKey  string `yaml:"client-key-data"`
-		} `yaml:"user"`
-	} `yaml:"users"`
-}
 
 func resourceVultrKubernetesV1() map[string]*schema.Schema {
 	schemaV0 := resourceVultrKubernetesV0().Schema
@@ -199,23 +178,27 @@ func resourceVultrKubernetesV0() *schema.Resource {
 				Type:        schema.TypeString,
 				Computed:    true,
 				Sensitive:   true,
+				Deprecated:  "kubernetes configs are their own data source and are no longer populated here",
 			},
 			"cluster_ca_certificate": {
-				Type:      schema.TypeString,
-				Computed:  true,
-				Sensitive: true,
+				Type:       schema.TypeString,
+				Computed:   true,
+				Sensitive:  true,
+				Deprecated: "kubernetes certificate fields are no longer populated",
 			},
 
 			"client_key": {
-				Type:      schema.TypeString,
-				Computed:  true,
-				Sensitive: true,
+				Type:       schema.TypeString,
+				Computed:   true,
+				Sensitive:  true,
+				Deprecated: "kubernetes certificate fields are no longer populated",
 			},
 
 			"client_certificate": {
-				Type:      schema.TypeString,
-				Computed:  true,
-				Sensitive: true,
+				Type:       schema.TypeString,
+				Computed:   true,
+				Sensitive:  true,
+				Deprecated: "kubernetes certificate fields are no longer populated",
 			},
 		},
 	}
@@ -348,22 +331,6 @@ func resourceVultrKubernetesNodePoolsV0(isNodePool bool) *schema.Resource {
 	}
 
 	return s
-}
-
-func getCertsFromKubeConfig(kubeconfig string) (ca string, cert string, key string, err error) {
-	decodedKC, err := base64.StdEncoding.DecodeString(kubeconfig)
-	if err != nil {
-		return "", "", "", err
-	}
-
-	var kc KubeConfig
-
-	err = yaml.Unmarshal(decodedKC, &kc)
-	if err != nil {
-		return "", "", "", err
-	}
-
-	return kc.Clusters[0].Cluster.CaCert, kc.Users[0].User.ClientCert, kc.Users[0].User.ClientKey, nil
 }
 
 func updateNodePoolOptions(ctx context.Context, client *govultr.Client, clusterID, nodePoolID, optionKind string, oldData, newData []interface{}) error { //nolint:lll
