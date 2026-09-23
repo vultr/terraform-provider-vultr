@@ -79,6 +79,17 @@ func resourceVultrReverseIPV4Read(ctx context.Context, d *schema.ResourceData, m
 	for {
 		ReverseIPV4s, meta, _, err := client.Instance.ListIPv4(ctx, instanceID, options)
 		if err != nil {
+			missing, missErr := checkIsMissing(err, "instance not found")
+			if missErr != nil {
+				return diag.Errorf("error in api response %q : %v", err, missErr)
+			}
+
+			if missing {
+				log.Printf("[WARN] Removing reverse IPv4 (%s) because parent instance (%s) is gone", d.Id(), instanceID)
+				d.SetId("")
+				return nil
+			}
+
 			return diag.Errorf("error getting reverse IPv4s: %v, %v", err, instanceID)
 		}
 
@@ -94,7 +105,9 @@ func resourceVultrReverseIPV4Read(ctx context.Context, d *schema.ResourceData, m
 		}
 
 		if meta.Links.Next == "" {
-			return diag.Errorf("error getting reverse IPv4s: %v, %v", err, instanceID)
+			log.Printf("[WARN] Removing reverse IPv4 (%s) because it is gone", d.Id())
+			d.SetId("")
+			return nil
 		}
 
 		options.Cursor = meta.Links.Next
