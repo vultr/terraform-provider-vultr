@@ -227,6 +227,11 @@ func resourceVultrKubernetesNodePoolsV0(isNodePool bool) *schema.Resource {
 				ValidateFunc: validation.IntAtLeast(1),
 				Required:     true,
 				DiffSuppressFunc: func(k, oldValue, newValue string, d *schema.ResourceData) bool {
+					// skip when creating resource
+					if oldValue == "" {
+						return false
+					}
+
 					stateNPAutoScaler := d.State().Attributes["node_pools.0.auto_scaler"]
 					autoScaler, err := strconv.ParseBool(stateNPAutoScaler)
 					if err != nil {
