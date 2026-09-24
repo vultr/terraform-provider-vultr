@@ -90,6 +90,10 @@ func dataSourceVultrKubernetes() *schema.Resource {
 							Type:     schema.TypeInt,
 							Computed: true,
 						},
+						"vpc_only": {
+							Type:     schema.TypeBool,
+							Computed: true,
+						},
 						"labels": {
 							Type:     schema.TypeSet,
 							Computed: true,
@@ -401,6 +405,7 @@ func flattenNodePools(np []govultr.NodePool) []map[string]interface{} {
 			"max_nodes":     n.MaxNodes,
 			"nodes":         instances,
 			"user_data":     n.UserData,
+			"vpc_only":      n.VPCOnly,
 		}
 
 		nodePools = append(nodePools, pool)
