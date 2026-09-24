@@ -61,10 +61,11 @@ The follow arguments are supported:
 * `plan` - (Required) The plan to be used in this node pool. [See plans list](https://www.vultr.com/api/#operation/list-plans) Note the minimum plan requirements must have at least 1 core and 2 gbs of memory.
 * `label` - (Required) The label to be used as a prefix for nodes in this node pool.
 * `tag` - (Optional) A tag that is assigned to this node pool.
-* `auto_scaler` - (Optional, Default to False) Enable the auto scaler for the default node pool.
+* `auto_scaler` - (Optional, Default to false) Enable the auto scaler for the default node pool.
 * `min_nodes` - (Optional, Default to 1) The minimum number of nodes to use with the auto scaler.
 * `max_nodes` - (Optional, Default to 1) The maximum number of nodes to use with the auto scaler.
 * `user_data` - (Optional) A base64 encoded string containing the user data to apply to nodes in the node pool.
+* `vpc_only` - (Optional, Default to false) Enable private-only VPC connectivity for nodes. If true, nodes can only access the internet via the NAT Gateway attached to the VPC.
 
 `labels` - (Optional) A list of labels to apply to the nodes in the node pool with these fields:
 
@@ -93,6 +94,7 @@ The following attributes are exported:
 * `min_nodes` - The minimum number of nodes used by the auto scaler.
 * `max_nodes` - The maximum number of nodes used by the auto scaler.
 * `user_data` - A base64 encoded string containing the user data in use by all nodes in the node pool.
+* `vpc_only` -  Private-only VPC connectivity for nodes.
 
 `labels` - A list of labels applied to the nodes in the node pool with these fields:
 
