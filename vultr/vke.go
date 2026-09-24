@@ -98,6 +98,12 @@ func resourceVultrKubernetesNodePoolsV1(isNodePool bool) map[string]*schema.Sche
 		},
 	}
 
+	schemaV1["vpc_only"] = &schema.Schema{
+		Type:     schema.TypeBool,
+		Optional: true,
+		ForceNew: true,
+	}
+
 	maps.Copy(schemaV0, schemaLabels)
 	maps.Copy(schemaV0, schemaTaints)
 	maps.Copy(schemaV1, schemaV0)
