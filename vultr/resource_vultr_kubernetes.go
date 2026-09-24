@@ -76,6 +76,7 @@ func resourceVultrKubernetesCreate(ctx context.Context, d *schema.ResourceData, 
 			MinNodes:     nodePool["min_nodes"].(int),
 			MaxNodes:     nodePool["max_nodes"].(int),
 			UserData:     nodePool["user_data"].(string),
+			VPCOnly:      govultr.BoolToBoolPtr(nodePool["vpc_only"].(bool)),
 		},
 	}
 
@@ -457,6 +458,7 @@ func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 		"min_nodes":     np.MinNodes,
 		"max_nodes":     np.MaxNodes,
 		"user_data":     np.UserData,
+		"vpc_only":      np.VPCOnly,
 	}
 
 	nodePools = append(nodePools, pool)

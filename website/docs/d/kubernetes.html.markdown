@@ -70,6 +70,7 @@ The following attributes are exported:
 * `min_nodes` - The minimum number of nodes used by the auto scaler.
 * `max_nodes` - The maximum number of nodes used by the auto scaler.
 * `user_data` - The base64 encoded string containing the user data applied to nodes in the node pool.
+* `vpc_only` -  Private-only VPC connectivity for nodes.
 
 `labels` - A list of labels applied to the nodes in the node pool with these fields:
 
