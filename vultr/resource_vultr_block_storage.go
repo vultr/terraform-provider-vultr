@@ -71,7 +71,7 @@ func resourceVultrBlockStorage() *schema.Resource {
 				Computed: true,
 			},
 			"cost": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeFloat,
 				Computed: true,
 			},
 			"pending_charges": {

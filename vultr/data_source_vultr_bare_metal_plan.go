@@ -38,7 +38,7 @@ func dataSourceVultrBareMetalPlan() *schema.Resource {
 				Computed: true,
 			},
 			"monthly_cost": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeFloat,
 				Computed: true,
 			},
 			"type": {
