@@ -34,7 +34,7 @@ func dataSourceVultrKubernetesVersion() *schema.Resource {
 	}
 }
 
-func dataSourceVultrKubernetesVersionRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+func dataSourceVultrKubernetesVersionRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	var diags diag.Diagnostics
 	client := meta.(*Client).govultrClient()
 
@@ -57,7 +57,6 @@ func dataSourceVultrKubernetesVersionRead(ctx context.Context, d *schema.Resourc
 	versionList := []string{}
 	upgradeList := []string{}
 	for i := range versions.Versions {
-
 		if filterOk {
 			compResult := semver.MajorMinor(versions.Versions[i])
 			compFilter := semver.MajorMinor(filter.(string))
