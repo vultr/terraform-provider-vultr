@@ -19,7 +19,7 @@ func dataSourceVultrObjectStorageTier() *schema.Resource {
 				Computed: true,
 			},
 			"price": {
-				Type:     schema.TypeInt,
+				Type:     schema.TypeFloat,
 				Computed: true,
 			},
 			"locations": {
