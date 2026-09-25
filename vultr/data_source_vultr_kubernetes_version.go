@@ -52,6 +52,8 @@ func dataSourceVultrKubernetesVersionRead(ctx context.Context, d *schema.Resourc
 		}
 
 		diags = append(diags, warn)
+
+		filterOk = false
 	}
 
 	versionList := []string{}
