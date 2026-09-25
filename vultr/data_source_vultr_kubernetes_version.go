@@ -81,7 +81,7 @@ func dataSourceVultrKubernetesVersionRead(ctx context.Context, d *schema.Resourc
 
 	if len(versionList) == 0 {
 		diags = append(diags, diag.Diagnostic{
-			Severity: diag.Error,
+			Severity: diag.Warning,
 			Summary:  "no versions available, check your filter",
 		})
 
