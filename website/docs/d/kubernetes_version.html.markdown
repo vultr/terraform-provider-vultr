@@ -3,12 +3,12 @@ layout: "vultr"
 page_title: "Vultr: vultr_kubernetes_version"
 sidebar_current: "docs-vultr-datasource-kubernetes-version"
 description: |-
-  Get information about the available kubernetes version
+  Get information about the available kubernetes versions.
 ---
 
 # vultr_kubernetes_version
 
-Get information about the available kubernetes version.
+Get information about the available kubernetes versions.
 
 ## Example Usage
 
