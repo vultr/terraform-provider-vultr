@@ -89,7 +89,7 @@ func dataSourceVultrKubernetesVersionRead(ctx context.Context, d *schema.Resourc
 	}
 
 	if err := d.Set("available", versionList); err != nil {
-		return diag.Errorf("unable to set kubernetes version `versions` read value: %v", err)
+		return diag.Errorf("unable to set kubernetes version `available` read value: %v", err)
 	}
 	if err := d.Set("upgrades", upgradeList); err != nil {
 		return diag.Errorf("unable to set kubernetes version `upgrades` read value: %v", err)
