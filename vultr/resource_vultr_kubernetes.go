@@ -413,13 +413,37 @@ func waitForVKEAvailable(ctx context.Context, d *schema.ResourceData, target str
 
 func newVKEStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
-	return func() (interface{}, string, error) {
-		log.Printf("[INFO] Creating kubernetes cluster")
 
+	// StateChangeConf treats ANY non-nil error from Refresh as fatal and aborts
+	// the wait instead of retrying, so a single transient Vultr API failure used
+	// to kill a create that still had ~59 minutes of its 60 minute budget left.
+	// Tolerate a run of consecutive failures instead, and surface the real error.
+	const maxConsecutiveErrors = 12
+	consecutiveErrors := 0
+
+	return func() (interface{}, string, error) {
 		vke, _, err := client.Kubernetes.GetCluster(ctx, d.Id())
 		if err != nil {
-			return nil, "", fmt.Errorf("error retrieving kubernetes cluster %s ", d.Id())
+			consecutiveErrors++
+			log.Printf("[WARN] error retrieving kubernetes cluster %s (attempt %d/%d): %v",
+				d.Id(), consecutiveErrors, maxConsecutiveErrors, err)
+
+			if consecutiveErrors >= maxConsecutiveErrors {
+				return nil, "", fmt.Errorf(
+					"error retrieving kubernetes cluster %s after %d consecutive attempts: %w",
+					d.Id(), consecutiveErrors, err)
+			}
+
+			// Two traps here:
+			//  - a nil result is treated as "resource not found" and trips
+			//    NotFoundChecks after 60 polls, so return a non-nil placeholder.
+			//  - the state must be one of the Pending values, otherwise
+			//    StateChangeConf raises UnexpectedStateError and aborts anyway.
+			// The result is discarded by the caller, so its type is irrelevant.
+			return struct{}{}, "pending", nil
 		}
+
+		consecutiveErrors = 0
 
 		if attr == "status" {
 			log.Printf("[INFO] The kubernetes cluster Status is %v", vke.Status)
