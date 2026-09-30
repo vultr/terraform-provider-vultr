@@ -1,6 +1,7 @@
 package vultr
 
 import (
+	"time"
 	"context"
 	"fmt"
 	"log"
@@ -83,7 +84,28 @@ func resourceVultrDNSRecordRead(ctx context.Context, d *schema.ResourceData, met
 
 	record, _, err := client.DomainRecord.Get(ctx, d.Get("domain").(string), d.Id())
 	if err != nil {
-		log.Printf("[WARN] DNS Record %s not found", d.Id())
+		// Retry once — Vultr API can return transient 404s
+		log.Printf("[WARN] DNS Record %s not found — retrying once", d.Id())
+		time.Sleep(2 * time.Second)
+		record2, _, err2 := client.DomainRecord.Get(ctx, d.Get("domain").(string), d.Id())
+		if err2 != nil {
+			log.Printf("[WARN] DNS Record %s not found after retry — removing from state", d.Id())
+			d.SetId("")
+			return nil
+		}
+		record = record2
+		log.Printf("[WARN] DNS Record %s found on retry — keeping in state", d.Id())
+	}
+
+	// Guard against nil record (transient API caching issue)
+	if record == nil {
+		// Retry once — API can return nil with no error
+		log.Printf("[WARN] DNS Record %s returned nil — retrying once", d.Id())
+		time.Sleep(2 * time.Second)
+		record, _, _ = client.DomainRecord.Get(ctx, d.Get("domain").(string), d.Id())
+	}
+	if record == nil {
+		log.Printf("[WARN] DNS Record %s still nil after retry — removing from state", d.Id())
 		d.SetId("")
 		return nil
 	}

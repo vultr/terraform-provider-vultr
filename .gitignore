@@ -1,16 +1,1 @@
-.terraform
-terraform.tfstate*
-terraform.tfvars
-assets
-bin
-./*.tfstate
-terraform.tfplan
-terraform.tfstate
-main.tf
-
-.DS_STORE
-.vscode/
-.idea
-terraform-provider-vultr
-terraform-provider-vultr.exe
-vendor
+terraform-provider-vultr_v*

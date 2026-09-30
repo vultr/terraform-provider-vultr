@@ -503,12 +503,37 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		}
 
 		if missing {
-			log.Printf("[WARN] Removing instance (%s) because it is gone", d.Id())
+			// Retry once before removing from state — Vultr API can return
+			// transient 404s due to database/caching issues even for active
+			// instances. See https://github.com/vultr/terraform-provider-vultr/issues/781
+			log.Printf("[WARN] Instance (%s) returned 404 — retrying once before removing from state", d.Id())
+			time.Sleep(2 * time.Second)
+			instance2, _, err2 := client.Instance.Get(ctx, d.Id())
+			if err2 == nil && instance2 != nil {
+				log.Printf("[WARN] Instance (%s) found on retry — keeping in state", d.Id())
+				instance = instance2
+				// Skip the nil check below since we have a valid instance
+				goto setAttributes
+			}
+			log.Printf("[WARN] Removing instance (%s) because it is gone (confirmed after retry)", d.Id())
 			d.SetId("")
 			return nil
 		}
 
 		return diag.Errorf("error getting instance (%s): %v", d.Id(), err)
+	}
+
+setAttributes:
+	if instance == nil {
+		// Retry once — API can return nil with no error
+		log.Printf("[WARN] Instance (%s) returned nil — retrying once", d.Id())
+		time.Sleep(2 * time.Second)
+		instance, _, _ = client.Instance.Get(ctx, d.Id())
+	}
+	if instance == nil {
+		log.Printf("[WARN] Instance (%s) still nil after retry — removing from state", d.Id())
+		d.SetId("")
+		return nil
 	}
 
 	if err := d.Set("os", instance.Os); err != nil {
@@ -601,14 +626,28 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 
 	backup, _, err := client.Instance.GetBackupSchedule(ctx, d.Id())
 	if err != nil {
-		return diag.Errorf("error getting backup schedule: %v", err)
+		// Skip on 404 — Vultr API sub-endpoints can return transient 404s
+		// See: https://github.com/vultr/terraform-provider-vultr/issues/781
+		log.Printf("[WARN] Backup schedule for instance (%s) returned error: %v — skipping", d.Id(), err)
+		backup = nil
+		err = nil
 	}
 
-	if err := d.Set("backups", backupStatus(backup.Enabled)); err != nil {
-		return diag.Errorf("unable to set resource instance `backups` read value: %v", err)
-	}
+	// Guard against nil backup schedule (transient API caching issue)
+	if backup == nil {
+		log.Printf("[WARN] Backup schedule for instance (%s) returned nil — skipping backup schedule read", d.Id())
+		if err := d.Set("backups", "disabled"); err != nil {
+			return diag.Errorf("unable to set resource instance `backups` read value: %v", err)
+		}
+		if err := d.Set("backups_schedule", nil); err != nil {
+			return diag.Errorf("unable to set resource instance `backups_schedule` read value: %v", err)
+		}
+	} else {
+		if err := d.Set("backups", backupStatus(backup.Enabled)); err != nil {
+			return diag.Errorf("unable to set resource instance `backups` read value: %v", err)
+		}
 
-	if backupStatus(backup.Enabled) != "disabled" {
+		if backupStatus(backup.Enabled) != "disabled" {
 		var bs []map[string]interface{}
 		backupScheduleInfo := map[string]interface{}{
 			"type": backup.Type,
@@ -621,20 +660,23 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		if err := d.Set("backups_schedule", bs); err != nil {
 			return diag.Errorf("unable to set resource instance `backups_schedule` read value: %v", err)
 		}
-	} else {
-		if err := d.Set("backups_schedule", nil); err != nil {
-			return diag.Errorf("unable to set resource instance `backups_schedule` read value: %v", err)
+		} else {
+			if err := d.Set("backups_schedule", nil); err != nil {
+				return diag.Errorf("unable to set resource instance `backups_schedule` read value: %v", err)
+			}
 		}
 	}
 
 	vpcs, err := getVPCs(client, d.Id())
 	if err != nil {
-		return diag.Errorf("%s", err.Error())
+		log.Printf("[WARN] VPCs for instance (%s) returned error: %v — skipping", d.Id(), err)
+		vpcs = nil
 	}
 
 	vpc2s, err := getVPC2s(client, d.Id())
 	if err != nil {
-		return diag.Errorf("%s", err.Error())
+		log.Printf("[WARN] VPC2s for instance (%s) returned error: %v — skipping", d.Id(), err)
+		vpc2s = nil
 	}
 
 	if _, vpcUpdate := d.GetOk("vpc_ids"); vpcUpdate {

@@ -1,6 +1,7 @@
 package vultr
 
 import (
+	"time"
 	"context"
 	"log"
 	"strings"
@@ -66,12 +67,30 @@ func resourceVultrInferenceRead(ctx context.Context, d *schema.ResourceData, met
 
 	inferenceSub, _, err := client.Inference.Get(ctx, d.Id())
 	if err != nil {
-		if strings.Contains(err.Error(), "invalid inference ID") {
-			log.Printf("[WARN] Removing inference subscription (%s) because it is gone", d.Id())
-			d.SetId("")
+		// Retry once on any error — Vultr API can return transient
+		// 400/404 errors during maintenance or caching issues
+		log.Printf("[WARN] Inference (%s) returned error: %v — retrying once", d.Id(), err)
+		time.Sleep(2 * time.Second)
+		inferenceSub2, _, err2 := client.Inference.Get(ctx, d.Id())
+		if err2 != nil {
+			if strings.Contains(err2.Error(), "invalid inference ID") {
+				log.Printf("[WARN] Inference (%s) confirmed gone after retry — removing from state", d.Id())
+				d.SetId("")
+				return nil
+			}
+			// Still failing but not "gone" — skip instead of crash
+			log.Printf("[WARN] Inference (%s) still failing after retry: %v — skipping read", d.Id(), err2)
 			return nil
 		}
-		return diag.Errorf("error getting inference subscription (%s): %v", d.Id(), err)
+		inferenceSub = inferenceSub2
+		log.Printf("[WARN] Inference (%s) found on retry — keeping in state", d.Id())
+	}
+
+	// Guard against nil inference subscription (transient API caching issue)
+	if inferenceSub == nil {
+		log.Printf("[WARN] Inference subscription (%s) returned nil from API with no error — likely transient caching issue", d.Id())
+		d.SetId("")
+		return nil
 	}
 
 	if err := d.Set("date_created", inferenceSub.DateCreated); err != nil {
