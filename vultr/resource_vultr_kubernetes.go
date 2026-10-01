@@ -378,9 +378,6 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 					return diag.FromErr(err)
 				}
 			}
-
-			// this field is write-only so clear the state
-			d.Set("node_pools.0.node_recycle", nil)
 		}
 	}
 
@@ -484,6 +481,7 @@ func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 		"max_nodes":     np.MaxNodes,
 		"user_data":     np.UserData,
 		"vpc_only":      np.VPCOnly,
+		"node_recycle":  []string{},
 	}
 
 	nodePools = append(nodePools, pool)
