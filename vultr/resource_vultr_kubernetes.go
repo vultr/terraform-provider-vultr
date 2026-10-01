@@ -14,7 +14,10 @@ import (
 	"github.com/vultr/govultr/v3"
 )
 
-var tfVKEDefault = "tf-vke-default"
+const (
+	tfVKEDefault           string = "tf-vke-default"
+	kubernetesMissingError string = "Invalid resource ID"
+)
 
 func resourceVultrKubernetes() *schema.Resource {
 	return &schema.Resource{
@@ -173,7 +176,7 @@ func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, me
 			return diag.Errorf("api authorization error: %v", err)
 		}
 
-		missing, missErr := checkIsMissing(err, "Invalid resource ID")
+		missing, missErr := checkIsMissing(err, kubernetesMissingError)
 		if missErr != nil {
 			return diag.Errorf("error in api response %q : %v", err, missErr)
 		}
@@ -418,11 +421,20 @@ func newVKEStateRefresh(ctx context.Context, d *schema.ResourceData, meta interf
 
 		vke, _, err := client.Kubernetes.GetCluster(ctx, d.Id())
 		if err != nil {
+			missing, missErr := checkIsMissing(err, kubernetesMissingError)
+			if missErr != nil {
+				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
+			}
+
+			if missing {
+				return nil, "", nil
+			}
+
 			return nil, "", fmt.Errorf("error retrieving kubernetes cluster %s ", d.Id())
 		}
 
 		if attr == "status" {
-			log.Printf("[INFO] The kubernetes cluster Status is %v", vke.Status)
+			tflog.Info(ctx, fmt.Sprintf("kubernetes cluster status is %v", vke.Status))
 			return vke, vke.Status, nil
 		}
 
