@@ -315,6 +315,10 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 		return diag.Errorf("unable to set resource kubernetes_nodepools `taints` read value: %v", err)
 	}
 
+	if err := d.Set("node_recycle", []string{}); err != nil {
+		return diag.Errorf("unable to delete resource kubernetes_nodepools `node_recycle` read value: %v", err)
+	}
+
 	return nil
 }
 
@@ -367,6 +371,17 @@ func resourceVultrKubernetesNodePoolsUpdate(ctx context.Context, d *schema.Resou
 		err := updateNodePoolOptions(ctx, client, clusterID, d.Id(), "taints", oldTaintsData, newTaintsData)
 		if err != nil {
 			return diag.FromErr(err)
+		}
+	}
+
+	if d.HasChange("node_recycle") {
+		_, newNodeRecycle := d.GetChange("node_recycle")
+		nodesRecycle := newNodeRecycle.(*schema.Set).List()
+		for i := range nodesRecycle {
+			err := client.Kubernetes.RecycleNodePoolInstance(ctx, clusterID, d.Id(), nodesRecycle[i].(string))
+			if err != nil {
+				return diag.FromErr(err)
+			}
 		}
 	}
 

@@ -104,6 +104,15 @@ func resourceVultrKubernetesNodePoolsV1(isNodePool bool) map[string]*schema.Sche
 		ForceNew: true,
 	}
 
+	schemaV1["node_recycle"] = &schema.Schema{
+		Type:     schema.TypeSet,
+		Optional: true,
+		Computed: true,
+		Elem: &schema.Schema{
+			Type: schema.TypeString,
+		},
+	}
+
 	maps.Copy(schemaV0, schemaLabels)
 	maps.Copy(schemaV0, schemaTaints)
 	maps.Copy(schemaV1, schemaV0)

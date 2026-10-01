@@ -369,6 +369,21 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 				return diag.FromErr(err)
 			}
 		}
+
+		if d.HasChange("node_pools.0.node_recycle") {
+			nodesRecycle := newNodePoolData["node_recycle"].(*schema.Set).List()
+			for i := range nodesRecycle {
+				err := client.Kubernetes.RecycleNodePoolInstance(
+					ctx,
+					d.Id(),
+					newNodePoolData["id"].(string),
+					nodesRecycle[i].(string),
+				)
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			}
+		}
 	}
 
 	// k8s version upgrade
@@ -471,6 +486,7 @@ func flattenNodePool(np *govultr.NodePool) []map[string]interface{} {
 		"max_nodes":     np.MaxNodes,
 		"user_data":     np.UserData,
 		"vpc_only":      np.VPCOnly,
+		"node_recycle":  []string{},
 	}
 
 	nodePools = append(nodePools, pool)
