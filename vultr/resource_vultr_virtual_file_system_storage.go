@@ -14,6 +14,8 @@ import (
 	"github.com/vultr/govultr/v3"
 )
 
+const virtualFileSystemStorageMissingError string = "Subscription ID Not Found."
+
 func resourceVultrVirtualFileSystemStorage() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVultrVirtualFileSystemStorageCreate,
@@ -150,7 +152,7 @@ func resourceVultrVirtualFileSystemStorageRead(ctx context.Context, d *schema.Re
 
 	storage, _, err := client.VirtualFileSystemStorage.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Subscription ID Not Found.")
+		missing, missErr := checkIsMissing(err, virtualFileSystemStorageMissingError)
 		if missErr != nil {
 			return diag.Errorf("error in api response %q : %v", err, missErr)
 		}
@@ -341,9 +343,19 @@ func waitForVirtualFileSystemStorageAvailable(ctx context.Context, d *schema.Res
 func newVirtualFileSystemStorageStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-		log.Printf("[INFO] Checking new virtual file system storage")
+		tflog.Info(ctx, "refreshing virtual file system storage state")
+
 		storage, _, err := client.VirtualFileSystemStorage.Get(ctx, d.Id())
 		if err != nil {
+			missing, missErr := checkIsMissing(err, virtualFileSystemStorageMissingError)
+			if missErr != nil {
+				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
+			}
+
+			if missing {
+				return nil, "", nil
+			}
+
 			return nil, "", fmt.Errorf("error retrieving virtual file system storage %s : %s", d.Id(), err)
 		}
 

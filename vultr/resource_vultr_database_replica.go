@@ -86,7 +86,7 @@ func resourceVultrDatabaseReplicaRead(ctx context.Context, d *schema.ResourceDat
 
 	database, _, err := client.Database.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "invalid database ID")
+		missing, missErr := checkIsMissing(err, databaseMissingError)
 		if missErr != nil {
 			return diag.Errorf("error in api response %q : %v", err, missErr)
 		}
@@ -345,15 +345,24 @@ func waitForDatabaseReplicaAvailable(ctx context.Context, d *schema.ResourceData
 func newDatabaseReplicaStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-		log.Printf("[INFO] Creating Database read replica")
-		server, _, err := client.Database.Get(ctx, d.Id())
+		tflog.Info(ctx, "refreshing database read replica state")
 
+		server, _, err := client.Database.Get(ctx, d.Id())
 		if err != nil {
+			missing, missErr := checkIsMissing(err, databaseMissingError)
+			if missErr != nil {
+				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
+			}
+
+			if missing {
+				return nil, "", nil
+			}
+
 			return nil, "", fmt.Errorf("error retrieving Managed Database read replica %s : %s", d.Id(), err)
 		}
 
 		if attr == "status" {
-			log.Printf("[INFO] The Managed Database read replica Status is %s", server.Status)
+			tflog.Info(ctx, fmt.Sprintf("database read replica status is %s", server.Status))
 			return server, server.Status, nil
 		}
 

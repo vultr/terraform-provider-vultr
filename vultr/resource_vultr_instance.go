@@ -8,12 +8,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v3"
 )
+
+const instMissingError string = "instance not found"
 
 func resourceVultrInstance() *schema.Resource {
 	return &schema.Resource{
@@ -485,7 +488,7 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 
 	instance, _, err := client.Instance.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "instance not found")
+		missing, missErr := checkIsMissing(err, instMissingError)
 		if missErr != nil {
 			return diag.Errorf("error in api response %q : %v", err, missErr)
 		}
@@ -813,9 +816,19 @@ func waitForServerAvailable(ctx context.Context, d *schema.ResourceData, target 
 func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-		log.Printf("[INFO] Creating Server")
+		tflog.Info(ctx, "refreshing instance state")
+
 		server, _, err := client.Instance.Get(ctx, d.Id())
 		if err != nil {
+			missing, missErr := checkIsMissing(err, instMissingError)
+			if missErr != nil {
+				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
+			}
+
+			if missing {
+				return nil, "", nil
+			}
+
 			return nil, "", fmt.Errorf("error retrieving Server %s : %s", d.Id(), err)
 		}
 

@@ -14,6 +14,8 @@ import (
 	"github.com/vultr/govultr/v3"
 )
 
+const databaseMissingError string = "invalid database ID"
+
 func resourceVultrDatabase() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVultrDatabaseCreate,
@@ -358,7 +360,7 @@ func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta
 
 	database, _, err := client.Database.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "invalid database ID")
+		missing, missErr := checkIsMissing(err, databaseMissingError)
 		if missErr != nil {
 			return diag.Errorf("error in api response %q : %v", err, missErr)
 		}
@@ -813,15 +815,24 @@ func waitForDatabaseAvailable(ctx context.Context, d *schema.ResourceData, targe
 func newDatabaseStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-		log.Printf("[INFO] Creating Database")
-		server, _, err := client.Database.Get(ctx, d.Id())
+		tflog.Info(ctx, "refreshing database state")
 
+		server, _, err := client.Database.Get(ctx, d.Id())
 		if err != nil {
-			return nil, "", fmt.Errorf("error retrieving Managed Database %s : %s", d.Id(), err)
+			missing, missErr := checkIsMissing(err, databaseMissingError)
+			if missErr != nil {
+				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
+			}
+
+			if missing {
+				return nil, "", nil
+			}
+
+			return nil, "", fmt.Errorf("error retrieving database %s : %s", d.Id(), err)
 		}
 
 		if attr == "status" {
-			log.Printf("[INFO] The Managed Database Status is %s", server.Status)
+			tflog.Info(ctx, fmt.Sprintf("database status is %s", server.Status))
 			return server, server.Status, nil
 		}
 
