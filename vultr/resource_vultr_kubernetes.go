@@ -366,6 +366,19 @@ func resourceVultrKubernetesUpdate(ctx context.Context, d *schema.ResourceData, 
 				return diag.FromErr(err)
 			}
 		}
+
+		if d.HasChange("node_pools.0.node_recycle") {
+			nodesRecycle := newNodePoolData["node_recycle"].(*schema.Set).List()
+			for i := range nodesRecycle {
+				err := client.Kubernetes.RecycleNodePoolInstance(ctx, d.Id(), newNodePoolData["id"].(string), nodesRecycle[i].(string))
+				if err != nil {
+					return diag.FromErr(err)
+				}
+			}
+
+			// this field is write-only so clear the state
+			d.Set("node_pools.0.node_recycle", nil)
+		}
 	}
 
 	// k8s version upgrade
