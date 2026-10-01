@@ -80,6 +80,7 @@ The follow arguments are supported:
 * `max_nodes` - (Optional, Default to 1) The maximum number of nodes to use with the auto scaler.
 * `user_data` - (Optional) A base64 encoded string containing the user data to apply to nodes in the node pool.
 * `vpc_only` - (Optional, Default to false) Enable private-only VPC connectivity for nodes. If true, nodes can only access the internet via the NAT Gateway attached to the VPC.
+* `node_recycle` - (Optional, update only, write only) A list of node IDs to recycle. This will increase the node pool size with new nodes and automatically remove the recycled nodes.
 
 `labels` - (Optional) A list of labels to apply to the nodes in the node pool with these fields:
 
