@@ -6,11 +6,14 @@ import (
 	"log"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v3"
 )
+
+const objStorageMissingError string = "Object does not exist."
 
 func resourceVultrObjectStorage() *schema.Resource {
 	return &schema.Resource{
@@ -134,7 +137,18 @@ func resourceVultrObjectStorageRead(ctx context.Context, d *schema.ResourceData,
 
 	obj, _, err := client.ObjectStorage.Get(ctx, d.Id())
 	if err != nil {
-		return diag.Errorf("error getting object storage account: %v", err)
+		missing, missErr := checkIsMissing(err, objStorageMissingError)
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("Remove object storage (%v) because it is gone", d.Id()))
+			d.SetId("")
+			return nil
+		}
+
+		return diag.Errorf("error getting object storage : %v", err)
 	}
 
 	if err := d.Set("date_created", obj.DateCreated); err != nil {
@@ -217,7 +231,16 @@ func newServerObjRefresh(ctx context.Context, d *schema.ResourceData, meta inter
 
 		obj, _, err := client.ObjectStorage.Get(ctx, d.Id())
 		if err != nil {
-			return nil, "", fmt.Errorf("error retrieving Object Store %s : %s", d.Id(), err)
+			missing, missErr := checkIsMissing(err, objStorageMissingError)
+			if missErr != nil {
+				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
+			}
+
+			if missing {
+				return nil, "", nil
+			}
+
+			return nil, "", fmt.Errorf("error retrieving object storage %s : %s", d.Id(), err)
 		}
 
 		log.Print(obj)

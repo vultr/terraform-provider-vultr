@@ -14,6 +14,8 @@ import (
 	"github.com/vultr/govultr/v3"
 )
 
+const kubernetesNodePoolMissingError string = "Nodepool not found"
+
 func resourceVultrKubernetesNodePools() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVultrKubernetesNodePoolsCreate,
@@ -214,7 +216,7 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 			return diag.Errorf("api authorization error: %v", err)
 		}
 
-		missing, missErr := checkIsMissing(err, "Invalid NodePool ID")
+		missing, missErr := checkIsMissing(err, kubernetesNodePoolMissingError)
 		if missErr != nil {
 			return diag.Errorf("error in api response %q : %v", err, missErr)
 		}
@@ -402,15 +404,24 @@ func waitForNodePoolAvailable(ctx context.Context, d *schema.ResourceData, targe
 func newNodePoolStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-		log.Printf("[INFO] Creating node pool")
+		tflog.Info(ctx, "refreshing kubernetes node pool state")
 
 		np, _, err := client.Kubernetes.GetNodePool(ctx, d.Get("cluster_id").(string), d.Id())
 		if err != nil {
+			missing, missErr := checkIsMissing(err, kubernetesNodePoolMissingError)
+			if missErr != nil {
+				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
+			}
+
+			if missing {
+				return nil, "", nil
+			}
+
 			return nil, "", fmt.Errorf("error retrieving node pool %s ", d.Id())
 		}
 
 		if attr == "status" {
-			log.Printf("[INFO] The node pool status is %v", np.Status)
+			tflog.Info(ctx, fmt.Sprintf("kubernetes node pool status is %v", np.Status))
 			return np, np.Status, nil
 		}
 

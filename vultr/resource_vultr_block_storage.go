@@ -14,6 +14,8 @@ import (
 	"github.com/vultr/govultr/v3"
 )
 
+const blockStorageMissingError string = "Invalid block storage ID"
+
 func resourceVultrBlockStorage() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVultrBlockStorageCreate,
@@ -173,7 +175,7 @@ func resourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData, 
 
 	bs, _, err := client.BlockStorage.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Invalid block storage ID")
+		missing, missErr := checkIsMissing(err, blockStorageMissingError)
 		if missErr != nil {
 			return diag.Errorf("error in api response %q : %v", err, missErr)
 		}
@@ -327,9 +329,19 @@ func waitForBlockAvailable(ctx context.Context, d *schema.ResourceData, target s
 func newBlockStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-		log.Printf("[INFO] Creating Block")
+		tflog.Info(ctx, "refreshing block storage state")
+
 		block, _, err := client.BlockStorage.Get(ctx, d.Id())
 		if err != nil {
+			missing, missErr := checkIsMissing(err, blockStorageMissingError)
+			if missErr != nil {
+				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
+			}
+
+			if missing {
+				return nil, "", nil
+			}
+
 			return nil, "", fmt.Errorf("error retrieving block %s : %s", d.Id(), err)
 		}
 

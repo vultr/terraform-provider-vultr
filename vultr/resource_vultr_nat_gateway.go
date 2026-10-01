@@ -7,12 +7,15 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/vultr/govultr/v3"
 )
+
+const natGatewayMissingError string = "Invalid NAT Gateway ID"
 
 func resourceVultrNATGateway() *schema.Resource {
 	return &schema.Resource{
@@ -131,6 +134,17 @@ func resourceVultrNATGatewayRead(ctx context.Context, d *schema.ResourceData, me
 
 	natGateway, _, err := client.VPC.GetNATGateway(ctx, vpcID, d.Id())
 	if err != nil {
+		missing, missErr := checkIsMissing(err, natGatewayMissingError)
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("removing load balancer (%v) because it is gone", d.Id()))
+			d.SetId("")
+			return nil
+		}
+
 		return diag.Errorf("error getting NAT Gateway (%s): %v", d.Id(), err)
 	}
 
@@ -233,15 +247,24 @@ func waitForNATGatewayAvailable(ctx context.Context, d *schema.ResourceData, tar
 func newNATGatewayStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}, attr string) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 	return func() (interface{}, string, error) {
-		log.Printf("[INFO] Creating NAT Gateway")
-		natGateway, _, err := client.VPC.GetNATGateway(ctx, d.Get("vpc_id").(string), d.Id())
+		tflog.Info(ctx, "refreshing nat gateway state")
 
+		natGateway, _, err := client.VPC.GetNATGateway(ctx, d.Get("vpc_id").(string), d.Id())
 		if err != nil {
-			return nil, "", fmt.Errorf("error retrieving NAT Gateway %s : %s", d.Id(), err)
+			missing, missErr := checkIsMissing(err, natGatewayMissingError)
+			if missErr != nil {
+				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
+			}
+
+			if missing {
+				return nil, "", nil
+			}
+
+			return nil, "", fmt.Errorf("error retrieving nat gateway %s : %s", d.Id(), err)
 		}
 
 		if attr == "status" {
-			log.Printf("[INFO] The NAT Gateway Status is %s", natGateway.Status)
+			tflog.Info(ctx, fmt.Sprintf("nat gateway status is %s", natGateway.Status))
 			return natGateway, natGateway.Status, nil
 		}
 

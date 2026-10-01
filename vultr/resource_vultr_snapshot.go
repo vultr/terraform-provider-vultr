@@ -6,12 +6,15 @@ import (
 	"log"
 	"time"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/retry"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v3"
 )
+
+const snapshotMissingError string = "Invalid snapshot ID"
 
 func resourceVultrSnapshot() *schema.Resource {
 	return &schema.Resource{
@@ -91,11 +94,22 @@ func resourceVultrSnapshotRead(ctx context.Context, d *schema.ResourceData, meta
 
 	snapshot, _, err := client.Snapshot.Get(ctx, d.Id())
 	if err != nil {
+		missing, missErr := checkIsMissing(err, snapshotMissingError)
+		if missErr != nil {
+			return diag.Errorf("error in api response %q : %v", err, missErr)
+		}
+
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("removing snapshot (%s) because it is gone", d.Id()))
+			d.SetId("")
+			return nil
+		}
+
 		return diag.Errorf("error getting snapshots: %v", err)
 	}
 
 	if snapshot == nil {
-		log.Printf("[WARN] Vultr snapshot (%s) not found", d.Id())
+		tflog.Warn(ctx, fmt.Sprintf("removing snapshot (%s) because it is gone", d.Id()))
 		d.SetId("")
 		return nil
 	}

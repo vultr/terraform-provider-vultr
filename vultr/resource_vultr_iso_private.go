@@ -17,6 +17,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
+const isoMissingError string = "Invalid ISO ID"
+
 func resourceVultrIsoPrivate() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVultrIsoCreate,
@@ -86,7 +88,7 @@ func resourceVultrIsoRead(ctx context.Context, d *schema.ResourceData, meta inte
 
 	iso, _, err := client.ISO.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Invalid iso")
+		missing, missErr := checkIsMissing(err, isoMissingError)
 		if missErr != nil {
 			return diag.Errorf("error in api response %q : %v", err, missErr)
 		}
@@ -218,18 +220,26 @@ func waitForIsoAvailable(ctx context.Context, d *schema.ResourceData, target str
 	return stateConf.WaitForStateContext(ctx)
 }
 
-func newIsoStateRefresh(ctx context.Context,
-	d *schema.ResourceData, meta interface{}) retry.StateRefreshFunc {
+func newIsoStateRefresh(ctx context.Context, d *schema.ResourceData, meta interface{}) retry.StateRefreshFunc { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
 	return func() (interface{}, string, error) {
-		log.Printf("[INFO] Creating Private ISO")
+		tflog.Info(ctx, "refreshing iso state")
 		iso, _, err := client.ISO.Get(ctx, d.Id())
 		if err != nil {
+			missing, missErr := checkIsMissing(err, isoMissingError)
+			if missErr != nil {
+				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
+			}
+
+			if missing {
+				return nil, "", nil
+			}
+
 			return nil, "", fmt.Errorf("error retrieving ISO %s : %s", d.Id(), err)
 		}
 
-		log.Printf("[INFO] The ISO Status is %s", iso.Status)
+		tflog.Info(ctx, fmt.Sprintf("iso status is %s", iso.Status))
 		return &iso, iso.Status, nil
 	}
 }

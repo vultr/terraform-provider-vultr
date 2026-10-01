@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-log/tflog"
@@ -15,6 +14,8 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/vultr/govultr/v3"
 )
+
+const bareMetalServerMissingError string = "bare metal not found"
 
 func resourceVultrBareMetalServer() *schema.Resource {
 	return &schema.Resource{
@@ -280,9 +281,16 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 		Target:  []string{"active"},
 
 		Refresh: func() (interface{}, string, error) {
+			tflog.Info(ctx, "refreshing bare metal server state")
+
 			bmRefresh, _, err := client.BareMetalServer.Get(ctx, d.Id())
 			if err != nil {
-				if strings.Contains(err.Error(), "Not found.") {
+				missing, missErr := checkIsMissing(err, bareMetalServerMissingError)
+				if missErr != nil {
+					return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
+				}
+
+				if missing {
 					return nil, "", nil
 				}
 
@@ -317,7 +325,7 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 
 	bms, _, err := client.BareMetalServer.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "invalid server")
+		missing, missErr := checkIsMissing(err, bareMetalServerMissingError)
 		if missErr != nil {
 			return diag.Errorf("error in api response %q : %v", err, missErr)
 		}

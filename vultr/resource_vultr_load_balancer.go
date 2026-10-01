@@ -17,6 +17,8 @@ import (
 	"github.com/vultr/govultr/v3"
 )
 
+const lbMissingError string = "Load Balancer Subscription ID Not Found"
+
 func resourceVultrLoadBalancer() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVultrLoadBalancerCreate,
@@ -453,13 +455,13 @@ func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, 
 
 	lb, _, err := client.LoadBalancer.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Load Balancer Subscription ID Not Found")
+		missing, missErr := checkIsMissing(err, lbMissingError)
 		if missErr != nil {
 			return diag.Errorf("error in api response %q : %v", err, missErr)
 		}
 
 		if missing {
-			tflog.Warn(ctx, fmt.Sprintf("Remove load balancer (%v) because it is gone", d.Id()))
+			tflog.Warn(ctx, fmt.Sprintf("removing load balancer (%v) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
@@ -788,6 +790,15 @@ func newLBStateRefresh(ctx context.Context, d *schema.ResourceData, meta interfa
 
 		lb, _, err := client.LoadBalancer.Get(ctx, d.Id())
 		if err != nil {
+			missing, missErr := checkIsMissing(err, lbMissingError)
+			if missErr != nil {
+				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
+			}
+
+			if missing {
+				return nil, "", nil
+			}
+
 			return nil, "", fmt.Errorf("error retrieving lb %s ", d.Id())
 		}
 
