@@ -5,8 +5,9 @@ go 1.26.0
 require (
 	github.com/hashicorp/terraform-plugin-log v0.11.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.40.1
-	github.com/vultr/govultr/v3 v3.33.0
+	github.com/vultr/govultr/v3 v3.33.1
 	go.yaml.in/yaml/v4 v4.0.0-rc.6
+	golang.org/x/mod v0.38.0
 	golang.org/x/oauth2 v0.37.0
 )
 
@@ -58,7 +59,6 @@ require (
 	github.com/vmihailenco/msgpack v4.0.4+incompatible // indirect
 	github.com/zclconf/go-cty v1.18.1 // indirect
 	golang.org/x/crypto v0.55.0 // indirect
-	golang.org/x/mod v0.38.0 // indirect
 	golang.org/x/net v0.58.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/text v0.41.0 // indirect
