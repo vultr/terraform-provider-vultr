@@ -103,9 +103,7 @@ func resourceVultrReservedIPRead(ctx context.Context, d *schema.ResourceData, me
 	}
 
 	if rip == nil {
-		log.Printf("[WARN] Vultr Reserved IP (%s) not found", d.Id())
-		d.SetId("")
-		return nil
+		return diag.Errorf("error getting reserved IP (%s): empty response from the Vultr API", d.Id())
 	}
 
 	if err := d.Set("region", rip.Region); err != nil {
