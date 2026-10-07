@@ -310,9 +310,27 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 		return diag.Errorf("error setting `backups_schedule`: %#v", err)
 	}
 
-	vpcs, err := getVPCs(client, d.Id())
-	if err != nil {
-		return diag.Errorf("%s", err.Error())
+	var vpcs []string
+	optionsVPC := &govultr.ListOptions{}
+	for {
+		vpcInfo, meta, _, err := client.Instance.ListVPCInfo(context.Background(), d.Id(), optionsVPC)
+		if err != nil {
+			return diag.Errorf("error retrieving list of instance vpcs : %v", err)
+		}
+
+		if len(vpcInfo) == 0 {
+			break
+		}
+
+		for _, v := range vpcInfo {
+			vpcs = append(vpcs, v.ID)
+		}
+
+		if meta.Links.Next == "" {
+			break
+		}
+
+		options.Cursor = meta.Links.Next
 	}
 
 	if err := d.Set("vpc_ids", vpcs); err != nil {
