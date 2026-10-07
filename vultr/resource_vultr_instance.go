@@ -588,7 +588,7 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		backup, resp, backErr := client.Instance.GetBackupSchedule(ctx, d.Id())
 		if backErr != nil {
 			if missing := checkIsMissing(resp, backErr, instMissingError); missing {
-				return retry.RetryableError(fmt.Errorf("instance backup schedule not found, retrying..."))
+				return retry.RetryableError(fmt.Errorf("instance backup schedule not found, retrying"))
 			}
 
 			return retry.NonRetryableError(backErr)
@@ -634,7 +634,7 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 				vpcInfo, meta, resp, err := client.Instance.ListVPCInfo(context.Background(), d.Id(), options)
 				if err != nil {
 					if missing := checkIsMissing(resp, err, instMissingError); missing {
-						return retry.RetryableError(fmt.Errorf("instance attached vpc list not found, retrying..."))
+						return retry.RetryableError(fmt.Errorf("instance attached vpc list not found, retrying"))
 					}
 
 					return retry.NonRetryableError(err)
@@ -677,7 +677,7 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 			udRead, resp, udErr = client.Instance.GetUserData(ctx, d.Id())
 			if udErr != nil {
 				if missing := checkIsMissing(resp, udErr, instMissingError); missing {
-					return retry.RetryableError(fmt.Errorf("instance user data not found, retrying..."))
+					return retry.RetryableError(fmt.Errorf("instance user data not found, retrying"))
 				}
 
 				return retry.NonRetryableError(udErr)
