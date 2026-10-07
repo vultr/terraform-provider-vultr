@@ -815,14 +815,9 @@ func newServerStateRefresh(ctx context.Context, d *schema.ResourceData, meta int
 	return func() (interface{}, string, error) {
 		tflog.Info(ctx, "refreshing instance state")
 
-		server, _, err := client.Instance.Get(ctx, d.Id())
+		server, resp, err := client.Instance.Get(ctx, d.Id())
 		if err != nil {
-			missing, missErr := checkIsMissing(err, instMissingError)
-			if missErr != nil {
-				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
-			}
-
-			if missing {
+			if missing := checkIsMissing(resp, err, instMissingError); missing {
 				return nil, "", nil
 			}
 
