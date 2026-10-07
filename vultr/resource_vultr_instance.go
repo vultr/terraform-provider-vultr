@@ -118,7 +118,9 @@ Will not do anything unless enable_ipv6 is also true.`,
 			},
 			"user_data": {
 				Type:     schema.TypeString,
+				Computed: true,
 				Optional: true,
+				ForceNew: true,
 			},
 			"activation_email": {
 				Type:     schema.TypeBool,
@@ -202,6 +204,7 @@ hostname on UI or API issues a reinstall of the OS.`,
 			"user_scheme": {
 				Type:     schema.TypeString,
 				Optional: true,
+				ForceNew: true,
 				Default:  "root",
 			},
 			"app_variables": {
