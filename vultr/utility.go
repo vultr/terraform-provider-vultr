@@ -8,11 +8,6 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
 
-type apiError struct {
-	Status  int    `json:"status"`
-	Message string `json:"error"`
-}
-
 // Lookup changes on a TF field and convert schema.Set to []string
 func tfChangeToSlices(fieldname string, d *schema.ResourceData) ([]string, []string) { //nolint:unparam
 	oldVal, newVal := d.GetChange(fieldname)
