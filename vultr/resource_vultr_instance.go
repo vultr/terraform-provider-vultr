@@ -583,22 +583,37 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		return diag.Errorf("unable to set resource instance `user_scheme` read value: %v", err)
 	}
 
-	backup, _, err := client.Instance.GetBackupSchedule(ctx, d.Id())
-	if err != nil {
-		return diag.Errorf("error getting backup schedule: %v", err)
+	var backupSchedule *govultr.BackupSchedule
+	backupScheduleRetryErr := retry.RetryContext(ctx, d.Timeout(schema.TimeoutRead), func() *retry.RetryError {
+		backup, resp, backErr := client.Instance.GetBackupSchedule(ctx, d.Id())
+		if backErr != nil {
+			if missing := checkIsMissing(resp, backErr, instMissingError); missing {
+				return retry.RetryableError(fmt.Errorf("instance backup schedule not found, retrying..."))
+			}
+
+			return retry.NonRetryableError(backErr)
+		}
+
+		backupSchedule = backup
+
+		return nil
+	})
+
+	if backupScheduleRetryErr != nil {
+		return diag.Errorf("error getting instance backup schedule : %v", backupScheduleRetryErr)
 	}
 
-	if err := d.Set("backups", backupStatus(backup.Enabled)); err != nil {
+	if err := d.Set("backups", backupStatus(backupSchedule.Enabled)); err != nil {
 		return diag.Errorf("unable to set resource instance `backups` read value: %v", err)
 	}
 
-	if backupStatus(backup.Enabled) != "disabled" {
+	if backupStatus(backupSchedule.Enabled) != "disabled" {
 		var bs []map[string]interface{}
 		backupScheduleInfo := map[string]interface{}{
-			"type": backup.Type,
-			"hour": backup.Hour,
-			"dom":  backup.Dom,
-			"dow":  backup.Dow,
+			"type": backupSchedule.Type,
+			"hour": backupSchedule.Hour,
+			"dom":  backupSchedule.Dom,
+			"dow":  backupSchedule.Dow,
 		}
 		bs = append(bs, backupScheduleInfo)
 
@@ -611,12 +626,41 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		}
 	}
 
-	vpcs, err := getVPCs(client, d.Id())
-	if err != nil {
-		return diag.Errorf("%s", err.Error())
-	}
+	if _, vpcOK := d.GetOk("vpc_ids"); vpcOK {
+		var vpcs []string
+		vpcRetryErr := retry.RetryContext(ctx, d.Timeout(schema.TimeoutRead), func() *retry.RetryError {
+			options := &govultr.ListOptions{}
+			for {
+				vpcInfo, meta, resp, err := client.Instance.ListVPCInfo(context.Background(), d.Id(), options)
+				if err != nil {
+					if missing := checkIsMissing(resp, err, instMissingError); missing {
+						return retry.RetryableError(fmt.Errorf("instance attached vpc list not found, retrying..."))
+					}
 
-	if _, vpcUpdate := d.GetOk("vpc_ids"); vpcUpdate {
+					return retry.NonRetryableError(err)
+				}
+
+				if len(vpcInfo) == 0 {
+					break
+				}
+
+				for _, v := range vpcInfo {
+					vpcs = append(vpcs, v.ID)
+				}
+
+				if meta.Links.Next == "" {
+					break
+				}
+				options.Cursor = meta.Links.Next
+			}
+
+			return nil
+		})
+
+		if vpcRetryErr != nil {
+			return diag.Errorf("error getting instance attached vpcs : %v", vpcRetryErr)
+		}
+
 		if err := d.Set("vpc_ids", vpcs); err != nil {
 			return diag.Errorf("unable to set resource instance `vpc_ids` read value: %v", err)
 		}
@@ -624,6 +668,36 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 
 	if err := d.Set("vpc_only", instance.VPCOnly); err != nil {
 		return diag.Errorf("unable to set resource instance `vpc_only` read value: %v", err)
+	}
+
+	if _, udOK := d.GetOk("user_data"); udOK {
+		var udRead *govultr.UserData
+		var udErr error
+		userDataRetryErr := retry.RetryContext(ctx, d.Timeout(schema.TimeoutRead), func() *retry.RetryError {
+			udRead, resp, udErr = client.Instance.GetUserData(ctx, d.Id())
+			if udErr != nil {
+				if missing := checkIsMissing(resp, udErr, instMissingError); missing {
+					return retry.RetryableError(fmt.Errorf("instance user data not found, retrying..."))
+				}
+
+				return retry.NonRetryableError(udErr)
+			}
+
+			return nil
+		})
+
+		if userDataRetryErr != nil {
+			return diag.Errorf("error getting instance user data : %v", userDataRetryErr)
+		}
+
+		udDecoded, err := base64.StdEncoding.DecodeString(udRead.Data)
+		if err != nil {
+			return diag.Errorf("error decoding instance user data : %v", err)
+		}
+
+		if err := d.Set("user_data", string(udDecoded)); err != nil {
+			return diag.Errorf("unable to set resource instance `user_data` read value : %v", err)
+		}
 	}
 
 	return nil
