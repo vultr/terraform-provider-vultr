@@ -86,14 +86,9 @@ func resourceVultrReservedIPCreate(ctx context.Context, d *schema.ResourceData, 
 func resourceVultrReservedIPRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	rip, _, err := client.ReservedIP.Get(ctx, d.Id())
+	rip, resp, err := client.ReservedIP.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "reserved ip not found")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "reserved ip not found"); missing {
 			tflog.Warn(ctx, fmt.Sprintf("Removing reserved-ip (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil

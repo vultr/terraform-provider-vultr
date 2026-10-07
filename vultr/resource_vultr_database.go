@@ -358,14 +358,9 @@ func resourceVultrDatabaseCreate(ctx context.Context, d *schema.ResourceData, me
 func resourceVultrDatabaseRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	database, _, err := client.Database.Get(ctx, d.Id())
+	database, resp, err := client.Database.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, databaseMissingError)
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, databaseMissingError); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing database (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
@@ -817,14 +812,9 @@ func newDatabaseStateRefresh(ctx context.Context, d *schema.ResourceData, meta i
 	return func() (interface{}, string, error) {
 		tflog.Info(ctx, "refreshing database state")
 
-		server, _, err := client.Database.Get(ctx, d.Id())
+		server, resp, err := client.Database.Get(ctx, d.Id())
 		if err != nil {
-			missing, missErr := checkIsMissing(err, databaseMissingError)
-			if missErr != nil {
-				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
-			}
-
-			if missing {
+			if missing := checkIsMissing(resp, err, databaseMissingError); missing {
 				return nil, "", nil
 			}
 

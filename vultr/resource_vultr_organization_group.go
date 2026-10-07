@@ -103,14 +103,9 @@ func resourceVultrOrganizationGroupCreate(ctx context.Context, d *schema.Resourc
 func resourceVultrOrganizationGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
-	grp, _, err := client.Organization.GetGroup(ctx, d.Id())
+	grp, resp, err := client.Organization.GetGroup(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Group not found")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "Group not found"); missing {
 			tflog.Warn(ctx, fmt.Sprintf("Removing organization group (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil

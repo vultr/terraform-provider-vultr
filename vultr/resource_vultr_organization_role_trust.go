@@ -111,14 +111,9 @@ func resourceVultrOrganizationRoleTrustCreate(ctx context.Context, d *schema.Res
 func resourceVultrOrganizationRoleTrustRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
-	trust, _, err := client.Organization.GetRoleTrust(ctx, d.Id())
+	trust, resp, err := client.Organization.GetRoleTrust(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Role trust not found")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "Role trust not found"); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing organization role trust (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil

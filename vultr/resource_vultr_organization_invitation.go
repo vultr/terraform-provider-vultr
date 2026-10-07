@@ -97,14 +97,9 @@ func resourceVultrOrganizationInvitationCreate(ctx context.Context, d *schema.Re
 func resourceVultrOrganizationInvitationRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
-	inv, _, err := client.Organization.GetInvitation(ctx, d.Id())
+	inv, resp, err := client.Organization.GetInvitation(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Invite not found")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "Invite not found"); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing organization invitation (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil

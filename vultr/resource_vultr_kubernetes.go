@@ -170,18 +170,13 @@ func resourceVultrKubernetesCreate(ctx context.Context, d *schema.ResourceData, 
 func resourceVultrKubernetesRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	vke, _, err := client.Kubernetes.GetCluster(ctx, d.Id())
+	vke, resp, err := client.Kubernetes.GetCluster(ctx, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Unauthorized") {
 			return diag.Errorf("api authorization error: %v", err)
 		}
 
-		missing, missErr := checkIsMissing(err, kubernetesMissingError)
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, kubernetesMissingError); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing kubernetes cluster (%v) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
@@ -434,14 +429,9 @@ func newVKEStateRefresh(ctx context.Context, d *schema.ResourceData, meta interf
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Creating kubernetes cluster")
 
-		vke, _, err := client.Kubernetes.GetCluster(ctx, d.Id())
+		vke, resp, err := client.Kubernetes.GetCluster(ctx, d.Id())
 		if err != nil {
-			missing, missErr := checkIsMissing(err, kubernetesMissingError)
-			if missErr != nil {
-				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
-			}
-
-			if missing {
+			if missing := checkIsMissing(resp, err, kubernetesMissingError); missing {
 				return nil, "", nil
 			}
 

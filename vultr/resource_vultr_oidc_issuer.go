@@ -107,14 +107,9 @@ func resourceVultrOIDCIssuerCreate(ctx context.Context, d *schema.ResourceData, 
 func resourceVultrOIDCIssuerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	issu, _, err := client.OIDC.GetOIDCIssuer(ctx, d.Id())
+	issu, resp, err := client.OIDC.GetOIDCIssuer(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Issuer Not Found")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "Issuer Not Found"); missing {
 			tflog.Warn(ctx, fmt.Sprintf("Removing oidc issuer (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil

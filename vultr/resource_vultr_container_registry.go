@@ -99,14 +99,9 @@ func resourceVultrContainerRegistryCreate(ctx context.Context, d *schema.Resourc
 func resourceVultrContainerRegistryRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
-	cr, _, err := client.ContainerRegistry.Get(ctx, d.Id())
+	cr, resp, err := client.ContainerRegistry.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Invalid container registry ID")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "Invalid container registry ID"); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing container registry (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil

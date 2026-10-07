@@ -486,13 +486,9 @@ func resourceVultrInstanceCreate(ctx context.Context, d *schema.ResourceData, me
 func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	instance, _, err := client.Instance.Get(ctx, d.Id())
+	instance, resp, err := client.Instance.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, instMissingError)
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
+		missing := checkIsMissing(resp, err, instMissingError)
 		if missing {
 			log.Printf("[WARN] Removing instance (%s) because it is gone", d.Id())
 			d.SetId("")
