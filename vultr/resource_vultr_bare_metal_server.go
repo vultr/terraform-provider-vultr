@@ -397,10 +397,6 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 		return diag.Errorf("unable to set resource bare_metal_server `user_scheme` read value: %v", err)
 	}
 
-	vpcInfo, _, err := client.BareMetalServer.ListVPCInfo(ctx, d.Id())
-	if err != nil {
-		return diag.Errorf("error getting list of attached vpcs during bare metal server read : %v", err)
-	}
 	if _, udOK := d.GetOk("user_data"); udOK {
 		var udRead *govultr.UserData
 		var udErr error
@@ -417,10 +413,6 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 			return nil
 		})
 
-	// only one VPC ever allowed on bare metal server
-	var vpcID = ""
-	if len(vpcInfo) != 0 {
-		vpcID = vpcInfo[0].ID
 		if userDataRetryErr != nil {
 			return diag.Errorf("error getting bare metal server user data : %v", userDataRetryErr)
 		}
@@ -435,8 +427,34 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 		}
 	}
 
-	if err := d.Set("vpc_id", vpcID); err != nil {
-		return diag.Errorf("unable to set resource bare metal server `vpc_id` read value : %v", err)
+	if _, vpcOK := d.GetOk("vpc_id"); vpcOK {
+		var vpcs []string
+		vpcRetryErr := retry.RetryContext(ctx, d.Timeout(schema.TimeoutRead), func() *retry.RetryError {
+			vpcs = []string{}
+			vpcInfo, resp, err := client.BareMetalServer.ListVPCInfo(ctx, d.Id())
+			if err != nil {
+				if missing := checkIsMissing(resp, err, bareMetalServerMissingError); missing {
+					return retry.RetryableError(fmt.Errorf("bare metal server attached vpc list not found, retrying"))
+				}
+
+				return retry.NonRetryableError(err)
+			}
+
+			for i := range vpcInfo {
+				vpcs = append(vpcs, vpcInfo[i].ID)
+			}
+
+			return nil
+		})
+
+		if vpcRetryErr != nil {
+			return diag.Errorf("error getting list of attached vpcs during bare metal server read : %v", err)
+		}
+
+		// only one vpc is able to be attached to bare metal servers
+		if err := d.Set("vpc_id", vpcs[0]); err != nil {
+			return diag.Errorf("unable to set resource bare metal server `vpc_id` read value : %v", err)
+		}
 	}
 
 	return nil
