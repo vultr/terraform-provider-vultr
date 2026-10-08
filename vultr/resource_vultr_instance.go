@@ -118,9 +118,7 @@ Will not do anything unless enable_ipv6 is also true.`,
 			},
 			"user_data": {
 				Type:     schema.TypeString,
-				Computed: true,
 				Optional: true,
-				ForceNew: true,
 			},
 			"activation_email": {
 				Type:     schema.TypeBool,
@@ -204,7 +202,6 @@ hostname on UI or API issues a reinstall of the OS.`,
 			"user_scheme": {
 				Type:     schema.TypeString,
 				Optional: true,
-				ForceNew: true,
 				Default:  "root",
 			},
 			"app_variables": {
@@ -767,6 +764,17 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		req.Tags = newTags
 	}
 
+	if d.HasChange("user_scheme") {
+		_, usNew := d.GetChange("user_scheme")
+		req.UserScheme = usNew.(string)
+	}
+
+	if d.HasChange("user_data") {
+		_, udNew := d.GetChange("user_data")
+		udEncoded := base64.StdEncoding.EncodeToString([]byte(udNew.(string)))
+		req.UserData = &udEncoded
+	}
+
 	if _, _, err := client.Instance.Update(ctx, d.Id(), req); err != nil {
 		return diag.Errorf("error updating instance %s : %s", d.Id(), err.Error())
 	}
@@ -806,13 +814,6 @@ func resourceVultrInstanceUpdate(ctx context.Context, d *schema.ResourceData, me
 		if _, err := waitForPlanUpgrade(ctx, d, newP.(string), []string{oldP.(string)}, meta); err != nil {
 			return diag.Errorf("error while waiting for instance %s to have updated plan : %s", d.Id(), err)
 		}
-	}
-
-	if d.HasChange("user_scheme") {
-		log.Printf("[INFO] Updating UserScheme")
-		_, newVal := d.GetChange("user_scheme")
-		uScheme := newVal.(string)
-		req.UserScheme = uScheme
 	}
 
 	return resourceVultrInstanceRead(ctx, d, meta)

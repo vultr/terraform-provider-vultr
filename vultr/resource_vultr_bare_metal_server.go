@@ -81,9 +81,7 @@ func resourceVultrBareMetalServer() *schema.Resource {
 			},
 			"user_data": {
 				Type:     schema.TypeString,
-				Computed: true,
 				Optional: true,
-				ForceNew: true,
 			},
 			"activation_email": {
 				Type:     schema.TypeBool,
@@ -125,7 +123,6 @@ func resourceVultrBareMetalServer() *schema.Resource {
 			"user_scheme": {
 				Type:     schema.TypeString,
 				Optional: true,
-				ForceNew: true,
 				Default:  "root",
 			},
 			"app_variables": {
@@ -400,19 +397,69 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 		return diag.Errorf("unable to set resource bare_metal_server `user_scheme` read value: %v", err)
 	}
 
-	vpcInfo, _, err := client.BareMetalServer.ListVPCInfo(ctx, d.Id())
-	if err != nil {
-		return diag.Errorf("error getting list of attached vpcs during bare metal server read : %v", err)
+	if _, udOK := d.GetOk("user_data"); udOK {
+		var udRead *govultr.UserData
+		var udErr error
+		userDataRetryErr := retry.RetryContext(ctx, d.Timeout(schema.TimeoutRead), func() *retry.RetryError {
+			udRead, resp, udErr = client.BareMetalServer.GetUserData(ctx, d.Id())
+			if udErr != nil {
+				if missing := checkIsMissing(resp, udErr, bareMetalServerMissingError); missing {
+					return retry.RetryableError(fmt.Errorf("bare metal user data not found, retrying"))
+				}
+
+				return retry.NonRetryableError(udErr)
+			}
+
+			return nil
+		})
+
+		if userDataRetryErr != nil {
+			return diag.Errorf("error getting bare metal server user data : %v", userDataRetryErr)
+		}
+
+		udDecoded, err := base64.StdEncoding.DecodeString(udRead.Data)
+		if err != nil {
+			return diag.Errorf("error decoding bare metal server user data : %v", err)
+		}
+
+		if err := d.Set("user_data", string(udDecoded)); err != nil {
+			return diag.Errorf("unable to set resource bare_metal_server `user_data` read value : %v", err)
+		}
 	}
 
-	// only one VPC ever allowed on bare metal server
-	var vpcID = ""
-	if len(vpcInfo) != 0 {
-		vpcID = vpcInfo[0].ID
-	}
+	if _, vpcOK := d.GetOk("vpc_id"); vpcOK {
+		var vpcs []string
+		vpcRetryErr := retry.RetryContext(ctx, d.Timeout(schema.TimeoutRead), func() *retry.RetryError {
+			vpcs = []string{}
+			vpcInfo, resp, err := client.BareMetalServer.ListVPCInfo(ctx, d.Id())
+			if err != nil {
+				if missing := checkIsMissing(resp, err, bareMetalServerMissingError); missing {
+					return retry.RetryableError(fmt.Errorf("bare metal server attached vpc list not found, retrying"))
+				}
 
-	if err := d.Set("vpc_id", vpcID); err != nil {
-		return diag.Errorf("unable to set resource bare metal server `vpc_id` read value : %v", err)
+				return retry.NonRetryableError(err)
+			}
+
+			for i := range vpcInfo {
+				vpcs = append(vpcs, vpcInfo[i].ID)
+			}
+
+			return nil
+		})
+
+		if vpcRetryErr != nil {
+			return diag.Errorf("error getting list of attached vpcs during bare metal server read : %v", vpcRetryErr)
+		}
+
+		var vpcZero string
+		if len(vpcs) > 0 {
+			// only one vpc is able to be attached to bare metal servers
+			vpcZero = vpcs[0]
+		}
+
+		if err := d.Set("vpc_id", vpcZero); err != nil {
+			return diag.Errorf("unable to set resource bare metal server `vpc_id` read value : %v", err)
+		}
 	}
 
 	return nil
@@ -452,39 +499,87 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 			return diag.Errorf("error retrieving vpc info for bare metal server update : %v", err)
 		}
 
-		var vpcCount = len(vpcInfo)
-		var vpcUpdateRetries = 10
-		var vpcUpdateDelayDuration = 10 * time.Second
-		if vpcCount != 0 {
+		if len(vpcInfo) != 0 {
 			if err := client.BareMetalServer.DetachVPC(ctx, d.Id(), oldVPC.(string)); err != nil {
 				return diag.Errorf("error updating bare metal server vpc detachment : %v", err)
 			}
 
-			for {
-				if vpcUpdateRetries == 0 {
-					return diag.Errorf("time out while waiting for bare metal server vpc detachment, aborting update")
-				}
+			// block and wait until vpc is detached
+			stateConfDetach := &retry.StateChangeConf{
+				Pending: []string{oldVPC.(string)},
+				Target:  []string{""},
 
-				vpcUpdateRetries -= 1
+				Refresh: func() (interface{}, string, error) {
+					tflog.Info(ctx, "refreshing bare metal server vpc attachment state")
 
-				refreshInfo, _, err := client.BareMetalServer.ListVPCInfo(ctx, d.Id())
-				if err != nil {
-					return diag.Errorf("error refreshing vpc info while updating bare metal server attchment : %v", err)
-				}
+					curVPC, resp, err := client.BareMetalServer.ListVPCInfo(ctx, d.Id())
+					if err != nil {
+						if missing := checkIsMissing(resp, err, bareMetalServerMissingError); missing {
+							return nil, "", nil
+						}
 
-				time.Sleep(vpcUpdateDelayDuration)
+						return nil, "", fmt.Errorf("error while refreshing bare metal server (%s) vpc attachments : %v", d.Id(), err)
+					}
 
-				if len(refreshInfo) != 0 {
-					continue
-				}
+					vpcAttached := ""
+					if len(curVPC) > 0 {
+						vpcAttached = curVPC[0].ID
+					}
 
-				break
+					tflog.Info(ctx, fmt.Sprintf("bare metal server (%s) current attached vpc is %q", d.Id(), vpcAttached))
+					return curVPC, vpcAttached, nil
+				},
+
+				Timeout:        d.Timeout(schema.TimeoutUpdate),
+				Delay:          10 * time.Second,
+				MinTimeout:     5 * time.Second,
+				NotFoundChecks: 10,
+			}
+
+			if _, err := stateConfDetach.WaitForStateContext(ctx); err != nil {
+				return diag.Errorf("error waiting for bare metal server (%s) vpc (%s) detachment: %s", d.Id(), oldVPC.(string), err)
 			}
 		}
 
 		if newVPC.(string) != "" {
 			if err := client.BareMetalServer.AttachVPC(ctx, d.Id(), newVPC.(string)); err != nil {
-				return diag.Errorf("error updating bare metal server vpc attachment : %v", err)
+				return diag.Errorf("error attaching vpc to bare metal server : %v", err)
+			}
+
+			// block and wait until vpc is attached
+			stateConfAttach := &retry.StateChangeConf{
+				Pending: []string{""},
+				Target:  []string{newVPC.(string)},
+
+				Refresh: func() (interface{}, string, error) {
+					tflog.Info(ctx, "refreshing bare metal server vpc attachment state")
+
+					curVPC, resp, err := client.BareMetalServer.ListVPCInfo(ctx, d.Id())
+					if err != nil {
+						if missing := checkIsMissing(resp, err, bareMetalServerMissingError); missing {
+							return nil, "", nil
+						}
+
+						return nil, "", fmt.Errorf("error while refreshing bare metal server (%s) vpc attachments : %v", d.Id(), err)
+					}
+
+					vpcAttached := ""
+					if len(curVPC) > 0 {
+						vpcAttached = curVPC[0].ID
+					}
+
+					tflog.Info(ctx, fmt.Sprintf("bare metal server (%s) current attached vpc is %q", d.Id(), vpcAttached))
+					return curVPC, vpcAttached, nil
+				},
+
+				Timeout:        d.Timeout(schema.TimeoutUpdate),
+				Delay:          10 * time.Second,
+				MinTimeout:     5 * time.Second,
+				NotFoundChecks: 10,
+			}
+
+			if _, err := stateConfAttach.WaitForStateContext(ctx); err != nil {
+				return diag.Errorf("error waiting for bare metal server (%s) vpc (%s) attachment: %s", d.Id(), newVPC.(string), err)
 			}
 		}
 	}
@@ -492,6 +587,12 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 	if d.HasChange("tags") {
 		_, newTags := tfChangeToSlices("tags", d)
 		req.Tags = newTags
+	}
+
+	if d.HasChange("user_data") {
+		_, udNew := d.GetChange("user_data")
+		udEncoded := base64.StdEncoding.EncodeToString([]byte(udNew.(string)))
+		req.UserData = &udEncoded
 	}
 
 	if d.HasChange("user_scheme") {
