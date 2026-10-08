@@ -499,39 +499,87 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 			return diag.Errorf("error retrieving vpc info for bare metal server update : %v", err)
 		}
 
-		var vpcCount = len(vpcInfo)
-		var vpcUpdateRetries = 10
-		var vpcUpdateDelayDuration = 10 * time.Second
-		if vpcCount != 0 {
+		if len(vpcInfo) != 0 {
 			if err := client.BareMetalServer.DetachVPC(ctx, d.Id(), oldVPC.(string)); err != nil {
 				return diag.Errorf("error updating bare metal server vpc detachment : %v", err)
 			}
 
-			for {
-				if vpcUpdateRetries == 0 {
-					return diag.Errorf("time out while waiting for bare metal server vpc detachment, aborting update")
-				}
+			// block and wait until vpc is detached
+			stateConfDetach := &retry.StateChangeConf{
+				Pending: []string{oldVPC.(string)},
+				Target:  []string{""},
 
-				vpcUpdateRetries -= 1
+				Refresh: func() (interface{}, string, error) {
+					tflog.Info(ctx, "refreshing bare metal server vpc attachment state")
 
-				refreshInfo, _, err := client.BareMetalServer.ListVPCInfo(ctx, d.Id())
-				if err != nil {
-					return diag.Errorf("error refreshing vpc info while updating bare metal server attchment : %v", err)
-				}
+					curVPC, resp, err := client.BareMetalServer.ListVPCInfo(ctx, d.Id())
+					if err != nil {
+						if missing := checkIsMissing(resp, err, bareMetalServerMissingError); missing {
+							return nil, "", nil
+						}
 
-				time.Sleep(vpcUpdateDelayDuration)
+						return nil, "", fmt.Errorf("error while refreshing bare metal server (%s) vpc attachments : %v", d.Id(), err)
+					}
 
-				if len(refreshInfo) != 0 {
-					continue
-				}
+					vpcAttached := ""
+					if len(curVPC) > 0 {
+						vpcAttached = curVPC[0].ID
+					}
 
-				break
+					tflog.Info(ctx, fmt.Sprintf("bare metal server (%s) current attached vpc is %q", d.Id(), vpcAttached))
+					return curVPC, vpcAttached, nil
+				},
+
+				Timeout:        d.Timeout(schema.TimeoutUpdate),
+				Delay:          10 * time.Second,
+				MinTimeout:     5 * time.Second,
+				NotFoundChecks: 10,
+			}
+
+			if _, err := stateConfDetach.WaitForStateContext(ctx); err != nil {
+				return diag.Errorf("error waiting for bare metal server (%s) vpc (%s) detachment: %s", d.Id(), oldVPC.(string), err)
 			}
 		}
 
 		if newVPC.(string) != "" {
 			if err := client.BareMetalServer.AttachVPC(ctx, d.Id(), newVPC.(string)); err != nil {
-				return diag.Errorf("error updating bare metal server vpc attachment : %v", err)
+				return diag.Errorf("error attaching vpc to bare metal server : %v", err)
+			}
+
+			// block and wait until vpc is attached
+			stateConfAttach := &retry.StateChangeConf{
+				Pending: []string{""},
+				Target:  []string{newVPC.(string)},
+
+				Refresh: func() (interface{}, string, error) {
+					tflog.Info(ctx, "refreshing bare metal server vpc attachment state")
+
+					curVPC, resp, err := client.BareMetalServer.ListVPCInfo(ctx, d.Id())
+					if err != nil {
+						if missing := checkIsMissing(resp, err, bareMetalServerMissingError); missing {
+							return nil, "", nil
+						}
+
+						return nil, "", fmt.Errorf("error while refreshing bare metal server (%s) vpc attachments : %v", d.Id(), err)
+					}
+
+					vpcAttached := ""
+					if len(curVPC) > 0 {
+						vpcAttached = curVPC[0].ID
+					}
+
+					tflog.Info(ctx, fmt.Sprintf("bare metal server (%s) current attached vpc is %q", d.Id(), vpcAttached))
+					return curVPC, vpcAttached, nil
+				},
+
+				Timeout:        d.Timeout(schema.TimeoutUpdate),
+				Delay:          10 * time.Second,
+				MinTimeout:     5 * time.Second,
+				NotFoundChecks: 10,
+			}
+
+			if _, err := stateConfAttach.WaitForStateContext(ctx); err != nil {
+				return diag.Errorf("error waiting for bare metal server (%s) vpc (%s) attachment: %s", d.Id(), newVPC.(string), err)
 			}
 		}
 	}
