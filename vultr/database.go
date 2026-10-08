@@ -169,6 +169,10 @@ func readReplicaSchema(isReadReplica bool) map[string]*schema.Schema {
 			Computed: true,
 			Optional: true,
 		},
+		"pending_charges": {
+			Type:     schema.TypeFloat,
+			Computed: true,
+		},
 	}
 
 	if isReadReplica {
