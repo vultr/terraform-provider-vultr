@@ -154,11 +154,6 @@ func dataSourceVultrInstances() *schema.Resource {
 							Type:     schema.TypeString,
 							Computed: true,
 						},
-						"private_network_ids": {
-							Type:     schema.TypeList,
-							Computed: true,
-							Elem:     &schema.Schema{Type: schema.TypeString},
-						},
 						"vpc_ids": {
 							Type:     schema.TypeList,
 							Computed: true,
@@ -210,46 +205,63 @@ func dataSourceVultrInstancesRead(ctx context.Context, d *schema.ResourceData, m
 					"dow":  strconv.Itoa(schedule.Dow),
 				}
 
-				vpcs, err := getVPCs(client, server.ID)
-				if err != nil {
-					return diag.Errorf("%s", err.Error())
+				var vpcs []string
+				optionsVPC := &govultr.ListOptions{}
+				for {
+					vpcInfo, meta, _, err := client.Instance.ListVPCInfo(context.Background(), server.ID, optionsVPC)
+					if err != nil {
+						return diag.Errorf("error retrieving list vpcs for instance %q : %v", server.ID, err)
+					}
+
+					if len(vpcInfo) == 0 {
+						break
+					}
+
+					for _, v := range vpcInfo {
+						vpcs = append(vpcs, v.ID)
+					}
+
+					if meta.Links.Next == "" {
+						break
+					}
+
+					optionsVPC.Cursor = meta.Links.Next
 				}
 
 				serverList = append(serverList, map[string]interface{}{
-					"id":                  server.ID,
-					"os":                  server.Os,
-					"ram":                 server.RAM,
-					"disk":                server.Disk,
-					"main_ip":             server.MainIP,
-					"vcpu_count":          server.VCPUCount,
-					"region":              server.Region,
-					"date_created":        server.DateCreated,
-					"allowed_bandwidth":   server.AllowedBandwidth,
-					"netmask_v4":          server.NetmaskV4,
-					"gateway_v4":          server.GatewayV4,
-					"status":              server.Status,
-					"power_status":        server.PowerStatus,
-					"server_status":       server.ServerStatus,
-					"plan":                server.Plan,
-					"label":               server.Label,
-					"internal_ip":         server.InternalIP,
-					"kvm":                 server.KVM,
-					"tags":                server.Tags,
-					"os_id":               server.OsID,
-					"app_id":              server.AppID,
-					"image_id":            server.ImageID,
-					"snapshot_id":         server.SnapshotID,
-					"firewall_group_id":   server.FirewallGroupID,
-					"v6_network":          server.V6Network,
-					"v6_main_ip":          server.V6MainIP,
-					"v6_network_size":     server.V6NetworkSize,
-					"features":            server.Features,
-					"hostname":            server.Hostname,
-					"user_scheme":         server.UserScheme,
-					"backups":             backupStatus(schedule.Enabled),
-					"backups_schedule":    bsInfo,
-					"private_network_ids": vpcs,
-					"vpc_ids":             vpcs,
+					"id":                server.ID,
+					"os":                server.Os,
+					"ram":               server.RAM,
+					"disk":              server.Disk,
+					"main_ip":           server.MainIP,
+					"vcpu_count":        server.VCPUCount,
+					"region":            server.Region,
+					"date_created":      server.DateCreated,
+					"allowed_bandwidth": server.AllowedBandwidth,
+					"netmask_v4":        server.NetmaskV4,
+					"gateway_v4":        server.GatewayV4,
+					"status":            server.Status,
+					"power_status":      server.PowerStatus,
+					"server_status":     server.ServerStatus,
+					"plan":              server.Plan,
+					"label":             server.Label,
+					"internal_ip":       server.InternalIP,
+					"kvm":               server.KVM,
+					"tags":              server.Tags,
+					"os_id":             server.OsID,
+					"app_id":            server.AppID,
+					"image_id":          server.ImageID,
+					"snapshot_id":       server.SnapshotID,
+					"firewall_group_id": server.FirewallGroupID,
+					"v6_network":        server.V6Network,
+					"v6_main_ip":        server.V6MainIP,
+					"v6_network_size":   server.V6NetworkSize,
+					"features":          server.Features,
+					"hostname":          server.Hostname,
+					"user_scheme":       server.UserScheme,
+					"backups":           backupStatus(schedule.Enabled),
+					"backups_schedule":  bsInfo,
+					"vpc_ids":           vpcs,
 				})
 			}
 		}

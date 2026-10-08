@@ -163,14 +163,9 @@ func resourceVultrOrganizationPolicyCreate(ctx context.Context, d *schema.Resour
 func resourceVultrOrganizationPolicyRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
-	policy, _, err := client.Organization.GetPolicy(ctx, d.Id())
+	policy, resp, err := client.Organization.GetPolicy(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Policy not found")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "Policy not found"); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing organization policy (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil

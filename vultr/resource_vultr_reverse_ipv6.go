@@ -68,14 +68,9 @@ func resourceVultrReverseIPV6Read(ctx context.Context, d *schema.ResourceData, m
 
 	reverseIPV6 := &govultr.ReverseIP{}
 
-	reverseIPv6s, _, err := client.Instance.ListReverseIPv6(ctx, instanceID)
+	reverseIPv6s, resp, err := client.Instance.ListReverseIPv6(ctx, instanceID)
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "instance not found")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "instance not found"); missing {
 			log.Printf("[WARN] Removing reverse IPv6 (%s) because parent instance (%s) is gone", d.Id(), instanceID)
 			d.SetId("")
 			return nil

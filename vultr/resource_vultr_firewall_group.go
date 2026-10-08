@@ -56,14 +56,9 @@ func resourceVultrFirewallGroupCreate(ctx context.Context, d *schema.ResourceDat
 func resourceVultrFirewallGroupRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	group, _, err := client.FirewallGroup.Get(ctx, d.Id())
+	group, resp, err := client.FirewallGroup.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Firewall Group Not Found")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "Firewall Group Not Found"); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing firewall group (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil

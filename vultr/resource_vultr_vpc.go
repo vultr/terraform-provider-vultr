@@ -82,14 +82,9 @@ func resourceVultrVPCCreate(ctx context.Context, d *schema.ResourceData, meta in
 func resourceVultrVPCRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	vpc, _, err := client.VPC.Get(ctx, d.Id())
+	vpc, resp, err := client.VPC.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "VPC not found")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "VPC not found"); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing vpc (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil

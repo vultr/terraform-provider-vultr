@@ -125,14 +125,9 @@ func resourceVultrUsersCreate(ctx context.Context, d *schema.ResourceData, meta 
 func resourceVultrUsersRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	user, _, err := client.User.Get(ctx, d.Id())
+	user, resp, err := client.User.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Invalid user")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "Invalid user"); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing user (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil

@@ -66,14 +66,9 @@ func resourceVultrInferenceCreate(ctx context.Context, d *schema.ResourceData, m
 func resourceVultrInferenceRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	inferenceSub, _, err := client.Inference.Get(ctx, d.Id())
+	inferenceSub, resp, err := client.Inference.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "invalid inference ID")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "invalid inference ID"); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing inference subscription (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil

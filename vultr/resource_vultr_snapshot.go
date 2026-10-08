@@ -92,14 +92,9 @@ func resourceVultrSnapshotCreate(ctx context.Context, d *schema.ResourceData, me
 func resourceVultrSnapshotRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	snapshot, _, err := client.Snapshot.Get(ctx, d.Id())
+	snapshot, resp, err := client.Snapshot.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, snapshotMissingError)
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, snapshotMissingError); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing snapshot (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
