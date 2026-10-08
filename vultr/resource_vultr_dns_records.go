@@ -6,6 +6,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -81,11 +82,16 @@ func resourceVultrDNSRecordCreate(ctx context.Context, d *schema.ResourceData, m
 func resourceVultrDNSRecordRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	record, _, err := client.DomainRecord.Get(ctx, d.Get("domain").(string), d.Id())
+	record, resp, err := client.DomainRecord.Get(ctx, d.Get("domain").(string), d.Id())
 	if err != nil {
-		log.Printf("[WARN] DNS Record %s not found", d.Id())
-		d.SetId("")
-		return nil
+		missing := checkIsMissing(resp, err, dnsMissingError)
+		if missing {
+			tflog.Warn(ctx, fmt.Sprintf("Removing domain dns record (%s) because it is gone", d.Id()))
+			d.SetId("")
+			return nil
+		}
+
+		return diag.Errorf("error getting dns record (%s) in domain (%s) : %v", d.Id(), d.Get("domain").(string), err)
 	}
 
 	if err := d.Set("domain", d.Get("domain").(string)); err != nil {

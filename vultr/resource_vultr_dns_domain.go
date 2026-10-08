@@ -12,6 +12,8 @@ import (
 	"github.com/vultr/govultr/v3"
 )
 
+const dnsMissingError string = "Invalid domain."
+
 func resourceVultrDNSDomain() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVultrDNSDomainCreate,
@@ -77,13 +79,13 @@ func resourceVultrDNSDomainRead(ctx context.Context, d *schema.ResourceData, met
 
 	domain, resp, err := client.Domain.Get(ctx, d.Id())
 	if err != nil {
-		if missing := checkIsMissing(resp, err, "Invalid domain"); missing {
+		if missing := checkIsMissing(resp, err, dnsMissingError); missing {
 			tflog.Warn(ctx, fmt.Sprintf("Removing domain (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
 
-		return diag.Errorf("error getting domains : %v", err)
+		return diag.Errorf("error getting domain (%s) : %v", d.Id(), err)
 	}
 
 	if err := d.Set("domain", domain.Domain); err != nil {
