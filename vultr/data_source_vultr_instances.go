@@ -225,7 +225,7 @@ func dataSourceVultrInstancesRead(ctx context.Context, d *schema.ResourceData, m
 						break
 					}
 
-					options.Cursor = meta.Links.Next
+					optionsVPC.Cursor = meta.Links.Next
 				}
 
 				serverList = append(serverList, map[string]interface{}{

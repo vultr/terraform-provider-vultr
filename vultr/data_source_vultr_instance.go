@@ -330,7 +330,7 @@ func dataSourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, me
 			break
 		}
 
-		options.Cursor = meta.Links.Next
+		optionsVPC.Cursor = meta.Links.Next
 	}
 
 	if err := d.Set("vpc_ids", vpcs); err != nil {
