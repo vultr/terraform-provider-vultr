@@ -132,14 +132,9 @@ func resourceVultrNATGatewayRead(ctx context.Context, d *schema.ResourceData, me
 
 	vpcID := d.Get("vpc_id").(string)
 
-	natGateway, _, err := client.VPC.GetNATGateway(ctx, vpcID, d.Id())
+	natGateway, resp, err := client.VPC.GetNATGateway(ctx, vpcID, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, natGatewayMissingError)
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, natGatewayMissingError); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing load balancer (%v) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
@@ -249,14 +244,9 @@ func newNATGatewayStateRefresh(ctx context.Context, d *schema.ResourceData, meta
 	return func() (interface{}, string, error) {
 		tflog.Info(ctx, "refreshing nat gateway state")
 
-		natGateway, _, err := client.VPC.GetNATGateway(ctx, d.Get("vpc_id").(string), d.Id())
+		natGateway, resp, err := client.VPC.GetNATGateway(ctx, d.Get("vpc_id").(string), d.Id())
 		if err != nil {
-			missing, missErr := checkIsMissing(err, natGatewayMissingError)
-			if missErr != nil {
-				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
-			}
-
-			if missing {
+			if missing := checkIsMissing(resp, err, natGatewayMissingError); missing {
 				return nil, "", nil
 			}
 

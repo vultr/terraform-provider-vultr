@@ -112,14 +112,9 @@ func resourceVultrOrganizationRoleSessionCreate(ctx context.Context, d *schema.R
 func resourceVultrOrganizationRoleSessionRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
-	session, _, err := client.Organization.GetRoleSession(ctx, d.Id())
+	session, resp, err := client.Organization.GetRoleSession(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Assumed Role Not Found")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "Assumed Role Not Found"); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing organization role session (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil

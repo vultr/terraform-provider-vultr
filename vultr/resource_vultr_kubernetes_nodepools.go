@@ -210,18 +210,13 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 
 	clusterID := d.Get("cluster_id").(string)
 
-	nodePool, _, err := client.Kubernetes.GetNodePool(ctx, clusterID, d.Id())
+	nodePool, resp, err := client.Kubernetes.GetNodePool(ctx, clusterID, d.Id())
 	if err != nil {
 		if strings.Contains(err.Error(), "Unauthorized") {
 			return diag.Errorf("api authorization error: %v", err)
 		}
 
-		missing, missErr := checkIsMissing(err, kubernetesNodePoolMissingError)
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, kubernetesNodePoolMissingError); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing kubernetes node pool (%v) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
@@ -421,14 +416,9 @@ func newNodePoolStateRefresh(ctx context.Context, d *schema.ResourceData, meta i
 	return func() (interface{}, string, error) {
 		tflog.Info(ctx, "refreshing kubernetes node pool state")
 
-		np, _, err := client.Kubernetes.GetNodePool(ctx, d.Get("cluster_id").(string), d.Id())
+		np, resp, err := client.Kubernetes.GetNodePool(ctx, d.Get("cluster_id").(string), d.Id())
 		if err != nil {
-			missing, missErr := checkIsMissing(err, kubernetesNodePoolMissingError)
-			if missErr != nil {
-				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
-			}
-
-			if missing {
+			if missing := checkIsMissing(resp, err, kubernetesNodePoolMissingError); missing {
 				return nil, "", nil
 			}
 

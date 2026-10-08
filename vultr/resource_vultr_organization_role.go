@@ -99,14 +99,9 @@ func resourceVultrOrganizationRoleCreate(ctx context.Context, d *schema.Resource
 func resourceVultrOrganizationRoleRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	role, _, err := client.Organization.GetRole(ctx, d.Id())
+	role, resp, err := client.Organization.GetRole(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Role not found")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "Role not found"); missing {
 			tflog.Warn(ctx, fmt.Sprintf("Removing organization role (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil

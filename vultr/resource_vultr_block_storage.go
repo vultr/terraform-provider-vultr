@@ -173,14 +173,9 @@ func resourceVultrBlockStorageCreate(ctx context.Context, d *schema.ResourceData
 func resourceVultrBlockStorageRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	bs, _, err := client.BlockStorage.Get(ctx, d.Id())
+	bs, resp, err := client.BlockStorage.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, blockStorageMissingError)
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, blockStorageMissingError); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing block storage (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
@@ -331,14 +326,9 @@ func newBlockStateRefresh(ctx context.Context, d *schema.ResourceData, meta inte
 	return func() (interface{}, string, error) {
 		tflog.Info(ctx, "refreshing block storage state")
 
-		block, _, err := client.BlockStorage.Get(ctx, d.Id())
+		block, resp, err := client.BlockStorage.Get(ctx, d.Id())
 		if err != nil {
-			missing, missErr := checkIsMissing(err, blockStorageMissingError)
-			if missErr != nil {
-				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
-			}
-
-			if missing {
+			if missing := checkIsMissing(resp, err, blockStorageMissingError); missing {
 				return nil, "", nil
 			}
 

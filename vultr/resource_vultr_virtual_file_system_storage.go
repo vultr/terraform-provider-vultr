@@ -150,14 +150,9 @@ func resourceVultrVirtualFileSystemStorageCreate(ctx context.Context, d *schema.
 func resourceVultrVirtualFileSystemStorageRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
-	storage, _, err := client.VirtualFileSystemStorage.Get(ctx, d.Id())
+	storage, resp, err := client.VirtualFileSystemStorage.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, virtualFileSystemStorageMissingError)
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, virtualFileSystemStorageMissingError); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing virtual file system storage (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
@@ -345,14 +340,9 @@ func newVirtualFileSystemStorageStateRefresh(ctx context.Context, d *schema.Reso
 	return func() (interface{}, string, error) {
 		tflog.Info(ctx, "refreshing virtual file system storage state")
 
-		storage, _, err := client.VirtualFileSystemStorage.Get(ctx, d.Id())
+		storage, resp, err := client.VirtualFileSystemStorage.Get(ctx, d.Id())
 		if err != nil {
-			missing, missErr := checkIsMissing(err, virtualFileSystemStorageMissingError)
-			if missErr != nil {
-				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
-			}
-
-			if missing {
+			if missing := checkIsMissing(resp, err, virtualFileSystemStorageMissingError); missing {
 				return nil, "", nil
 			}
 

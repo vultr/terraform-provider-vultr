@@ -112,14 +112,9 @@ func resourceVultrFirewallRuleRead(ctx context.Context, d *schema.ResourceData, 
 	client := meta.(*Client).govultrClient()
 
 	ruleID, _ := strconv.Atoi(d.Id())
-	fw, _, err := client.FirewallRule.Get(ctx, d.Get("firewall_group_id").(string), ruleID)
+	fw, resp, err := client.FirewallRule.Get(ctx, d.Get("firewall_group_id").(string), ruleID)
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Firewall rule ID not found")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "Firewall rule ID not found"); missing {
 			tflog.Warn(ctx,
 				fmt.Sprintf(
 					"removing firewall rule id (%s) in group (%s) because it is gone",

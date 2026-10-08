@@ -453,14 +453,9 @@ func resourceVultrLoadBalancerCreate(ctx context.Context, d *schema.ResourceData
 func resourceVultrLoadBalancerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	lb, _, err := client.LoadBalancer.Get(ctx, d.Id())
+	lb, resp, err := client.LoadBalancer.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, lbMissingError)
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, lbMissingError); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing load balancer (%v) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
@@ -788,14 +783,9 @@ func newLBStateRefresh(ctx context.Context, d *schema.ResourceData, meta interfa
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Refreshing load balancer state")
 
-		lb, _, err := client.LoadBalancer.Get(ctx, d.Id())
+		lb, resp, err := client.LoadBalancer.Get(ctx, d.Id())
 		if err != nil {
-			missing, missErr := checkIsMissing(err, lbMissingError)
-			if missErr != nil {
-				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
-			}
-
-			if missing {
+			if missing := checkIsMissing(resp, err, lbMissingError); missing {
 				return nil, "", nil
 			}
 

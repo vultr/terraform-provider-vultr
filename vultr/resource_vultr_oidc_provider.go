@@ -53,14 +53,9 @@ func resourceVultrOIDCProviderCreate(ctx context.Context, d *schema.ResourceData
 func resourceVultrOIDCProviderRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	prov, _, err := client.OIDC.GetOIDCProvider(ctx, d.Id())
+	prov, resp, err := client.OIDC.GetOIDCProvider(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Provider Not Found")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "Provider Not Found"); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing oidc provider (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil

@@ -86,14 +86,9 @@ func resourceVultrIsoCreate(ctx context.Context, d *schema.ResourceData, meta in
 func resourceVultrIsoRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	iso, _, err := client.ISO.Get(ctx, d.Id())
+	iso, resp, err := client.ISO.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, isoMissingError)
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, isoMissingError); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing private iso (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
@@ -225,14 +220,9 @@ func newIsoStateRefresh(ctx context.Context, d *schema.ResourceData, meta interf
 
 	return func() (interface{}, string, error) {
 		tflog.Info(ctx, "refreshing iso state")
-		iso, _, err := client.ISO.Get(ctx, d.Id())
+		iso, resp, err := client.ISO.Get(ctx, d.Id())
 		if err != nil {
-			missing, missErr := checkIsMissing(err, isoMissingError)
-			if missErr != nil {
-				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
-			}
-
-			if missing {
+			if missing := checkIsMissing(resp, err, isoMissingError); missing {
 				return nil, "", nil
 			}
 

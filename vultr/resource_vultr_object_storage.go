@@ -135,14 +135,9 @@ func resourceVultrObjectStorageCreate(ctx context.Context, d *schema.ResourceDat
 func resourceVultrObjectStorageRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	obj, _, err := client.ObjectStorage.Get(ctx, d.Id())
+	obj, resp, err := client.ObjectStorage.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, objStorageMissingError)
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, objStorageMissingError); missing {
 			tflog.Warn(ctx, fmt.Sprintf("Remove object storage (%v) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
@@ -229,14 +224,9 @@ func newServerObjRefresh(ctx context.Context, d *schema.ResourceData, meta inter
 	return func() (interface{}, string, error) {
 		log.Printf("[INFO] Creating Object Storage")
 
-		obj, _, err := client.ObjectStorage.Get(ctx, d.Id())
+		obj, resp, err := client.ObjectStorage.Get(ctx, d.Id())
 		if err != nil {
-			missing, missErr := checkIsMissing(err, objStorageMissingError)
-			if missErr != nil {
-				return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
-			}
-
-			if missing {
+			if missing := checkIsMissing(resp, err, objStorageMissingError); missing {
 				return nil, "", nil
 			}
 

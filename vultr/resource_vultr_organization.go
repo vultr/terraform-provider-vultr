@@ -61,14 +61,9 @@ func resourceVultrOrganizationCreate(ctx context.Context, d *schema.ResourceData
 func resourceVultrOrganizationRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	org, _, err := client.Organization.GetOrganization(ctx, d.Id())
+	org, resp, err := client.Organization.GetOrganization(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, "Organization not found")
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, "Organization not found"); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing organization (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil

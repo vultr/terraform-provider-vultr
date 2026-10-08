@@ -283,14 +283,9 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 		Refresh: func() (interface{}, string, error) {
 			tflog.Info(ctx, "refreshing bare metal server state")
 
-			bmRefresh, _, err := client.BareMetalServer.Get(ctx, d.Id())
+			bmRefresh, resp, err := client.BareMetalServer.Get(ctx, d.Id())
 			if err != nil {
-				missing, missErr := checkIsMissing(err, bareMetalServerMissingError)
-				if missErr != nil {
-					return nil, "", fmt.Errorf("error in wait state retry api response %q : %v", err, missErr)
-				}
-
-				if missing {
+				if missing := checkIsMissing(resp, err, bareMetalServerMissingError); missing {
 					return nil, "", nil
 				}
 
@@ -323,14 +318,9 @@ func resourceVultrBareMetalServerCreate(ctx context.Context, d *schema.ResourceD
 func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	client := meta.(*Client).govultrClient()
 
-	bms, _, err := client.BareMetalServer.Get(ctx, d.Id())
+	bms, resp, err := client.BareMetalServer.Get(ctx, d.Id())
 	if err != nil {
-		missing, missErr := checkIsMissing(err, bareMetalServerMissingError)
-		if missErr != nil {
-			return diag.Errorf("error in api response %q : %v", err, missErr)
-		}
-
-		if missing {
+		if missing := checkIsMissing(resp, err, bareMetalServerMissingError); missing {
 			tflog.Warn(ctx, fmt.Sprintf("removing bare metal server (%s) because it is gone", d.Id()))
 			d.SetId("")
 			return nil
