@@ -81,9 +81,7 @@ func resourceVultrBareMetalServer() *schema.Resource {
 			},
 			"user_data": {
 				Type:     schema.TypeString,
-				Computed: true,
 				Optional: true,
-				ForceNew: true,
 			},
 			"activation_email": {
 				Type:     schema.TypeBool,
@@ -404,11 +402,38 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 	if err != nil {
 		return diag.Errorf("error getting list of attached vpcs during bare metal server read : %v", err)
 	}
+	if _, udOK := d.GetOk("user_data"); udOK {
+		var udRead *govultr.UserData
+		var udErr error
+		userDataRetryErr := retry.RetryContext(ctx, d.Timeout(schema.TimeoutRead), func() *retry.RetryError {
+			udRead, resp, udErr = client.BareMetalServer.GetUserData(ctx, d.Id())
+			if udErr != nil {
+				if missing := checkIsMissing(resp, udErr, bareMetalServerMissingError); missing {
+					return retry.RetryableError(fmt.Errorf("bare metal user data not found, retrying"))
+				}
+
+				return retry.NonRetryableError(udErr)
+			}
+
+			return nil
+		})
 
 	// only one VPC ever allowed on bare metal server
 	var vpcID = ""
 	if len(vpcInfo) != 0 {
 		vpcID = vpcInfo[0].ID
+		if userDataRetryErr != nil {
+			return diag.Errorf("error getting bare metal server user data : %v", userDataRetryErr)
+		}
+
+		udDecoded, err := base64.StdEncoding.DecodeString(udRead.Data)
+		if err != nil {
+			return diag.Errorf("error decoding bare metal server user data : %v", err)
+		}
+
+		if err := d.Set("user_data", string(udDecoded)); err != nil {
+			return diag.Errorf("unable to set resource bare_metal_server `user_data` read value : %v", err)
+		}
 	}
 
 	if err := d.Set("vpc_id", vpcID); err != nil {
@@ -492,6 +517,12 @@ func resourceVultrBareMetalServerUpdate(ctx context.Context, d *schema.ResourceD
 	if d.HasChange("tags") {
 		_, newTags := tfChangeToSlices("tags", d)
 		req.Tags = newTags
+	}
+
+	if d.HasChange("user_data") {
+		_, udNew := d.GetChange("user_data")
+		udEncoded := base64.StdEncoding.EncodeToString([]byte(udNew.(string)))
+		req.UserData = &udEncoded
 	}
 
 	if d.HasChange("user_scheme") {
