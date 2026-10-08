@@ -633,6 +633,7 @@ func resourceVultrInstanceRead(ctx context.Context, d *schema.ResourceData, meta
 		var vpcs []string
 		vpcRetryErr := retry.RetryContext(ctx, d.Timeout(schema.TimeoutRead), func() *retry.RetryError {
 			options := &govultr.ListOptions{}
+			vpcs = []string{}
 			for {
 				vpcInfo, meta, resp, err := client.Instance.ListVPCInfo(context.Background(), d.Id(), options)
 				if err != nil {
