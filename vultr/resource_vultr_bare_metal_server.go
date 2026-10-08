@@ -448,7 +448,7 @@ func resourceVultrBareMetalServerRead(ctx context.Context, d *schema.ResourceDat
 		})
 
 		if vpcRetryErr != nil {
-			return diag.Errorf("error getting list of attached vpcs during bare metal server read : %v", err)
+			return diag.Errorf("error getting list of attached vpcs during bare metal server read : %v", vpcRetryErr)
 		}
 
 		// only one vpc is able to be attached to bare metal servers
