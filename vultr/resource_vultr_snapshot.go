@@ -20,6 +20,7 @@ func resourceVultrSnapshot() *schema.Resource {
 	return &schema.Resource{
 		CreateContext: resourceVultrSnapshotCreate,
 		ReadContext:   resourceVultrSnapshotRead,
+		UpdateContext: resourceVultrSnapshotUpdate,
 		DeleteContext: resourceVultrSnapshotDelete,
 		Importer: &schema.ResourceImporter{
 			StateContext: schema.ImportStatePassthroughContext,
@@ -35,7 +36,6 @@ func resourceVultrSnapshot() *schema.Resource {
 				Type:     schema.TypeString,
 				Optional: true,
 				Default:  "",
-				ForceNew: true,
 			},
 			"date_created": {
 				Type:     schema.TypeString,
@@ -129,6 +129,23 @@ func resourceVultrSnapshotRead(ctx context.Context, d *schema.ResourceData, meta
 	}
 
 	return nil
+}
+
+func resourceVultrSnapshotUpdate(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
+	client := meta.(*Client).govultrClient()
+
+	req := &govultr.SnapshotUpdateReq{}
+	if d.HasChange("description") {
+		req.Description = d.Get("description").(string)
+	}
+
+	tflog.Info(ctx, fmt.Sprintf("updating snapshot description %q", d.Id()))
+
+	if err := client.Snapshot.Update(ctx, d.Id(), req); err != nil {
+		return diag.Errorf("error updating snapshot: %v", err)
+	}
+
+	return resourceVultrSnapshotRead(ctx, d, meta)
 }
 
 func resourceVultrSnapshotDelete(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
