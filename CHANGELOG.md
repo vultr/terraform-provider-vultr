@@ -1,4 +1,68 @@
 # Changelog
+## [v2.33.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.32.0...v2.33.0) (2026-10-08)
+### Enhancements
+* resource/snapshot: Allow description updates [PR 796](https://github.com/vultr/terraform-provider-vultr/pull/796)
+* data source/kubernetes_kubeconfig: New kubeconfig data source [PR 773](https://github.com/vultr/terraform-provider-vultr/pull/773)
+* resource/kubernetes: Add vpc_only field [PR 776](https://github.com/vultr/terraform-provider-vultr/pull/776)
+* resource/kubernetes_node_pool: Add vpc_only field [PR 776](https://github.com/vultr/terraform-provider-vultr/pull/776)
+* data source/kubernetes: Add vpc_only field [PR 776](https://github.com/vultr/terraform-provider-vultr/pull/776)
+* data source/kubernetes_version: Add new kubernetes version data source [PR 780](https://github.com/vultr/terraform-provider-vultr/pull/780)
+* resource/kubernetes: Add node recycle functionality [PR 787](https://github.com/vultr/terraform-provider-vultr/pull/787)
+* resource/kubernetes_node_pool: Add node recycle functionality [PR 787](https://github.com/vultr/terraform-provider-vultr/pull/787)
+* resource/bare_metal_server: Allow user_data field updates [PR 794](https://github.com/vultr/terraform-provider-vultr/pull/794)
+* resource/bare_metal_server: Allow user_scheme field updates [PR 794](https://github.com/vultr/terraform-provider-vultr/pull/794)
+* resource/bare_metal_server: Improve vpc_id updates and state refreshes [PR 794](https://github.com/vultr/terraform-provider-vultr/pull/794)
+* resource/instance: Allow user_data field updates [PR 794](https://github.com/vultr/terraform-provider-vultr/pull/794)
+* resource/instance: Allow user_scheme field updates [PR 794](https://github.com/vultr/terraform-provider-vultr/pull/794)
+* many resources: Add missing checks on wait state retries to help reduce false "not found" errors [PR 786](https://github.com/vultr/terraform-provider-vultr/pull/786)
+* most resources: Improve missing resource checks [PR 769](https://github.com/vultr/terraform-provider-vultr/pull/769)
+* most resources: Further improve missing resource checking and retries to reduce "not found" errors [PR 793](https://github.com/vultr/terraform-provider-vultr/pull/793)
+
+### Bug Fixes
+* resource/database_replica: Add missing pending charges field to database replica [PR 795](https://github.com/vultr/terraform-provider-vultr/pull/795)
+* resource/load_balancer: Fix broken global state with new schema version [PR 764](https://github.com/vultr/terraform-provider-vultr/pull/764)
+* resource/kubernetes: Ignore node quantity when auto_scaler enabled [PR 775](https://github.com/vultr/terraform-provider-vultr/pull/775)
+* resource/kubernetes: Use SchemaFunc [PR 775](https://github.com/vultr/terraform-provider-vultr/pull/775)
+* resource/load_balancer: Use SchemaFunc and fix schema type [PR 775](https://github.com/vultr/terraform-provider-vultr/pull/775)
+* resource/reverse_ipv4: Add parent instance check and reduce false "not found" errors [PR 758](https://github.com/vultr/terraform-provider-vultr/pull/758)
+* resource/reverse_ipv6: Reduce false not found errors [PR 758](https://github.com/vultr/terraform-provider-vultr/pull/758)
+* resource/kubernetes: Check for empty state in DiffSupressFunc [PR 777](https://github.com/vultr/terraform-provider-vultr/pull/777)
+* resource/kubernetes_node_pool: Check for empty state in DiffSupressFunc [PR 777](https://github.com/vultr/terraform-provider-vultr/pull/777)
+* data source/bare_metal_plan: Fix data type mismatch on monthly_cost field [PR 779](https://github.com/vultr/terraform-provider-vultr/pull/779)
+* data source/block_storage: Fix data type mismatch on cost field [PR 779](https://github.com/vultr/terraform-provider-vultr/pull/779)
+* data source/object_storage_tier: Fix data type mismatch on price field [PR 779](https://github.com/vultr/terraform-provider-vultr/pull/779)
+* resource/vultr_inference: Mark api_key field as sensitive [PR 782](https://github.com/vultr/terraform-provider-vultr/pull/782)
+* data source/vultr_inference: Mark api_key field as sensitive [PR 782](https://github.com/vultr/terraform-provider-vultr/pull/782)
+
+### Dependencies
+* Bump github.com/vultr/govultr/v3 from 3.31.2 to 3.32.0 [PR 750](https://github.com/vultr/terraform-provider-vultr/pull/750)
+* Bump google.golang.org/grpc from 1.79.3 to 1.83.1 [PR 759](https://github.com/vultr/terraform-provider-vultr/pull/759)
+* Update govultr from v3.32.0 to v3.33.0 [PR 765](https://github.com/vultr/terraform-provider-vultr/pull/765)
+* Update govultr from v3.33.0 to v3.33.1 [PR 788](https://github.com/vultr/terraform-provider-vultr/pull/788)
+* Update govultr from v3.33.1 to v3.33.2 [PR 792](https://github.com/vultr/terraform-provider-vultr/pull/792)
+* Bump golang.org/x/mod from 0.38.0 to 0.41.0 [PR 791](https://github.com/vultr/terraform-provider-vultr/pull/791)
+* Bump golang.org/x/oauth2 from 0.36.0 to 0.37.0 [PR 762](https://github.com/vultr/terraform-provider-vultr/pull/762)
+* Bump google.golang.org/grpc from 1.83.1 to 1.83.2 [PR 763](https://github.com/vultr/terraform-provider-vultr/pull/763)
+* Bump github.com/hashicorp/terraform-plugin-log from 0.10.0 to 0.11.0 [PR 754](https://github.com/vultr/terraform-provider-vultr/pull/754)
+
+### Clean Up
+* all: Add optional debug flags to provider plugin  [PR 774](https://github.com/vultr/terraform-provider-vultr/pull/774)
+* all: Replace deprecated provider configure func [PR 768](https://github.com/vultr/terraform-provider-vultr/pull/768)
+* resource/database: Replace deprecated test Providers [PR 767](https://github.com/vultr/terraform-provider-vultr/pull/767)
+* resource/instance: Replace deprecated test Providers [PR 767](https://github.com/vultr/terraform-provider-vultr/pull/767)
+* resource/reserved_ip: Replace deprecated test Providers [PR 767](https://github.com/vultr/terraform-provider-vultr/pull/767)
+* resource/instance: Remove deprecated VPC2 fields [PR 760](https://github.com/vultr/terraform-provider-vultr/pull/760)
+* data source/instance: Remove deprecated VPC2 fields [PR 760](https://github.com/vultr/terraform-provider-vultr/pull/760)
+* data source/instances: Remove deprecated VPC2 fields [PR 760](https://github.com/vultr/terraform-provider-vultr/pull/760)
+* resource/bare_metal_server: Remove deprecated VPC2 fields [PR 760](https://github.com/vultr/terraform-provider-vultr/pull/760)
+* data source/bare_metal_server: Remove deprecated VPC2 fields [PR 760](https://github.com/vultr/terraform-provider-vultr/pull/760)
+* resource/kubernetes: Use StateContext for node pool ResourceImporter [PR 766](https://github.com/vultr/terraform-provider-vultr/pull/766)
+* resource/kubernetes_node_pool: Use StateContext for node pool ResourceImporter [PR 766](https://github.com/vultr/terraform-provider-vultr/pull/766)
+
+### New Contributors
+* @josephjophy made their first contribution in [PR 758](https://github.com/vultr/terraform-provider-vultr/pull/758)
+* @demophoon made their first contribution in [PR 779](https://github.com/vultr/terraform-provider-vultr/pull/779)
+
 ## [v2.32.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.31.2...v2.32.0) (2026-07-14)
 ### Enhancements
 * resource/instance: Add vpc_only field [PR 741](https://github.com/vultr/terraform-provider-vultr/pull/741)
