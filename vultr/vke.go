@@ -241,8 +241,14 @@ func resourceVultrKubernetesNodePoolsV0(isNodePool bool) *schema.Resource {
 						return false
 					}
 
-					stateNPAutoScaler := d.State().Attributes["node_pools.0.auto_scaler"]
-					autoScaler, err := strconv.ParseBool(stateNPAutoScaler)
+					var isAutoScaler string
+					if isNodePool {
+						isAutoScaler = d.State().Attributes["auto_scaler"]
+					} else {
+						isAutoScaler = d.State().Attributes["node_pools.0.auto_scaler"]
+					}
+
+					autoScaler, err := strconv.ParseBool(isAutoScaler)
 					if err != nil {
 						return false
 					}
