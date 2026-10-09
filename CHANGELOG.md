@@ -1,4 +1,8 @@
 # Changelog
+## [v2.33.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.33.0...v2.33.1) (2026-10-09)
+### Bug Fixes
+* resource/kubernetes_nodepool: Fix node_quantity DiffSuppressFunc state check [PR 798](https://github.com/vultr/terraform-provider-vultr/pull/798)
+
 ## [v2.33.0](https://github.com/vultr/terraform-provider-vultr/compare/v2.32.0...v2.33.0) (2026-10-08)
 ### Enhancements
 * resource/snapshot: Allow description updates [PR 796](https://github.com/vultr/terraform-provider-vultr/pull/796)
