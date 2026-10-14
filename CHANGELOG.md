@@ -1,4 +1,11 @@
 # Changelog
+## [v2.33.2](https://github.com/vultr/terraform-provider-vultr/compare/v2.33.1...v2.33.2) (2026-10-14)
+### Bug Fixes
+* resource/kubernetes_node_pool: No longer always include tag & quantity in all updates [PR 803](https://github.com/vultr/terraform-provider-vultr/pull/803)
+
+### Dependencies
+* Bump golang.org/x/mod from 0.41.0 to 0.42.0 [PR 801](https://github.com/vultr/terraform-provider-vultr/pull/801)
+
 ## [v2.33.1](https://github.com/vultr/terraform-provider-vultr/compare/v2.33.0...v2.33.1) (2026-10-09)
 ### Bug Fixes
 * resource/kubernetes_nodepool: Fix node_quantity DiffSuppressFunc state check [PR 798](https://github.com/vultr/terraform-provider-vultr/pull/798)
