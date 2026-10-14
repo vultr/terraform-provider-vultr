@@ -322,9 +322,14 @@ func resourceVultrKubernetesNodePoolsUpdate(ctx context.Context, d *schema.Resou
 
 	clusterID := d.Get("cluster_id").(string)
 
-	req := &govultr.NodePoolReqUpdate{
-		NodeQuantity: d.Get("node_quantity").(int),
-		Tag:          govultr.StringToStringPtr(d.Get("tag").(string)),
+	req := &govultr.NodePoolReqUpdate{}
+
+	if d.HasChange("node_quantity") {
+		req.NodeQuantity = d.Get("node_quantity").(int)
+	}
+
+	if d.HasChange("tag") {
+		req.Tag = govultr.StringToStringPtr(d.Get("tag").(string))
 	}
 
 	if d.HasChange("auto_scaler") {
