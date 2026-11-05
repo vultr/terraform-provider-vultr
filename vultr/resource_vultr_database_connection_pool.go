@@ -81,8 +81,14 @@ func resourceVultrDatabaseConnectionPoolRead(ctx context.Context, d *schema.Reso
 
 	databaseID := d.Get("database_id").(string)
 
-	databaseConnectionPool, _, err := client.Database.GetConnectionPool(ctx, databaseID, d.Id())
+	databaseConnectionPool, resp, err := client.Database.GetConnectionPool(ctx, databaseID, d.Id())
 	if err != nil {
+		if checkIsMissing(resp, err, databaseMissingError) {
+			log.Printf("[WARN] removing database connection pool (%s) because its database is gone", d.Id())
+			d.SetId("")
+			return nil
+		}
+
 		return diag.Errorf("error getting database connection pool (%s): %v", d.Id(), err)
 	}
 

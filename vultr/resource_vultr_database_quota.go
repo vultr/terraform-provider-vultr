@@ -102,8 +102,14 @@ func resourceVultrDatabaseQuotaRead(ctx context.Context, d *schema.ResourceData,
 	databaseID := d.Get("database_id").(string)
 	quotaID := strings.Split(d.Id(), "|")
 
-	DatabaseQuota, _, err := client.Database.GetQuota(ctx, databaseID, quotaID[0], quotaID[1])
+	DatabaseQuota, resp, err := client.Database.GetQuota(ctx, databaseID, quotaID[0], quotaID[1])
 	if err != nil {
+		if checkIsMissing(resp, err, databaseMissingError) {
+			log.Printf("[WARN] removing database quota (%s) because its database is gone", d.Id())
+			d.SetId("")
+			return nil
+		}
+
 		return diag.Errorf("error getting database quota (%s): %v", d.Id(), err)
 	}
 

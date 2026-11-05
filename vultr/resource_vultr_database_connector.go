@@ -86,8 +86,14 @@ func resourceVultrDatabaseConnectorRead(ctx context.Context, d *schema.ResourceD
 
 	databaseID := d.Get("database_id").(string)
 
-	databaseConnector, _, err := client.Database.GetConnector(ctx, databaseID, d.Id())
+	databaseConnector, resp, err := client.Database.GetConnector(ctx, databaseID, d.Id())
 	if err != nil {
+		if checkIsMissing(resp, err, databaseMissingError) {
+			log.Printf("[WARN] removing database connector (%s) because its database is gone", d.Id())
+			d.SetId("")
+			return nil
+		}
+
 		return diag.Errorf("error getting database connector (%s): %v", d.Id(), err)
 	}
 

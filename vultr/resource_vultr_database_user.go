@@ -104,8 +104,14 @@ func resourceVultrDatabaseUserRead(ctx context.Context, d *schema.ResourceData, 
 
 	databaseID := d.Get("database_id").(string)
 
-	databaseUser, _, err := client.Database.GetUser(ctx, databaseID, d.Id())
+	databaseUser, resp, err := client.Database.GetUser(ctx, databaseID, d.Id())
 	if err != nil {
+		if checkIsMissing(resp, err, databaseMissingError) {
+			log.Printf("[WARN] removing database user (%s) because its database is gone", d.Id())
+			d.SetId("")
+			return nil
+		}
+
 		return diag.Errorf("error getting database user (%s): %v", d.Id(), err)
 	}
 

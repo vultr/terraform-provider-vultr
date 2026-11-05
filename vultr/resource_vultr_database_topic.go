@@ -80,8 +80,14 @@ func resourceVultrDatabaseTopicRead(ctx context.Context, d *schema.ResourceData,
 
 	databaseID := d.Get("database_id").(string)
 
-	databaseTopic, _, err := client.Database.GetTopic(ctx, databaseID, d.Id())
+	databaseTopic, resp, err := client.Database.GetTopic(ctx, databaseID, d.Id())
 	if err != nil {
+		if checkIsMissing(resp, err, databaseMissingError) {
+			log.Printf("[WARN] removing database topic (%s) because its database is gone", d.Id())
+			d.SetId("")
+			return nil
+		}
+
 		return diag.Errorf("error getting database topic (%s): %v", d.Id(), err)
 	}
 
