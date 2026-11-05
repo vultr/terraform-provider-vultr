@@ -6,7 +6,7 @@ require (
 	github.com/hashicorp/terraform-plugin-log v0.11.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.40.1
 	github.com/vultr/govultr/v3 v3.33.2
-	go.yaml.in/yaml/v4 v4.0.0-rc.6
+	go.yaml.in/yaml/v4 v4.0.0-rc.8
 	golang.org/x/mod v0.42.0
 	golang.org/x/oauth2 v0.37.0
 )
