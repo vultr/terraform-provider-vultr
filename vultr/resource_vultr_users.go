@@ -61,8 +61,9 @@ func resourceVultrUsers() *schema.Resource {
 				Default:  false,
 			},
 			"api_key": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:      schema.TypeString,
+				Sensitive: true,
+				Computed:  true,
 			},
 		},
 	}
