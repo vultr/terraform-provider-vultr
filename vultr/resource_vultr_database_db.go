@@ -60,8 +60,14 @@ func resourceVultrDatabaseDBRead(ctx context.Context, d *schema.ResourceData, me
 
 	databaseID := d.Get("database_id").(string)
 
-	databaseDB, _, err := client.Database.GetDB(ctx, databaseID, d.Id())
+	databaseDB, resp, err := client.Database.GetDB(ctx, databaseID, d.Id())
 	if err != nil {
+		if checkIsMissing(resp, err, databaseMissingError) {
+			log.Printf("[WARN] removing database logical DB (%s) because its database is gone", d.Id())
+			d.SetId("")
+			return nil
+		}
+
 		return diag.Errorf("error getting database logical DB (%s): %v", d.Id(), err)
 	}
 
