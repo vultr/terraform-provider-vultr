@@ -2,8 +2,10 @@ package vultr
 
 import (
 	"context"
+	"fmt"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -60,10 +62,10 @@ func resourceVultrDatabaseDBRead(ctx context.Context, d *schema.ResourceData, me
 
 	databaseID := d.Get("database_id").(string)
 
-	databaseDB, resp, err := client.Database.GetDB(ctx, databaseID, d.Id())
+	databaseDB, _, err := client.Database.GetDB(ctx, databaseID, d.Id())
 	if err != nil {
-		if checkIsMissing(resp, err, databaseMissingError) {
-			log.Printf("[WARN] removing database logical DB (%s) because its database is gone", d.Id())
+		if databaseIsGone(ctx, client, databaseID) {
+			tflog.Warn(ctx, fmt.Sprintf("removing database logical DB (%s) because its database is gone", d.Id()))
 			d.SetId("")
 			return nil
 		}
