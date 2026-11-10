@@ -135,6 +135,7 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 		MinNodes:     d.Get("min_nodes").(int),
 		MaxNodes:     d.Get("max_nodes").(int),
 		UserData:     d.Get("user_data").(string),
+		VPCOnly:      govultr.BoolToBoolPtr(d.Get("vpc_only").(bool)),
 	}
 
 	nodePool, _, err := client.Kubernetes.CreateNodePool(ctx, clusterID, req)
@@ -254,6 +255,9 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 	}
 	if err := d.Set("max_nodes", nodePool.MaxNodes); err != nil {
 		return diag.Errorf("unable to set resource kubernetes_nodepools `max_nodes` read value: %v", err)
+	}
+	if err := d.Set("vpc_only", nodePool.VPCOnly); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `vpc_only` read value: %v", err)
 	}
 
 	var instances []map[string]interface{}
