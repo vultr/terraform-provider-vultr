@@ -8,7 +8,7 @@ require (
 	github.com/vultr/govultr/v3 v3.33.2
 	go.yaml.in/yaml/v4 v4.0.0-rc.6
 	golang.org/x/mod v0.42.0
-	golang.org/x/oauth2 v0.37.0
+	golang.org/x/oauth2 v0.38.0
 )
 
 require (
