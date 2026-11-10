@@ -3,8 +3,10 @@ package vultr
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -88,6 +90,12 @@ func resourceVultrDatabaseConnectorRead(ctx context.Context, d *schema.ResourceD
 
 	databaseConnector, _, err := client.Database.GetConnector(ctx, databaseID, d.Id())
 	if err != nil {
+		if databaseIsGone(ctx, client, databaseID) {
+			tflog.Warn(ctx, fmt.Sprintf("removing database connector (%s) because its database is gone", d.Id()))
+			d.SetId("")
+			return nil
+		}
+
 		return diag.Errorf("error getting database connector (%s): %v", d.Id(), err)
 	}
 

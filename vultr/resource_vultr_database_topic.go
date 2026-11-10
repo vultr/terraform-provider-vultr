@@ -2,8 +2,10 @@ package vultr
 
 import (
 	"context"
+	"fmt"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -82,6 +84,12 @@ func resourceVultrDatabaseTopicRead(ctx context.Context, d *schema.ResourceData,
 
 	databaseTopic, _, err := client.Database.GetTopic(ctx, databaseID, d.Id())
 	if err != nil {
+		if databaseIsGone(ctx, client, databaseID) {
+			tflog.Warn(ctx, fmt.Sprintf("removing database topic (%s) because its database is gone", d.Id()))
+			d.SetId("")
+			return nil
+		}
+
 		return diag.Errorf("error getting database topic (%s): %v", d.Id(), err)
 	}
 

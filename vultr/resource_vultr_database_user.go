@@ -2,8 +2,10 @@ package vultr
 
 import (
 	"context"
+	"fmt"
 	"log"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -106,6 +108,12 @@ func resourceVultrDatabaseUserRead(ctx context.Context, d *schema.ResourceData, 
 
 	databaseUser, _, err := client.Database.GetUser(ctx, databaseID, d.Id())
 	if err != nil {
+		if databaseIsGone(ctx, client, databaseID) {
+			tflog.Warn(ctx, fmt.Sprintf("removing database user (%s) because its database is gone", d.Id()))
+			d.SetId("")
+			return nil
+		}
+
 		return diag.Errorf("error getting database user (%s): %v", d.Id(), err)
 	}
 
