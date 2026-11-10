@@ -66,10 +66,11 @@ func readReplicaSchema(isReadReplica bool) map[string]*schema.Schema {
 			Computed: true,
 		},
 		"ferretdb_credentials": {
-			Type:     schema.TypeMap,
-			Computed: true,
-			Optional: true,
-			Elem:     schema.TypeString,
+			Type:      schema.TypeMap,
+			Sensitive: true,
+			Computed:  true,
+			Optional:  true,
+			Elem:      schema.TypeString,
 			DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 				return d.Get("database_engine") != "ferretpg"
 			},
@@ -92,8 +93,9 @@ func readReplicaSchema(isReadReplica bool) map[string]*schema.Schema {
 			Computed: true,
 		},
 		"password": {
-			Type:     schema.TypeString,
-			Computed: true,
+			Type:      schema.TypeString,
+			Sensitive: true,
+			Computed:  true,
 		},
 		"latest_backup": {
 			Type:     schema.TypeString,
