@@ -247,47 +247,68 @@ You must set the default tag on one node pool before importing.`,
 	if err := d.Set("region", vke.Region); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `region` read value: %v", err)
 	}
+
 	if err := d.Set("label", vke.Label); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `label` read value: %v", err)
 	}
+
 	if err := d.Set("date_created", vke.DateCreated); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `date_created` read value: %v", err)
 	}
+
 	if err := d.Set("cluster_subnet", vke.ClusterSubnet); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `cluster_subnet` read value: %v", err)
 	}
+
 	if err := d.Set("service_subnet", vke.ServiceSubnet); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `service_subnet` read value: %v", err)
 	}
+
 	if err := d.Set("ip", vke.IP); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `ip` read value: %v", err)
 	}
+
 	if err := d.Set("endpoint", vke.Endpoint); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `endpoint` read value: %v", err)
 	}
+
 	if err := d.Set("status", vke.Status); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `status` read value: %v", err)
 	}
+
 	if err := d.Set("version", vke.Version); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `version` read value: %v", err)
 	}
+
 	if err := d.Set("ha_controlplanes", vke.HAControlPlanes); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `ha_controlplanes` read value: %v", err)
 	}
+
 	if err := d.Set("firewall_group_id", vke.FirewallGroupID); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `firewall_group_id` read value: %v", err)
 	}
+
 	if err := d.Set("oidc_issuer_url", vke.OIDCConfig.IssuerURL); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `oidc_issuer_url` read value: %v", err)
 	}
+
 	if err := d.Set("oidc_client_id", vke.OIDCConfig.ClientID); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `oidc_client_id` read value: %v", err)
 	}
+
 	if err := d.Set("oidc_username_claim", vke.OIDCConfig.UserNameClaim); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `oidc_username_claim` read value: %v", err)
 	}
+
 	if err := d.Set("oidc_groups_claim", vke.OIDCConfig.GroupsClaim); err != nil {
 		return diag.Errorf("unable to set resource kubernetes `oidc_groups_claim` read value: %v", err)
+	}
+
+	if len(vke.VPC) != 0 {
+		// there can only be one VPC on a cluster
+		if err := d.Set("vpc_id", vke.VPC[0].ID); err != nil {
+			return diag.Errorf("unable to set resource kubernetes `vpc_id` read value: %v", err)
+		}
 	}
 
 	return nil
