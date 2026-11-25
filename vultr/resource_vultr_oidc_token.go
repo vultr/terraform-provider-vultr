@@ -45,13 +45,15 @@ func resourceVultrOIDCToken() *schema.Resource {
 				Optional: true,
 			},
 			"refresh_token": {
-				Type:     schema.TypeString,
-				ForceNew: true,
-				Optional: true,
+				Type:      schema.TypeString,
+				Sensitive: true,
+				ForceNew:  true,
+				Optional:  true,
 			},
 			"access_token": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:      schema.TypeString,
+				Sensitive: true,
+				Computed:  true,
 			},
 			"token_type": {
 				Type:     schema.TypeString,
@@ -62,8 +64,9 @@ func resourceVultrOIDCToken() *schema.Resource {
 				Computed: true,
 			},
 			"id_token": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:      schema.TypeString,
+				Sensitive: true,
+				Computed:  true,
 			},
 			"scope": {
 				Type:     schema.TypeString,

@@ -124,9 +124,10 @@ func resourceVultrDatabase() *schema.Resource {
 				Computed: true,
 			},
 			"password": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:      schema.TypeString,
+				Sensitive: true,
+				Optional:  true,
+				Computed:  true,
 			},
 			// Computed
 			"date_created": {
@@ -169,10 +170,11 @@ func resourceVultrDatabase() *schema.Resource {
 				Computed: true,
 			},
 			"ferretdb_credentials": {
-				Type:     schema.TypeMap,
-				Computed: true,
-				Optional: true,
-				Elem:     schema.TypeString,
+				Type:      schema.TypeMap,
+				Sensitive: true,
+				Computed:  true,
+				Optional:  true,
+				Elem:      schema.TypeString,
 				DiffSuppressFunc: func(k, old, new string, d *schema.ResourceData) bool {
 					return d.Get("database_engine") != "ferretpg"
 				},
@@ -200,9 +202,10 @@ func resourceVultrDatabase() *schema.Resource {
 				Computed: true,
 			},
 			"access_key": {
-				Type:     schema.TypeString,
-				Computed: true,
-				Optional: true,
+				Type:      schema.TypeString,
+				Sensitive: true,
+				Computed:  true,
+				Optional:  true,
 			},
 			"access_cert": {
 				Type:     schema.TypeString,

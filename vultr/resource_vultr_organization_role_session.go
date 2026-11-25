@@ -46,8 +46,9 @@ func resourceVultrOrganizationRoleSession() *schema.Resource {
 				ForceNew: true,
 			},
 			"token": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:      schema.TypeString,
+				Sensitive: true,
+				Computed:  true,
 			},
 			"conditions_met": {
 				Type:     schema.TypeList,

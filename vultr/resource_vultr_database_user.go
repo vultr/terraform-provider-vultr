@@ -33,9 +33,10 @@ func resourceVultrDatabaseUser() *schema.Resource {
 			},
 			// Optional
 			"password": {
-				Type:     schema.TypeString,
-				Optional: true,
-				Computed: true,
+				Type:      schema.TypeString,
+				Sensitive: true,
+				Optional:  true,
+				Computed:  true,
 			},
 			"encryption": {
 				Type:     schema.TypeString,
@@ -58,8 +59,9 @@ func resourceVultrDatabaseUser() *schema.Resource {
 			},
 			// Computed
 			"access_key": {
-				Type:     schema.TypeString,
-				Computed: true,
+				Type:      schema.TypeString,
+				Sensitive: true,
+				Computed:  true,
 			},
 			"access_cert": {
 				Type:     schema.TypeString,
