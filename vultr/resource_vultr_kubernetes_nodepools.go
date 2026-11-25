@@ -126,16 +126,7 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 
 	clusterID := d.Get("cluster_id").(string)
 
-	req := &govultr.NodePoolReq{
-		NodeQuantity: d.Get("node_quantity").(int),
-		Label:        d.Get("label").(string),
-		Plan:         d.Get("plan").(string),
-		Tag:          d.Get("tag").(string),
-		AutoScaler:   govultr.BoolToBoolPtr(d.Get("auto_scaler").(bool)),
-		MinNodes:     d.Get("min_nodes").(int),
-		MaxNodes:     d.Get("max_nodes").(int),
-		UserData:     d.Get("user_data").(string),
-	}
+	req := expandNodePoolCreateReq(d)
 
 	nodePool, _, err := client.Kubernetes.CreateNodePool(ctx, clusterID, req)
 	if err != nil {
@@ -205,6 +196,20 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 	return resourceVultrKubernetesNodePoolsRead(ctx, d, meta)
 }
 
+func expandNodePoolCreateReq(d *schema.ResourceData) *govultr.NodePoolReq {
+	return &govultr.NodePoolReq{
+		NodeQuantity: d.Get("node_quantity").(int),
+		Label:        d.Get("label").(string),
+		Plan:         d.Get("plan").(string),
+		Tag:          d.Get("tag").(string),
+		AutoScaler:   govultr.BoolToBoolPtr(d.Get("auto_scaler").(bool)),
+		MinNodes:     d.Get("min_nodes").(int),
+		MaxNodes:     d.Get("max_nodes").(int),
+		UserData:     d.Get("user_data").(string),
+		VPCOnly:      govultr.BoolToBoolPtr(d.Get("vpc_only").(bool)),
+	}
+}
+
 func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics { //nolint:lll
 	client := meta.(*Client).govultrClient()
 
@@ -254,6 +259,10 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 	}
 	if err := d.Set("max_nodes", nodePool.MaxNodes); err != nil {
 		return diag.Errorf("unable to set resource kubernetes_nodepools `max_nodes` read value: %v", err)
+	}
+
+	if err := d.Set("vpc_only", nodePool.VPCOnly); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `vpc_only` read value: %v", err)
 	}
 
 	var instances []map[string]interface{}
