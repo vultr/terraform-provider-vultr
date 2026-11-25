@@ -794,6 +794,10 @@ func newLBStateRefresh(ctx context.Context, d *schema.ResourceData, meta interfa
 
 		if attr == "status" {
 			log.Printf("[INFO] The load balancer Status is %v", lb.Status)
+			if lb.Status == "active" && lb.IPV4 == "" {
+				log.Printf("[INFO] The load balancer Status is %v, but ipv4 is not yet assigned", lb.Status)
+				return lb, "installing", nil
+			}
 			return lb, lb.Status, nil
 		}
 
