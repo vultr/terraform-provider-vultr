@@ -6,6 +6,7 @@ import (
 	"log"
 	"strings"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
@@ -104,6 +105,12 @@ func resourceVultrDatabaseQuotaRead(ctx context.Context, d *schema.ResourceData,
 
 	DatabaseQuota, _, err := client.Database.GetQuota(ctx, databaseID, quotaID[0], quotaID[1])
 	if err != nil {
+		if databaseIsGone(ctx, client, databaseID) {
+			tflog.Warn(ctx, fmt.Sprintf("removing database quota (%s) because its database is gone", d.Id()))
+			d.SetId("")
+			return nil
+		}
+
 		return diag.Errorf("error getting database quota (%s): %v", d.Id(), err)
 	}
 

@@ -1,6 +1,7 @@
 package vultr
 
 import (
+	"context"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
@@ -9,6 +10,11 @@ import (
 )
 
 const defaultTimeout = 60 * time.Minute
+
+func databaseIsGone(ctx context.Context, client *govultr.Client, databaseID string) bool {
+	_, resp, err := client.Database.Get(ctx, databaseID)
+	return err != nil && checkIsMissing(resp, err, databaseMissingError)
+}
 
 func readReplicaSchema(isReadReplica bool) map[string]*schema.Schema {
 	s := map[string]*schema.Schema{
