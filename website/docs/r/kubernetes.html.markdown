@@ -55,6 +55,36 @@ resource "vultr_kubernetes" "k8" {
 }
 ```
 
+Create a cluster with a NAT gateway and nodes without public interfaces. The NAT gateway comes through two resources so you must manually relate the dependency in order to create all resources in a single apply:
+```hcl
+resource "vultr_vpc" "my-vpc" {
+  region      = "yto"
+  description = "my-vpc"
+}
+
+resource "vultr_nat_gateway" "my-nat-gateway" {
+  vpc_id = resource.vultr_vpc.my-vpc.id
+  label = "my-nat-gw"
+}
+
+data "vultr_kubernetes_version" "k8s-version" {}
+
+resource "vultr_kubernetes" "my-vpc-only-k8s" {
+	region = "yto"
+	label = "my-vpc-only-k8s"
+	version = data.vultr_kubernetes_version.k8s-version.latest
+	vpc_id = resource.vultr_vpc.my-vpc.id
+	depends_on = [ resource.vultr_nat_gateway.my-nat-gateway ]
+
+	node_pools {
+		node_quantity = 3
+		plan = "vc2-4c-8gb"
+		label = "my-vpc-only-np"
+		vpc_only = true
+	}
+}
+```
+
 ## Argument Reference
 
 The follow arguments are supported:
@@ -79,7 +109,7 @@ The follow arguments are supported:
 * `min_nodes` - (Optional, Default to 1) The minimum number of nodes to use with the auto scaler.
 * `max_nodes` - (Optional, Default to 1) The maximum number of nodes to use with the auto scaler.
 * `user_data` - (Optional) A base64 encoded string containing the user data to apply to nodes in the node pool.
-* `vpc_only` - (Optional, Default to false) Enable private-only VPC connectivity for nodes. If true, nodes can only access the internet via the NAT Gateway attached to the VPC.
+* `vpc_only` - (Optional, Default to false) Enable private-only VPC connectivity for nodes. If true, nodes can only access the internet via the NAT Gateway attached to the VPC. *NOTE* Terraform will create the NAT gateway out of sequence with the node pool if created simultaneously. See the example usage for a working example, applied all at once.
 * `node_recycle` - (Optional, update only, write only) A list of node IDs to recycle. This will increase the node pool size with new nodes and automatically remove the recycled nodes.
 
 `labels` - (Optional) A list of labels to apply to the nodes in the node pool with these fields:

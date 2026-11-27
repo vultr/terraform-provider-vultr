@@ -100,6 +100,7 @@ func resourceVultrKubernetesNodePoolsV1(isNodePool bool) map[string]*schema.Sche
 
 	schemaV1["vpc_only"] = &schema.Schema{
 		Type:     schema.TypeBool,
+		Default:  false,
 		Optional: true,
 		ForceNew: true,
 	}

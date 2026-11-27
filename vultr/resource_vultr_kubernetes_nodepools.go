@@ -135,6 +135,7 @@ func resourceVultrKubernetesNodePoolsCreate(ctx context.Context, d *schema.Resou
 		MinNodes:     d.Get("min_nodes").(int),
 		MaxNodes:     d.Get("max_nodes").(int),
 		UserData:     d.Get("user_data").(string),
+		VPCOnly:      govultr.BoolToBoolPtr(d.Get("vpc_only").(bool)),
 	}
 
 	nodePool, _, err := client.Kubernetes.CreateNodePool(ctx, clusterID, req)
@@ -228,32 +229,45 @@ func resourceVultrKubernetesNodePoolsRead(ctx context.Context, d *schema.Resourc
 	if err := d.Set("status", nodePool.Status); err != nil {
 		return diag.Errorf("unable to set resource kubernetes_nodepools `status` read value: %v", err)
 	}
+
 	if err := d.Set("label", nodePool.Label); err != nil {
 		return diag.Errorf("unable to set resource kubernetes_nodepools `label` read value: %v", err)
 	}
+
 	if err := d.Set("plan", nodePool.Plan); err != nil {
 		return diag.Errorf("unable to set resource kubernetes_nodepools `plan` read value: %v", err)
 	}
+
 	if err := d.Set("tag", nodePool.Tag); err != nil {
 		return diag.Errorf("unable to set resource kubernetes_nodepools `tag` read value: %v", err)
 	}
+
 	if err := d.Set("node_quantity", nodePool.NodeQuantity); err != nil {
 		return diag.Errorf("unable to set resource kubernetes_nodepools `node_quantity` read value: %v", err)
 	}
+
 	if err := d.Set("date_created", nodePool.DateCreated); err != nil {
 		return diag.Errorf("unable to set resource kubernetes_nodepools `date_created` read value: %v", err)
 	}
+
 	if err := d.Set("date_updated", nodePool.DateUpdated); err != nil {
 		return diag.Errorf("unable to set resource kubernetes_nodepools `date_updated` read value: %v", err)
 	}
+
 	if err := d.Set("auto_scaler", nodePool.AutoScaler); err != nil {
 		return diag.Errorf("unable to set resource kubernetes_nodepools `auto_scaler` read value: %v", err)
 	}
+
 	if err := d.Set("min_nodes", nodePool.MinNodes); err != nil {
 		return diag.Errorf("unable to set resource kubernetes_nodepools `min_nodes` read value: %v", err)
 	}
+
 	if err := d.Set("max_nodes", nodePool.MaxNodes); err != nil {
 		return diag.Errorf("unable to set resource kubernetes_nodepools `max_nodes` read value: %v", err)
+	}
+
+	if err := d.Set("vpc_only", nodePool.VPCOnly); err != nil {
+		return diag.Errorf("unable to set resource kubernetes_nodepools `vpc_only` read value: %v", err)
 	}
 
 	var instances []map[string]interface{}
