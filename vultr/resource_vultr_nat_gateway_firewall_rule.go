@@ -22,7 +22,7 @@ func resourceVultrNATGatewayFirewallRule() *schema.Resource {
 		UpdateContext: resourceVultrNATGatewayFirewallRuleUpdate,
 		DeleteContext: resourceVultrNATGatewayFirewallRuleDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: importNATGatewayRule("firewall rule"),
 		},
 		Schema: map[string]*schema.Schema{
 			// Required

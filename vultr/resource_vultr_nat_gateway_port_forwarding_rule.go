@@ -19,7 +19,7 @@ func resourceVultrNATGatewayPortForwardingRule() *schema.Resource {
 		UpdateContext: resourceVultrNATGatewayPortForwardingRuleUpdate,
 		DeleteContext: resourceVultrNATGatewayPortForwardingRuleDelete,
 		Importer: &schema.ResourceImporter{
-			StateContext: schema.ImportStatePassthroughContext,
+			StateContext: importNATGatewayRule("port forwarding rule"),
 		},
 		Schema: map[string]*schema.Schema{
 			// Required

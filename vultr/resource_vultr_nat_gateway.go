@@ -261,3 +261,27 @@ func newNATGatewayStateRefresh(ctx context.Context, d *schema.ResourceData, meta
 		return nil, "", nil
 	}
 }
+
+// importNATGatewayRule imports a NAT gateway sub-resource from a composite
+// <VPC UUID>_<NAT UUID>_<rule UUID> ID, since reading a rule needs all three.
+func importNATGatewayRule(kind string) schema.StateContextFunc {
+	return func(ctx context.Context, d *schema.ResourceData, meta interface{}) ([]*schema.ResourceData, error) {
+		parts := strings.Split(d.Id(), "_")
+		if len(parts) != 3 || parts[0] == "" || parts[1] == "" || parts[2] == "" {
+			return nil, fmt.Errorf(`unable to import nat gateway %s:
+the composite import id must be formatted as <VPC UUID>_<NAT UUID>_<rule UUID>, received %q`, kind, d.Id())
+		}
+
+		if err := d.Set("vpc_id", parts[0]); err != nil {
+			return nil, fmt.Errorf("unable to set vpc_id on nat gateway %s: %v", kind, err)
+		}
+
+		if err := d.Set("nat_gateway_id", parts[1]); err != nil {
+			return nil, fmt.Errorf("unable to set nat_gateway_id on nat gateway %s: %v", kind, err)
+		}
+
+		d.SetId(parts[2])
+
+		return []*schema.ResourceData{d}, nil
+	}
+}

@@ -61,3 +61,14 @@ The following attributes are exported:
 * `description` - The description of the port forwarding rule.
 * `date_created` - The date the port forwarding rule was created.
 * `date_updated` - The date the port forwarding rule was last updated.
+
+## Import
+
+NAT gateway port forwarding rules rely on a VPC ID and a NAT gateway ID as well as their own ID.
+To import we look up the rule via a composite key formatted like
+`<VPC UUID>_<NAT UUID>_<rule UUID>` (the three UUIDs separated by underscores).
+The import will look like:
+
+```
+terraform import vultr_nat_gateway_port_forwarding_rule.my_rule 7ceab21c-e35b-4efb-9e96-6026ff5de5aa_f5dc2455-b748-4a8c-a8ac-5eef9c2ebfb7_0b5b8c4e-6c55-4b8b-9f2e-8a3d6d2f4c11
+```
